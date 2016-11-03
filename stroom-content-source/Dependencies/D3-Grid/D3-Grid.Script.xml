@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+    <dependenciesXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+	&lt;docs&gt;
+        @@DEPENDENCY#D3@@
+	&lt;/docs&gt;
+    </dependenciesXML>
+    <description>Library for creating grids of things in d3.js</description>
+    <name>D3-Grid</name>
+    <uuid>@@UUID@@</uuid>
+</script>
+

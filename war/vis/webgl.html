@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright 2016 Crown Copyright
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+<html>
+  <head>
+    <title></title>
+    <style>
+body {
+  margin: 0;
+}
+    </style>
+  </head>
+  <body>
+<script type="x-shader/x-vertex" id="vertexshader">
+  attribute float size;
+  uniform float pointSize;
+  uniform vec3 color;
+  uniform float alpha;
+  varying vec4 vColor;
+  varying vec2 myPosition;
+  varying float mySize;
+  void main() {
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = size;
+    mySize = size;
+    gl_Position = projectionMatrix * mvPosition;
+    vColor = vec4(color, alpha);
+  }
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+  varying vec4 vColor;
+  varying vec2 myPosition;
+  varying float mySize;
+  void main() {
+    float f = 0.5;
+    float d = abs(distance(gl_PointCoord - f, vec2(0.0, 0.0)));
+    float pixelD = (d + 0.5) * mySize;
+    if(pixelD + 0.5 < mySize) {
+      gl_FragColor = vec4(vColor.xyz, 0.9);
+    } else if(pixelD < mySize) {
+      gl_FragColor = vec4(vColor.xyz, 0.1);
+    } else {
+      discard;
+    }
+  }
+</script>
+
+<script src="d3.min.js" charset="utf-8"></script> <script src="three.min.js" charset="utf-8"></script>
+
+<script>
+
+'use strict'
+var scene, camera, renderer;
+var geometry, material, mesh;
+var width = window.innerWidth;
+var height = window.innerHeight;
+var scene = new THREE.Scene();
+var camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 10000);
+scene.add(camera);
+camera.position.z = 1000;
+
+// geometry = new THREE.BoxGeometry( 200, 200, 200 ) // material = new THREE.MeshBasicMaterial({color: 0xff0000}) // mesh = new THREE.Mesh(geometry, material) // scene.add(mesh)
+
+function uniforms(opts) {
+  opts = opts || {};
+  return {
+    color: {
+      type: 'c',
+      value: new THREE.Color(0x3498db)
+    },
+    alpha: { type: 'f', value: 0.7 },
+    pointSize: { type: 'f', value: 10 },
+    shouldResize: { type: '1i', value: opts.shouldResize ? 1 : 0 }
+  }
+}
+
+var particles = 1000;
+var mouseIdx = 200;
+var positions = new Float32Array(particles * 3);
+var dx = 2;
+var norm = d3.random.normal(0, 100);
+for(var i = 0; i < positions.length; i+=3) {
+  var x = norm(), y = norm(), z = norm();
+  if (i / 3 < particles / 3) x -= 0.5, y += 1, z -= 0.5;
+  else if (i / 3 < particles / 3 * 2) x += dx, y += dx, z += dx;
+  else x -= dx, y -= dx, z -= dx;
+  positions[i] = x, positions[i + 1] = y, positions[i + 2] = z;
+} 
+var sizes = new Float32Array(particles);
+for(var i = 0; i < particles; i++) sizes[i] = Math.random() * 10 + 3;
+
+var attributes = {
+  size: { type: 'f', value: [] }
+}
+
+var cloudMat = new THREE.ShaderMaterial({
+    uniforms:       uniforms(),
+    attributes:     attributes,
+    vertexShader:   d3.select('#vertexshader').node().textContent,
+    fragmentShader: d3.select('#fragmentshader').node().textContent,
+    transparent:    true,
+    setDepthTest: false,
+    // blending: THREE.CustomBlending,
+    // blendEquation: THREE.AddEquation,
+    // blendSrc: THREE.SrcAlphaSaturate,
+    // blendDst: THREE.OneMinusSrcAlphaFactor,
+})
+
+var cloudGeom = new THREE.BufferGeometry();
+var posBuff = new THREE.BufferAttribute(positions, 3);
+cloudGeom.addAttribute('position', posBuff);
+cloudGeom.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
+cloudGeom.computeBoundingSphere();
+
+var pointCloud = new THREE.PointCloud(cloudGeom, cloudMat)
+scene.add(pointCloud)
+
+var renderer = new THREE.WebGLRenderer({alpha: true});
+renderer.setSize(width, height);
+document.body.appendChild(renderer.domElement);
+
+var nodes = d3.range(particles).map(function(d) { return {} });
+var mouseNode = { fixed: true };
+nodes.push(mouseNode)
+
+// mouseNode.fixed = true
+
+var force = d3.layout.force()
+  .nodes(nodes)
+  .size([width, height])
+  .charge(function(d, i) { return -sizes[i] || -500 })
+  // .chargeDistance(10)
+  .start();
+
+var mousePosition = [0, 0];
+d3.timer(function(d) {
+  force.start();
+  mouseNode.x = mousePosition[0], mouseNode.y = mousePosition[1];
+  for(var i = 0; i + 1 < nodes.length; i++) {
+    positions[i * 3] = nodes[i].x - width / 2;
+    positions[i * 3 + 1] = - (nodes[i].y - height / 2);
+  }
+  posBuff.needsUpdate = true; // Important!
+  renderer.render(scene, camera);
+});
+
+d3.select('canvas')
+  .on('mousemove', updateMouse)
+  .call(d3.behavior.drag().on('drag', updateMouse));
+
+function updateMouse() {
+  var p = d3.mouse(this);
+  mousePosition = p;
+}
+
+    </script>
+  </body>
+</html>

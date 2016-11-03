@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+    <!--<createTime></createTime>-->
+    <!--<createUser></createUser>-->
+    <dependencies>Common</dependencies>
+    <dependencies>GenericGrid</dependencies>
+    <description>Git commit: @@GIT_COMMIT@@
+Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <name>ChordLabels</name>
+    <!--<updateTime></updateTime>-->
+    <!--<updateUser></updateUser>-->
+</script>
+

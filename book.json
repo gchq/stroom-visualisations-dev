@@ -1,0 +1,17 @@
+{
+    "root": "./docs",
+    "gitbook": "3.x.x",
+    "title": "Stroom Visualisations Development Framework",
+    "plugins": ["prism", "-highlight", "github", "anchorjs"],
+    "pluginsConfig": {
+        "github": {
+            "url": "https://github.com/TODO"
+        },
+        "theme-default": {
+            "showLevel": true,
+            "styles": {
+                "website": "build/gitbook.css"
+            }
+        }
+    }
+}

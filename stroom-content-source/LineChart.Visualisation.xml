@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Git commit: @@GIT_COMMIT@@
+Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <functionName>visualisations.LineChart</functionName>
+    <name>LineChart</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           @@DEPENDENCY#LineChart@@
+    </scriptRefXML> 
+    <uuid>@@UUID@@</uuid>
+</visualisation>
+

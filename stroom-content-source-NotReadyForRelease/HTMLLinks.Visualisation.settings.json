@@ -1,0 +1,40 @@
+{
+    "data" : {
+        "structure" : {
+            "values" : {
+                "fields" : [ 
+                    {
+                        "id" : "${field}"
+                    } 
+                ]
+            }
+        }
+    },
+    "tabs" : [ 
+        {
+            "name" : "Data",
+            "controls" : [ 
+                {
+                    "id" : "field",
+                    "type" : "field",
+                    "label" : "Field"
+                } 
+            ]
+        },
+        {
+            "name" : "HTML Links",
+            "controls" : [
+                {
+                    "id" : "URL",
+                    "type" : "text",
+                    "label" : "URL"
+                },
+                {
+                    "id" : "linkText",
+                    "type" : "text",
+                    "label" : "Link Text"
+                }
+            ]
+        } 
+    ]
+}

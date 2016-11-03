@@ -1,0 +1,14 @@
+#Tmuxinator config to fire up vim with the commonly edited files and to start a web server to server the vizes
+name: stroom-visualisations-dev
+root: ~/git_work/stroom-visualisations-dev/
+
+windows:
+  - editor: cd ./war/vis && vim Common.js GenericGrid.js ../css/vis.css TestVis.js TestData.js index.html
+  - shells:
+      layout: main-vertical
+      panes:
+        - cd ./stroom-content-builder && ls -l
+        - cd ./war/vis && ls -l
+        - cd ./stroom-content-source && ls -l
+  - server: cd ./war/ && python -m SimpleHTTPServer 8889
+  - chrome: /usr/bin/google-chrome-stable http://localhost:8889/vis

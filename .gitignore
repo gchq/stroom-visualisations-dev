@@ -1,0 +1,11 @@
+TestVis/.classpath
+**/.project
+/gwt-unitCache/
+/.settings/
+*.swp
+stroom-content-target
+stroom-content-artifacts
+node_modules
+_book
+_unused
+*.swp

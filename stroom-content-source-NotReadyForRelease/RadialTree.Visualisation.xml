@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <!--<createTime></createTime>-->
+    <!--<createUser></createUser>-->
+    <description>Git commit: @@GIT_COMMIT@@
+Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <functionName>visualisations.RadialTree</functionName>
+    <name>RadialTree</name>
+    <script>RadialTree</script>
+    <!--<updateTime></updateTime>-->
+    <!--<updateUser></updateUser>-->
+</visualisation>
+

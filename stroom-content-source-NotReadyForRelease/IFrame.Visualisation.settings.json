@@ -1,0 +1,35 @@
+{
+    "data" : {
+        "structure" : {
+            "values" : {
+                "fields" : [ 
+                    {
+                        "id" : "${field}"
+                    } 
+                ]
+            }
+        }
+    },
+    "tabs" : [ 
+        {
+            "name" : "Data",
+            "controls" : [ 
+                {
+                    "id" : "field",
+                    "type" : "field",
+                    "label" : "Field"
+                } 
+            ]
+        },
+        {
+            "name" : "IFrame",
+            "controls" : [
+                {
+                    "id" : "URL",
+                    "type" : "text",
+                    "label" : "URL"
+                }
+            ]
+        } 
+    ]
+}
