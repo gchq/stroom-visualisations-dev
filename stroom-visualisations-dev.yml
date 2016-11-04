@@ -11,4 +11,4 @@ windows:
         - cd ./war/vis && ls -l
         - cd ./stroom-content-source && ls -l
   - server: cd ./war/ && python -m SimpleHTTPServer 8889
-  - chrome: /usr/bin/google-chrome-stable http://localhost:8889/vis
+  - chrome: /usr/bin/google-chrome-stable http://localhost:8889/
