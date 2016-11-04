@@ -8,6 +8,12 @@ The aim of the Stroom Visualisations is to provide a set of visualisations with 
 
 While these visualisations have been built for Stroom they are not tightly integrated with it and can easily be used in other applications as long as the data contract and API are met.
 
+## Demo
+
+To see the visualisations test harness in action visit the [demo page](https://gchq.github.io/stroom-visualisations-dev/), choose your visualisation/settings and click _Update_.
+
+> _Note:_ Some of the visualisations are work in progress so may have bugs or may not be working at all in the test harness.
+
 ## Visualisation Features
 
 Common features of these visualisations:
