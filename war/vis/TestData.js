@@ -46,7 +46,8 @@ function TestData() {
     var VIS_TYPE_HOUR_DAY_SESSION_MAP = "HourDaySessionMap";
     var VIS_TYPE_LINE_CHART = "LineChart";
     var VIS_TYPE_RADIAL_TREE = "RadialTree";
-    var VIS_TYPE_RAG_STATUS = "RAGStatus";
+    var VIS_TYPE_RAG_STATUS_GR = "RAGStatus-GreenRed";
+    var VIS_TYPE_RAG_STATUS_RG = "RAGStatus-RedGreen";
     var VIS_TYPE_SCATTER = "Scatter";
     var VIS_TYPE_SERIES_DAY_HEAT_MAP = "SeriesDayHeatMap";
     var VIS_TYPE_SERIES_SESSION_MAP = "SeriesSessionMap";
@@ -55,7 +56,8 @@ function TestData() {
     var VIS_TYPE_STATEFUL_SESSION_MAP = "SeriesSessionMap-Stateful";
     var VIS_TYPE_STROOM = "Stroom";
     var VIS_TYPE_TEXT_VALUE = "TextValue";
-    var VIS_TYPE_TRAFFIC_LIGHTS = "TrafficLights";
+    var VIS_TYPE_TRAFFIC_LIGHTS_GR = "TrafficLights-GreenRed";
+    var VIS_TYPE_TRAFFIC_LIGHTS_RG = "TrafficLights-RedGreen";
     var VIS_TYPE_TREE = "Tree";
     var VIS_TYPE_TREEMAP = "TreeMap";
 
@@ -70,7 +72,8 @@ function TestData() {
         VIS_TYPE_HOUR_DAY_POINT_MAP,
         VIS_TYPE_HOUR_DAY_SESSION_MAP,
         VIS_TYPE_LINE_CHART,
-        VIS_TYPE_RAG_STATUS,
+        VIS_TYPE_RAG_STATUS_GR,
+        VIS_TYPE_RAG_STATUS_RG,
         VIS_TYPE_SCATTER,
         VIS_TYPE_SERIES_SESSION_MAP,
         VIS_TYPE_STACKED_AREA,
@@ -78,7 +81,8 @@ function TestData() {
         VIS_TYPE_STATEFUL_SESSION_MAP,
         VIS_TYPE_STROOM,
         VIS_TYPE_TEXT_VALUE,
-        VIS_TYPE_TRAFFIC_LIGHTS
+        VIS_TYPE_TRAFFIC_LIGHTS_GR,
+        VIS_TYPE_TRAFFIC_LIGHTS_RG
     ];
 
     this.visTestDataSettingsMap = (function() {
@@ -236,7 +240,7 @@ function TestData() {
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateFloatValue;
             fieldZeroType = 'GENERAL';
-        } else if ([VIS_TYPE_RAG_STATUS, VIS_TYPE_TRAFFIC_LIGHTS].indexOf(visType) !== -1) {
+        } else if ([VIS_TYPE_RAG_STATUS_GR, VIS_TYPE_RAG_STATUS_RG, VIS_TYPE_TRAFFIC_LIGHTS_GR, VIS_TYPE_TRAFFIC_LIGHTS_RG].indexOf(visType) !== -1) {
             seriesCount = 1;
             valueFunctions[0] = generateFloatValue;
             fieldZeroType = 'GENERAL';

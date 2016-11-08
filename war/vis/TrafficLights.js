@@ -66,24 +66,47 @@ if (!visualisations) {
         //builds a colour scale based on the thresholds passed in 
         //the vis settings
         var createColourScale = function(settings) {
-            var scale = d3.scale.threshold()
-                .domain([
-                    settings.GreenLo,
-                    settings.GreenHi,
-                    settings.AmberLo,
-                    settings.AmberHi,
-                    settings.RedLo,
-                    settings.RedHi
-                ])
-                .range([
-                    COLOUR_OUTLIER,
-                    COLOUR_GREEN,
-                    COLOUR_OUTLIER,
-                    COLOUR_AMBER,
-                    COLOUR_OUTLIER,
-                    COLOUR_RED,
-                    COLOUR_OUTLIER
-                ]);
+            if (settings.GreenHi > settings.GreenLo) {
+                //Green-Amber-Red scale
+                var scale = d3.scale.threshold()
+                    .domain([
+                        settings.GreenLo,
+                        settings.GreenHi,
+                        settings.AmberLo,
+                        settings.AmberHi,
+                        settings.RedLo,
+                        settings.RedHi
+                    ])
+                    .range([
+                        COLOUR_OUTLIER,
+                        COLOUR_GREEN,
+                        COLOUR_OUTLIER,
+                        COLOUR_AMBER,
+                        COLOUR_OUTLIER,
+                        COLOUR_RED,
+                        COLOUR_OUTLIER
+                    ]);
+            } else {
+                //Red-Amber-Green scale
+                var scale = d3.scale.threshold()
+                    .domain([
+                        settings.RedHi,
+                        settings.RedLo,
+                        settings.AmberHi,
+                        settings.AmberLo,
+                        settings.GreenHi,
+                        settings.GreenLo
+                    ])
+                    .range([
+                        COLOUR_OUTLIER,
+                        COLOUR_RED,
+                        COLOUR_OUTLIER,
+                        COLOUR_AMBER,
+                        COLOUR_OUTLIER,
+                        COLOUR_GREEN,
+                        COLOUR_OUTLIER
+                    ]);
+            }
             return scale;
         };
 

@@ -413,27 +413,41 @@
     };
 
     function postProcessTestData(data) {
-        if (getVisType() === "RAGStatus" || getVisType() === "TrafficLights") {
+
+        //function to set settings.[Green|Amber|Red][Hi|Lo] according to the data
+        //if isReversed, Reg->Green else Green->Red
+        var setRAGSettigns = function(data, isReversed) {
             //Need to define the thresholds based on the data we have generated
             var valueGetterFunc = function(d) {
                 return d.values[0][0];
-            }
+            };
+            var deltaOpFunc = isReversed ? function(a,b) { return a - b; } : function(a,b) { return a + b; };
+
+            //top and bottom 5% are treated as outliers
+            //the rest of the range is split evenly from green-red or vice versa
             var minVal = d3.min(data.values, valueGetterFunc);
             var maxVal = d3.max(data.values, valueGetterFunc);
             var range = maxVal - minVal;
             var workingRange = range * 0.9;
             var outlierBand = (range - workingRange) / 2;
-            settings.GreenLo = minVal + outlierBand;
-            settings.GreenHi = settings.GreenLo + (workingRange / 3);
+            settings.GreenLo = deltaOpFunc((isReversed ? maxVal : minVal), outlierBand);
+            settings.GreenHi = deltaOpFunc(settings.GreenLo, (workingRange / 3));
             settings.AmberLo = settings.GreenHi;
-            settings.AmberHi = settings.AmberLo + (workingRange / 3);
+            settings.AmberHi = deltaOpFunc(settings.AmberLo, (workingRange / 3));
             settings.RedLo = settings.AmberHi;
-            settings.RedHi = settings.RedLo + (workingRange / 3);
+            settings.RedHi = deltaOpFunc(settings.RedLo, (workingRange / 3));
 
             console.log("Green: " + commonFunctions.autoFormat(settings.GreenLo) + " - " + commonFunctions.autoFormat(settings.GreenHi));
             console.log("AmberLo: " + commonFunctions.autoFormat(settings.AmberLo)  + " - " + commonFunctions.autoFormat(settings.AmberHi));
             console.log("RedLo:   " + commonFunctions.autoFormat(settings.RedLo) + " - " + commonFunctions.autoFormat(settings.RedHi));
+        };
+
+        if (getVisType() === "RAGStatus-GreenRed" || getVisType() === "TrafficLights-GreenRed") {
+            setRAGSettigns(data, false);
+        } else if (getVisType() === "RAGStatus-RedGreen" || getVisType() === "TrafficLights-RedGreen") {
+            setRAGSettigns(data, true);
         }
+
     };
 
     function clone(obj) {
