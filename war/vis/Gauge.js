@@ -19,12 +19,19 @@
  * example found at:
  *
  * http://bl.ocks.org/tomerd/1499279
+ *
+ * which in turn is a modified version of Google's gauge found at:
+ *
+ * https://developers.google.com/chart/interactive/docs/gallery/gauge?csw=1
+ *
+ * which is licenced under the Apache 2.0 licence.
  */
 
 
 if (!visualisations) {
     var visualisations = {};
 }
+
 //IIFE to prvide shared scope for sharing state and constants between the controller 
 //object and each grid cell object instance
 (function(){
@@ -296,9 +303,9 @@ if (!visualisations) {
                     .style("fill", "#333")
                     .style("stroke-width", "0px");
 
-                self.drawBand(ge,visSettings.GreenLo, visSettings.GreenHi, "green");
-                self.drawBand(ge,visSettings.AmberLo, visSettings.AmberHi, "darkorange");
-                self.drawBand(ge,visSettings.RedLo, visSettings.RedHi, "red");
+                self.drawBand(ge,visSettings.GreenLo, visSettings.GreenHi, COLOUR_GREEN, STATUS_GREEN);
+                self.drawBand(ge,visSettings.AmberLo, visSettings.AmberHi, COLOUR_AMBER, STATUS_AMBER);
+                self.drawBand(ge,visSettings.RedLo, visSettings.RedHi, COLOUR_RED, STATUS_RED);
 
                 var majorDelta = (visSettings.RedHi) / 10 ;
                 for (var major = 0; major <= 10; major++) {
@@ -351,27 +358,27 @@ if (!visualisations) {
                     var pointer = e.select(".pointer");
                     var pointerCircle = e.select(".pointerCircle");
 
-                    var green = e.select(".green");
-                    var amber = e.select(".darkorange");
-                    var red = e.select(".red");
+                    var greenBand = e.select("." + STATUS_GREEN.toLowerCase());
+                    var amberBand = e.select("." + STATUS_AMBER.toLowerCase());
+                    var redBand = e.select("." + STATUS_RED.toLowerCase());
 
                     var count = e.select(".value");
                     var ticks = e.selectAll(".tick");
 
                     var bbc = circleOuter.node().getBBox();
-                    var scale = Math.min((element.clientWidth -10) / bbc.width,(element.clientHeight -10) / bbc.height);
+                    var scale = Math.min((width -10) / bbc.width,(height -10) / bbc.height);
 
-                    circleOuter.attr("transform","translate("+element.clientWidth/2 +","+element.clientHeight/2 +")scale("+scale+")");
-                    circleInner.attr("transform","translate("+element.clientWidth/2 +","+element.clientHeight/2 +")scale("+scale+")");
-                    pointer.attr("transform","translate("+element.clientWidth/2 +","+element.clientHeight/2 +")scale("+scale+")");
-                    pointerCircle.attr("transform","translate("+element.clientWidth/2 +","+element.clientHeight/2 +")scale("+scale+")");
-                    green.attr("transform","translate("+element.clientWidth/2 +","+element.clientHeight/2 +")scale("+scale+") rotate(270)");
-                    amber.attr("transform","translate("+element.clientWidth/2 +","+element.clientHeight/2 +")scale("+scale+") rotate(270)");
-                    red.attr("transform","translate("+element.clientWidth/2 +","+element.clientHeight/2 +")scale("+scale+") rotate(270)");
-                    count.attr("transform","translate("+((element.clientWidth/2)-(bbc.width*scale*.07)) +","+(((element.clientHeight/2)+(bbc.height*scale*.25)))+")scale("+scale*0.75+")");
+                    circleOuter.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
+                    circleInner.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
+                    pointer.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
+                    pointerCircle.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
+                    greenBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
+                    amberBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
+                    redBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
+                    count.attr("transform","translate("+((width/2)-(bbc.width*scale*.07)) +","+(((height/2)+(bbc.height*scale*.25)))+")scale("+scale*0.75+")");
                     ticks.each(function (d) {
                         var e = d3.select(this);
-                        e.attr("transform","translate("+element.clientWidth/2 +","+(element.clientHeight/2) +")scale("+scale+")rotate(270)");
+                        e.attr("transform","translate("+width/2 +","+(height/2) +")scale("+scale+")rotate(270)");
                     });
 
 
@@ -394,11 +401,14 @@ if (!visualisations) {
             }
         };
 
-        this.drawBand = function(g, start, end, color) {
+        this.drawBand = function(g, start, end, color, status) {
             if (0 >= end - start) return;
 
             g.append("svg:path")
-                .attr("class",color)
+                //.attr("class",className)
+                .attr("class", commonFunctions.makeColouredElementClassStringFunc(function(d) {
+                    return statusToRangeTextMap[status];
+                }, status.toLowerCase()))
                 .style("fill", color)
                 .attr("d", d3.svg.arc()
                     .startAngle(this.valueToRadians(start))
@@ -407,8 +417,8 @@ if (!visualisations) {
                     .outerRadius(0.85 * 50)
                 )
                 .attr("transform", function() { 
-                    return "translate(" + element.clientWidth/2 + 
-                        ", " + element.clientHeight/2 + 
+                    return "translate(" + width/2 + 
+                        ", " + height/2 + 
                         ") rotate(270)" 
                 });
         };
@@ -426,8 +436,8 @@ if (!visualisations) {
                     .outerRadius(0.85 * 50)
                 )
                 .attr("transform", function() { 
-                    return "translate(" + element.clientWidth/2 + 
-                        ", " + element.clientHeight/2 + 
+                    return "translate(" + width/2 + 
+                        ", " + height/2 + 
                         ") rotate(270)" 
                 });
         };
@@ -445,8 +455,8 @@ if (!visualisations) {
                     .outerRadius(0.85 * 50)
                 )
                 .attr("transform", function() { 
-                    return "translate(" + element.clientWidth/2 + 
-                        ", " + element.clientHeight/2 + 
+                    return "translate(" + width/2 + 
+                        ", " + height/2 + 
                         ") rotate(270)"; 
                 });
         }
