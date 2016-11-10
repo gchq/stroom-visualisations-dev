@@ -66,18 +66,17 @@ if (!visualisations) {
         //builds a colour scale based on the thresholds passed in 
         //the vis settings
         var createColourScale = function(settings) {
-            if (settings.GreenHi > settings.GreenLo) {
-                //Green-Amber-Red scale
-                var scale = d3.scale.threshold()
-                    .domain([
+            var greenRedDomain = [
                         settings.GreenLo,
                         settings.GreenHi,
                         settings.AmberLo,
                         settings.AmberHi,
                         settings.RedLo,
                         settings.RedHi
-                    ])
-                    .range([
+                    ];
+            //clone and reverse the array
+            var redGreenDomain = greenRedDomain.slice(0).reverse();
+            var greenRedRange = [
                         COLOUR_OUTLIER,
                         COLOUR_GREEN,
                         COLOUR_OUTLIER,
@@ -85,27 +84,20 @@ if (!visualisations) {
                         COLOUR_OUTLIER,
                         COLOUR_RED,
                         COLOUR_OUTLIER
-                    ]);
+                    ];
+            //clone and reverse the array
+            var redGreenRange = greenRedRange.slice(0).reverse();
+
+            if (settings.GreenHi > settings.GreenLo) {
+                //Green-Amber-Red scale
+                var scale = d3.scale.threshold()
+                    .domain(greenRedDomain)
+                    .range(greenRedRange);
             } else {
                 //Red-Amber-Green scale
                 var scale = d3.scale.threshold()
-                    .domain([
-                        settings.RedHi,
-                        settings.RedLo,
-                        settings.AmberHi,
-                        settings.AmberLo,
-                        settings.GreenHi,
-                        settings.GreenLo
-                    ])
-                    .range([
-                        COLOUR_OUTLIER,
-                        COLOUR_RED,
-                        COLOUR_OUTLIER,
-                        COLOUR_AMBER,
-                        COLOUR_OUTLIER,
-                        COLOUR_GREEN,
-                        COLOUR_OUTLIER
-                    ]);
+                    .domain(redGreenDomain)
+                    .range(redGreenRange);
             }
             return scale;
         };
