@@ -442,9 +442,9 @@
             console.log("RedLo:   " + commonFunctions.autoFormat(settings.RedLo) + " - " + commonFunctions.autoFormat(settings.RedHi));
         };
 
-        if (getVisType() === "RAGStatus-GreenRed" || getVisType() === "TrafficLights-GreenRed") {
+        if (getVisType() === "RAGStatus-GreenRed" || getVisType() === "TrafficLights-GreenRed" || getVisType() === "Gauge-GreenRed") {
             setRAGSettigns(data, false);
-        } else if (getVisType() === "RAGStatus-RedGreen" || getVisType() === "TrafficLights-RedGreen") {
+        } else if (getVisType() === "RAGStatus-RedGreen" || getVisType() === "TrafficLights-RedGreen" || getVisType() === "Gauge-RedGreen") {
             setRAGSettigns(data, true);
         }
 

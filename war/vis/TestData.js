@@ -39,7 +39,8 @@ function TestData() {
     var VIS_TYPE_DOUGHNUT = "Doughnut";
     var VIS_TYPE_FORCE = "Force";
     var VIS_TYPE_FORCE_CANVAS = "ForceCanvas";
-    var VIS_TYPE_GENERIC_GRID = "GenericGrid";
+    var VIS_TYPE_GAUGE_GR = "Gauge-GreenRed";
+    var VIS_TYPE_GAUGE_RG = "Gauge-RedGreen";
     var VIS_TYPE_HOUR_DAY_HEAT_MAP = "HourDayHeatMap";
     var VIS_TYPE_HOUR_DAY_MULTI_HEAT_MAP = "HourDayMultiHeatMap";
     var VIS_TYPE_HOUR_DAY_POINT_MAP = "HourDayPointMap";
@@ -69,6 +70,8 @@ function TestData() {
         VIS_TYPE_BUBBLE_FLAT,
         VIS_TYPE_BUBBLE_NESTED,
         VIS_TYPE_DOUGHNUT, 
+        VIS_TYPE_GAUGE_GR,
+        VIS_TYPE_GAUGE_RG,
         VIS_TYPE_HOUR_DAY_POINT_MAP,
         VIS_TYPE_HOUR_DAY_SESSION_MAP,
         VIS_TYPE_LINE_CHART,
@@ -240,7 +243,7 @@ function TestData() {
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateFloatValue;
             fieldZeroType = 'GENERAL';
-        } else if ([VIS_TYPE_RAG_STATUS_GR, VIS_TYPE_RAG_STATUS_RG, VIS_TYPE_TRAFFIC_LIGHTS_GR, VIS_TYPE_TRAFFIC_LIGHTS_RG].indexOf(visType) !== -1) {
+        } else if ([VIS_TYPE_RAG_STATUS_GR, VIS_TYPE_RAG_STATUS_RG, VIS_TYPE_TRAFFIC_LIGHTS_GR, VIS_TYPE_TRAFFIC_LIGHTS_RG, VIS_TYPE_GAUGE_GR, VIS_TYPE_GAUGE_RG].indexOf(visType) !== -1) {
             seriesCount = 1;
             valueFunctions[0] = generateFloatValue;
             fieldZeroType = 'GENERAL';
