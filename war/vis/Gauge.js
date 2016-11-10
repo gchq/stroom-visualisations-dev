@@ -159,7 +159,7 @@ if (!visualisations) {
                         var colourValue = d.values[0][1];
                         //remove and values above/below/between the three status bands and also greens if
                         //the settings say to do that
-                        return (colourValue !== STATUS_OUTLIER) && (displayGreens || (!displayGreens && colourValue != STATUS_GREEN)) ;
+                        return (displayGreens || (!displayGreens && colourValue != STATUS_GREEN)) ;
                     });
                     var synchedFields = [];
 
@@ -269,7 +269,13 @@ if (!visualisations) {
                 var g = seriesContainer.selectAll(".gauge")
                     .data(visibleValues);
 
-                range = visSettings.RedHi;
+                range = visSettings.RedHi - visSettings.GreenLo;
+
+                //greenLo may not be zero based, so have to convert to
+                //a value that is zero based for the gauge
+                var absoluteToRelative = function(absValue) {
+                    return absValue - visSettings.GreenLo;
+                };
 
                 var ge = g.enter()
                     .append("svg:svg")
@@ -303,16 +309,16 @@ if (!visualisations) {
                     .style("fill", "#333")
                     .style("stroke-width", "0px");
 
-                self.drawBand(ge,visSettings.GreenLo, visSettings.GreenHi, COLOUR_GREEN, STATUS_GREEN);
-                self.drawBand(ge,visSettings.AmberLo, visSettings.AmberHi, COLOUR_AMBER, STATUS_AMBER);
-                self.drawBand(ge,visSettings.RedLo, visSettings.RedHi, COLOUR_RED, STATUS_RED);
+                self.drawBand(ge,absoluteToRelative(visSettings.GreenLo), absoluteToRelative(visSettings.GreenHi), COLOUR_GREEN, STATUS_GREEN);
+                self.drawBand(ge,absoluteToRelative(visSettings.AmberLo), absoluteToRelative(visSettings.AmberHi), COLOUR_AMBER, STATUS_AMBER);
+                self.drawBand(ge,absoluteToRelative(visSettings.RedLo), absoluteToRelative(visSettings.RedHi), COLOUR_RED, STATUS_RED);
 
-                var majorDelta = (visSettings.RedHi) / 10 ;
+                var majorDelta = (range) / 10 ;
                 for (var major = 0; major <= 10; major++) {
                     self.drawMajorTick(ge,majorDelta*major,(majorDelta*major+majorDelta/100),"black");
                 }
 
-                var majorDelta = (visSettings.RedHi) / 100 ;
+                var majorDelta = (range) / 100 ;
                 for (var major = 0; major <= 100; major++) {
                     self.drawMinorTick(ge, majorDelta * major, (majorDelta * major + majorDelta / 10), "black");
                 }
@@ -351,11 +357,18 @@ if (!visualisations) {
 
                 g.each(function(d) {
                     var e = d3.select(this);
+                    var gaugeCurrentValue = d[0];
+                    var gaugeCurrentStatus = d[1];
+                    var gaugeCurrentRangeText = d[2];
 
                     var circleInner = e.select(".inner");
                     var circleOuter = e.select(".outer");
 
-                    var pointer = e.select(".pointer");
+                    //make the pointer disapear if we hover over one of the other legend colours
+                    var pointer = e.select(".pointer")
+                        .attr("class", commonFunctions.makeColouredElementClassStringFunc(function(d) {
+                            return gaugeCurrentRangeText;
+                        }, gaugeCurrentStatus.toLowerCase() + " pointer"));
                     var pointerCircle = e.select(".pointerCircle");
 
                     var greenBand = e.select("." + STATUS_GREEN.toLowerCase());
@@ -365,7 +378,8 @@ if (!visualisations) {
                     var count = e.select(".value");
                     var ticks = e.selectAll(".tick");
 
-                    var bbc = circleOuter.node().getBBox();
+                    var bbc = circleOuter.node()
+                        .getBBox();
                     var scale = Math.min((width -10) / bbc.width,(height -10) / bbc.height);
 
                     circleOuter.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
@@ -376,44 +390,60 @@ if (!visualisations) {
                     amberBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
                     redBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
                     count.attr("transform","translate("+((width/2)-(bbc.width*scale*.07)) +","+(((height/2)+(bbc.height*scale*.25)))+")scale("+scale*0.75+")");
+
                     ticks.each(function (d) {
                         var e = d3.select(this);
                         e.attr("transform","translate("+width/2 +","+(height/2) +")scale("+scale+")rotate(270)");
                     });
 
+                    count.text(commonFunctions.autoFormat(gaugeCurrentValue));
 
-                    var val = d[0];
-                    count.text(val);
+                    var gaugeAmendedValue = gaugeCurrentValue;
 
-                    if (val > visSettings.RedHi) {
-                        val = visSettings.RedHi; 
-                        count.style("fill","red");
-                        count.attr("text-decoration","underline");
+                    if (gaugeCurrentValue > visSettings.RedHi) {
+                        //value is above the red range so change the text colour
+                        //and put the pointer just outside the red band
+                        gaugeAmendedValue = visSettings.RedHi + (range * 0.03); 
+                        count.style("fill", commonConstants.googleRed500);
+                    } else if (gaugeCurrentValue < visSettings.GreenLo) {
+                        //value is below the green range so change the text colour
+                        //and put the pointer just below the green band
+                        gaugeAmendedValue = visSettings.GreenLo - (range * 0.03); 
+                        count.style("fill", commonConstants.googleRed500);
+                    } else {
+                        count.style("fill", commonConstants.googlePrimaryText);
                     }
-                    else {
-                        count.style("fill","#333");
-                        count.attr("text-decoration","inherit");
-                    }
-                    var pointerPath = buildPointerPath(val);
+
+                    console.log("gaugeCurrentValue: " + gaugeCurrentValue + " gaugeAmendedValue: " + gaugeAmendedValue + "rel: " + absoluteToRelative(gaugeAmendedValue));
+                    var pointerPath = buildPointerPath(absoluteToRelative(gaugeAmendedValue));
                     var temp = pointerLine(pointerPath);
                     pointer.attr("d",temp);
                 });
             }
         };
 
-        this.drawBand = function(g, start, end, color, status) {
+        this.drawBand = function(g, start, end, colour, status) {
             if (0 >= end - start) return;
 
             g.append("svg:path")
                 //.attr("class",className)
+                //.attr("class", function() {
+                    //if (gaugeCurrentStatus === status) {
+                        //return commonFunctions.makeColouredElementClassStringFunc(function(d) {
+                            //return statusToRangeTextMap[status];
+                        //}, status.toLowerCase());
+                    //} else {
+                        //return  "vis-coloured-element vis-legend-key-XXX " + status.toLowerCase();
+                    //}
+                //}())
                 .attr("class", commonFunctions.makeColouredElementClassStringFunc(function(d) {
                     return statusToRangeTextMap[status];
                 }, status.toLowerCase()))
-                .style("fill", color)
+                .style("fill", colour)
                 .attr("d", d3.svg.arc()
                     .startAngle(this.valueToRadians(start))
                     .endAngle(this.valueToRadians(end))
-                    .innerRadius(0.65 * 50)
+                    .innerRadius(0.70 * 50)
                     .outerRadius(0.85 * 50)
                 )
                 .attr("transform", function() { 
@@ -421,14 +451,28 @@ if (!visualisations) {
                         ", " + height/2 + 
                         ") rotate(270)" 
                 });
+
+            //add the hover tip mouse events on the apprpriate path
+            var cssSelector = "path." + status.toLowerCase();
+            commonFunctions.addDelegateEvent(
+                g, 
+                "mouseover", 
+                cssSelector, 
+                inverseHighlight.makeInverseHighlightMouseOverHandler("DUMMY", visData.types, seriesContainer, cssSelector));
+
+            commonFunctions.addDelegateEvent(
+                g, 
+                "mouseout", 
+                cssSelector, 
+                inverseHighlight.makeInverseHighlightMouseOutHandler(seriesContainer, cssSelector));
         };
 
-        this.drawMajorTick = function(g, start, end, color) {
+        this.drawMajorTick = function(g, start, end, colour) {
             if (0 >= end - start) return;
 
             g.append("svg:path")
                 .attr("class","tick")
-                .style("fill", color)
+                .style("fill", colour)
                 .attr("d", d3.svg.arc()
                     .startAngle(this.valueToRadians(start))
                     .endAngle(this.valueToRadians(end))
@@ -442,12 +486,12 @@ if (!visualisations) {
                 });
         };
 
-        this.drawMinorTick = function(g, start, end, color) {
+        this.drawMinorTick = function(g, start, end, colour) {
             if (0 >= end - start) return;
 
             g.append("svg:path")
                 .attr("class","tick")
-                .style("fill", color)
+                .style("fill", colour)
                 .attr("d", d3.svg.arc()
                     .startAngle(this.valueToRadians(start))
                     .endAngle(this.valueToRadians(end))
