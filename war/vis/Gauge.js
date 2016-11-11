@@ -141,6 +141,7 @@ if (!visualisations) {
                     statusToRangeTextMap[STATUS_GREEN] = createRangeText(settings.GreenLo, settings.GreenHi);
                     statusToRangeTextMap[STATUS_AMBER] = createRangeText(settings.AmberLo,settings.AmberHi);
                     statusToRangeTextMap[STATUS_RED] = createRangeText(settings.RedLo,settings.RedHi);
+                    statusToRangeTextMap[STATUS_OUTLIER] = "Outlier";
                 }
 
                 if (data.values) {
@@ -201,8 +202,9 @@ if (!visualisations) {
             tip = inverseHighlight.tip()
                 .html(function(tipData) { 
                     var html = inverseHighlight.htmlBuilder()
-                        .addTipEntry("Status",tipData.values[1])
                         .addTipEntry("Value",commonFunctions.autoFormat(tipData.values[0]))
+                        .addTipEntry("Status",tipData.values[1])
+                        .addTipEntry("Range",statusToRangeTextMap[tipData.values[1]])
                         .build();
                     return html;
                 });
@@ -268,11 +270,16 @@ if (!visualisations) {
 
                 var g = seriesContainer.selectAll(".gauge")
                     .data(visibleValues);
+                
+                var gaugeCurrentValue = visibleValues[0][0];
+                var gaugeCurrentStatus = visibleValues[0][1];
+                var gaugeCurrentRangeText = visibleValues[0][2];
+
+                var legendKeyClass = "vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[gaugeCurrentStatus]);
 
                 range = visSettings.RedHi - visSettings.GreenLo;
 
-                //greenLo may not be zero based, so have to convert to
-                //a value that is zero based for the gauge
+                //greenLo may not be zero based, so have to convert to a value that is zero based for the gauge
                 var absoluteToRelative = function(absValue) {
                     return absValue - visSettings.GreenLo;
                 };
@@ -300,7 +307,9 @@ if (!visualisations) {
                     .style("stroke-width", "2px");
 
                 ge.append("svg:text")
-                    .attr("class","value")
+                    .classed("value", true)
+                    .classed("vis-coloured-element", true)
+                    .classed(legendKeyClass, true)
                     .attr("x", 0)
                     .attr("y", 0)
                     .attr("dy", 8)
@@ -309,9 +318,9 @@ if (!visualisations) {
                     .style("fill", "#333")
                     .style("stroke-width", "0px");
 
-                self.drawBand(ge,absoluteToRelative(visSettings.GreenLo), absoluteToRelative(visSettings.GreenHi), COLOUR_GREEN, STATUS_GREEN);
-                self.drawBand(ge,absoluteToRelative(visSettings.AmberLo), absoluteToRelative(visSettings.AmberHi), COLOUR_AMBER, STATUS_AMBER);
-                self.drawBand(ge,absoluteToRelative(visSettings.RedLo), absoluteToRelative(visSettings.RedHi), COLOUR_RED, STATUS_RED);
+                self.drawBand(ge,absoluteToRelative(visSettings.GreenLo), absoluteToRelative(visSettings.GreenHi), COLOUR_GREEN, STATUS_GREEN, gaugeCurrentStatus);
+                self.drawBand(ge,absoluteToRelative(visSettings.AmberLo), absoluteToRelative(visSettings.AmberHi), COLOUR_AMBER, STATUS_AMBER, gaugeCurrentStatus);
+                self.drawBand(ge,absoluteToRelative(visSettings.RedLo), absoluteToRelative(visSettings.RedHi), COLOUR_RED, STATUS_RED, gaugeCurrentStatus);
 
                 var majorDelta = (range) / 10 ;
                 for (var major = 0; major <= 10; major++) {
@@ -323,28 +332,32 @@ if (!visualisations) {
                     self.drawMinorTick(ge, majorDelta * major, (majorDelta * major + majorDelta / 10), "black");
                 }
 
-                var pc = ge.append("svg:g")
-                    .attr("class", "pointerContainer");
+                var pointerContainer = ge.append("svg:g")
+                    .classed("pointerContainer", true);
 
-                pc.append("svg:path")
-                    .attr("class", "pointer")
-                    .style("fill", "#dc3912")
-                    .style("stroke", "#666")
-                    .style("fill-opacity", 0.7);
+                pointerContainer.append("svg:path")
+                    //.attr("class", "pointer")
+                    .classed("pointer", true)
+                    .classed("vis-coloured-element", true)
+                    .classed(legendKeyClass, true)
+                    .style("fill", "#900000")
+                    .style("fill-opacity", 1);
 
-                pc.append("svg:circle")
-                    .attr("class", "pointerCircle")
+                var pointerCircle = pointerContainer.append("svg:circle")
+                    .classed("pointerCircle", true)
+                    .classed("vis-coloured-element", true)
+                    .classed(legendKeyClass, true)
                     .attr("cx", 0)
                     .attr("cy", 0)
                     .attr("r", 0.12 * 45)
-                    .style("fill", "#4684EE")
-                    .style("stroke", "#666")
-                    .style("opacity", 1);;
+                    .style("fill", "#383838")
+                    .style("opacity", 1);
 
                 g.exit()
                     .transition()
                     .duration(duration)
-                    .style("opacity",0).remove();
+                    .style("opacity",0)
+                    .remove();
 
                 g.transition()
                     .duration(duration)
@@ -357,18 +370,10 @@ if (!visualisations) {
 
                 g.each(function(d) {
                     var e = d3.select(this);
-                    var gaugeCurrentValue = d[0];
-                    var gaugeCurrentStatus = d[1];
-                    var gaugeCurrentRangeText = d[2];
 
                     var circleInner = e.select(".inner");
                     var circleOuter = e.select(".outer");
-
-                    //make the pointer disapear if we hover over one of the other legend colours
-                    var pointer = e.select(".pointer")
-                        .attr("class", commonFunctions.makeColouredElementClassStringFunc(function(d) {
-                            return gaugeCurrentRangeText;
-                        }, gaugeCurrentStatus.toLowerCase() + " pointer"));
+                    var pointer = e.select(".pointer");
                     var pointerCircle = e.select(".pointerCircle");
 
                     var greenBand = e.select("." + STATUS_GREEN.toLowerCase());
@@ -404,46 +409,64 @@ if (!visualisations) {
                         //value is above the red range so change the text colour
                         //and put the pointer just outside the red band
                         gaugeAmendedValue = visSettings.RedHi + (range * 0.03); 
-                        count.style("fill", commonConstants.googleRed500);
+                        count
+                            .style("fill", commonConstants.googleRed500)
+                            .style("font-weight", "700");
                     } else if (gaugeCurrentValue < visSettings.GreenLo) {
                         //value is below the green range so change the text colour
                         //and put the pointer just below the green band
                         gaugeAmendedValue = visSettings.GreenLo - (range * 0.03); 
-                        count.style("fill", commonConstants.googleRed500);
+                        count
+                            .style("fill", commonConstants.googleRed500)
+                            .style("font-weight", "700");
                     } else {
-                        count.style("fill", commonConstants.googlePrimaryText);
+                        count
+                            .style("fill", commonConstants.googlePrimaryText)
+                            .style("font-weight", "400");
                     }
 
-                    console.log("gaugeCurrentValue: " + gaugeCurrentValue + " gaugeAmendedValue: " + gaugeAmendedValue + "rel: " + absoluteToRelative(gaugeAmendedValue));
+                    //console.log("gaugeCurrentValue: " + gaugeCurrentValue + " gaugeAmendedValue: " + gaugeAmendedValue + "rel: " + absoluteToRelative(gaugeAmendedValue));
                     var pointerPath = buildPointerPath(absoluteToRelative(gaugeAmendedValue));
                     var temp = pointerLine(pointerPath);
                     pointer.attr("d",temp);
                 });
+
+                //add the hover tip mouse events on the apprpriate path
+                var cssSelector = "path.active";
+                commonFunctions.addDelegateEvent(
+                    g, 
+                    "mouseover", 
+                    cssSelector, 
+                    inverseHighlight.makeInverseHighlightMouseOverHandler("DUMMY_SERIES_KEY", visData.types, seriesContainer, cssSelector, pointerCircle.node()));
+
+                commonFunctions.addDelegateEvent(
+                    g, 
+                    "mouseout", 
+                    cssSelector, 
+                    inverseHighlight.makeInverseHighlightMouseOutHandler(seriesContainer, cssSelector, pointerCircle.node()));
             }
         };
 
-        this.drawBand = function(g, start, end, colour, status) {
+        //this.drawBand = function(g, start, end, colour, status, currentStatus) {
+        this.drawBand = function(g, start, end, colour, status, currentStatus) {
             if (0 >= end - start) return;
+            if (currentStatus === STATUS_OUTLIER) return;
+
+            //Make the active band thicker to draw attention to it
+            var innerRadiusFactor = (status === currentStatus ? 0.65 : 0.80);
+            var activeBandClass = (status === currentStatus ? "active" : "");
 
             g.append("svg:path")
-                //.attr("class",className)
-                //.attr("class", function() {
-                    //if (gaugeCurrentStatus === status) {
-                        //return commonFunctions.makeColouredElementClassStringFunc(function(d) {
-                            //return statusToRangeTextMap[status];
-                        //}, status.toLowerCase());
-                    //} else {
-                        //return  "vis-coloured-element vis-legend-key-XXX " + status.toLowerCase();
-                    //}
-                //}())
-                .attr("class", commonFunctions.makeColouredElementClassStringFunc(function(d) {
-                    return statusToRangeTextMap[status];
-                }, status.toLowerCase()))
+                .classed("vis-coloured-element", true)
+                //.classed(vis)
+                .classed("vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[currentStatus]), true)
+                .classed(status.toLowerCase(), true)
+                .classed(activeBandClass, true)
                 .style("fill", colour)
                 .attr("d", d3.svg.arc()
                     .startAngle(this.valueToRadians(start))
                     .endAngle(this.valueToRadians(end))
-                    .innerRadius(0.70 * 50)
+                    .innerRadius(innerRadiusFactor * 50)
                     .outerRadius(0.85 * 50)
                 )
                 .attr("transform", function() { 
@@ -451,20 +474,6 @@ if (!visualisations) {
                         ", " + height/2 + 
                         ") rotate(270)" 
                 });
-
-            //add the hover tip mouse events on the apprpriate path
-            var cssSelector = "path." + status.toLowerCase();
-            commonFunctions.addDelegateEvent(
-                g, 
-                "mouseover", 
-                cssSelector, 
-                inverseHighlight.makeInverseHighlightMouseOverHandler("DUMMY", visData.types, seriesContainer, cssSelector));
-
-            commonFunctions.addDelegateEvent(
-                g, 
-                "mouseout", 
-                cssSelector, 
-                inverseHighlight.makeInverseHighlightMouseOutHandler(seriesContainer, cssSelector));
         };
 
         this.drawMajorTick = function(g, start, end, colour) {
@@ -556,12 +565,14 @@ if (!visualisations) {
                 .range([
                     COLOUR_RED,
                     COLOUR_AMBER,
-                    COLOUR_GREEN
+                    COLOUR_GREEN,
+                    COLOUR_OUTLIER
                 ])
                 .domain([
                     statusToRangeTextMap[STATUS_RED],
                     statusToRangeTextMap[STATUS_AMBER],
-                    statusToRangeTextMap[STATUS_GREEN]
+                    statusToRangeTextMap[STATUS_GREEN],
+                    statusToRangeTextMap[STATUS_OUTLIER]
                 ]);
         };
     };
