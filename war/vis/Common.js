@@ -241,6 +241,7 @@ if (!visualisations) {
         greyscale: ["#ffffff","#eeeeee","#dddddd","#cccccc","#bbbbbb","#aaaaaa","#999999","#888888","#777777"]
     };
     commonConstants.heatMapColours = commonConstants.heatMapColourRanges.greenyBlues;
+    commonConstants.classVisColouredElement = "vis-coloured-element";
 
     // Common Functions
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1383,7 +1384,7 @@ if (!visualisations) {
                         //console.log("domainValue: " + domainValue + " seriesKeyHash: " + seriesKeyHash);
 
                         //find all coloured elements apart from the colour we are hovering over
-                        var otherColouredElements = d3.selectAll(".vis-coloured-element:not(." + classToExclude + ")");
+                        var otherColouredElements = d3.selectAll("." + commonConstants.classVisColouredElement + ":not(." + classToExclude + ")");
 
                         otherColouredElements.each(function(d,i) {
                             var otherElm = d3.select(this).node();
@@ -1500,7 +1501,7 @@ if (!visualisations) {
                 hashedKey = commonFunctions.generateHash(key);
             }
 
-            classStr += " vis-coloured-element vis-legend-key-" + hashedKey;
+            classStr += " " + commonConstants.classVisColouredElement + " vis-legend-key-" + hashedKey;
             return classStr;
         };
     };

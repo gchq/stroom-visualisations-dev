@@ -231,7 +231,12 @@ if (!visualisations) {
             .y(function(d) { return d.y })
             .interpolate("basis");
 
-        var data, range ;
+        var getLegendKeyClass = function(status) {
+            return "vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[status]);
+        };
+
+
+        var range; 
         //
         //Public entry point for the Grid to call back in to set the cell level data on the cell level 
         //visualisation instance.
@@ -275,7 +280,8 @@ if (!visualisations) {
                 var gaugeCurrentStatus = visibleValues[0][1];
                 var gaugeCurrentRangeText = visibleValues[0][2];
 
-                var legendKeyClass = "vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[gaugeCurrentStatus]);
+                var legendKeyClass = getLegendKeyClass(gaugeCurrentStatus);
+                //var legendKeyClass = "vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[gaugeCurrentStatus]);
 
                 range = visSettings.RedHi - visSettings.GreenLo;
 
@@ -308,7 +314,7 @@ if (!visualisations) {
 
                 ge.append("svg:text")
                     .classed("value", true)
-                    .classed("vis-coloured-element", true)
+                    .classed(commonConstants.classVisColouredElement, true)
                     .classed(legendKeyClass, true)
                     .attr("x", 0)
                     .attr("y", 0)
@@ -318,34 +324,33 @@ if (!visualisations) {
                     .style("fill", "#333")
                     .style("stroke-width", "0px");
 
-                self.drawBand(ge,absoluteToRelative(visSettings.GreenLo), absoluteToRelative(visSettings.GreenHi), COLOUR_GREEN, STATUS_GREEN, gaugeCurrentStatus);
-                self.drawBand(ge,absoluteToRelative(visSettings.AmberLo), absoluteToRelative(visSettings.AmberHi), COLOUR_AMBER, STATUS_AMBER, gaugeCurrentStatus);
-                self.drawBand(ge,absoluteToRelative(visSettings.RedLo), absoluteToRelative(visSettings.RedHi), COLOUR_RED, STATUS_RED, gaugeCurrentStatus);
+                drawBand(ge,absoluteToRelative(visSettings.GreenLo), absoluteToRelative(visSettings.GreenHi), COLOUR_GREEN, STATUS_GREEN, gaugeCurrentStatus);
+                drawBand(ge,absoluteToRelative(visSettings.AmberLo), absoluteToRelative(visSettings.AmberHi), COLOUR_AMBER, STATUS_AMBER, gaugeCurrentStatus);
+                drawBand(ge,absoluteToRelative(visSettings.RedLo), absoluteToRelative(visSettings.RedHi), COLOUR_RED, STATUS_RED, gaugeCurrentStatus);
 
                 var majorDelta = (range) / 10 ;
                 for (var major = 0; major <= 10; major++) {
-                    self.drawMajorTick(ge,majorDelta*major,(majorDelta*major+majorDelta/100),"black");
+                    drawMajorTick(ge,majorDelta*major,(majorDelta*major+majorDelta/100),"black");
                 }
 
                 var majorDelta = (range) / 100 ;
                 for (var major = 0; major <= 100; major++) {
-                    self.drawMinorTick(ge, majorDelta * major, (majorDelta * major + majorDelta / 10), "black");
+                    drawMinorTick(ge, majorDelta * major, (majorDelta * major + majorDelta / 10), "black");
                 }
 
                 var pointerContainer = ge.append("svg:g")
                     .classed("pointerContainer", true);
 
                 pointerContainer.append("svg:path")
-                    //.attr("class", "pointer")
                     .classed("pointer", true)
-                    .classed("vis-coloured-element", true)
+                    .classed(commonConstants.classVisColouredElement, true)
                     .classed(legendKeyClass, true)
                     .style("fill", "#900000")
                     .style("fill-opacity", 1);
 
                 var pointerCircle = pointerContainer.append("svg:circle")
                     .classed("pointerCircle", true)
-                    .classed("vis-coloured-element", true)
+                    .classed(commonConstants.classVisColouredElement, true)
                     .classed(legendKeyClass, true)
                     .attr("cx", 0)
                     .attr("cy", 0)
@@ -448,7 +453,7 @@ if (!visualisations) {
         };
 
         //this.drawBand = function(g, start, end, colour, status, currentStatus) {
-        this.drawBand = function(g, start, end, colour, status, currentStatus) {
+        var drawBand = function(g, start, end, colour, status, currentStatus) {
             if (0 >= end - start) return;
             if (currentStatus === STATUS_OUTLIER) return;
 
@@ -457,15 +462,14 @@ if (!visualisations) {
             var activeBandClass = (status === currentStatus ? "active" : "");
 
             g.append("svg:path")
-                .classed("vis-coloured-element", true)
-                //.classed(vis)
-                .classed("vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[currentStatus]), true)
+                .classed(commonConstants.classVisColouredElement, true)
+                .classed(getLegendKeyClass(currentStatus), true)
                 .classed(status.toLowerCase(), true)
                 .classed(activeBandClass, true)
                 .style("fill", colour)
                 .attr("d", d3.svg.arc()
-                    .startAngle(this.valueToRadians(start))
-                    .endAngle(this.valueToRadians(end))
+                    .startAngle(valueToRadians(start))
+                    .endAngle(valueToRadians(end))
                     .innerRadius(innerRadiusFactor * 50)
                     .outerRadius(0.85 * 50)
                 )
@@ -476,15 +480,15 @@ if (!visualisations) {
                 });
         };
 
-        this.drawMajorTick = function(g, start, end, colour) {
+        var drawMajorTick = function(g, start, end, colour) {
             if (0 >= end - start) return;
 
             g.append("svg:path")
                 .attr("class","tick")
                 .style("fill", colour)
                 .attr("d", d3.svg.arc()
-                    .startAngle(this.valueToRadians(start))
-                    .endAngle(this.valueToRadians(end))
+                    .startAngle(valueToRadians(start))
+                    .endAngle(valueToRadians(end))
                     .innerRadius(0.75 * 50)
                     .outerRadius(0.85 * 50)
                 )
@@ -495,15 +499,15 @@ if (!visualisations) {
                 });
         };
 
-        this.drawMinorTick = function(g, start, end, colour) {
+        var drawMinorTick = function(g, start, end, colour) {
             if (0 >= end - start) return;
 
             g.append("svg:path")
                 .attr("class","tick")
                 .style("fill", colour)
                 .attr("d", d3.svg.arc()
-                    .startAngle(this.valueToRadians(start))
-                    .endAngle(this.valueToRadians(end))
+                    .startAngle(valueToRadians(start))
+                    .endAngle(valueToRadians(end))
                     .innerRadius(0.80 * 50)
                     .outerRadius(0.85 * 50)
                 )
@@ -512,9 +516,16 @@ if (!visualisations) {
                         ", " + height/2 + 
                         ") rotate(270)"; 
                 });
-        }
+        };
 
         var buildPointerPath = function(value) {
+            var valueToPoint = function(value, factor) {
+                var point = {
+                    x: -45 * factor * Math.cos(valueToRadians(value)),
+                    y: -45 * factor * Math.sin(valueToRadians(value))
+                };
+                return point;
+            };
             var delta = range / 9;
 
             var head = valueToPoint(value, 0.85);
@@ -527,35 +538,17 @@ if (!visualisations) {
             var tail2 = valueToPoint(tailValue + delta, 0.12);
 
             return [head, head1, tail2, tail, tail1, head2, head];
-
-            function valueToPoint(value, factor) {
-                var point = self.valueToPoint(value, factor);
-                point.x -= 100;
-                point.y -= 100;
-                return point;
-            };
         };
 
-        this.valueToDegrees = function(value) {
+        var valueToDegrees = function(value) {
             return value / range * 270 - (0 / range * 270 + 30);
         };
 
-        this.valueToRadians = function(value) {
-            return this.valueToDegrees(value) * Math.PI / 180;
+        var valueToRadians = function(value) {
+            return valueToDegrees(value) * Math.PI / 180;
         };
 
-        this.valueToPoint = function(value, factor) {
-            return {
-                x: 100 - 45 * factor * Math.cos(this.valueToRadians(value)),
-                y: 100 - 45 * factor * Math.sin(this.valueToRadians(value))
-            }; 
-        };
-
-        //this.resize = function() {
-        //update(1000);   
-        //};
         this.teardown = function() {
-
         };
 
         this.getColourScale = function(){
