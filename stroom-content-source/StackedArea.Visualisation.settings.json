@@ -29,7 +29,7 @@
             "name": "Area",
             "controls": [
                 {
-                    "id": "interpolate",
+                    "id": "interpolationMode",
                     "type": "selection",
                     "label": "Interpolation Mode",
                     "values": [
