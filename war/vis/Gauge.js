@@ -225,7 +225,7 @@ if (!visualisations) {
             .append("svg:svg");
 
         var svg = canvas.append("svg:g");
-        
+
         // Add the series data.
         seriesContainer = svg.append("svg:g")
             .attr("class", "vis-series");
@@ -297,7 +297,7 @@ if (!visualisations) {
 
                 var g = seriesContainer.selectAll(".gauge")
                     .data(visibleValues);
-                
+
                 var gaugeCurrentValue = visibleValues[0][0];
                 var gaugeCurrentStatus = visibleValues[0][1];
                 var gaugeCurrentRangeText = visibleValues[0][2];
@@ -322,11 +322,11 @@ if (!visualisations) {
                 var absoluteToRelative = function(absValue) {
                     return absValue - rangeMinVal;
                     //if (visSettings.RedHi > visSettings.GreenLo) {
-                        ////Green-Amber-Red scale
-                        //return absValue - visSettings.GreenLo;
+                    ////Green-Amber-Red scale
+                    //return absValue - visSettings.GreenLo;
                     //} else {
-                        ////Red-Amber-Green scale
-                        //return absValue - visSettings.RedLo;
+                    ////Red-Amber-Green scale
+                    //return absValue - visSettings.RedLo;
                     //}
                 };
 
@@ -380,7 +380,7 @@ if (!visualisations) {
 
                 var majorDelta = (range) / 100 ;
                 for (var major = 0; major <= 100; major++) {
-                drawTick(tickGroup, majorDelta * major, (majorDelta * major + majorDelta / 10), "black", 0.8, 0.85);
+                    drawTick(tickGroup, majorDelta * major, (majorDelta * major + majorDelta / 10), "black", 0.8, 0.85);
                 }
 
                 var pointerContainer = ge.append("svg:g")
@@ -495,24 +495,12 @@ if (!visualisations) {
                     var countFontWeight = "400"
 
                     if (gaugeCurrentValue > rangeMaxVal) {
-                        //value is above the red range so change the text colour
-                        //and put the pointer just outside the red band
+                        //value is above the red range so put the pointer just outside the higher band
                         gaugeAmendedValue = rangeMaxVal + (range * 0.03); 
-                        //countFillColour = commonConstants.googleRed500;
-                        //countFontWeight = "700";
                     } else if (gaugeCurrentValue < rangeMinVal) {
-                        //value is below the green range so change the text colour
-                        //and put the pointer just below the green band
+                        //value is below the green range so put the pointer just below the lower band
                         gaugeAmendedValue = rangeMinVal - (range * 0.03); 
-                        //countFillColour = commonConstants.googleRed500;
-                        //countFontWeight = "700";
                     } 
-
-                    //if (commonFunctions.isTrue(visSettings.showLabels)) {
-                        //count
-                            //.style("fill", countFillColour)
-                            //.style("font-weight",countFontWeight);
-                    //}
 
                     //console.log("gaugeCurrentValue: " + gaugeCurrentValue + " gaugeAmendedValue: " + gaugeAmendedValue + "rel: " + absoluteToRelative(gaugeAmendedValue));
                     var pointerPath = buildPointerPath(absoluteToRelative(gaugeAmendedValue));
@@ -537,19 +525,8 @@ if (!visualisations) {
         };
 
         var updateBand = function(bandNode, start, end, colour, status, currentStatus) {
-            
-            //if (0 >= end - start) return;
-            //if (visSettings.RedHi > visSettings.GreenLo) {
-                ////Green-Amber-Red scale
-                //var start = bandLo;
-                //var end = bandHigh;
-            //} else {
-                ////Red-Amber-Green scale
-                //var start = bandHigh;
-                //var end = bandLo;
-            //}
-            //if (0 >= end - start) return;
-            console.log("updating band: " + status + " start: " + start + " end: " + end);
+
+            //console.log("updating band: " + status + " start: " + start + " end: " + end);
 
             var isActiveStatus = (status === currentStatus);
             var isOutlier = (currentStatus === STATUS_OUTLIER);
@@ -568,7 +545,6 @@ if (!visualisations) {
         };
 
         var drawBand = function(g, status) {
-
             g.append("svg:path")
                 .classed(commonConstants.classVisColouredElement, true)
                 .classed(status.toLowerCase(), true)
@@ -628,7 +604,7 @@ if (!visualisations) {
 
         this.getColourScale = function(){
             //hard coded colour scale for the legend
-            
+
             var greenRedDomain = [
                 statusToRangeTextMap[STATUS_GREEN],
                 statusToRangeTextMap[STATUS_AMBER],
