@@ -352,17 +352,19 @@ if (!visualisations) {
                     .style("stroke", "#e0e0e0")
                     .style("stroke-width", "2px");
 
-                ge.append("svg:text")
-                    .classed("value", true)
-                    .classed(commonConstants.classVisColouredElement, true)
-                    .classed(legendKeyClass, true)
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .attr("dy", 8)
-                    .attr("text-anchor", "middle")
-                    .style("font-size","10px")
-                    .style("fill", "#333")
-                    .style("stroke-width", "0px");
+                if (commonFunctions.isTrue(visSettings.showLabels)) {
+                    ge.append("svg:text")
+                        .classed("value", true)
+                        .classed(commonConstants.classVisColouredElement, true)
+                        .classed(legendKeyClass, true)
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("dy", 8)
+                        .attr("text-anchor", "middle")
+                        .style("font-size","10px")
+                        .style("fill", "#333")
+                        .style("stroke-width", "0px");
+                }
 
                 drawBand(ge, STATUS_GREEN);
                 drawBand(ge, STATUS_AMBER);
@@ -452,7 +454,6 @@ if (!visualisations) {
                         STATUS_RED, 
                         gaugeCurrentStatus);
 
-                    var count = e.select(".value");
                     var ticks = e.selectAll(".tick");
 
                     var bbc = circleOuter.node()
@@ -461,41 +462,57 @@ if (!visualisations) {
 
                     circleOuter.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
                     circleInner.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
+
                     pointer.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
                     pointerCircle.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+")");
+
                     greenBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
                     amberBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
                     redBand.attr("transform","translate("+width/2 +","+height/2 +")scale("+scale+") rotate(270)");
-                    count.attr("transform","translate("+((width/2)-(bbc.width*scale*.07)) +","+(((height/2)+(bbc.height*scale*.25)))+")scale("+scale*0.75+")");
+
+                    if (commonFunctions.isTrue(visSettings.showLabels)) {
+                        var countFillColour = commonConstants.googlePrimaryText;
+                        var countFontWeight = "400"
+                        if (gaugeCurrentValue > rangeMaxVal || gaugeCurrentValue < rangeMinVal) {
+                            countFillColour = commonConstants.googleRed500;
+                            countFontWeight = "700";
+                        }
+                        e.select(".value")
+                            .attr("transform","translate("+((width/2)-(bbc.width*scale*.07)) +","+(((height/2)+(bbc.height*scale*.25)))+")scale("+scale*0.75+")")
+                            .text(commonFunctions.autoFormat(gaugeCurrentValue))
+                            .style("fill", countFillColour)
+                            .style("font-weight",countFontWeight);
+                    }
 
                     ticks.each(function (d) {
                         var e = d3.select(this);
                         e.attr("transform","translate("+width/2 +","+(height/2) +")scale("+scale+")rotate(270)");
                     });
 
-                    count.text(commonFunctions.autoFormat(gaugeCurrentValue));
 
                     var gaugeAmendedValue = gaugeCurrentValue;
+                    var countFillColour = commonConstants.googlePrimaryText;
+                    var countFontWeight = "400"
 
                     if (gaugeCurrentValue > rangeMaxVal) {
                         //value is above the red range so change the text colour
                         //and put the pointer just outside the red band
                         gaugeAmendedValue = rangeMaxVal + (range * 0.03); 
-                        count
-                            .style("fill", commonConstants.googleRed500)
-                            .style("font-weight", "700");
+                        //countFillColour = commonConstants.googleRed500;
+                        //countFontWeight = "700";
                     } else if (gaugeCurrentValue < rangeMinVal) {
                         //value is below the green range so change the text colour
                         //and put the pointer just below the green band
                         gaugeAmendedValue = rangeMinVal - (range * 0.03); 
-                        count
-                            .style("fill", commonConstants.googleRed500)
-                            .style("font-weight", "700");
-                    } else {
-                        count
-                            .style("fill", commonConstants.googlePrimaryText)
-                            .style("font-weight", "400");
-                    }
+                        //countFillColour = commonConstants.googleRed500;
+                        //countFontWeight = "700";
+                    } 
+
+                    //if (commonFunctions.isTrue(visSettings.showLabels)) {
+                        //count
+                            //.style("fill", countFillColour)
+                            //.style("font-weight",countFontWeight);
+                    //}
 
                     //console.log("gaugeCurrentValue: " + gaugeCurrentValue + " gaugeAmendedValue: " + gaugeAmendedValue + "rel: " + absoluteToRelative(gaugeAmendedValue));
                     var pointerPath = buildPointerPath(absoluteToRelative(gaugeAmendedValue));
@@ -504,7 +521,7 @@ if (!visualisations) {
                 });
 
                 //add the hover tip mouse events on the apprpriate path
-                var cssSelector = "path.active";
+                var cssSelector = ".pointerCircle";
                 commonFunctions.addDelegateEvent(
                     g, 
                     "mouseover", 
