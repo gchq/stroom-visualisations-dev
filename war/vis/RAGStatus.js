@@ -66,28 +66,35 @@ if (!visualisations) {
         //the vis settings
         var createColourScale = function(settings) {
             var greenRedDomain = [
-                        settings.GreenLo,
-                        settings.GreenHi,
-                        settings.AmberLo,
-                        settings.AmberHi,
-                        settings.RedLo,
-                        settings.RedHi
-                    ];
-            //clone and reverse the array
-            var redGreenDomain = greenRedDomain.slice(0).reverse();
+                settings.GreenLo,
+                settings.GreenHi,
+                settings.AmberLo,
+                settings.AmberHi,
+                settings.RedLo,
+                settings.RedHi
+            ];
+
+            var redGreenDomain = [
+                settings.RedLo,
+                settings.RedHi,
+                settings.AmberLo,
+                settings.AmberHi,
+                settings.GreenLo,
+                settings.GreenHi
+            ];
             var greenRedRange = [
-                        COLOUR_OUTLIER,
-                        COLOUR_GREEN,
-                        COLOUR_OUTLIER,
-                        COLOUR_AMBER,
-                        COLOUR_OUTLIER,
-                        COLOUR_RED,
-                        COLOUR_OUTLIER
-                    ];
+                COLOUR_OUTLIER,
+                COLOUR_GREEN,
+                COLOUR_OUTLIER,
+                COLOUR_AMBER,
+                COLOUR_OUTLIER,
+                COLOUR_RED,
+                COLOUR_OUTLIER
+            ];
             //clone and reverse the array
             var redGreenRange = greenRedRange.slice(0).reverse();
 
-            if (settings.GreenHi > settings.GreenLo) {
+            if (settings.RedHi > settings.GreenLo) {
                 //Green-Amber-Red scale
                 var scale = d3.scale.threshold()
                     .domain(greenRedDomain)

@@ -419,14 +419,18 @@
         var setRAGSettigns = function(data, isReversed, addOutliers) {
             //Need to define the thresholds based on the data we have generated
             var valueGetterFunc = function(d) {
-                return d.values[0][0];
+                    return d.values[0][0];
             };
-            var deltaOpFunc = isReversed ? function(a,b) { return a - b; } : function(a,b) { return a + b; };
 
             //top and bottom 5% are treated as outliers
             //the rest of the range is split evenly from green-red or vice versa
             var minVal = d3.min(data.values, valueGetterFunc);
             var maxVal = d3.max(data.values, valueGetterFunc);
+            var count = (useGridSeries ? 1 : data.values.length);
+            if (count === 1) {
+                minVal = minVal - (Math.random() * 0.5 * minVal);
+                maxVal = maxVal + (Math.random() * 0.5 * maxVal);
+            }
             var range = maxVal - minVal;
             if (commonFunctions.isTrue(addOutliers)) {
                 var workingRange = range * 0.9;
@@ -436,16 +440,26 @@
                 var outlierBand = 0;
             }
 
-            settings.GreenLo = deltaOpFunc((isReversed ? maxVal : minVal), outlierBand);
-            settings.GreenHi = deltaOpFunc(settings.GreenLo, (workingRange / 3));
-            settings.AmberLo = settings.GreenHi;
-            settings.AmberHi = deltaOpFunc(settings.AmberLo, (workingRange / 3));
-            settings.RedLo = settings.AmberHi;
-            settings.RedHi = deltaOpFunc(settings.RedLo, (workingRange / 3));
+            if (!isReversed) {
+                settings.GreenLo = minVal + outlierBand;
+                settings.GreenHi = settings.GreenLo + (workingRange / 3);
+                settings.AmberLo = settings.GreenHi;
+                settings.AmberHi = settings.AmberLo + (workingRange / 3);
+                settings.RedLo = settings.AmberHi;
+                settings.RedHi = settings.RedLo + (workingRange / 3);
+            } else {
+                settings.RedLo = minVal + outlierBand;
+                settings.RedHi = settings.RedLo + (workingRange / 3);
+                settings.AmberLo = settings.RedHi;
+                settings.AmberHi = settings.AmberLo + (workingRange / 3);
+                settings.GreenLo = settings.AmberHi;
+                settings.GreenHi = settings.GreenLo + (workingRange / 3);
+            }
 
             console.log("Green: " + commonFunctions.autoFormat(settings.GreenLo) + " - " + commonFunctions.autoFormat(settings.GreenHi));
-            console.log("AmberLo: " + commonFunctions.autoFormat(settings.AmberLo)  + " - " + commonFunctions.autoFormat(settings.AmberHi));
-            console.log("RedLo:   " + commonFunctions.autoFormat(settings.RedLo) + " - " + commonFunctions.autoFormat(settings.RedHi));
+            console.log("Amber: " + commonFunctions.autoFormat(settings.AmberLo)  + " - " + commonFunctions.autoFormat(settings.AmberHi));
+            console.log("Red:   " + commonFunctions.autoFormat(settings.RedLo) + " - " + commonFunctions.autoFormat(settings.RedHi));
+            console.log("values:   " + data.values.map(function(d) { return commonFunctions.autoFormat(d.values[0][0]); }));
         };
 
         if (getVisType() === "RAGStatus-GreenRed" || getVisType() === "TrafficLights-GreenRed") {

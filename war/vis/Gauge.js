@@ -87,8 +87,14 @@ if (!visualisations) {
                 settings.RedLo,
                 settings.RedHi
             ];
-            //clone and reverse the array
-            var redGreenDomain = greenRedDomain.slice(0).reverse();
+            var redGreenDomain = [
+                settings.RedLo,
+                settings.RedHi,
+                settings.AmberLo,
+                settings.AmberHi,
+                settings.GreenLo,
+                settings.GreenHi
+            ];
             var greenRedRange = [
                 COLOUR_OUTLIER,
                 COLOUR_GREEN,
@@ -101,7 +107,7 @@ if (!visualisations) {
             //clone and reverse the array
             var redGreenRange = greenRedRange.slice(0).reverse();
 
-            if (settings.GreenHi > settings.GreenLo) {
+            if (settings.RedHi > settings.GreenLo) {
                 //Green-Amber-Red scale
                 var scale = d3.scale.threshold()
                     .domain(greenRedDomain)
@@ -234,9 +240,25 @@ if (!visualisations) {
         var getLegendKeyClass = function(status) {
             return "vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[status]);
         };
+        var legendKeyClassGreen = getLegendKeyClass(STATUS_GREEN);
+        var legendKeyClassAmber = getLegendKeyClass(STATUS_AMBER);
+        var legendKeyClassRed = getLegendKeyClass(STATUS_RED);
+
+        //TODO figure out how to get this working so it transitions the coloured elements correctly
+        var setLegendKeyClasses = function(currentStatus) {
+            return function(d) {
+                var elm = d3.select(this);
+                elm
+                    .classed(legendKeyClassGreen, currentStatus === STATUS_GREEN)
+                    .classed(legendKeyClassAmber, currentStatus === STATUS_AMBER)
+                    .classed(legendKeyClassRed, currentStatus === STATUS_RED);
+            };
+        };
 
 
         var range; 
+        var rangeMinVal; 
+        var rangeMaxVal; 
         //
         //Public entry point for the Grid to call back in to set the cell level data on the cell level 
         //visualisation instance.
@@ -283,11 +305,29 @@ if (!visualisations) {
                 var legendKeyClass = getLegendKeyClass(gaugeCurrentStatus);
                 //var legendKeyClass = "vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[gaugeCurrentStatus]);
 
-                range = visSettings.RedHi - visSettings.GreenLo;
+                //establish the full range of the gauge scale
+                if (visSettings.RedHi > visSettings.GreenLo) {
+                    //Green-Amber-Red scale
+                    rangeMinVal = visSettings.GreenLo;
+                    rangeMaxVal = visSettings.RedHi;
+                } else {
+                    //Red-Amber-Green scale
+                    rangeMinVal = visSettings.RedLo;
+                    rangeMaxVal = visSettings.GreenHi;
+                }
+                range = rangeMaxVal - rangeMinVal;
 
-                //greenLo may not be zero based, so have to convert to a value that is zero based for the gauge
+
+                //GreenLo/RedLo may not be zero based, so have to convert to a value that is zero based for the gauge
                 var absoluteToRelative = function(absValue) {
-                    return absValue - visSettings.GreenLo;
+                    return absValue - rangeMinVal;
+                    //if (visSettings.RedHi > visSettings.GreenLo) {
+                        ////Green-Amber-Red scale
+                        //return absValue - visSettings.GreenLo;
+                    //} else {
+                        ////Red-Amber-Green scale
+                        //return absValue - visSettings.RedLo;
+                    //}
                 };
 
                 var ge = g.enter()
@@ -324,18 +364,21 @@ if (!visualisations) {
                     .style("fill", "#333")
                     .style("stroke-width", "0px");
 
-                drawBand(ge,absoluteToRelative(visSettings.GreenLo), absoluteToRelative(visSettings.GreenHi), COLOUR_GREEN, STATUS_GREEN, gaugeCurrentStatus);
-                drawBand(ge,absoluteToRelative(visSettings.AmberLo), absoluteToRelative(visSettings.AmberHi), COLOUR_AMBER, STATUS_AMBER, gaugeCurrentStatus);
-                drawBand(ge,absoluteToRelative(visSettings.RedLo), absoluteToRelative(visSettings.RedHi), COLOUR_RED, STATUS_RED, gaugeCurrentStatus);
+                drawBand(ge, STATUS_GREEN);
+                drawBand(ge, STATUS_AMBER);
+                drawBand(ge, STATUS_RED);
+
+                var tickGroup = ge.append("svg:g")
+                    .classed("tickGroup", true);
 
                 var majorDelta = (range) / 10 ;
                 for (var major = 0; major <= 10; major++) {
-                    drawMajorTick(ge,majorDelta*major,(majorDelta*major+majorDelta/100),"black");
+                    drawTick(tickGroup, majorDelta * major, (majorDelta * major + majorDelta / 100), "black", 0.75, 0.85);
                 }
 
                 var majorDelta = (range) / 100 ;
                 for (var major = 0; major <= 100; major++) {
-                    drawMinorTick(ge, majorDelta * major, (majorDelta * major + majorDelta / 10), "black");
+                drawTick(tickGroup, majorDelta * major, (majorDelta * major + majorDelta / 10), "black", 0.8, 0.85);
                 }
 
                 var pointerContainer = ge.append("svg:g")
@@ -381,9 +424,33 @@ if (!visualisations) {
                     var pointer = e.select(".pointer");
                     var pointerCircle = e.select(".pointerCircle");
 
-                    var greenBand = e.select("." + STATUS_GREEN.toLowerCase());
-                    var amberBand = e.select("." + STATUS_AMBER.toLowerCase());
-                    var redBand = e.select("." + STATUS_RED.toLowerCase());
+                    var greenBand = e.select("path." + STATUS_GREEN.toLowerCase());
+                    var amberBand = e.select("path." + STATUS_AMBER.toLowerCase());
+                    var redBand = e.select("path." + STATUS_RED.toLowerCase());
+
+                    updateBand(
+                        greenBand,
+                        absoluteToRelative(visSettings.GreenLo), 
+                        absoluteToRelative(visSettings.GreenHi), 
+                        COLOUR_GREEN,
+                        STATUS_GREEN, 
+                        gaugeCurrentStatus);
+
+                    updateBand(
+                        amberBand,
+                        absoluteToRelative(visSettings.AmberLo), 
+                        absoluteToRelative(visSettings.AmberHi), 
+                        COLOUR_AMBER,
+                        STATUS_AMBER, 
+                        gaugeCurrentStatus);
+
+                    updateBand(
+                        redBand,
+                        absoluteToRelative(visSettings.RedLo), 
+                        absoluteToRelative(visSettings.RedHi), 
+                        COLOUR_RED,
+                        STATUS_RED, 
+                        gaugeCurrentStatus);
 
                     var count = e.select(".value");
                     var ticks = e.selectAll(".tick");
@@ -410,17 +477,17 @@ if (!visualisations) {
 
                     var gaugeAmendedValue = gaugeCurrentValue;
 
-                    if (gaugeCurrentValue > visSettings.RedHi) {
+                    if (gaugeCurrentValue > rangeMaxVal) {
                         //value is above the red range so change the text colour
                         //and put the pointer just outside the red band
-                        gaugeAmendedValue = visSettings.RedHi + (range * 0.03); 
+                        gaugeAmendedValue = rangeMaxVal + (range * 0.03); 
                         count
                             .style("fill", commonConstants.googleRed500)
                             .style("font-weight", "700");
-                    } else if (gaugeCurrentValue < visSettings.GreenLo) {
+                    } else if (gaugeCurrentValue < rangeMinVal) {
                         //value is below the green range so change the text colour
                         //and put the pointer just below the green band
-                        gaugeAmendedValue = visSettings.GreenLo - (range * 0.03); 
+                        gaugeAmendedValue = rangeMinVal - (range * 0.03); 
                         count
                             .style("fill", commonConstants.googleRed500)
                             .style("font-weight", "700");
@@ -452,35 +519,45 @@ if (!visualisations) {
             }
         };
 
-        //this.drawBand = function(g, start, end, colour, status, currentStatus) {
-        var drawBand = function(g, start, end, colour, status, currentStatus) {
-            if (0 >= end - start) return;
-            if (currentStatus === STATUS_OUTLIER) return;
+        var updateBand = function(bandNode, start, end, colour, status, currentStatus) {
+            
+            //if (0 >= end - start) return;
+            //if (visSettings.RedHi > visSettings.GreenLo) {
+                ////Green-Amber-Red scale
+                //var start = bandLo;
+                //var end = bandHigh;
+            //} else {
+                ////Red-Amber-Green scale
+                //var start = bandHigh;
+                //var end = bandLo;
+            //}
+            //if (0 >= end - start) return;
+            console.log("updating band: " + status + " start: " + start + " end: " + end);
 
-            //Make the active band thicker to draw attention to it
-            var innerRadiusFactor = (status === currentStatus ? 0.65 : 0.80);
-            var activeBandClass = (status === currentStatus ? "active" : "");
+            var isActiveStatus = (status === currentStatus);
+            var isOutlier = (currentStatus === STATUS_OUTLIER);
+            var innerRadiusFactor = (isActiveStatus ? 0.65 : 0.80);
 
-            g.append("svg:path")
-                .classed(commonConstants.classVisColouredElement, true)
-                .classed(getLegendKeyClass(currentStatus), true)
-                .classed(status.toLowerCase(), true)
-                .classed(activeBandClass, true)
-                .style("fill", colour)
+            bandNode
+                .classed(getLegendKeyClass(currentStatus), isActiveStatus)
+                .classed("active", isActiveStatus)
+                .style("fill", (isOutlier ?  "rgba(0,0,0,0)" : colour))
                 .attr("d", d3.svg.arc()
                     .startAngle(valueToRadians(start))
                     .endAngle(valueToRadians(end))
                     .innerRadius(innerRadiusFactor * 50)
                     .outerRadius(0.85 * 50)
-                )
-                .attr("transform", function() { 
-                    return "translate(" + width/2 + 
-                        ", " + height/2 + 
-                        ") rotate(270)" 
-                });
+                );
         };
 
-        var drawMajorTick = function(g, start, end, colour) {
+        var drawBand = function(g, status) {
+
+            g.append("svg:path")
+                .classed(commonConstants.classVisColouredElement, true)
+                .classed(status.toLowerCase(), true)
+        };
+
+        var drawTick = function(g, start, end, colour, innerRadiusFactor, outerRadiusFactor) {
             if (0 >= end - start) return;
 
             g.append("svg:path")
@@ -489,32 +566,13 @@ if (!visualisations) {
                 .attr("d", d3.svg.arc()
                     .startAngle(valueToRadians(start))
                     .endAngle(valueToRadians(end))
-                    .innerRadius(0.75 * 50)
-                    .outerRadius(0.85 * 50)
+                    .innerRadius(innerRadiusFactor * 50)
+                    .outerRadius(outerRadiusFactor * 50)
                 )
                 .attr("transform", function() { 
                     return "translate(" + width/2 + 
                         ", " + height/2 + 
                         ") rotate(270)" 
-                });
-        };
-
-        var drawMinorTick = function(g, start, end, colour) {
-            if (0 >= end - start) return;
-
-            g.append("svg:path")
-                .attr("class","tick")
-                .style("fill", colour)
-                .attr("d", d3.svg.arc()
-                    .startAngle(valueToRadians(start))
-                    .endAngle(valueToRadians(end))
-                    .innerRadius(0.80 * 50)
-                    .outerRadius(0.85 * 50)
-                )
-                .attr("transform", function() { 
-                    return "translate(" + width/2 + 
-                        ", " + height/2 + 
-                        ") rotate(270)"; 
                 });
         };
 
@@ -553,20 +611,24 @@ if (!visualisations) {
 
         this.getColourScale = function(){
             //hard coded colour scale for the legend
+            
+            var greenRedDomain = [
+                statusToRangeTextMap[STATUS_GREEN],
+                statusToRangeTextMap[STATUS_AMBER],
+                statusToRangeTextMap[STATUS_RED],
+                statusToRangeTextMap[STATUS_OUTLIER]
+            ];
+
+            var greenRedRange = [
+                COLOUR_GREEN,
+                COLOUR_AMBER,
+                COLOUR_RED,
+                COLOUR_OUTLIER
+            ];
 
             return d3.scale.ordinal()
-                .range([
-                    COLOUR_RED,
-                    COLOUR_AMBER,
-                    COLOUR_GREEN,
-                    COLOUR_OUTLIER
-                ])
-                .domain([
-                    statusToRangeTextMap[STATUS_RED],
-                    statusToRangeTextMap[STATUS_AMBER],
-                    statusToRangeTextMap[STATUS_GREEN],
-                    statusToRangeTextMap[STATUS_OUTLIER]
-                ]);
+                .range(greenRedRange)
+                .domain(greenRedDomain);
         };
     };
 
