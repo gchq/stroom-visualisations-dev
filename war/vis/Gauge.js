@@ -189,9 +189,8 @@ if (!visualisations) {
         this.getLegendKeyField = function() {
             return 2;
         };
-
     };
-    //
+    
     //This is the content of the visualisation inside the containerNode
     //One instance will be created per grid cell
     visualisations.Gauge.Visualisation = function(containerNode) {
@@ -303,7 +302,6 @@ if (!visualisations) {
                 var gaugeCurrentRangeText = visibleValues[0][2];
 
                 var legendKeyClass = getLegendKeyClass(gaugeCurrentStatus);
-                //var legendKeyClass = "vis-legend-key-" + commonFunctions.generateHash(statusToRangeTextMap[gaugeCurrentStatus]);
 
                 //establish the full range of the gauge scale
                 if (visSettings.RedHi > visSettings.GreenLo) {
@@ -321,13 +319,6 @@ if (!visualisations) {
                 //GreenLo/RedLo may not be zero based, so have to convert to a value that is zero based for the gauge
                 var absoluteToRelative = function(absValue) {
                     return absValue - rangeMinVal;
-                    //if (visSettings.RedHi > visSettings.GreenLo) {
-                    ////Green-Amber-Red scale
-                    //return absValue - visSettings.GreenLo;
-                    //} else {
-                    ////Red-Amber-Green scale
-                    //return absValue - visSettings.RedLo;
-                    //}
                 };
 
                 var ge = g.enter()
@@ -362,7 +353,6 @@ if (!visualisations) {
                         .attr("dy", 8)
                         .attr("text-anchor", "middle")
                         .style("font-size","10px")
-                        .style("fill", "#333")
                         .style("stroke-width", "0px");
                 }
 
