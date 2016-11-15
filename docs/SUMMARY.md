@@ -2,6 +2,7 @@
 
 * [Stroom Entities](stroomEntities.md)
 * [Building a Stroom Import Bundle](buildingImportBundle.md)
+* [Developing Visualisations](developingVisualisations.md)
 * [Structure of a Visualisation Script](structureOfAVisualisationScript.md)
 * [Visualisation Settings Structure](visualisationsSettingsStructure.md)
 * [Data Structure](dataStructure.md)
