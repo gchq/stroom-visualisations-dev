@@ -1,15 +1,4 @@
 {
-    "data" : {
-        "structure" : {
-            "values" : {
-                "fields" : [ 
-                    {
-                        "id" : "${field}"
-                    } 
-                ]
-            }
-        }
-    },
     "tabs" : [ 
         {
             "name" : "Data",
@@ -18,7 +7,12 @@
                     "id" : "field",
                     "type" : "field",
                     "label" : "Field"
-                } 
+                },
+                {
+                    "id" : "gridSeries",
+                    "type" : "field",
+                    "label" : "Grid Series"
+                }
             ]
         },
         {
@@ -80,5 +74,34 @@
                 }
             ]
         } 
-    ]
+    ],
+    "data" : {
+        "structure" : {
+            "nest": {
+                "key": {
+                    "id": "${gridSeries}",
+                    "sort": {
+                        "direction": "${sortGridSeries}",
+                        "enabled": "true"
+                    }
+                },
+                "values" : {
+                    "fields" : [ 
+                        {
+                            "id" : "${field}",
+                            "sort": {
+                                "direction": "Ascending",
+                                "enabled": "true"
+                            }
+                        } 
+                    ]
+                }
+                ,
+                "limit": {
+                    "enabled": "true",
+                    "size": "${maxGridSeries}"
+                }
+            }
+        }
+    }
 }
