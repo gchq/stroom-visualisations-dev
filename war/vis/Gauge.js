@@ -287,6 +287,7 @@ if (!visualisations) {
                 height = commonFunctions.gridAwareHeightFunc(true, containerNode, element);
                 fullWidth = commonFunctions.gridAwareWidthFunc(false, containerNode, element);
                 fullHeight = commonFunctions.gridAwareHeightFunc(false, containerNode, element);
+
                 canvas
                     .attr("width", fullWidth)
                     .attr("height", fullHeight);
@@ -314,7 +315,6 @@ if (!visualisations) {
                     rangeMaxVal = visSettings.GreenHi;
                 }
                 range = rangeMaxVal - rangeMinVal;
-
 
                 //GreenLo/RedLo may not be zero based, so have to convert to a value that is zero based for the gauge
                 var absoluteToRelative = function(absValue) {
