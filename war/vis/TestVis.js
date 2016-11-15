@@ -440,20 +440,29 @@
                 var outlierBand = 0;
             }
 
+            var posOrNeg = function() {
+                return (Math.random() > 0.5 ? 1 : -1);
+            };
+
+            var avgBandSize = workingRange / 3;
+            var greenBandSize = avgBandSize + (posOrNeg() * avgBandSize * 0.5);
+            var amberBandSize = avgBandSize + (posOrNeg() * avgBandSize * 0.5);
+            var redBandSize = workingRange - greenBandSize - amberBandSize;
+
             if (!isReversed) {
                 settings.GreenLo = minVal + outlierBand;
-                settings.GreenHi = settings.GreenLo + (workingRange / 3);
+                settings.GreenHi = settings.GreenLo + greenBandSize;
                 settings.AmberLo = settings.GreenHi;
-                settings.AmberHi = settings.AmberLo + (workingRange / 3);
+                settings.AmberHi = settings.AmberLo + amberBandSize;
                 settings.RedLo = settings.AmberHi;
-                settings.RedHi = settings.RedLo + (workingRange / 3);
+                settings.RedHi = settings.RedLo + redBandSize;
             } else {
                 settings.RedLo = minVal + outlierBand;
-                settings.RedHi = settings.RedLo + (workingRange / 3);
+                settings.RedHi = settings.RedLo + greenBandSize;
                 settings.AmberLo = settings.RedHi;
-                settings.AmberHi = settings.AmberLo + (workingRange / 3);
+                settings.AmberHi = settings.AmberLo + amberBandSize;
                 settings.GreenLo = settings.AmberHi;
-                settings.GreenHi = settings.GreenLo + (workingRange / 3);
+                settings.GreenHi = settings.GreenLo + redBandSize;
             }
 
             console.log("Green: " + commonFunctions.autoFormat(settings.GreenLo) + " - " + commonFunctions.autoFormat(settings.GreenHi));
