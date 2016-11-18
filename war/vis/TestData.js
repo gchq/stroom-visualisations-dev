@@ -474,6 +474,8 @@ function TestData() {
                 }
             } else if (visType == VIS_TYPE_HOUR_DAY_HEAT_MAP ) {
                 values = createHourDayHeatMapData(randomMaxVal);
+            } else if (visType == VIS_TYPE_HEAT_MAP) {
+                values = createHeatMapData(randomMaxVal);    
             } else if (visType == VIS_TYPE_HOUR_DAY_MULTI_HEAT_MAP) {
                 values = createHourDayMultiHeatMapData(randomMaxVal);    
             } else if (visType == VIS_TYPE_DAY_WEEK_HEAT_MAP) {
@@ -769,6 +771,37 @@ function TestData() {
                     value[0] = millis;
 
                     value[1] = Math.random() * randomMaxVal;
+
+                    values[arrPos++] = value;
+                }
+            }
+
+            return values;
+        };
+
+        function createHeatMapData(randomMaxVal) {
+
+            var values = [];
+            var startDeltaHours = Math.floor(Math.random() * 72 * 24) + Math.floor(Math.random() * 24) + 1;
+            var hoursInPeriod = (Math.floor(Math.random() * 15) + 1) * 24;
+            var startMs = commonConstants.truncateToStartOfDay(Date.now()) + (startDeltaHours * commonConstants.millisInHour);
+
+            var arrPos = 0;
+            for (var i = 0; i < hoursInPeriod; i++) {
+
+                // in 20% of cases don't produce a value to make the data sparse
+                if (Math.random() > 0.2) {
+                    var value = [];
+
+                    var millis = satrtMs + (i * millisInHour);
+
+                    // console.log(new Date(millis));
+                    //hours
+                    value[0] = millis;
+                    //days
+                    value[1] = truncateToStartOfInterval(millis, commonConstants.millisInDay);
+                    //heat map cell value
+                    value[2] = Math.random() * randomMaxVal;
 
                     values[arrPos++] = value;
                 }

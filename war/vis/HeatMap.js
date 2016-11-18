@@ -27,12 +27,38 @@ if (!visualisations) {
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
 
+    var yAxisData = [];
+    var xAxisData = [];
+
+    var heatMapColours = chroma.brewer.OrRd;
+
+    var bezierColourInterpolator = chroma.bezier([
+            heatMapColours[0],
+            heatMapColours[2],
+            heatMapColours[4],
+            heatMapColours[6],
+            heatMapColours[8]]
+    );
+
+    var fillFunc;
+
     visualisations.HeatMap = function() {
 
 
         this.element = window.document.createElement("div");
         var grid = new visualisations.GenericGrid(this.element);
         var colour;
+
+        var buildAxisData(data, arrPos, type) {
+            if (type.toLowerCase() === "text") {
+                return commonFunctions.uniqueArray(data.values, function(d) return d[arrPos]; });
+            } else {
+                return commonFunctions.generateContiguousTimeArray(
+                    data.min[arrPos],
+                    data.max[arrPos],
+                    type);
+            }
+        };
 
         //Method to allow the grid to call back in to get new instances for each cell
         this.getInstance = function(containerNode) {
@@ -57,6 +83,27 @@ if (!visualisations) {
                 //#########################################################
                 //Perform any visualisation specific data manipulation here
                 //#########################################################
+
+                //get the distinct (and contiguous if applicable) values for each axis
+                //TODO this assumes the data is synched across grid cells
+                xAxisData = buildAxisData(data, 0, settings.xAxisDataType);    
+                yAxisData = buildAxisData(data, 1, settings.yAxisDataType);    
+
+                //Alternate cell fill function using chroma to give an interpolated colour value
+                //for the heat map cells rather than a bucketised value.
+                fillFunc = function(d) { 
+                    //TODO finish this function
+                    var val = d[2];
+                    var lower = (typeof(settings.lowerThreshold) === "number") ? settings.lowerThreshold : data.min[2];
+                    var upper = (typeof(settings.upperThreshold) === "number") ? settings.upperThreshold : data.max[2];
+
+                    if (d[2] < lower)  {
+                        return backgroundColour;
+                    } else {
+                        var colourFraction = (d[2] - min[1]) / (max[1] - min[1]);
+                        return bezierColourInterpolator(colourFraction).hex();
+                    }
+                };
 
                 if (settings) {
 
@@ -123,6 +170,7 @@ if (!visualisations) {
 
         var update = function(duration) {
             if (visData) {
+                var visibleValues = visData.visibleValues();
                 width = commonFunctions.gridAwareWidthFunc(true, containerNode, element);
                 height = commonFunctions.gridAwareHeightFunc(true, containerNode, element);
                 fullWidth = commonFunctions.gridAwareWidthFunc(false, containerNode, element);
@@ -133,6 +181,54 @@ if (!visualisations) {
                     .attr("height", fullHeight);
 
                 svg.attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+                if (commonFunctions.resizeMargins(margins, xAxisContainer, yAxisContainer) == true) {
+                    update();
+                } else {
+                    var dataPoints = seriesContainer.selectAll(".vis-heatMap-cell")
+                        .data(visibleValues, function(d) {
+                            return d[0] + "~#~" + d[1]; 
+                        });
+
+                    dataPoints.enter()
+                        .append("svg:rect")
+                        .attr("class", "vis-heatMap-cell vis-heatMap-all-cells")
+                        .style("fill-opacity", 1e-6)
+                        .attr("opacity", 1e-6);
+
+                    dataPoints.exit().transition()
+                        .duration(transitionDuration)
+                        .attr("opacity", "0")
+                        .remove();
+
+                    dataPoints.each(function(point) {
+
+                        var cell = d3.select(this);
+                        var x = xScale(point[0]);
+
+                        //use the string version of the day axis
+                        var y = yScale(point[3]);
+
+                        if (isNaN(x) || isNaN(y)) {
+                            //dumpPoint(point);
+                            console.log("INVALID DATA - point[0]: " + point[0] + " x: " + x + " point[3]: " + point[3] + " y: " + y);
+
+                        }
+
+                        cell.transition()
+                            .duration(transitionDuration)
+                            .attr("opacity", "1")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("width", gridSizeX)
+                            .attr("height", gridSizeY)
+                            .style("stroke-opacity", 1)
+                            .style("fill", fillFunc(point))
+                            .style("fill-opacity", 1)
+                            .style("stroke", "none")
+                            .style("stroke-width", "0");
+                    });
+                }
 
 
             }

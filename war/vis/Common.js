@@ -218,6 +218,7 @@ if (!visualisations) {
     commonConstants.millisInDay = commonConstants.millisInHour * 24;
     commonConstants.millisInWeek = commonConstants.millisInDay * 7;
 
+
     //Font Awesome
     commonConstants.fontAwesomeMove = "\uf047";
     commonConstants.fontAwesomeClose = "\uf00d";
@@ -886,26 +887,82 @@ if (!visualisations) {
         return timeMs - commonFunctions.truncateToStartOfDay(timeMs);
     };
 
-    commonFunctions.generateContiguousTimeArray = function(minTimeMs, maxTimeMs,
-        intervalMs, conversionFunc) {
+    /*
+     * Builds a contiguous order set of time buckets, truncated to the start of each interval.
+     * minTimMs - The start time in millis
+     * maxTimMs - The end time in millis
+     * interval - Either the interval size in millis or second/minute/hour/day/week/month/year
+     * conversionFunc - OPTIONAL function to convert the values in the set into something else, e.g date strings
+     */
+    commonFunctions.generateContiguousTimeArray = function(minTimeMs, maxTimeMs, interval, conversionFunc) {
 
-        //console.log("min: " + new Date(minTimeMs) + " max: " + new Date(maxTimeMs));
-
-        if (intervalMs === commonConstants.millisInWeek) {
-            //special case for week intervals as we want them to start on a Monday
-            //Unix epoch is a Thursday so simple rounding is no good
-            var timeMs = commonFunctions.getWeekCommencingDate(new Date(minTimeMs)).getTime();
+        var contiguousTimes = [];
+        if (typeof(interval) === "string" && ["month", "year"].indexOf(interval.toLowerCase()) !== -1) {
+            //Special case for months and years as the time interval is variable
+            if (interval.toLowerCase() === "month") {
+                var truncToStartFunc = function(ms) {
+                    var startOfDayMs = commonFunctions.truncateToStartOfInterval(commonFunctions.millisInDay);
+                    var dateObj = new Date(startOfDayMs);
+                    var month = dateObj.getMonth();
+                    dateObj.setMonth(month, 0);
+                    return dateObj.getTime();
+                };
+                var nextTimeFunc = function(ms) {
+                    var dateObj = new Date(ms);
+                    var month = dateObj.getMonth();
+                    dateObj.setMonth(++month,0);
+                    return dateObj.getTime();
+                };
+            } else if (interval.toLowerCase() === "year") {
+                var truncToStartFunc = function(ms) {
+                    var startOfDayMs = commonFunctions.truncateToStartOfInterval(commonFunctions.millisInDay);
+                    var dateObj = new Date(startOfDayMs);
+                    dateObj.setMonth(0, 0);
+                    return dateObj.getTime();
+                };
+                var nextTimeFunc = function(ms) {
+                    var dateObj = new Date(ms);
+                    var year = dateObj.getMonth();
+                    dateObj.setYear(++Year);
+                    return dateObj.getTime();
+                };
+            }
         } else {
-            var timeMs = commonFunctions.truncateToStartOfInterval(minTimeMs, intervalMs);
-        }
+            //support both millis and string intervals
+            if (typeof(interval) === "string") {
+                var intervalMs = commonFunctions.decodeTimePeriod(interval);
+            } else { 
+                var intervalMs = interval;
+            }
 
-        var arr = [];
+            //console.log("min: " + new Date(minTimeMs) + " max: " + new Date(maxTimeMs));
 
-        while (timeMs <= maxTimeMs) {
-            arr.push(conversionFunc(timeMs));
-            timeMs += intervalMs;
+            if (intervalMs === commonConstants.millisInWeek) {
+                //special case for week intervals as we want them to start on a Monday
+                //Unix epoch is a Thursday so simple rounding is no good
+                var truncToStartFunc = function(ms) {
+                    return commonFunctions.getWeekCommencingDate(new Date(ms)).getTime();
+                };
+            } else {
+                var truncToStartFunc = function(ms) {
+                    return commonFunctions.truncateToStartOfInterval(ms, intervalMs);
+                };
+                var nextTimeFunc = function(ms) {
+                    return ms + intervalMs;
+                };
+            }
+            var timeMs = truncToStartFunc(minTimeMs);
+
+            while (timeMs <= maxTimeMs) {
+                if (typeof(conversionFunc) !== "undefined") {
+                    contiguousTimes.push(conversionFunc(timeMs));
+                } else {
+                    contiguousTimes.push(timeMs);
+                }
+                timeMs = nextTimeFunc(timeMs);
+            }
         }
-        return arr;
+        return contiguousTimes;
     };
 
     /*
@@ -1230,6 +1287,23 @@ if (!visualisations) {
             data.visibleUniqueKeys = d3.keys(visibleKeyMap);
             data.visibleUniqueKeys.sort();
         }
+    };
+
+
+    /*
+     * Converts an array of objects into an array of unique values, using the mapfunc
+     * to extract the value out of the source array
+     */
+    commonFunctions.uniqueArray = function(sourceArray, mapFunc) {
+        var allValues = sourceArray.map(mapFunc);
+        var uniqueValues = [];
+        var valueSet = new set(allValues);
+        allValues.forEach(function(val) {
+            if (!valueSet.has(val)) {
+                uniqueValues.push(val);
+            }
+        });
+       return uniqueValues;
     };
 
 
