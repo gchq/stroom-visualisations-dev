@@ -95,11 +95,11 @@
         "structure" : {
             "nest" : {
                 "key" : {
+                    "id" : "${gridSeries}",
                     "sort" : {
                         "direction" : "${sortGridSeries}",
                         "enabled" : "true"
-                    },
-                    "id" : "${gridSeries}"
+                    }
                 },
                 "values" : {
                     "fields" : [

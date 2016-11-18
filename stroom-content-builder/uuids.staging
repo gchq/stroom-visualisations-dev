@@ -26,6 +26,7 @@ Script.Bubble=1fe1f036-4c6f-45cd-b68c-bf688a4c4a7e
 Script.DayWeekHeatMap=1fcf8ea6-3469-43ec-aae9-2487f9421787
 Script.Doughnut=82d6f790-f928-491d-8815-ec2485cbcee1
 Script.GenericGrid=fcce542a-4543-4a80-9f01-d4973f0f3a2c
+Script.HeatMap=dd24b39f-4151-4b5b-9a8d-62070c244b0e
 Script.HourDayMultiHeatMap=8ffb1f82-3306-4bd0-94f8-53b28fe77f18
 Script.HourDayPointMap=1354d485-9cf9-4b8e-b066-7e0a3f3b16f1
 Script.HourDaySessionMap=613a9e47-23d9-42a8-83c7-6720df315a9c

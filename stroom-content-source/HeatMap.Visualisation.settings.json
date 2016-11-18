@@ -1,0 +1,163 @@
+{
+    "tabs" : [ 
+        {
+            "name" : "Data",
+            "controls" : [ 
+                {
+                    "id" : "gridSeries",
+                    "type" :  "field",
+                    "label" : "Series"
+                }, 
+                {
+                    "id" : "x",
+                    "type" :  "field",
+                    "label" : "X Axis"
+                }, 
+                {
+                    "id" : "xAxisDataType",
+                    "type" :  "selection",
+                    "label" : "X Axis Data Type",
+                    "values" : [ 
+                        "text",
+                        "second",
+                        "minute",
+                        "hour",
+                        "day",
+                        "week",
+                        "month"
+                    ],
+                    "defaultValue" : "hour"
+                }, 
+                {
+                    "id" : "y",
+                    "type" :  "field",
+                    "label" : "Y Axis"
+                },
+                {
+                    "id" : "yAxisDataType",
+                    "type" : "selection",
+                    "label" : "X Axis Data Type",
+                    "values" : [ 
+                        "text",
+                        "second",
+                        "minute",
+                        "hour",
+                        "day",
+                        "week",
+                        "month"
+                    ],
+                    "defaultValue" : "hour"
+                }
+            ]
+        }, 
+        {
+            "name" : "HeatMap",
+            "controls" : [ 
+                {
+                    "id" : "lowerThreshold",
+                    "type" :  "number",
+                    "label" : "lowerThreshold (inc)",
+                    "defaultValue" : ""
+                }, 
+                {
+                    "id" : "upperThreshold",
+                    "type" :  "number",
+                    "label" : "upperThreshold (inc)",
+                    "defaultValue" : ""
+                }, 
+                {
+                    "id" : "sortGridSeries",
+                    "type" :  "selection",
+                    "label" : "Sort Grid Series",
+                    "values" : [ 
+                        "", 
+                        "Ascending", 
+                        "Descending" 
+                    ],
+                    "defaultValue" : "Ascending"
+                }, 
+                {
+                    "id" : "maxGridSeries",
+                    "type" :  "number",
+                    "label" : "Max Grid Series",
+                    "defaultValue" : "20",
+                    "max": "36",
+                    "min": "1"
+                } ,
+                {
+                    "id" : "gridSeriesDateFormat",
+                    "type" : "text",
+                    "label" : "Grid Series Date Format (optional)",
+                    "defaultValue" : ""
+                },
+                {
+                    "id": "synchXAxis",
+                    "type": "selection",
+                    "label": "Synch X Axis",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "displayXAxis",
+                    "type": "selection",
+                    "label": "Display X Axis",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "synchYAxis",
+                    "type": "selection",
+                    "label": "Synch Y Axis",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "displayYAxis",
+                    "type": "selection",
+                    "label": "Display Y Axis",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                }
+            ]
+        } 
+    ],
+    "data" : {
+        "structure" : {
+            "nest" : {
+                "key" : {
+                    "id" : "${gridSeries}",
+                    "sort" : {
+                        "enabled" : "true",
+                        "direction" : "${sortSeries}"
+                    }
+                },
+                "values" : {
+                    "fields" : [ 
+                        {
+                            "id" : "${x}"
+                        }, 
+                        {
+                            "id" : "${y}"
+                        } 
+                    ]
+                },
+                "limit" : {
+                    "enabled" : "true",
+                    "size" : "${maxGridSeries}"
+                }
+            }
+        }
+    }
+}

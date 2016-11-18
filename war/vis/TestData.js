@@ -40,6 +40,7 @@ function TestData() {
     var VIS_TYPE_FORCE = "Force";
     var VIS_TYPE_FORCE_CANVAS = "ForceCanvas";
     var VIS_TYPE_GENERIC_GRID = "GenericGrid";
+    var VIS_TYPE_HEAT_MAP = "HeatMap";
     var VIS_TYPE_HOUR_DAY_HEAT_MAP = "HourDayHeatMap";
     var VIS_TYPE_HOUR_DAY_MULTI_HEAT_MAP = "HourDayMultiHeatMap";
     var VIS_TYPE_HOUR_DAY_POINT_MAP = "HourDayPointMap";
@@ -69,6 +70,7 @@ function TestData() {
         VIS_TYPE_BUBBLE_FLAT,
         VIS_TYPE_BUBBLE_NESTED,
         VIS_TYPE_DOUGHNUT, 
+        VIS_TYPE_HEAT_MAP,
         VIS_TYPE_HOUR_DAY_POINT_MAP,
         VIS_TYPE_HOUR_DAY_SESSION_MAP,
         VIS_TYPE_LINE_CHART,
