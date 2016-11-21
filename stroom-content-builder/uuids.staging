@@ -44,6 +44,7 @@ Visualisation.Bubble=ea0d35ad-0fbe-496c-851e-e3bcacc34249
 Visualisation.DayWeekHeatMap=db059a6e-587d-487a-9cb5-3f1a21f2bd68
 Visualisation.Doughnut=411f27aa-cf63-4898-a9c8-0b6312c367de
 Visualisation.GenericGrid=fee40c9f-2076-40fc-9089-ce509595634f
+Visualisation.HeatMap=264e941d-480b-457f-8bc2-47575971434b
 Visualisation.HourDayMultiHeatMap=d31a0c28-430e-4912-9c61-ae5b04264a55
 Visualisation.HourDayPointMap=077839a4-41e0-4429-b248-1dcd9e8d51bc
 Visualisation.HourDaySessionMap=19988050-a419-44f2-bdcf-e6fe650fe499
