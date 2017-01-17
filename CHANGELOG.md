@@ -8,9 +8,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+### Changed
+
+## [v3.0.2] - 2017-01-17
+
+### Added
+
 * Added the Gauge visualisation
 
 ### Changed
+
+* Fixed issue #10 - Interpolation mode being ignored on stacked area
+* Randomised RAG bands in test data for RAG/TrafficLight/Guage
+* Fixed issue #13 - RAG band settings now accept floats
 
 ## [v3.0.1] - 2016-11-08
 
@@ -22,7 +32,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.2...HEAD
+
+[v3.0.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.1...v3.0.2
 
 [v3.0.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.0...v3.0.1
 
