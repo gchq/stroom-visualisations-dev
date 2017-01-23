@@ -140,6 +140,7 @@ visualisations.SeriesSessionMap = function(containerNode) {
         if (settings && settings.stateChange)
         {
             closeSessionText = settings.closeSessionText || defaultCloseSessionText;
+            openSessionText = settings.openSessionText || defaultOpenSessionText;
         }
 
         var seriesCount = data.values.length;
@@ -147,22 +148,41 @@ visualisations.SeriesSessionMap = function(containerNode) {
         var OPEN_SESSION = 0;
         var CONTINUE_SESSION = 1;
         var CLOSE_SESSION = 2;
+        var OPEN_CLOSE_SESSION = 3;
 
         var getSessionState = function(lastEventTime, eventTime, lastSessionText, sessionText) {
             if (lastEventTime != null) {
                 var timeDiff = (eventTime - lastEventTime)
             }
-            if ((closeSessionText && sessionText == closeSessionText) ) {
-                //no explicit close for time based sessionisation
+            if (closeSessionText && sessionText == closeSessionText && !lastSessionText ) {
+                //First event is a close
+                return OPEN_CLOSE_SESSION;
+            } else if (closeSessionText && lastSessionText && sessionText && sessionText == closeSessionText && lastSessionText === closeSessionText ) {
+                //CLOSE after a CLOSE so treat as an open-close 
+                return OPEN_CLOSE_SESSION;
+            } else if ((closeSessionText && sessionText == closeSessionText) ) {
                 return CLOSE_SESSION;
             } else if ((timeDiff && timeDiff < sessionThresholdMillis) || (sessionText && sessionText === lastSessionText)) {
+                //no explicit close for time based sessionisation
                 return CONTINUE_SESSION;
-            } else if (lastEventTime == null || timeDiff && timeDiff >= sessionThresholdMillis) {
+            } else if (lastEventTime == null || timeDiff && timeDiff >= sessionThresholdMillis || (sessionText && sessionText === openSessionText)) {
                 return OPEN_SESSION;
             } else {
                 throw "Error in logic - lastEventTime: " + lastEventTime + " eventTime: " + eventTime + " lastSessionText: " + lastSessionText + " sessionText: " + sessionText + " timeDiff: " + timeDiff;
             }
-        }
+        };
+
+        var isNewSession = function(lastEventTime, eventTime, lastSessionText, sessionText) {
+            if (sessionText && sessionText === openSessionText && lastSessionText && lastSessionText === closeSessionText) {
+                return true;
+            } else if (!lastSessionText) {
+                return true;
+            } else if (timeDiff && timeDiff < sessionThresholdMillis) {
+                return true;
+            } else {
+                return false;
+            }
+        };
 
         //console.log("Series count: " + seriesCount);
 
@@ -184,19 +204,21 @@ visualisations.SeriesSessionMap = function(containerNode) {
                 var sessionText = data.values[j].values[i][1];
                 var sessionState = getSessionState(lastEventTime, eventTime, lastSessionText, sessionText);
 
-                if (sessionState === OPEN_SESSION) {
+                if (sessionState === OPEN_SESSION || sessionState === OPEN_CLOSE_SESSION) {
                     sessionId++;
                     sessionisedData[sessionId] = [];
                     sessionisedData[sessionId][0] = eventTime;
-                    sessionisedData[sessionId][1] = eventTime;
-                    sessionisedData[sessionId][2] = 1;
-                } else if (sessionState === CONTINUE_SESSION || sessionState === CLOSE_SESSION) {
-                    //within threshold so extend the current session or an explicit close event
-                    sessionisedData[sessionId][1] = eventTime;
-                    sessionisedData[sessionId][2]++;
-                } else {
-                    throw "sessionState not one of the expected values";
-                }
+                    //Add on the session threshold time until we know otherwise
+                    sessionisedData[sessionId][1] = eventTime + sessionThresholdMillis;
+                    sessionisedData[sessionId][2] = 0;
+                    sessionisedData[sessionId][3] = sessionId;
+                    sessionisedData[sessionId][4] = "";
+                } 
+
+                //update the session close time and increment the event count
+                sessionisedData[sessionId][1] = eventTime;
+                sessionisedData[sessionId][2]++;
+                sessionisedData[sessionId][4] = sessionisedData[sessionId][4] + "-" + sessionText;
 
                 lastEventTime = eventTime;
                 lastSessionText = sessionText;
@@ -240,21 +262,21 @@ visualisations.SeriesSessionMap = function(containerNode) {
             arrLen = data.values[j].values.length;
 
             //now loop through the sessions and augment the data
-            for (var i = 0; i < arrLen; i++){
+            //for (var i = 0; i < arrLen; i++){
 
-                var hourOfDay = commonFunctions.getTwoDigitHourOfDay(data.values[j].values[i][0]);
-                var dayMs = commonFunctions.truncateToStartOfDay(data.values[j].values[i][0]);
+                //var hourOfDay = commonFunctions.getTwoDigitHourOfDay(data.values[j].values[i][0]);
+                //var dayMs = commonFunctions.truncateToStartOfDay(data.values[j].values[i][0]);
 
-                //console.log("time: " + eventDate + " val: " + cellValue + " hour: " + hourOfDay + " day: " + new Date(dayMs));
+                ////console.log("time: " + eventDate + " val: " + cellValue + " hour: " + hourOfDay + " day: " + new Date(dayMs));
 
-                //values[i][0] = session start event time ms
-                //values[i][1] = session end event time ms
-                //values[i][2] = event count
-                //values[i][3] = session ID
+                ////values[i][0] = session start event time ms
+                ////values[i][1] = session end event time ms
+                ////values[i][2] = event count
+                ////values[i][3] = session ID
 
-                data.values[j].values[i][3] = i; //the sessionId
-                //console.log("Session: " + i + " start: " + new Date(data.values[j].values[i][0]) + " end: " + new Date(data.values[j].values[i][1]));
-            }
+                //data.values[j].values[i][3] = i; //the sessionId
+                ////console.log("Session: " + i + " start: " + new Date(data.values[j].values[i][0]) + " end: " + new Date(data.values[j].values[i][1]));
+            //}
         }
     };
 
@@ -277,6 +299,8 @@ visualisations.SeriesSessionMap = function(containerNode) {
                         .addTipEntry("Start", new Date(tipData.values[0]))
                         .addTipEntry("End", new Date(tipData.values[1]))
                         .addTipEntry("Count",commonFunctions.autoFormat(tipData.values[2]))
+                        .addTipEntry("Session ID",commonFunctions.autoFormat(tipData.values[3]))
+                        .addTipEntry("States",commonFunctions.autoFormat(tipData.values[4]))
                         .build();
                     return html;
                 });
