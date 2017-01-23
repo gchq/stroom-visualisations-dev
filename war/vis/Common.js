@@ -290,7 +290,15 @@ if (!visualisations) {
         };
     };
 
-    commonFunctions.d3TipDirectionFunc = function(tipData) {
+    commonFunctions.d3TipNorthSouthDirectionFunc = function(tipData) {
+        //orient the tip north or south depending on which half of the screen
+        //the cursor is in to avoid edge clashes
+        var pageY = d3.event.pageY;
+        var pageHeight = window.innerHeight;
+        return (pageY > (pageHeight / 2)) ? 'n' : 's';
+    };
+
+    commonFunctions.d3TipEastWestDirectionFunc = function(tipData) {
         //orient the tip west or east depending on which half of the screen
         //the cursor is in to avoid edge clashes
         var pageX = d3.event.pageX;
@@ -335,7 +343,7 @@ if (!visualisations) {
 
             return d3.tip()
                 .attr('class', 'd3-tip')
-                .direction(commonFunctions.d3TipDirectionFunc)
+                .direction(commonFunctions.d3TipEastWestDirectionFunc)
                 .offset(function(tipData) {
                     if (this.direction()() == "w"){
                         return [0, -8];
@@ -344,7 +352,7 @@ if (!visualisations) {
                     } else if (this.direction()() == "n") {
                         return [-8,0];
                     } else {
-                        return [0,0];
+                        return [8,0];
                     }
                 })
                 .html(function(tipData) { 
@@ -1679,7 +1687,7 @@ if (!visualisations) {
     commonFunctions.buildAxis = function(axisContainer, axisSettings, orientation, ticks, maxAxisLabelLengthPx, displayText){
 
         var axisLabelTip = d3.tip()
-            .direction(commonFunctions.d3TipDirectionFunc)
+            .direction(commonFunctions.d3TipEastWestDirectionFunc)
             .attr('class', 'd3-tip')
             .html(commonFunctions.makeD3TipBasicTextHtmlFunc(function(val) {
                 if (axisSettings.tickFormat) {
