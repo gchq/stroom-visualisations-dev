@@ -123,7 +123,6 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
     var defaultOpenSessionText = "IN";
     var defaultCloseSessionText = "OUT";
-    var openSessionText = null;
     var closeSessionText = null;
 
     //Sessionise the data to reduce the point events into a number of sessions,
@@ -140,11 +139,30 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
         if (settings && settings.stateChange)
         {
-            openSessionText = settings.openSessionText || defaultOpenSessionText;
             closeSessionText = settings.closeSessionText || defaultCloseSessionText;
         }
 
         var seriesCount = data.values.length;
+
+        var OPEN_SESSION = 0;
+        var CONTINUE_SESSION = 1;
+        var CLOSE_SESSION = 2;
+
+        var getSessionState = function(lastEventTime, eventTime, lastSessionText, sessionText) {
+            if (lastEventTime != null) {
+                var timeDiff = (eventTime - lastEventTime)
+            }
+            if ((closeSessionText && sessionText == closeSessionText) ) {
+                //no explicit close for time based sessionisation
+                return CLOSE_SESSION;
+            } else if ((timeDiff && timeDiff < sessionThresholdMillis) || (sessionText && sessionText === lastSessionText)) {
+                return CONTINUE_SESSION;
+            } else if (lastEventTime == null || timeDiff && timeDiff >= sessionThresholdMillis) {
+                return OPEN_SESSION;
+            } else {
+                throw "Error in logic - lastEventTime: " + lastEventTime + " eventTime: " + eventTime + " lastSessionText: " + lastSessionText + " sessionText: " + sessionText + " timeDiff: " + timeDiff;
+            }
+        }
 
         //console.log("Series count: " + seriesCount);
 
@@ -154,46 +172,66 @@ visualisations.SeriesSessionMap = function(containerNode) {
             //console.log("########Series: " + data.values[j].key);
 
             var arrLen = data.values[j].values.length;
-            var sessionId = 0;
+            var sessionId = -1;
             var lastEventTime = null;
+            var lastSessionText = "";
             var sessionisedData = [];
 
             //loop through all the values for the series
             for (var i = 0; i < arrLen; i++){
 
                 var eventTime = data.values[j].values[i][0];
+                var sessionText = data.values[j].values[i][1];
+                var sessionState = getSessionState(lastEventTime, eventTime, lastSessionText, sessionText);
 
-                if (lastEventTime == null){
-                    //first event of the series so create the first session, starting and ending on the same time
+                if (sessionState === OPEN_SESSION) {
+                    sessionId++;
                     sessionisedData[sessionId] = [];
                     sessionisedData[sessionId][0] = eventTime;
                     sessionisedData[sessionId][1] = eventTime;
                     sessionisedData[sessionId][2] = 1;
+                } else if (sessionState === CONTINUE_SESSION || sessionState === CLOSE_SESSION) {
+                    //within threshold so extend the current session or an explicit close event
+                    sessionisedData[sessionId][1] = eventTime;
+                    sessionisedData[sessionId][2]++;
                 } else {
-                    if ((eventTime - lastEventTime) < sessionThresholdMillis)
-                    {
-                        //within threshold so extend the current session
-                        sessionisedData[sessionId][1] = eventTime;
-                        sessionisedData[sessionId][2]++;
+                    throw "sessionState not one of the expected values";
+                }
 
-                    } else {
-                        //outside threshold so make a new session
-                        sessionId++;
-                        sessionisedData[sessionId] = [];
-                        sessionisedData[sessionId][0] = eventTime;
-                        sessionisedData[sessionId][1] = eventTime;
-                        sessionisedData[sessionId][2] = 1;
-                    }
-                }
-                if (closeSessionText && (data.values[j].values[i][1] == closeSessionText))
-                {
-                    sessionId++;
-                    lastEventTime = null;
-                }
-                else
-                {
-                    lastEventTime = eventTime;
-                }
+                lastEventTime = eventTime;
+                lastSessionText = sessionText;
+                
+
+                //if (lastEventTime == null) {
+                    ////first event of the series so create the first session, starting and ending on the same time
+                    //sessionisedData[sessionId] = [];
+                    //sessionisedData[sessionId][0] = eventTime;
+                    //sessionisedData[sessionId][1] = eventTime;
+                    //sessionisedData[sessionId][2] = 1;
+                //} else {
+                    //if ((eventTime - lastEventTime) < sessionThresholdMillis)
+                    //{
+                        ////within threshold so extend the current session
+                        //sessionisedData[sessionId][1] = eventTime;
+                        //sessionisedData[sessionId][2]++;
+                    //} else {
+                        ////outside threshold so make a new session
+                        //sessionId++;
+                        //sessionisedData[sessionId] = [];
+                        //sessionisedData[sessionId][0] = eventTime;
+                        //sessionisedData[sessionId][1] = eventTime;
+                        //sessionisedData[sessionId][2] = 1;
+                    //}
+                //}
+                //if (closeSessionText && (data.values[j].values[i][1] == closeSessionText))
+                //{
+                    //sessionId++;
+                    //lastEventTime = null;
+                //}
+                //else
+                //{
+                    //lastEventTime = eventTime;
+                //}
             }
 
             //overwrite the existing data with the new sessionised data
@@ -394,7 +432,13 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
             xSettingsTime = commonFunctions.createAxis(visData.types[0], 0, width);
             xScaleTime = xSettingsTime.scale;
-            xSettingsTime.setRangeDomain(visData.types[0], visData, 0);
+            //custom data object as min[0] is the lowest of all the session start times and max[1] is the highest of all the session end times
+
+            var xScaleData = {
+                min: [visData.min[0]],
+                max: [visData.max[1]]
+            };
+            xSettingsTime.setRangeDomain(visData.types[0], xScaleData, 0);
             commonFunctions.buildAxis(xAxisContainer, xSettingsTime, "bottom", null, null, visSettings.displayXAxis);
 
             //if a custom date format has been provided then create a format function for the axis to use for its ticks
