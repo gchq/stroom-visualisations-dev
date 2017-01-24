@@ -419,7 +419,7 @@ visualisations.GenericGrid = function(element) {
         //set up the chart tile hover tip
         if (typeof(seriesLabelTip) == "undefined") {
             seriesLabelTip = d3.tip()
-                .direction(commonFunctions.d3TipDirectionFunc)
+                .direction(commonFunctions.d3TipEastWestDirectionFunc)
                 .attr('class', 'd3-tip')
                 .html(commonFunctions.makeD3TipBasicTextHtmlFunc(function(d) { 
                     return d.key;

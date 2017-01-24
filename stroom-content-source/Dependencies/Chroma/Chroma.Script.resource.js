@@ -1,1 +1,1 @@
-../../../war/chroma/chroma.min.js
+../../../war/chroma/chroma.js

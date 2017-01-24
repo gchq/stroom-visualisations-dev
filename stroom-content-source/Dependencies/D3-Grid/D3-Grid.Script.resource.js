@@ -1,1 +1,1 @@
-../../../war/d3-grid//d3-grid.js
+../../../war/d3-grid/d3-grid.js

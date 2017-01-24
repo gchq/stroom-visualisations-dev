@@ -1,1 +1,1 @@
-../../../war/jshashes/hashes.min.js
+../../../war/jshashes/hashes.js
