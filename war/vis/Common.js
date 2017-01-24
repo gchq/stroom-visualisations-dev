@@ -550,6 +550,10 @@ if (!visualisations) {
             result.scale.domain(valuesArr);
         }
 
+        result.setExplicitRangeDomain = function(min, max) {
+            result.scale.domain([min, max]);
+        }
+
         result.setRangeDomain = function(dataType, data, i) {
             if (dataType == "DATE_TIME") {
                 result.scale.domain([ data.min[i], data.max[i] ]);

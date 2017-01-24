@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Fixed issue #15 - SeriesSessionMap now doesn't truncate the end of the rightmost session.
 * Added state text and session number to the hover tip in SeriesSessionMap
 * Re-worked the sessionisation logic for SeriesSessionMap
+* Fixed issue #12 - Bucketised bar wasn't displaying the last bar
 
 
 
