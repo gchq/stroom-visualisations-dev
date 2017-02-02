@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+
+## [v3.0.3] - 2017-01-24
+
+### Changed
+
+* Fixed issue **#19** - Removed synchYAxis from SeriesSessionMap as it is redundant and that was causing the x axis to be synched
+
+
+
+
+
 ## [v3.0.3] - 2017-01-24
 
 ### Changed
@@ -54,7 +65,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.3...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.4...HEAD
+
+[v3.0.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.3...v3.0.4
 
 [v3.0.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.2...v3.0.3
 
