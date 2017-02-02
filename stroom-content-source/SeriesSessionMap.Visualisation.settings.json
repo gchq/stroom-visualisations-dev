@@ -99,16 +99,6 @@
                     "defaultValue": "True"
                 },
                 {
-                    "id" : "synchYAxis",
-                    "type" : "selection",
-                    "label" : "Synch Y Axis",
-                    "values" : [
-                        "True",
-                        "False"
-                    ],
-                    "defaultValue" : "True"
-                },
-                {
                     "id": "displayYAxis",
                     "type": "selection",
                     "label": "Display Y Axis",

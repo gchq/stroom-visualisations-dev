@@ -328,9 +328,6 @@ visualisations.SeriesSessionMap = function(containerNode) {
                 if (settings.synchXAxis && settings.synchXAxis.toLowerCase() == "true"){
                     synchedFields.push(0);
                 }
-                if (settings.synchYAxis && settings.synchYAxis.toLowerCase() == "true"){
-                    synchedFields.push(1);
-                }
 
                 if (settings.synchSeries && settings.synchSeries.toLowerCase() == "true") {
                     //series are synched so setup the colour scale domain and add it to the context
