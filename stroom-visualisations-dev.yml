@@ -3,7 +3,7 @@ name: stroom-visualisations-dev
 root: ~/git_work/stroom-visualisations-dev/
 
 windows:
-  - editor: cd ./war/vis && vim Common.js GenericGrid.js ../css/vis.css TestVis.js TestData.js ../index.html
+  - VI: cd ./war/vis && vim Common.js GenericGrid.js ../css/vis.css TestVis.js TestData.js ../index.html
   - shells:
       layout: main-vertical
       panes:
