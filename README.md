@@ -70,9 +70,11 @@ Stroom has an important feature allowing a set of Stroom entities (such as Visua
 
 ## Running Stroom Visualisations Development
 
-`cd` into the war directory and run the following to start the python simple web server on port 8888
+`cd` into the war directory and run one of the following commands (depending on your python version) to start the python simple web server on port 8888
 
-`python -m SimpleHTTPServer 8888`
+`python -m SimpleHTTPServer 8888` (python2)
+
+`python -m http.server 8888` (python3)
 
 In the browser (currently they have only been tested in Google Chrome) enter the URL
 
