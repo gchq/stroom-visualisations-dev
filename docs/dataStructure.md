@@ -1,4 +1,4 @@
-#Visualisation Data Structure
+# Visualisation Data Structure
 The data contract for each visualisation is defined in the .Visualisation.settings.js file.  The 'data' object within the JSON file defines the various grouping levels of the data and the fields.  The following shows the data structure for the BarChart visualisation.  Here there are two levels of nesting, the top level grid series and sub series.  Within that sub series there are two value fields.
 
 The limit property is used to instruct Stroom to only supply the first N groups at that level.
