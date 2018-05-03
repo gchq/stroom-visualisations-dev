@@ -12,18 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Fix failing visualisations following introduction of Object.values() and Array.values() in Javascript ES 2017
 
 
-
-
-## [v3.0.3] - 2017-01-24
+## [v3.0.4] - 2017-02-02
 
 ### Changed
 
 * Fixed issue **#19** - Removed synchYAxis from SeriesSessionMap as it is redundant and that was causing the x axis to be synched
-
-
-
 
 
 ## [v3.0.3] - 2017-01-24
@@ -34,8 +30,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added state text and session number to the hover tip in SeriesSessionMap
 * Re-worked the sessionisation logic for SeriesSessionMap
 * Fixed issue **#12** - Bucketised bar wasn't displaying the last bar
-
-
 
 
 ## [v3.0.2] - 2017-01-17
@@ -51,14 +45,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Fixed issue **#13** - RAG band settings now accept floats
 
 
-
 ## [v3.0.1] - 2016-11-08
 
 ### Changed
 
 * Fixed issue **#9** - RAG status and traffic lights now work Red-Green, i.e. where red is a lower value than green.
-
-
 
 
 ## v3.0.0 - 2016-11-03
