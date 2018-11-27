@@ -46,7 +46,7 @@ visualisations.GenericGrid = function(element) {
     var intraCellPadding = 5;
 
     var margin = {
-        top: 15,
+        top: 14,
         right: interCellPadding,
         bottom: interCellPadding,
         left: interCellPadding
