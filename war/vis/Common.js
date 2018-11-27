@@ -684,19 +684,28 @@ if (!visualisations) {
         }
     };
 
-    commonFunctions.resize = function(grid, updateFunc, element, margins, width, height){
-        if (grid) {
-            grid.resize();
-        } else {
-            var newWidth = element.clientWidth - margins.right - margins.left;
-            var newHeight = element.clientHeight - margins.top - margins.bottom;
-            if ((newWidth > 0 && newHeight > 0) && (newWidth != width || newHeight != height)) {
-                //need to do the update with trasition time of zero otherwise we getr all sorts of
-                //interpolation errors in the setting of the svg translate attribute by D3
-                updateFunc(0);
-            }
-        }
-    };
+  commonFunctions.lastWidth = 0;
+  commonFunctions.lastHeight = 0;
+  commonFunctions.resize = function(grid, updateFunc, element, margins, width, height) {
+    if(grid) {
+      grid.resize();
+    } else {
+      // Get new width and height.
+      var newWidth = element.clientWidth - margins.right - margins.left;
+      var newHeight = element.clientHeight - margins.top - margins.bottom;
+
+      // Update the vis if the width or height have changed and are both greater than 0.
+      if ((newWidth > 0 && newHeight > 0) && (newWidth != commonFunctions.lastWidth || newHeight != commonFunctions.lastHeight)) {
+        //need to do the update with trasition time of zero otherwise we getr all sorts of
+        //interpolation errors in the setting of the svg translate attribute by D3
+        updateFunc(0);
+      }
+
+      // Store the current width and height for the next call.
+      commonFunctions.lastWidth = newWidth;
+      commonFunctions.lastHeight = newHeight;
+    }
+  };
 
     commonFunctions.getBucketValues = function(minVal, maxVal, bucketCount) {
 
