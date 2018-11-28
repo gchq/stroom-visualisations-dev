@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Fixed issue **#24** - Increased cell padding to 14px.
+
+* Added protection from height and width <= 0.
+
 ## [v3.0.5] - 2018-05-03
 
 ### Changed
