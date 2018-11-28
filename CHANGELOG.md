@@ -10,9 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## [v3.0.6] - 2018-11-28
+
+### Changed
+
 * Fixed issue **#24** - Increased cell padding to 14px.
 
-* Added protection from height and width <= 0.
+* Added protection from height and width less than or equal to 0.
 
 ## [v3.0.5] - 2018-05-03
 
@@ -62,15 +66,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.5...HEAD
-
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.6...HEAD
+[v3.0.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.5...v3.0.6
 [v3.0.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.4...v3.0.5
-
 [v3.0.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.3...v3.0.4
-
 [v3.0.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.2...v3.0.3
-
 [v3.0.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.1...v3.0.2
-
 [v3.0.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.0...v3.0.1
 
