@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-* Fixed typo in common.js.
+* Issue **#26** - Added various maxXXX and sortXXX properties to the settings of multiple visualisations.
 
+* Fixed typo in common.js.
 
 ## [v3.0.6] - 2018-11-28
 

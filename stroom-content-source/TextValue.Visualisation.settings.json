@@ -36,7 +36,8 @@
                     "id": "${gridSeries}",
                     "sort": {
                         "direction": "${sortGridSeries}",
-                        "enabled": "true"
+                        "enabled": "true",
+                        "priority": 0
                     }
                 },
                 "values" : {
@@ -45,10 +46,15 @@
                             "id" : "${field}",
                             "sort": {
                                 "direction": "Ascending",
-                                "enabled": "true"
+                                "enabled": "true",
+                                "priority": 1
                             }
                         } 
-                    ]
+                    ],
+                    "limit": {
+                        "enabled": "true",
+                        "size": "1"
+                    }
                 },
                 "limit": {
                     "enabled": "true",
