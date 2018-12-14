@@ -6,9 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-### Added
+* Fixed typo in common.js.
 
-### Changed
 
 ## [v3.0.6] - 2018-11-28
 
