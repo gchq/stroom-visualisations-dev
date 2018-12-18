@@ -217,6 +217,9 @@ if(!visualisations) {
   commonConstants.millisInDay = commonConstants.millisInHour * 24;
   commonConstants.millisInWeek = commonConstants.millisInDay * 7;
 
+  commonConstants.sortAscending = "Ascending";
+  commonConstants.sortDescending = "Descending";
+
   // Font Awesome
   commonConstants.fontAwesomeMove = "\uf047";
   commonConstants.fontAwesomeClose = "\uf00d";
@@ -897,7 +900,7 @@ if(!visualisations) {
     return new Date(
       Math
       .floor((dateObj.getTime() - (commonConstants.millisInDay * commonFunctions
-          .getDayNoOfWeek(dateObj))) /
+        .getDayNoOfWeek(dateObj))) /
         commonConstants.millisInDay) *
       commonConstants.millisInDay);
   };
@@ -964,7 +967,7 @@ if(!visualisations) {
       if(seriesName !== null && seriesName !== "") {
         var labelName = label.append("div").attr("class",
           "vis-seriesLabel name").style("top", topVal + "px").style(
-          "background-color", "inherit");
+            "background-color", "inherit");
         topVal += topDelta;
       }
 
@@ -1114,9 +1117,9 @@ if(!visualisations) {
     if(element.localName == "svg") {
       var body = d3.select(element)
         .append("svg:foreignObject")
-        //.attr("width","100%")
-        //.attr("height","100%")
-        //.attr("requiredExtensions","http://www.w3.org/1999/xhtml")
+      //.attr("width","100%")
+      //.attr("height","100%")
+      //.attr("requiredExtensions","http://www.w3.org/1999/xhtml")
         .append("xhtml:body")
       //.attr("class", classValue);
       //.attr("xmlns","http://www.w3.org/1999/xhtml")
@@ -1168,8 +1171,7 @@ if(!visualisations) {
           obj.visibleUnique = [];
         }
         // TODO the problem with using maps is that we lose the original order of the data.
-        // Probably need to add an arg to the outer function to give a choice of sroting or preserving
-        // the original order
+        // If no order is specified in the data structure then sort a-z by default
         var valuesMap = {};
         var visibleValuesMap = {};
         if(obj.values && obj.values.length > 0) {
@@ -1188,6 +1190,7 @@ if(!visualisations) {
                 visibleValuesMap[uniqueVal] = 1;
               })
             });
+
           } else {
             // This is the last object in this branch of the tree
             // Each item in the 'values' array is an array of point values
@@ -1203,8 +1206,15 @@ if(!visualisations) {
         // Need to sort the unique values else they end up coming out in an inconsistent order
         obj.unique[fieldIndex] = d3.keys(valuesMap);
         obj.unique[fieldIndex].sort();
+
         obj.visibleUnique[fieldIndex] = d3.keys(visibleValuesMap);
         obj.visibleUnique[fieldIndex].sort();
+
+        // Respect the sort order from the viz settings if these is one
+        if (obj.hasOwnProperty('sortDirections') && obj.sortDirections[fieldIndex] === commonConstants.sortDescending) {
+          obj.unique[fieldIndex].reverse();
+          obj.visibleUnique[fieldIndex].reverse();
+        }
       };
       return addUniqueValues;
     };
@@ -1257,6 +1267,12 @@ if(!visualisations) {
       data.uniqueKeys.sort();
       data.visibleUniqueKeys = d3.keys(visibleKeyMap);
       data.visibleUniqueKeys.sort();
+
+      // Respect the sort order from the viz settings if there is one
+      if (data.hasOwnProperty('keySortDirection') && data.keySortDirection === commonConstants.sortDescending){
+        data.uniqueKeys.reverse();
+        data.visibleUniqueKeys.reverse();
+      }
     }
   };
 
@@ -1712,7 +1728,13 @@ if(!visualisations) {
     }
   };
 
-  commonFunctions.buildAxis = function(axisContainer, axisSettings, orientation, ticks, maxAxisLabelLengthPx, displayText) {
+  commonFunctions.buildAxis = function(
+    axisContainer, 
+    axisSettings, 
+    orientation, 
+    ticks, 
+    maxAxisLabelLengthPx, 
+    displayText) {
 
     var axisLabelTip = d3.tip()
       .direction(commonFunctions.d3TipEastWestDirectionFunc)
@@ -1758,13 +1780,13 @@ if(!visualisations) {
 
       axisContainer
         .call(axis)
-        //.call(axisSettings.axis.orient(orientation))
+      //.call(axisSettings.axis.orient(orientation))
         .call(axisLabelTip);
 
       if(isTextDisplayed) {
         axisContainer
           .selectAll("text")
-          .each(commonFunctions.truncateSVGText((maxAxisLabelLengthPx ? maxAxisLabelLength : optimumLabelLengthPx)));
+          .each(commonFunctions.truncateSVGText((maxAxisLabelLengthPx ? maxAxisLabelLengthPx : optimumLabelLengthPx)));
       }
     } else {
       axisContainer
