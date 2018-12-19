@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v3.0.8] - 2018-12-19
+
 * Issue **#27** - Add support for Stroom's TEXT data type.
 
 * Refactor hard coded data types to be common constants.
@@ -72,7 +74,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.7...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.8...HEAD
+[v3.0.8]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.7...v3.0.8
 [v3.0.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.6...v3.0.7
 [v3.0.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.5...v3.0.6
 [v3.0.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.4...v3.0.5
