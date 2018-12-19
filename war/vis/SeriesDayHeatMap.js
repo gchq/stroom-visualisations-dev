@@ -249,22 +249,12 @@ visualisations.SeriesDayHeatMap = function() {
 
             var yAxisLength = Math.min(gridSizeY * seriesOnChart, height)
 
-                //xSettings = commonFunctions.createAxis("NUMBER", 0, width);
-                //ySettings = commonFunctions.createAxis("TEXT", height - yAxisLength, height);
-                //xScale = xSettings.scale;
-                //yScale = ySettings.scale;
-                //xAxis = xSettings.axis.orient("bottom").ticks(24);
-                //yAxis = ySettings.axis.orient("left");
-
-                //xSettings.setDomain([0,24]);
-                //ySettings.setDomain(data.values.map(function(d) { return d.key }));
-
-                xSettings = commonFunctions.createAxis("NUMBER", 0, width);
+            xSettings = commonFunctions.createAxis(commonConstants.dataTypeNumber, 0, width);
             xScale = xSettings.scale;
             xSettings.setExplicitDomain([0,24]);
             commonFunctions.buildAxis(xAxisContainer, xSettings, "bottom", 24, null, visSettings.displayXAxis);
 
-            ySettings = commonFunctions.createAxis("TEXT", height - yAxisLength, height);
+            ySettings = commonFunctions.createAxis(commonConstants.dataTypeText, height - yAxisLength, height);
             yScale = ySettings.scale;
             ySettings.setExplicitDomain(data.values.map(function(d) { return d.key }));
             commonFunctions.buildAxis(yAxisContainer, ySettings, "left", null, null, visSettings.displayYAxis);
@@ -275,15 +265,6 @@ visualisations.SeriesDayHeatMap = function() {
                     });
             var series = g.enter().append("svg:g");
             g.exit().transition().attr("opacity", "0").remove();
-
-
-            //xAxisContainer.transition()
-            //.duration(transitionDuration)
-            //.call(xAxis.orient("bottom"));
-
-            //yAxisContainer.transition()
-            //.duration(transitionDuration)
-            //.call(yAxis.orient("left"));
 
             g.each(function(d) {
                 var e = d3.select(this);

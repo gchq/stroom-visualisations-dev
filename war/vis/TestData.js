@@ -234,7 +234,7 @@ function TestData() {
         var maxSeries = 9;
         var seriesCount;
         var nestValues = false;
-        var fieldZeroType = 'DATE_TIME';
+        var fieldZeroType = commonConstants.dataTypeDateTime;
 
         if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
             seriesCount = 1;
@@ -242,16 +242,16 @@ function TestData() {
             seriesCount = 1;
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateFloatValue;
-            fieldZeroType = 'GENERAL';
+            fieldZeroType = commonConstants.dataTypeGeneral;
         } else if ([VIS_TYPE_RAG_STATUS_GR, VIS_TYPE_RAG_STATUS_RG, VIS_TYPE_TRAFFIC_LIGHTS_GR, VIS_TYPE_TRAFFIC_LIGHTS_RG, VIS_TYPE_GAUGE_GR, VIS_TYPE_GAUGE_RG].indexOf(visType) !== -1) {
             seriesCount = 1;
             valueFunctions[0] = generateFloatValue;
-            fieldZeroType = 'GENERAL';
+            fieldZeroType = commonConstants.dataTypeGeneral;
             valueCountLimit = 1;
         } else if (visType === VIS_TYPE_TEXT_VALUE) {
             seriesCount = 1;
             valueFunctions[0] = generateRadomTextValue;
-            fieldZeroType = 'GENERAL';
+            fieldZeroType = commonConstants.dataTypeGeneral;
             valueCountLimit = 1;
         } else if (visType == VIS_TYPE_HOUR_DAY_HEAT_MAP  || visType == VIS_TYPE_DAY_WEEK_HEAT_MAP) {
             seriesCount = 1;
@@ -270,7 +270,7 @@ function TestData() {
             seriesCount = Math.max(1, Math.round(Math.random() * 5));
             //seriesCount = 2;
             nestValues = true;
-            fieldZeroType = 'GENERAL';
+            fieldZeroType = commonConstants.dataTypeGeneral;
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateFloatValue;
         } else if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
@@ -306,19 +306,23 @@ function TestData() {
             }
 
             data.values = values;
-            data.types = [ "GENERAL", "GENERAL", "NUMBER" ];
+            data.types = [
+                commonConstants.dataTypeGeneral,
+                commonConstants.dataTypeGeneral, 
+                commonConstants.dataTypeNumber
+            ];
 
             computeValueAggregates(data);
         } else if (nestValues === false) {
 
             // no nesting of values.
-            if (fieldZeroType == "DATE_TIME"){
+            if (fieldZeroType == commonConstants.dataTypeNumber){
                 values = createDateBasedValues(visType, pass, date, randomMaxVal);
             } else {
                 values = createGeneralBasedValues(visType, pass, randomMaxVal);
             }
             data.values = values;
-            data.types = [fieldZeroType, "NUMBER" ];
+            data.types = [fieldZeroType, commonConstants.dataTypeNumber];
 
             computeValueAggregates(data);
 
@@ -343,14 +347,14 @@ function TestData() {
                 }
                 if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
                     values.push(createTimeBucketBasedSeries(visType, i, date, seriesKey, randomMaxVal));
-                }else if (fieldZeroType == "DATE_TIME"){
+                }else if (fieldZeroType == commonConstants.dataTypeDateTime){
                     values.push(createDateBasedSeries(visType, i, date, seriesKey, randomMaxVal));
                 } else {
                     values.push(createGeneralBasedSeries(visType, pass, seriesKey, randomMaxVal));
                 }
             }
             data.values = values;
-            data.types = [fieldZeroType, "NUMBER" ];
+            data.types = [fieldZeroType, commonConstants.dataTypeNumber];
 
             computeNestedAggregates(data);
 
@@ -1065,7 +1069,7 @@ function TestData() {
 
         var createStroomData = function() {
             var d = {
-                types: ["GENERAL"],
+                types: [commonConstants.dataTypeGeneral],
                 values: []
             };
 
@@ -1078,7 +1082,7 @@ function TestData() {
                     min: [colour],
                     max: [colour],
                     sum: [0],
-                    types: ["GENERAL"],
+                    types: [commonConstants.dataTypeGeneral],
                     values: [ [colour] ]
                 };
                 d.values.push(value);

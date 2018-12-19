@@ -234,7 +234,6 @@ visualisations.HourDayHeatMap = function() {
             } else if (cellValue == maxZ){
                 minMaxData.push({type: "MAX", values: d.values[i]});
             }
-
         }
 
         //console.log(yAxisData);
@@ -250,7 +249,7 @@ visualisations.HourDayHeatMap = function() {
         //re-arrange the types
         d.types[0] = "HOUR";
         d.types[1] = "DAY";
-        d.types[2] = "NUMBER";
+        d.types[2] = commonConstants.dataTypeNumber;
 
         d.min[0] = minX;
         d.min[1] = minY;
@@ -301,7 +300,6 @@ visualisations.HourDayHeatMap = function() {
             var legendElementWidth = gridSizeX / 3;
             var legendElementHeight = Math.floor(height / buckets);
 
-
             canvas
                 .attr("width", element.clientWidth)
                 .attr("height",element.clientHeight);
@@ -338,7 +336,7 @@ visualisations.HourDayHeatMap = function() {
 
             var yAxisLength = Math.min(gridSizeY * daysOnChart, height)
 
-                xSettings = commonFunctions.createAxis("NUMBER", 0, width);
+                xSettings = commonFunctions.createAxis(commonConstants.dataTypeNumber, 0, width);
             xScale = xSettings.scale;
             xSettings.setExplicitDomain([0,24]);
             commonFunctions.buildAxis(xAxisContainer, xSettings, "bottom", 24, null, visSettings.displayXAxis);

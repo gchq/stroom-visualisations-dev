@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Issue **#27** - Add support for Stroom's TEXT data type.
+
+* Refactor hard coded data types to be common constants.
+
 ## [v3.0.7] - 2018-12-18
 
 * Issue **#26** - Added various maxXXX and sortXXX properties to the settings of multiple visualisations.

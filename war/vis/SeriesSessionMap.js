@@ -436,7 +436,7 @@ visualisations.SeriesSessionMap = function(containerNode) {
                 };
             }
 
-            ySettingsOrdinal = commonFunctions.createAxis("TEXT", height , 0, yTickFormat);
+            ySettingsOrdinal = commonFunctions.createAxis(commonConstants.dataTypeText, height , 0, yTickFormat);
             yScaleOrdinal = ySettingsOrdinal.scale;
             ySettingsOrdinal.setExplicitDomain(yScaleData);
             commonFunctions.buildAxis(yAxisContainer, ySettingsOrdinal, "left", null, null, visSettings.displayYAxis);
