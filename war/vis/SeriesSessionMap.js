@@ -125,10 +125,39 @@ visualisations.SeriesSessionMap = function(containerNode) {
   var defaultCloseSessionText = "OUT";
   var closeSessionText = null;
 
+  var getSeriesFilter = function(settings) {
+    //return function(sessionisedSeriesData) {
+      //console.log("Returning true");
+      //return true;
+    //}
+
+    if (settings && settings.seriesFilter == "Broken") {
+      // We only want series with breaks in it, i.e. more than one session block
+      return function(sessionisedSeriesData) {
+        var result = sessionisedSeriesData.length > 1;
+        //console.log("Returning " + result);
+        return result;
+      }
+    } else if (settings && settings.seriesFilter == "Unbroken") { 
+      // We only want series with no breaks in it, i.e. only one session block
+      return function(sessionisedSeriesData) {
+        var result = sessionisedSeriesData.length == 1;
+        //console.log("Returning " + result);
+        return result;
+      }
+    } else {
+      // We want all series
+      return function(sessionisedSeriesData) {
+        //console.log("Returning true");
+        return true;
+      }
+    }
+  }
+
   //Sessionise the data to reduce the point events into a number of sessions,
   //each with a start and end time.  Sessionisation is based on events being within
   //a certain time of each other to be included in the same session
-  var sessioniseData = function(data, settings){
+  var sessioniseInputData = function(data, settings){
 
     var sessionThresholdMillis;
     if (settings && settings.thresholdMs && typeof(parseInt(settings.thresholdMs, 10) == "number")){
@@ -176,7 +205,11 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
     //console.log("Series count: " + seriesCount);
 
-    //loop through the series
+    var visibleSeriesIdx = 0;
+    var seriesFilterFunc = getSeriesFilter(settings);
+    var sessionisedData = [];
+
+    // loop through each series
     for (var j = 0; j < seriesCount; j++){
 
       //console.log("########Series: " + data.values[j].key);
@@ -185,9 +218,10 @@ visualisations.SeriesSessionMap = function(containerNode) {
       var sessionId = -1;
       var lastEventTime = null;
       var lastSessionText = "";
-      var sessionisedData = [];
+      var sessionisedSeriesData = [];
 
-      //loop through all the values for the series
+      // loop through all the values for the series and convert them into
+      // session blocks with a start/end time
       for (var i = 0; i < arrLen; i++){
 
         var eventTime = data.values[j].values[i][0];
@@ -195,40 +229,40 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
         if (isNewSession(lastEventTime, eventTime, lastSessionText, sessionText)) {
           sessionId++;
-          sessionisedData[sessionId] = [];
-          sessionisedData[sessionId][0] = eventTime;
-          //Add on the session threshold time until we know otherwise, unless it is an explicit close
+          sessionisedSeriesData[sessionId] = [];
+          sessionisedSeriesData[sessionId][0] = eventTime;
+          // Add on the session threshold time until we know otherwise, unless it is an explicit close
           if (sessionText && sessionText === closeSessionText) {
-            sessionisedData[sessionId][1] = eventTime;
+            sessionisedSeriesData[sessionId][1] = eventTime;
           } else {
-            sessionisedData[sessionId][1] = eventTime + sessionThresholdMillis;
+            sessionisedSeriesData[sessionId][1] = eventTime + sessionThresholdMillis;
           }
-          sessionisedData[sessionId][2] = 0;
-          sessionisedData[sessionId][3] = sessionId;
-          sessionisedData[sessionId][4] = "";
+          sessionisedSeriesData[sessionId][2] = 0;
+          sessionisedSeriesData[sessionId][3] = sessionId;
+          sessionisedSeriesData[sessionId][4] = "";
         } else if (sessionText && sessionText === closeSessionText) {
-          //explicit close of an existing session so set the end time to the close event
-          sessionisedData[sessionId][1] = eventTime;
+          // explicit close of an existing session so set the end time to the close event
+          sessionisedSeriesData[sessionId][1] = eventTime;
         } else {
-          //continuation of a session so update the end time with the event time plus the timeout period
-          sessionisedData[sessionId][1] = eventTime + sessionThresholdMillis;
+          // continuation of a session so update the end time with the event time plus the timeout period
+          sessionisedSeriesData[sessionId][1] = eventTime + sessionThresholdMillis;
         }
 
-        if (sessionId > 0 && sessionisedData[sessionId - 1][1] > eventTime) {
-          //the end of the timeout period of the last session has overlapped this this one
-          //so truncate the previous one to butt up against this one
-          sessionisedData[sessionId - 1][1] = eventTime - 1;
+        if (sessionId > 0 && sessionisedSeriesData[sessionId - 1][1] > eventTime) {
+          // the end of the timeout period of the last session has overlapped this this one
+          // so truncate the previous one to butt up against this one
+          sessionisedSeriesData[sessionId - 1][1] = eventTime - 1;
         } 
 
         //increment the event count
-        sessionisedData[sessionId][2]++;
+        sessionisedSeriesData[sessionId][2]++;
 
         //Build a string of the first n state values up to a max char length
-        if (!sessionisedData[sessionId][4].endsWith("...")) {
-          if (sessionText && sessionisedData[sessionId][4].length < 40){
-            sessionisedData[sessionId][4] = sessionisedData[sessionId][4] + sessionText + " ";
+        if (!sessionisedSeriesData[sessionId][4].endsWith("...")) {
+          if (sessionText && sessionisedSeriesData[sessionId][4].length < 40){
+            sessionisedSeriesData[sessionId][4] = sessionisedSeriesData[sessionId][4] + sessionText + " ";
           } else {
-            sessionisedData[sessionId][4] = sessionisedData[sessionId][4] + "...";
+            sessionisedSeriesData[sessionId][4] = sessionisedSeriesData[sessionId][4] + "...";
           }
         }
 
@@ -236,11 +270,18 @@ visualisations.SeriesSessionMap = function(containerNode) {
         lastSessionText = sessionText;
       }
 
-      //overwrite the existing data with the new sessionised data
-      data.values[j].values = sessionisedData;
-
-      arrLen = data.values[j].values.length;
+      // overwrite the existing data with the new sessionised data
+      if (seriesFilterFunc(sessionisedSeriesData)) {
+        // This series is visble so add it to our array
+        // First copy the whole of the original series, not just the values
+        sessionisedData[visibleSeriesIdx] = data.values[j];
+        // Now overwrite the values with the sessionised form
+        sessionisedData[visibleSeriesIdx].values = sessionisedSeriesData;
+        visibleSeriesIdx++
+      }
     }
+    // now replace our input data with the visible (filtered) sessionised data
+    data.values = sessionisedData;
   };
 
   var initialise = function() {
@@ -318,7 +359,7 @@ visualisations.SeriesSessionMap = function(containerNode) {
       //sessionise the data for each nested data set (if there is no grid series then there
       //will only be one nested set)
       data.values.forEach(function (d,i) {
-        sessioniseData(d, settings);
+        sessioniseInputData(d, settings);
       });
 
       if (settings) {

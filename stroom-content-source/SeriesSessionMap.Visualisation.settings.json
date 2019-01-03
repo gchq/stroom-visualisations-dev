@@ -149,6 +149,17 @@
                     "defaultValue" : "600000"
                 },
                 {
+                    "id" : "seriesFilter",
+                    "type" : "selection",
+                    "label" : "Series Filter",
+                    "values" : [
+                        "All",
+                        "Broken",
+                        "Unbroken"
+                    ],
+                    "defaultValue" : "True"
+                },
+                {
                     "id" : "openSessionText",
                     "type" : "text",
                     "label" : "Session Start Text",
