@@ -175,7 +175,9 @@ visualisations.SeriesSessionMap = function(containerNode) {
     var seriesCount = data.values.length;
 
     //Determine if the event represents a new session or not
-    var isNewSession = function(lastEventTime, eventTime, lastSessionText, sessionText) {
+    var isNewSession = function(
+      lastEventTime, eventTime, lastSessionText, sessionText) {
+
       if (lastEventTime != null) {
         var timeDiff = (eventTime - lastEventTime)
       }
@@ -183,10 +185,12 @@ visualisations.SeriesSessionMap = function(containerNode) {
       if (sessionText && !lastSessionText) {
         //No previos session text so assume a new session
         return true;
-      } else if (sessionText && sessionText === openSessionText && lastSessionText && lastSessionText === closeSessionText) {
+      } else if (sessionText && sessionText === openSessionText 
+        && lastSessionText && lastSessionText === closeSessionText) {
         //OPEN after a CLOSE
         return true;
-      } else if (sessionText && sessionText === closeSessionText && lastSessionText && lastSessionText === closeSessionText) {
+      } else if (sessionText && sessionText === closeSessionText 
+        && lastSessionText && lastSessionText === closeSessionText) {
         //CLOSE after a CLOSE
         return true;
       } else if (!lastSessionText && sessionText) {
@@ -197,6 +201,7 @@ visualisations.SeriesSessionMap = function(containerNode) {
         return true;
       } else if (!sessionText && timeDiff && timeDiff >= sessionThresholdMillis) {
         //time based sessionisation and event is outside the threshold
+        console.log("timeDiff: " + timeDiff + " +/-: " + (timeDiff - sessionThresholdMillis))
         return true;
       } else {
         return false;
