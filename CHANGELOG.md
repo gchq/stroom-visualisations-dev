@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v3.1.0] - 2019-01-03
+
 * Issue **#29** - Add series filtering to Series Session Map.
 
 ## [v3.0.8] - 2018-12-19
@@ -76,7 +78,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.8...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.1.0...HEAD
+[v3.1.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.8...v3.1.0
 [v3.0.8]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.7...v3.0.8
 [v3.0.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.6...v3.0.7
 [v3.0.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.5...v3.0.6
