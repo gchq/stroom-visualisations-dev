@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Issue **#29** - Add series filtering to Series Session Map.
+
 ## [v3.0.8] - 2018-12-19
 
 * Issue **#27** - Add support for Stroom's TEXT data type.
