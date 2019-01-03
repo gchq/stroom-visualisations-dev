@@ -1,29 +1,31 @@
 /*
- * Copyright 2016 Crown Copyright
+ * copyright 2016 crown copyright
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * licensed under the apache license, version 2.0 (the "license");
+ * you may not use this file except in compliance with the license.
+ * you may obtain a copy of the license at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/license-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * unless required by applicable law or agreed to in writing, software
+ * distributed under the license is distributed on an "as is" basis,
+ * without warranties or conditions of any kind, either express or implied.
+ * see the license for the specific language governing permissions and
+ * limitations under the license.
  */
 /*
- * Visulisation to display a day/hour map of sessionised events for multiple series.
- * It has the following dimensions:
+ * visulisation to display a day/hour map of sessionised events for multiple series.
+ * it has the following dimensions:
  * x -           the time range of the session
  * y -           the day
- * cell colour - The series
+ * cell colour - the series
  * 
- * Data is expected in the form of two dimensions per series, an exact millisecond time value (values[0]) and the value at that time (values[1]), which may 
- * just be one for events with no value.  
+ * data is expected in the form of two dimensions per series, an exact 
+ * millisecond time value (values[0]) and the value at that time 
+ * (values[1]), which may just be one for events with no value.  
  *
- * The data will be sessionised based on a threshold time period.  E.g. if the threshold is 5mins then any event within 5mins of another is deemed to be 
+ * the data will be sessionised based on a threshold time period.  e.g. if 
+ * the threshold is 5mins then any event within 5mins of another is deemed to be 
  * part of the same session and will be linked into one data 'bar'.
  * 
  */
@@ -125,30 +127,20 @@ visualisations.SeriesSessionMap = function(containerNode) {
   var defaultCloseSessionText = "OUT";
   var closeSessionText = null;
 
-  var getSeriesFilter = function(settings) {
-    //return function(sessionisedSeriesData) {
-      //console.log("Returning true");
-      //return true;
-    //}
-
-    if (settings && settings.seriesFilter == "Broken") {
+  var makeSeriesFilterFunc = function(settings) {
+    if (settings && settings.seriesFilter == "Non-contiguous Only") {
       // We only want series with breaks in it, i.e. more than one session block
       return function(sessionisedSeriesData) {
-        var result = sessionisedSeriesData.length > 1;
-        //console.log("Returning " + result);
-        return result;
+        return result = sessionisedSeriesData.length > 1;
       }
-    } else if (settings && settings.seriesFilter == "Unbroken") { 
+    } else if (settings && settings.seriesFilter == "Contiguous Only") { 
       // We only want series with no breaks in it, i.e. only one session block
       return function(sessionisedSeriesData) {
-        var result = sessionisedSeriesData.length == 1;
-        //console.log("Returning " + result);
-        return result;
+        return result = sessionisedSeriesData.length == 1;
       }
     } else {
       // We want all series
       return function(sessionisedSeriesData) {
-        //console.log("Returning true");
         return true;
       }
     }
@@ -201,7 +193,7 @@ visualisations.SeriesSessionMap = function(containerNode) {
         return true;
       } else if (!sessionText && timeDiff && timeDiff >= sessionThresholdMillis) {
         //time based sessionisation and event is outside the threshold
-        console.log("timeDiff: " + timeDiff + " +/-: " + (timeDiff - sessionThresholdMillis))
+        //console.log("timeDiff: " + timeDiff + " +/-: " + (timeDiff - sessionThresholdMillis))
         return true;
       } else {
         return false;
@@ -211,7 +203,7 @@ visualisations.SeriesSessionMap = function(containerNode) {
     //console.log("Series count: " + seriesCount);
 
     var visibleSeriesIdx = 0;
-    var seriesFilterFunc = getSeriesFilter(settings);
+    var seriesFilterFunc = makeSeriesFilterFunc(settings);
     var sessionisedData = [];
 
     // loop through each series
@@ -236,26 +228,32 @@ visualisations.SeriesSessionMap = function(containerNode) {
           sessionId++;
           sessionisedSeriesData[sessionId] = [];
           sessionisedSeriesData[sessionId][0] = eventTime;
-          // Add on the session threshold time until we know otherwise, unless it is an explicit close
+          // Add on the session threshold time until we know otherwise, 
+          // unless it is an explicit close
           if (sessionText && sessionText === closeSessionText) {
             sessionisedSeriesData[sessionId][1] = eventTime;
           } else {
-            sessionisedSeriesData[sessionId][1] = eventTime + sessionThresholdMillis;
+            sessionisedSeriesData[sessionId][1] = eventTime 
+              + sessionThresholdMillis;
           }
           sessionisedSeriesData[sessionId][2] = 0;
           sessionisedSeriesData[sessionId][3] = sessionId;
           sessionisedSeriesData[sessionId][4] = "";
         } else if (sessionText && sessionText === closeSessionText) {
-          // explicit close of an existing session so set the end time to the close event
+          // explicit close of an existing session so set the end time to the 
+          // close event
           sessionisedSeriesData[sessionId][1] = eventTime;
         } else {
-          // continuation of a session so update the end time with the event time plus the timeout period
-          sessionisedSeriesData[sessionId][1] = eventTime + sessionThresholdMillis;
+          // continuation of a session so update the end time with the event 
+          // time plus the timeout period
+          sessionisedSeriesData[sessionId][1] = eventTime 
+            + sessionThresholdMillis;
         }
 
         if (sessionId > 0 && sessionisedSeriesData[sessionId - 1][1] > eventTime) {
-          // the end of the timeout period of the last session has overlapped this this one
-          // so truncate the previous one to butt up against this one
+          // the end of the timeout period of the last session has overlapped 
+          // this this one so truncate the previous one to butt up against 
+          // this one
           sessionisedSeriesData[sessionId - 1][1] = eventTime - 1;
         } 
 
@@ -265,9 +263,11 @@ visualisations.SeriesSessionMap = function(containerNode) {
         //Build a string of the first n state values up to a max char length
         if (!sessionisedSeriesData[sessionId][4].endsWith("...")) {
           if (sessionText && sessionisedSeriesData[sessionId][4].length < 40){
-            sessionisedSeriesData[sessionId][4] = sessionisedSeriesData[sessionId][4] + sessionText + " ";
+            sessionisedSeriesData[sessionId][4] = sessionisedSeriesData[sessionId][4] 
+              + sessionText + " ";
           } else {
-            sessionisedSeriesData[sessionId][4] = sessionisedSeriesData[sessionId][4] + "...";
+            sessionisedSeriesData[sessionId][4] = sessionisedSeriesData[sessionId][4] 
+              + "...";
           }
         }
 
@@ -275,7 +275,6 @@ visualisations.SeriesSessionMap = function(containerNode) {
         lastSessionText = sessionText;
       }
 
-      // overwrite the existing data with the new sessionised data
       if (seriesFilterFunc(sessionisedSeriesData)) {
         // This series is visble so add it to our array
         // First copy the whole of the original series, not just the values
@@ -285,7 +284,8 @@ visualisations.SeriesSessionMap = function(containerNode) {
         visibleSeriesIdx++
       }
     }
-    // now replace our input data with the visible (filtered) sessionised data
+    // Now replace our input data with the visible (filtered) sessionised data
+    // (which may well be empty)
     data.values = sessionisedData;
   };
 
@@ -304,7 +304,10 @@ visualisations.SeriesSessionMap = function(containerNode) {
       tip = inverseHighlight.tip()
         .html(function(tipData) { 
           var htmlBuilder = inverseHighlight.htmlBuilder()
-            .addTipEntry("Series", commonFunctions.autoFormat(tipData.key, visSettings.seriesDateFormat))
+            .addTipEntry(
+              "Series", commonFunctions.autoFormat(
+                tipData.key, 
+                visSettings.seriesDateFormat))
             .addTipEntry("Start", new Date(tipData.values[0]))
             .addTipEntry("End", new Date(tipData.values[1]))
             .addTipEntry("Count",commonFunctions.autoFormat(tipData.values[2]))
@@ -392,7 +395,13 @@ visualisations.SeriesSessionMap = function(containerNode) {
         //Get grid to construct the grid cells and for each one call back into a 
         //new instance of this to build the visualisation in the cell
         //The last array arg allows you to synchronise the scales of fields
-        grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
+        grid.buildGrid(
+          context, 
+          settings, 
+          data, 
+          this, 
+          commonConstants.transitionDuration, 
+          synchedFields);
       }
     }
   };
@@ -433,7 +442,11 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
 
   function dumpPoint(d){
-    console.log("hourOfDay: " + d[0] + " dayMs: " + d[1] + " day: " + new Date(d[1]) + " val: " + d[2]);
+    console.log(
+      "hourOfDay: " + d[0] 
+      + " dayMs: " + d[1] 
+      + " day: " + new Date(d[1]) 
+      + " val: " + d[2]);
   }
 
   var update = function(duration) {
@@ -465,16 +478,24 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
       xSettingsTime = commonFunctions.createAxis(visData.types[0], 0, width);
       xScaleTime = xSettingsTime.scale;
-      //custom data object as min[0] is the lowest of all the session start times and max[1] is the highest of all the session end times
+      // Custom data object as min[0] is the lowest of all the session start 
+      // times and max[1] is the highest of all the session end times
 
       var xScaleData = {
         min: [visData.min[0]],
         max: [visData.max[1]]
       };
       xSettingsTime.setRangeDomain(visData.types[0], xScaleData, 0);
-      commonFunctions.buildAxis(xAxisContainer, xSettingsTime, "bottom", null, null, visSettings.displayXAxis);
+      commonFunctions.buildAxis(
+        xAxisContainer, 
+        xSettingsTime, 
+        "bottom", 
+        null, 
+        null, 
+        visSettings.displayXAxis);
 
-      //if a custom date format has been provided then create a format function for the axis to use for its ticks
+      // if a custom date format has been provided then create a format 
+      // function for the axis to use for its ticks
       var yTickFormat;
       if (visSettings.seriesDateFormat) {
         yTickFormat = function(val) {
@@ -482,12 +503,25 @@ visualisations.SeriesSessionMap = function(containerNode) {
         };
       }
 
-      ySettingsOrdinal = commonFunctions.createAxis(commonConstants.dataTypeText, height , 0, yTickFormat);
+      ySettingsOrdinal = commonFunctions.createAxis(
+        commonConstants.dataTypeText, 
+        height , 
+        0, 
+        yTickFormat);
+
       yScaleOrdinal = ySettingsOrdinal.scale;
       ySettingsOrdinal.setExplicitDomain(yScaleData);
-      commonFunctions.buildAxis(yAxisContainer, ySettingsOrdinal, "left", null, null, visSettings.displayYAxis);
 
-      if (commonFunctions.resizeMargins(margins, xAxisContainer, yAxisContainer) == true) {
+      commonFunctions.buildAxis(
+        yAxisContainer, 
+        ySettingsOrdinal, 
+        "left", 
+        null, 
+        null, 
+        visSettings.displayYAxis);
+
+      if (commonFunctions.resizeMargins(margins, xAxisContainer, yAxisContainer) 
+        == true) {
         update();
       } else {
         var g = seriesContainer.selectAll("g")
@@ -506,7 +540,8 @@ visualisations.SeriesSessionMap = function(containerNode) {
         g.each(function(seriesData, i) {
           var e = d3.select(this);
 
-          //use a key function that returns the series name concatenated to the session start time 
+          // use a key function that returns the series name concatenated to 
+          // the session start time 
           var series = e.selectAll("rect")
             .data(seriesData.values, function(d) { 
               return d.key + "~~~" + d[0]; 
@@ -552,7 +587,9 @@ visualisations.SeriesSessionMap = function(containerNode) {
 
             graphPoint.transition()
               .duration(commonConstants.transitionDuration)
-              .attr("class", commonFunctions.makeColouredElementClassStringFunc(legendKeyFunc))
+              .attr(
+                "class", 
+                commonFunctions.makeColouredElementClassStringFunc(legendKeyFunc))
               .attr("opacity", "1")
               .attr("x", x)
               .attr("y", y)
@@ -572,12 +609,15 @@ visualisations.SeriesSessionMap = function(containerNode) {
             e, 
             "mouseover",
             cssSelector, 
-            inverseHighlight.makeInverseHighlightMouseOverHandler(seriesData.key, visData.types, seriesContainer,cssSelector));
+            inverseHighlight.makeInverseHighlightMouseOverHandler(
+              seriesData.key, visData.types, seriesContainer,cssSelector));
+
           commonFunctions.addDelegateEvent(
             e,
             "mouseout",
             cssSelector,
-            inverseHighlight.makeInverseHighlightMouseOutHandler(seriesContainer,cssSelector));
+            inverseHighlight.makeInverseHighlightMouseOutHandler(
+              seriesContainer,cssSelector));
         });
       }
     }

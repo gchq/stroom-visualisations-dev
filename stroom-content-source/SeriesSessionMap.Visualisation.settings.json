@@ -153,11 +153,11 @@
                     "type" : "selection",
                     "label" : "Series Filter",
                     "values" : [
-                        "All",
-                        "Broken",
-                        "Unbroken"
+                        "Unfiltered",
+                        "Non-contiguous Only",
+                        "Contiguous Only"
                     ],
-                    "defaultValue" : "True"
+                    "defaultValue" : "Unfiltered"
                 },
                 {
                     "id" : "openSessionText",
