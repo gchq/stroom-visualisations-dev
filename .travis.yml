@@ -5,7 +5,6 @@ sudo: false
 script: "./stroom-content-builder/buildImportBundle.sh"
 
 deploy:
-  matrix:
   - provider: pages
     skip_cleanup: true
     github_token: "$GITHUB_TOKEN"
