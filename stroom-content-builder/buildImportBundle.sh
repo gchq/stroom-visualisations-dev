@@ -465,15 +465,13 @@ for env in "${environments[@]}"; do
     replaceParamInFile "${file}" "${uuidParamName}" "${uuid}"
   done
 
+  zipFileName="${artifactDir}/visualisations-${env}-${version}.zip" 
   echo ""
-  echo -e "${GREEN}Creating zip file${NC}"
-  #Now zip all the target output, removing the zipped content
-  pushd "${targetDir}"
-
-  #get the git commit hash for no file, thus getting the latest hash for the repo
-  zip -9 -q -r -m "${artifactDir}/visualisations-${env}-${version}.zip" ./*
-  #zip -9 -q -r $artifactDir/visualisations-$env.zip ./*
-  popd
+  echo -e "${GREEN}Creating zip file ${BLUE}${zipFileName}${NC}"
+  # Now zip all the target output
+  pushd "${targetDir}" > /dev/null
+  zip -9 -q -r -m ./* "${zipFileName}"
+  popd > /dev/null
 
 done
 
