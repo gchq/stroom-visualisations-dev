@@ -71,168 +71,200 @@ declare -a environments=("production" "staging")
 #&lt;name&gt;Bar Chart&lt;/name&gt;
 #&lt;/doc&gt;
 
-splitPath() {
-    #strip leading/trailing "/"
-    local thePath=$(echo "$1" | sed 's#^/\(.*\)/$#\1#');
-    local IFS="/"; 
+setup_echo_colours() {
 
-    expandedPath=($thePath); 
+  # shellcheck disable=SC2034
+  if [ "${MONOCHROME}" = true ]; then
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    BLUE2=''
+    NC='' # No Colour
+  else 
+    RED='\033[1;31m'
+    GREEN='\033[1;32m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[1;34m'
+    BLUE2='\033[1;34m'
+    NC='\033[0m' # No Colour
+  fi
+}
+
+test_for_bash_version_4() {
+  local -r bash_version="$(bash -c 'echo $BASH_VERSION')" 
+  local -r bash_major_version="${bash_version:0:1}"
+  if [[ "${bash_major_version}" -lt 4 ]]; then
+    echo -e "${RED}Error${NC} - Bash version 4 or higher required"
+    exit 1
+  fi
+}
+
+splitPath() {
+  #strip leading/trailing "/"
+  local thePath
+  thePath="$(echo "$1" | sed 's#^/\(.*\)/$#\1#')"
+  local IFS="/"; 
+
+  expandedPath=($thePath); 
 }
 
 getGitComitHashForFile() {
-    local filePath=$1
+  local filePath=$1
 
-    commitHash="$(git log -1 --format="%H" ${filePath})"
+  commitHash="$(git log -1 --format="%H" "${filePath}")"
 }
 
 getDateForGitCommit() {
-    local commitHash=$1
+  local commitHash=$1
 
-    commitDate="$(git show -s --format=%ci ${commitHash})"
+  commitDate="$(git show -s --format=%ci "${commitHash}")"
 }
 
 getUUID() {
-    local key=$1
-    local value=${nameToUuidMap[$key]}
-    if [[ -z "$value" ]]; then
-        echo "Error - unable to resolve a UUID for key $key"
-        exit 1
-    fi
-    #uuid="$(uuidgen)"
-    #echo "$key=$value"
-    uuid=$value
+  local key=$1
+  local value=${nameToUuidMap[$key]}
+  if [[ -z "$value" ]]; then
+    echo "${RED}Error${NC} - unable to resolve a UUID for key $key"
+    exit 1
+  fi
+  #uuid="$(uuidgen)"
+  #echo "$key=$value"
+  uuid=$value
 }
 
 getRootPath() {
-    local key=$1
-    local value=${nameToUuidMap[$key]}
-    if [[ -z "$value" ]]; then
-        echo "Error - unable to resolve a value for key $key"
-        exit 1
-    fi
-    rootPath=$value
+  local key=$1
+  local value=${nameToUuidMap[$key]}
+  if [[ -z "$value" ]]; then
+    echo "${RED}Error${NC} - unable to resolve a value for key $key"
+    exit 1
+  fi
+  rootPath=$value
 }
 
 replaceXmlTagContent() {
-    local filePath=$1
-    local tagName=$2
-    local newValue=$3
+  local filePath=$1
+  local tagName=$2
+  local newValue=$3
 
     #'&' in a sed replacement has special meaning in that it is replaced with the search
     #term so need to escape it to '\&'
-    newValue=$(echo "$newValue" | sed "s#&#\\\&#g")
+    newValue="$(echo "$newValue" | sed "s#&#\\\&#g")"
 
-    sed -i "s/\(<${tagName}>\)[^<>]*\(<\/${tagName}>\)/\1$newValue\2/" ${filePath};
-}
+    sed -i "s/\(<${tagName}>\)[^<>]*\(<\/${tagName}>\)/\1$newValue\2/" "${filePath}"
+  }
 
 replaceInFile() {
-    local filePath=$1
-    local searchValue=$2
-    local replacementValue=$3
+  local filePath=$1
+  local searchValue=$2
+  local replacementValue=$3
 
-    #echo "filePath: $filePath"
-    #echo "searchValue: $searchValue"
-    #echo "replacementValue: $replacementValue"
+  #echo "filePath: $filePath"
+  #echo "searchValue: $searchValue"
+  #echo "replacementValue: $replacementValue"
 
-    #'&' in a sed replacement has special meaning in that it is replaced with the search
-    #term so need to escape it to '\&'
-    replacementValue=$(echo "$replacementValue" | sed "s#&#\\\&#g")
+  #'&' in a sed replacement has special meaning in that it is replaced with the search
+  #term so need to escape it to '\&'
+  replacementValue=$(echo "$replacementValue" | sed "s#&#\\\&#g")
 
-    sed -i "s!${searchValue}!${replacementValue}!" ${filePath};
+  sed -i "s!${searchValue}!${replacementValue}!" "${filePath}"
 }
 
 replaceParamInFile() {
-    local filePath=$1
-    local paramName=$2
-    local replacementValue=$3
+  local filePath=$1
+  local paramName=$2
+  local replacementValue=$3
 
-    #echo "filePath: $filePath"
-    #echo "paramName: $paramName"
-    #echo "replacementValue: $replacementValue"
+  #echo "filePath: $filePath"
+  #echo "paramName: $paramName"
+  #echo "replacementValue: $replacementValue"
 
-    local searchValue="${paramSurround}${paramName}${paramSurround}"
+  local searchValue="${paramSurround}${paramName}${paramSurround}"
 
-    replaceInFile $filePath "$searchValue" "$replacementValue"
-    #sed -i "s##${replacementValue}#g" ${filePath};
+  replaceInFile "${filePath}" "${searchValue}" "${replacementValue}"
+  #sed -i "s##${replacementValue}#g" ${filePath};
 }
 
 replaceDependencyParams() {
-    local filePath=$1
-    #basically match on '@@DEPENDENCY#.......@@'
-    local searchTerm="${paramSurround}${dependencyParamName}${dependencyParamSeparator}[^@]*${paramSurround}"
+  local filePath=$1
+  #basically match on '@@DEPENDENCY#.......@@'
+  local searchTerm="${paramSurround}${dependencyParamName}${dependencyParamSeparator}[^@]*${paramSurround}"
 
-    #loop over each dependency tag in the file and replace it with a resolved dependency block
-    while read -r grepMatch; do
-        #extract the bit between the '#' and the end '@@', i.e. the script name
-        local scriptName=$(echo "$grepMatch" | grep -P -o "[^@#]*(?=@@)")
-        echo "Replacing dependency tag $grepMatch"
-        #echo "env: $env"
+  #loop over each dependency tag in the file and replace it with a resolved dependency block
+  while read -r grepMatch; do
+    #extract the bit between the '#' and the end '@@', i.e. the script name
+    local scriptName
+    scriptName="$(echo "$grepMatch" | grep -P -o "[^@#]*(?=@@)")"
+    echo -e "${GREEN}Replacing dependency tag ${BLUE}${grepMatch}${NC}"
+    #echo "env: $env"
 
-        #Assemble the key to look up the uuid e.g. 'production.Script.Common'
-        getUUID "$env.$scriptType.$scriptName"
-        #echo "uuid; $uuid"
+    #Assemble the key to look up the uuid e.g. 'production.Script.Common'
+    getUUID "$env.$scriptType.$scriptName"
+    #echo "uuid; $uuid"
 
-        #echo "dependencyBlock: $dependencyBlock"
-        local uuidParam="${paramSurround}${uuidParamName}${paramSurround}"
-        #echo "uuidParam: $uuidParam"
-        local scriptNameParam="${paramSurround}${scriptNameParamName}${paramSurround}"
-        #echo "scriptNameParam: $scriptNameParam"
+    #echo "dependencyBlock: $dependencyBlock"
+    local uuidParam="${paramSurround}${uuidParamName}${paramSurround}"
+    #echo "uuidParam: $uuidParam"
+    local scriptNameParam="${paramSurround}${scriptNameParamName}${paramSurround}"
+    #echo "scriptNameParam: $scriptNameParam"
 
-        #Replace the two params in the dependency block with the uuid and script name
-        local editedDependencyBlock=$(echo "$dependencyBlock" | \
-            sed "s/$uuidParam/$uuid/" | \
-            sed "s/$scriptNameParam/$scriptName/" \
-        )
+    #Replace the two params in the dependency block with the uuid and script name
+    local editedDependencyBlock
+    editedDependencyBlock="$(echo "$dependencyBlock" | \
+      sed "s/$uuidParam/$uuid/" | \
+      sed "s/$scriptNameParam/$scriptName/" \
+    )"
 
-        #echo "editedDependencyBlock: $editedDependencyBlock"
+    #echo "editedDependencyBlock: $editedDependencyBlock"
 
-        replaceInFile $filePath "$grepMatch" "$editedDependencyBlock"
-    done < <(grep -o "$searchTerm" ${filePath}) 
+    replaceInFile "${filePath}" "${grepMatch}" "${editedDependencyBlock}"
+  done < <(grep -o "${searchTerm}" "${filePath}") 
 
 }
 
 buildFolder() {
-    local folderName=$1
-    local parentPath=$2
-    local folderPath="${parentPath}/${folderName}"
-    local osPath="${targetDir}/${parentPath}/${folderName}"
+  local folderName=$1
+  local parentPath=$2
+  local folderPath="${parentPath}/${folderName}"
+  local osPath="${targetDir}/${parentPath}/${folderName}"
 
-    echo "Making path ${osPath}"
-    mkdir -p ${osPath}
+  echo -e "${GREEN}Making path ${BLUE}${osPath}${NC}"
+  mkdir -p "${osPath}"
 
-    local newFile="${osPath}.Folder.xml"
-    echo "Copying template file ${scriptDir}/template.Folder.xml to ${newFile}"
-    cp ${scriptDir}/template.Folder.xml ${newFile}
+  local newFile="${osPath}.Folder.xml"
+  echo -e "${GREEN}Copying template file ${BLUE}${scriptDir}/template.Folder.xml${GREEN} to ${BLUE}${newFile}${NC}"
+  cp "${scriptDir}/template.Folder.xml" "${newFile}"
 
-    replaceXmlTagContent ${newFile} "name" ${folderName}
+  replaceXmlTagContent "${newFile}" "name" "${folderName}"
 
-    getUUID "$env.$folderType.$folderPath/"
-    replaceParamInFile ${newFile} ${uuidParamName} ${uuid}
+  getUUID "$env.$folderType.$folderPath/"
+  replaceParamInFile "${newFile}" "${uuidParamName}" "${uuid}"
 
-    echo ""
+  echo ""
 }
 
 exitIfFileNotExists() {
-    local fileName=$1
+  local fileName=$1
 
-    if ! [[ -f $fileName ]]; then
-        echo "File $fileName doesn't exist";
-        exit 1;
-    fi
+  if ! [[ -f $fileName ]]; then
+    echo -e "${RED}Error${NC} - File ${BLUE}${fileName}${NC} doesn't exist";
+    exit 1;
+  fi
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~Start of script~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #if [[ $# -eq 1 ]]; then
-    #rootPath=$1
-    #if ! [[ $rootPath =~ ^/([0-9a-zA-Z_-()]+/)+$ ]]; then 
-        #echo "ERROR - Root path is invalid, it must conform to the pattern ^/([0-9a-zA-Z_-()]+/)+$";
-        #exit 1;
-    #fi
+#rootPath=$1
+#if ! [[ $rootPath =~ ^/([0-9a-zA-Z_-()]+/)+$ ]]; then 
+#echo "ERROR - Root path is invalid, it must conform to the pattern ^/([0-9a-zA-Z_-()]+/)+$";
+#exit 1;
+#fi
 #else
-    #echo "ERROR - invalid arguments."
-    #echo "  Usage: buildImportBundle stroomPathForVisualisations"
-    #echo "  E.g.: buildImportBundle /Visualisations/Version3/"
-    #exit 1;
+#echo "ERROR - invalid arguments."
+#echo "  Usage: buildImportBundle stroomPathForVisualisations"
+#echo "  E.g.: buildImportBundle /Visualisations/Version3/"
+#exit 1;
 #fi
 
 #while true; do
@@ -246,193 +278,196 @@ exitIfFileNotExists() {
 #fi
 #done
 
+setup_echo_colours
 
 
-echo "scriptDir: $scriptDir"
-echo "sourceDir: $sourceDir"
-echo "targetDir: $targetDir"
-echo "visJsFilesDir: $visJsFilesDir"
+echo -e "${YELLOW}scriptDir: ${BLUE}${scriptDir}${NC}"
+echo -e "${YELLOW}sourceDir: ${BLUE}${sourceDir}${NC}"
+echo -e "${YELLOW}targetDir: ${BLUE}${targetDir}${NC}"
+echo -e "${YELLOW}visJsFilesDir: ${BLUE}${visJsFilesDir}${NC}"
 
 echo ""
-mkdir -p $targetDir
-mkdir -p $artifactDir
+mkdir -p "${targetDir}"
+mkdir -p "${artifactDir}"
 
-echo "Clearing out dir ${artifactDir}/*"
-rm -rf ${artifactDir}/*
+echo -e "${GREEN}Clearing out dir ${BLUE}${artifactDir}/*${NC}"
+# :? makes command fail if artifactDir is not set to prevent rm from
+# wiping the filesystem
+rm -rf "${artifactDir:?}"/*
 
-for env in ${environments[@]}; do
+for env in "${environments[@]}"; do
 
+  #The file containing all the uuids for an environment
+  envFile=$scriptDir/$envFilePrefix$env
 
-    #The file containing all the uuids for an environment
-    envFile=$scriptDir/$envFilePrefix$env
+  exitIfFileNotExists "${envFile}"
 
-    exitIfFileNotExists $envFile
+  #loop through all the lines in the env specific file adding all the
+  #key value pairs into the nameToUuidMap, prefixed with the environment name
+  while read -r line || [[ -n "$line" ]]; do
+    if [[ ! -z $line ]] && [[ ${line:0:1} != "#" ]]; then
+      ##read the line into an array, splitting on '='
+      IFS='=' read -r -a arr <<< "$line"
 
-    #loop through all the lines in the env specific file adding all the
-    #key value pairs into the nameToUuidMap, prefixed with the environment name
-    while read -r line || [[ -n "$line" ]]; do
-        if [[ ! -z $line ]] && [[ ${line:0:1} != "#" ]]; then
-            ##read the line into an array, splitting on '='
-            IFS='=' read -r -a arr <<< "$line"
-
-            #Add the key/value into the associative array
-            key="$env.${arr[0]}"
-            uuid=${arr[1]}
-            nameToUuidMap[$key]=$uuid
-        fi
-    done < $envFile
+          #Add the key/value into the associative array
+          key="$env.${arr[0]}"
+          uuid=${arr[1]}
+          nameToUuidMap[$key]=$uuid
+    fi
+  done < "${envFile}"
 done
 
 #echo "Contents of map:"
 #for key in ${!nameToUuidMap[@]}; do
-    #getUUID $key
-    #echo "$key - ${nameToUuidMap[$key]} - $uuid"
+#getUUID $key
+#echo "$key - ${nameToUuidMap[$key]} - $uuid"
 #done
 
 #build an import bundle zip for each environment
-for env in ${environments[@]}; do
-    echo ""
-    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo "Processing environment: $env"
-    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    
-    echo "Clearing out dir ${targetDir}/*"
-    rm -rf ${targetDir}/*
+for env in "${environments[@]}"; do
+  echo -e ""
+  echo -e "${GREEN}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${NC}"
+  echo -e "${GREEN}Processing environment: ${BLUE}$env${NC}"
+  echo -e "${GREEN}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${NC}"
 
-    getRootPath $env.$rootPathType
-    echo "rootPath: $rootPath"
-    splitPath "$rootPath"
+  echo -e "${GREEN}Clearing out dir ${BLUE}${targetDir}/*${NC}"
+  # :? makes command fail if artifactDir is not set to prevent rm from
+  # wiping the filesystem
+  rm -rf "${targetDir:?}"/*
 
-    rootPathWithNoTrailingSlash="$(echo ${rootPath} | sed 's/\/$//')"
-    currentParentPath=""
-    #loop through each dir in the root path to create the structure
-    for pathPart in ${expandedPath[@]}; do 
-        echo "Building folder entity for $pathPart"; 
-        buildFolder ${pathPart} ${currentParentPath}
-        currentParentPath="${currentParentPath}/${pathPart}"
-    done;
+  getRootPath "${env}.${rootPathType}"
+  echo -e "${YELLOW}rootPath: ${BLUE}${rootPath}${NC}"
+  splitPath "${rootPath}"
 
-    osPath=${targetDir}/${currentParentPath}/
+  rootPathWithNoTrailingSlash="$(echo "${rootPath}" | sed 's/\/$//')"
+  currentParentPath=""
+  #loop through each dir in the root path to create the structure
+  for pathPart in "${expandedPath[@]}"; do 
+    echo -e "${GREEN}Building folder entity for ${BLUE}${pathPart}${NC}"; 
+    buildFolder "${pathPart}" "${currentParentPath}"
+    currentParentPath="${currentParentPath}/${pathPart}"
+  done;
 
-    echo "Copying the static content"
-    cp --dereference -r ${sourceDir}/* ${osPath}
+  osPath=${targetDir}/${currentParentPath}/
 
-    #loop through all the *.Script.xml files in the source and do the following:
-    #  generate a uuid for the script and store it in the map
-    #  copy the corresponding js file
-    #  do param substitution on the *.script.xml and *.Visualisation.xml files
-    for file in ${sourceDir}/*${scriptFileSuffix}; do
-        echo "Processing script file: $file"
+  echo -e "${GREEN}Copying the static content${NC}"
+  cp --dereference -r "${sourceDir}"/* "${osPath}"
 
-        baseScriptName=$(basename $file | sed "s/${scriptFileSuffix}$//")
-        echo "baseScriptName: ${baseScriptName}"
+  #loop through all the *.Script.xml files in the source and do the following:
+  #  generate a uuid for the script and store it in the map
+  #  copy the corresponding js file
+  #  do param substitution on the *.script.xml and *.Visualisation.xml files
+  for file in "${sourceDir}"/*"${scriptFileSuffix}"; do
+    echo -e "${GREEN}Processing script file: ${BLUE}${file}${NC}"
 
-        if [[ "${baseScriptName}" = "CSS" ]]; then
-            #special case for CSS as its js file has to be generated from a raw css file
-            #as Stroom cannot load a CSS directly
+    baseScriptName=$(basename "${file}" | sed "s/${scriptFileSuffix}$//")
+    echo -e "${YELLOW}baseScriptName: ${BLUE}${baseScriptName}${NC}"
 
-            #Generate the css javascript file and copy it into the target dir
-            #do it in a sub shell to avoid any name clashes
-            inputCssFile=${cssFilesDir}/vis.css
-            sourceScriptJsFile=${cssFilesDir}/visCssStr.js
-            echo "inputCssFile: $inputCssFile"
-            echo "sourceScriptJsFile: $sourceScriptJsFile"
-            #sourceScriptJsFile="${cssFilesDir}/$outputCssJsFile" 
-            . ${cssFilesDir}/makeCssStr.sh "$inputCssFile" "$sourceScriptJsFile"
-            getGitComitHashForFile $inputCssFile
+    if [[ "${baseScriptName}" = "CSS" ]]; then
+      #special case for CSS as its js file has to be generated from a raw css file
+      #as Stroom cannot load a CSS directly
+
+          #Generate the css javascript file and copy it into the target dir
+          #do it in a sub shell to avoid any name clashes
+          inputCssFile=${cssFilesDir}/vis.css
+          sourceScriptJsFile=${cssFilesDir}/visCssStr.js
+          echo -e "${YELLOW}inputCssFile: ${BLUE}${inputCssFile}${NC}"
+          echo -e "${YELLOW}sourceScriptJsFile: ${BLUE}${sourceScriptJsFile}${NC}"
+          #sourceScriptJsFile="${cssFilesDir}/$outputCssJsFile" 
+          . "${cssFilesDir}/makeCssStr.sh" "$inputCssFile" "$sourceScriptJsFile"
+          getGitComitHashForFile "${inputCssFile}"
         else
-            sourceScriptJsFile="${visJsFilesDir}/${baseScriptName}.js" 
-            getGitComitHashForFile ${sourceScriptJsFile}
-        fi
+          sourceScriptJsFile="${visJsFilesDir}/${baseScriptName}.js" 
+          getGitComitHashForFile "${sourceScriptJsFile}"
+    fi
 
-        destScriptJsFile="${osPath}/${baseScriptName}.Script.resource.js"
-        echo "Copying script .js file $sourceScriptJsFile to $destScriptJsFile"
-        cp ${sourceScriptJsFile} ${destScriptJsFile}
+    destScriptJsFile="${osPath}/${baseScriptName}.Script.resource.js"
+    echo -e "${GREEN}Copying script .js file ${BLUE}${sourceScriptJsFile}${GREEN} to ${BLUE}${destScriptJsFile}${NC}"
+    cp "${sourceScriptJsFile}" "${destScriptJsFile}"
 
-        destScriptXmlFile="${osPath}/${baseScriptName}.Script.xml"
-        replaceParamInFile ${destScriptXmlFile} ${gitCommitParamName} "${commitHash}"
-        getDateForGitCommit ${commitHash}
-        replaceParamInFile ${destScriptXmlFile} ${gitCommitTimeParamName} "${commitDate}"
-        #replace the parent path in the file with the root path, stripping any trailing /
-        replaceParamInFile ${destScriptXmlFile} "PARENT_PATH" ${rootPathWithNoTrailingSlash}
-        replaceDependencyParams ${destScriptXmlFile}
+    destScriptXmlFile="${osPath}/${baseScriptName}.Script.xml"
+    replaceParamInFile "${destScriptXmlFile}" "${gitCommitParamName}" "${commitHash}"
+    getDateForGitCommit "${commitHash}"
+    replaceParamInFile "${destScriptXmlFile}" ${gitCommitTimeParamName} "${commitDate}"
+    #replace the parent path in the file with the root path, stripping any trailing /
+    replaceParamInFile "${destScriptXmlFile}" "PARENT_PATH" "${rootPathWithNoTrailingSlash}"
+    replaceDependencyParams "${destScriptXmlFile}"
 
-        getUUID "$env.$scriptType.$baseScriptName"
-        replaceParamInFile ${destScriptXmlFile} ${uuidParamName} ${uuid}
+    getUUID "$env.$scriptType.$baseScriptName"
+    replaceParamInFile "${destScriptXmlFile}" "${uuidParamName}" "${uuid}"
 
-        if [[ -f ${sourceDir}/${baseScriptName}.Visualisation.xml ]]; then
-            #script has a visualisation so process that file
-            sourceVisJsonFile="${sourceDir}/${baseScriptName}.Visualisation.settings.json"
-            destVisJsonFile="${osPath}/${baseScriptName}.Visualisation.settings.json"
-            destVisXmlFile="${osPath}/${baseScriptName}.Visualisation.xml"
-            getGitComitHashForFile ${sourceVisJsonFile}
-            replaceParamInFile ${destVisXmlFile} ${gitCommitParamName} "${commitHash}"
-            getDateForGitCommit ${commitHash}
-            replaceParamInFile ${destVisXmlFile} ${gitCommitTimeParamName} "${commitDate}"
-            replaceDependencyParams ${destVisXmlFile}
+    if [[ -f ${sourceDir}/${baseScriptName}.Visualisation.xml ]]; then
+      #script has a visualisation so process that file
+      sourceVisJsonFile="${sourceDir}/${baseScriptName}.Visualisation.settings.json"
+      getGitComitHashForFile "${sourceVisJsonFile}"
+      destVisXmlFile="${osPath}/${baseScriptName}.Visualisation.xml"
+      replaceParamInFile "${destVisXmlFile}" "${gitCommitParamName}" "${commitHash}"
+      getDateForGitCommit "${commitHash}"
+      replaceParamInFile "${destVisXmlFile}" "${gitCommitTimeParamName}" "${commitDate}"
+      replaceDependencyParams "${destVisXmlFile}"
 
-            getUUID "$env.$visualisationType.$baseScriptName"
-            replaceParamInFile ${destVisXmlFile} ${uuidParamName} ${uuid}
-        fi
-        echo ""
-    done
-
+      getUUID "$env.$visualisationType.$baseScriptName"
+      replaceParamInFile "${destVisXmlFile}" "${uuidParamName}" "${uuid}"
+    fi
     echo ""
-    echo "Processing dependency script files"
-    echo "----------------------------------"
+  done
 
-    #Loop through all the dependency script files in the target dir to
-    #replace and PARENT_PATH params
-    for file in ${osPath}/${dependenciesSubDir}/**/*${scriptFileSuffix}; do
-        echo "Processing script file: $file"
-        baseScriptName=$(basename $file | sed "s/${scriptFileSuffix}$//")
+  echo -e ""
+  echo -e "${GREEN}Processing dependency script files${NC}"
+  echo -e "${GREEN}----------------------------------${NC}"
 
-        replaceDependencyParams ${file}
+  #Loop through all the dependency script files in the target dir to
+  #replace and PARENT_PATH params
+  for file in ${osPath}/${dependenciesSubDir}/**/*${scriptFileSuffix}; do
+    echo -e "${GREEN}Processing script file: ${BLUE}${file}${NC}"
+    baseScriptName=$(basename "${file}" | sed "s/${scriptFileSuffix}$//")
 
-        getUUID "$env.$scriptType.$baseScriptName"
-        replaceParamInFile ${file} ${uuidParamName} ${uuid}
-    done
+    replaceDependencyParams "${file}"
 
-    echo ""
-    echo "Processing dependency folder files"
-    echo "----------------------------------"
+    getUUID "$env.$scriptType.$baseScriptName"
+    replaceParamInFile "${file}" "${uuidParamName}" "${uuid}"
+  done
 
-    echo "osPath: $osPath"
+  echo -e ""
+  echo -e "${GREEN}Processing dependency folder files${NC}"
+  echo -e "${GREEN}----------------------------------${NC}"
 
-    for file in ${osPath}/**/*${folderType}.xml; do
-        echo "Processing Folder file: $file"
+  echo -e "${YELLOW}osPath: ${BLUE}${osPath}${NC}"
 
-        baseFolderName=$(basename $file | sed "s/${folderFileSuffix}$//")
-        #subtract the targetDir string from the file string to get the path as it will be in stroom
-        #see bash parameter substitution
-        #e.g. /a/b/c/d/myDir.Folder.xml becomes /c/d/myDir.Folder.xml
-        stroomPath=${file#$targetDir}
-        #remove the filename from the end by deleting up to an including the last dot, then add a slash
-        #e.g. /c/d/myDir.Folder.xml becomes /c/d/myDir/
-        stroomPath="${stroomPath%%.*}/"
-        #replace any instances of // with / in case we have doubled up on path separators at any point
-        stroomPath=${stroomPath//\/\//\/}
-        echo "Folder path in Stroom: $stroomPath"
+  for file in ${osPath}/**/*${folderType}.xml; do
+    echo -e "${GREEN}Processing Folder file: ${BLUE}${file}${NC}"
 
-        getUUID "$env.$folderType.$stroomPath"
-        replaceParamInFile ${file} ${uuidParamName} ${uuid}
-    done
+    baseFolderName=$(basename "${file}" | sed "s/${folderFileSuffix}$//")
+    #subtract the targetDir string from the file string to get the path as it will be in stroom
+    #see bash parameter substitution
+    #e.g. /a/b/c/d/myDir.Folder.xml becomes /c/d/myDir.Folder.xml
+    stroomPath=${file#$targetDir}
+    #remove the filename from the end by deleting up to an including the last dot, then add a slash
+    #e.g. /c/d/myDir.Folder.xml becomes /c/d/myDir/
+    stroomPath="${stroomPath%%.*}/"
+    #replace any instances of // with / in case we have doubled up on path separators at any point
+    stroomPath=${stroomPath//\/\//\/}
+    echo -e "${GREEN}Folder path in Stroom: ${BLUE}$stroomPath${NC}"
 
-    echo ""
-    echo "Creating zip file"
-    #Now zip all the target output, removing the zipped content
-    pushd ${targetDir}
+    getUUID "$env.$folderType.$stroomPath"
+    replaceParamInFile "${file}" "${uuidParamName}" "${uuid}"
+  done
 
-    #get the git commit hash for no file, thus getting the latest hash for the repo
-    getGitComitHashForFile
-    zip -9 -q -r -m $artifactDir/visualisations-$env-$commitHash.zip ./*
-    #zip -9 -q -r $artifactDir/visualisations-$env.zip ./*
-    popd
+  echo ""
+  echo -e "${GREEN}Creating zip file${NC}"
+  #Now zip all the target output, removing the zipped content
+  pushd "${targetDir}"
+
+  #get the git commit hash for no file, thus getting the latest hash for the repo
+  getGitComitHashForFile
+  zip -9 -q -r -m "${artifactDir}/visualisations-${env}-${commitHash}.zip" ./*
+  #zip -9 -q -r $artifactDir/visualisations-$env.zip ./*
+  popd
 
 done
 
-echo ""
-echo "Done!"
+echo -e ""
+echo -e "${GREEN}Done!"
 
 #TODO The uuid lookup map could be extended such that we include a version in the dependency.  Currently
 #all the visualisations code is released as a complete set, so if say we uplift D3 to a new version we have
