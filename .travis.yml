@@ -1,4 +1,4 @@
-language: ruby
+language: minimal
 dist: trusty
 sudo: false
 
