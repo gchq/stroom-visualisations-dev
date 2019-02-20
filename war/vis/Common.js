@@ -1176,9 +1176,6 @@ if(!visualisations) {
         if(!obj.hasOwnProperty("visibleUnique")) {
           obj.visibleUnique = [];
         }
-        // TODO the problem with using maps is that we lose the original order 
-        // of the data. If no order is specified in the data structure then sort 
-        // a-z by default
         var uniqueValues = new Set();
         var uniqueVisibleValues = new Set();
         if(obj.values && obj.values.length > 0) {
