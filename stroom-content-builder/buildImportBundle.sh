@@ -18,6 +18,7 @@
 # limitations under the License.
 #**********************************************************************
 
+set -e 
 #Enable the use of ** in globs
 shopt -s globstar
 
@@ -42,8 +43,10 @@ dependencyParamSeparator="#"
 dependencyParamName="DEPENDENCY"
 uuidParamName="UUID"
 scriptNameParamName="SCRIPT_NAME"
+versionParamName="VERSION"
 gitCommitParamName="GIT_COMMIT"
 gitCommitTimeParamName="GIT_COMMIT_TIME"
+defaultVersion="SNAPSHOT"
 
 dependencyBlock="&lt;doc&gt;\n" 
 dependencyBlock+="&lt;type&gt;Script&lt;/type&gt;\n" 
@@ -285,6 +288,10 @@ test_for_bash_version_4
 
 setup_echo_colours
 
+# If an arg is supplied use that as the version else use the default
+version=${1:-${defaultVersion}}
+
+echo -e "${YELLOW}version: ${BLUE}${version}${NC}"
 echo -e "${YELLOW}scriptDir: ${BLUE}${scriptDir}${NC}"
 echo -e "${YELLOW}sourceDir: ${BLUE}${sourceDir}${NC}"
 echo -e "${YELLOW}targetDir: ${BLUE}${targetDir}${NC}"
@@ -390,6 +397,7 @@ for env in "${environments[@]}"; do
     cp "${sourceScriptJsFile}" "${destScriptJsFile}"
 
     destScriptXmlFile="${osPath}/${baseScriptName}.Script.xml"
+    replaceParamInFile "${destScriptXmlFile}" "${versionParamName}" "${version}"
     replaceParamInFile "${destScriptXmlFile}" "${gitCommitParamName}" "${commitHash}"
     getDateForGitCommit "${commitHash}"
     replaceParamInFile "${destScriptXmlFile}" ${gitCommitTimeParamName} "${commitDate}"
@@ -405,6 +413,7 @@ for env in "${environments[@]}"; do
       sourceVisJsonFile="${sourceDir}/${baseScriptName}.Visualisation.settings.json"
       getGitComitHashForFile "${sourceVisJsonFile}"
       destVisXmlFile="${osPath}/${baseScriptName}.Visualisation.xml"
+      replaceParamInFile "${destVisXmlFile}" "${versionParamName}" "${version}"
       replaceParamInFile "${destVisXmlFile}" "${gitCommitParamName}" "${commitHash}"
       getDateForGitCommit "${commitHash}"
       replaceParamInFile "${destVisXmlFile}" "${gitCommitTimeParamName}" "${commitDate}"
@@ -463,7 +472,7 @@ for env in "${environments[@]}"; do
 
   #get the git commit hash for no file, thus getting the latest hash for the repo
   getGitComitHashForFile
-  zip -9 -q -r -m "${artifactDir}/visualisations-${env}-${commitHash}.zip" ./*
+  zip -9 -q -r -m "${artifactDir}/visualisations-${env}-${version}.zip" ./*
   #zip -9 -q -r $artifactDir/visualisations-$env.zip ./*
   popd
 

@@ -8,7 +8,8 @@
         @@DEPENDENCY#Chroma@@
 	&lt;/docs&gt;
     </dependenciesXML>
-    <description>Git commit: @@GIT_COMMIT@@
+    <description>Version: @@VERSION@@
+Git commit: @@GIT_COMMIT@@
 Git commit time: @@GIT_COMMIT_TIME@@</description>
     <name>HourDayMultiHeatMap</name>
     <uuid>@@UUID@@</uuid>
