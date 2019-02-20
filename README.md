@@ -66,7 +66,7 @@ Stroom Visualisations Development is designed to generate random test data appli
 
 ## Stroom Content Packs
 
-Stroom has an important feature allowing a set of Stroom entities (such as Visualisation and Script) to be imported as a content pack bundle. Stroom Visualisations Development includes a script for generating a visualisations content pack for Stroom. See [Building a Stroom Import Bundle](buildingImportBundle.md).
+Stroom has an import feature allowing a set of Stroom entities (such as Visualisation and Script) to be imported as a content pack bundle. Stroom Visualisations Development includes a script for generating a visualisations content pack for Stroom. See [Building a Stroom Import Bundle](buildingImportBundle.md).
 
 ## Running Stroom Visualisations Development
 
