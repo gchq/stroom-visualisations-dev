@@ -471,7 +471,6 @@ for env in "${environments[@]}"; do
   pushd "${targetDir}"
 
   #get the git commit hash for no file, thus getting the latest hash for the repo
-  getGitComitHashForFile
   zip -9 -q -r -m "${artifactDir}/visualisations-${env}-${version}.zip" ./*
   #zip -9 -q -r $artifactDir/visualisations-$env.zip ./*
   popd
