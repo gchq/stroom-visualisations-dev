@@ -1157,13 +1157,13 @@ if(!visualisations) {
     return unNestedData;
   }
 
-  // pass in a data tree and an array of field positions types and it  will add 
+  // Pass in a data tree and an array of field positions types and it  will add 
   // a 'unique' property at each nest level containing a sparse array (one value 
   // per ordinal field) with each value being an array of the unique values for 
-  // that field at that level.  similar to the way min/max/sum work in the data 
+  // that field at that level.  Similar to the way min/max/sum work in the data 
   // tree.  The optional filter func arg allows you to pass a function that will 
   // filter on the type and/or field position to determine which fields to process.
-  commonfunctions.computeuniquevalues = function(data, typeandfieldindexfilterfunc) {
+  commonFunctions.computeUniqueValues = function(data, typeAndFieldIndexFilterFunc) {
 
     var makeAddUniqueValueFunc = function(fieldIndex) {
       var fieldIndex = fieldIndex;
