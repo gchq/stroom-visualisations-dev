@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Issue **#31** - Leave keys and values in original order if no sort has been specified.
 
+* Issue **#33** - Fix problem of LineChart and StackedArea ignoring interpolationMode setting.
+
+* Issue **#32** - Add support for no line interpolation to LineChart and StackedArea.
+
 ## [v3.1.0] - 2019-01-03
 
 * Issue **#29** - Add series filtering to Series Session Map.

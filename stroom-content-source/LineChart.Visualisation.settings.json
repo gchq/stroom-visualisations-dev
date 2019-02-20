@@ -33,6 +33,7 @@
                     "type": "selection",
                     "label": "Interpolation Mode",
                     "values": [
+                        "",
                         "linear",
                         "linear-closed",
                         "step",
