@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Issue **#31** - Leave keys and values in original order if no sort has been specified.
+
 ## [v3.1.0] - 2019-01-03
 
 * Issue **#29** - Add series filtering to Series Session Map.
