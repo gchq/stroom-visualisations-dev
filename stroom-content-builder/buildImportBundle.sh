@@ -34,7 +34,6 @@ visualisationType="Visualisation"
 folderType="Folder"
 rootPathType="RootPath"
 scriptFileSuffix=".$scriptType.xml"
-folderFileSuffix=".$folderType.xml"
 envFilePrefix="uuids."
 
 #Replacement param stuff
@@ -103,6 +102,7 @@ test_for_bash_version_4() {
 splitPath() {
   #strip leading/trailing "/"
   local thePath
+  # shellcheck disable=SC2001
   thePath="$(echo "$1" | sed 's#^/\(.*\)/$#\1#')"
   local IFS="/"; 
 
@@ -150,6 +150,7 @@ replaceXmlTagContent() {
 
     #'&' in a sed replacement has special meaning in that it is replaced with the search
     #term so need to escape it to '\&'
+    # shellcheck disable=SC2001
     newValue="$(echo "$newValue" | sed "s#&#\\\&#g")"
 
     sed -i "s/\(<${tagName}>\)[^<>]*\(<\/${tagName}>\)/\1$newValue\2/" "${filePath}"
@@ -166,6 +167,7 @@ replaceInFile() {
 
   #'&' in a sed replacement has special meaning in that it is replaced with the search
   #term so need to escape it to '\&'
+  # shellcheck disable=SC2001
   replacementValue=$(echo "$replacementValue" | sed "s#&#\\\&#g")
 
   sed -i "s!${searchValue}!${replacementValue}!" "${filePath}"
@@ -278,8 +280,10 @@ exitIfFileNotExists() {
 #fi
 #done
 
-setup_echo_colours
+# Script uses some bash4 features so check it is present
+test_for_bash_version_4
 
+setup_echo_colours
 
 echo -e "${YELLOW}scriptDir: ${BLUE}${scriptDir}${NC}"
 echo -e "${YELLOW}sourceDir: ${BLUE}${sourceDir}${NC}"
@@ -437,7 +441,6 @@ for env in "${environments[@]}"; do
   for file in ${osPath}/**/*${folderType}.xml; do
     echo -e "${GREEN}Processing Folder file: ${BLUE}${file}${NC}"
 
-    baseFolderName=$(basename "${file}" | sed "s/${folderFileSuffix}$//")
     #subtract the targetDir string from the file string to get the path as it will be in stroom
     #see bash parameter substitution
     #e.g. /a/b/c/d/myDir.Folder.xml becomes /c/d/myDir.Folder.xml
