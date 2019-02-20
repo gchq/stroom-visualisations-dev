@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [v3.2.2] - 2019-02-20
+
+* Fix incorrect sort direction logic in computeUniqueValues.
+
+
 ## [v3.2.1] - 2019-02-20
 
 * Fix accidental lowercasing of whole line in common.js.
@@ -99,7 +104,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.2...HEAD
+[v3.2.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.1...v3.2.2
 [v3.2.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.0...v3.2.1
 [v3.2.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.1.0...v3.2.0
 [v3.1.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.8...v3.1.0
