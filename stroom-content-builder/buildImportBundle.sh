@@ -470,7 +470,7 @@ for env in "${environments[@]}"; do
   echo -e "${GREEN}Creating zip file ${BLUE}${zipFileName}${NC}"
   # Now zip all the target output
   pushd "${targetDir}" > /dev/null
-  zip -9 -q -r -m ./* "${zipFileName}"
+  zip -9  -q -r -m  "${zipFileName}" ./*
   popd > /dev/null
 
 done
