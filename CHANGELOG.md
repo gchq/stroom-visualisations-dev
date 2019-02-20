@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.2.0] - 2019-02-20
+
 * Add release version to Script and Visualisation entity description.
 
 * Issue **#31** - Leave keys and values in original order if no sort has been specified.
@@ -14,9 +17,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Issue **#32** - Add support for no line interpolation to LineChart and StackedArea.
 
+
 ## [v3.1.0] - 2019-01-03
 
 * Issue **#29** - Add series filtering to Series Session Map.
+
 
 ## [v3.0.8] - 2018-12-19
 
@@ -24,11 +29,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Refactor hard coded data types to be common constants.
 
+
 ## [v3.0.7] - 2018-12-18
 
 * Issue **#26** - Added various maxXXX and sortXXX properties to the settings of multiple visualisations.
 
 * Fixed typo in common.js.
+
 
 ## [v3.0.6] - 2018-11-28
 
@@ -37,6 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Fixed issue **#24** - Increased cell padding to 14px.
 
 * Added protection from height and width less than or equal to 0.
+
 
 ## [v3.0.5] - 2018-05-03
 
@@ -86,7 +94,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.0...HEAD
+[v3.2.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.1.0...v3.2.0
 [v3.1.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.8...v3.1.0
 [v3.0.8]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.7...v3.0.8
 [v3.0.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.6...v3.0.7
