@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Add release version to Script and Visualisation entity description.
+
 * Issue **#31** - Leave keys and values in original order if no sort has been specified.
 
 * Issue **#33** - Fix problem of LineChart and StackedArea ignoring interpolationMode setting.
