@@ -1216,10 +1216,11 @@ if(!visualisations) {
         // If there isn't then the order will be insertion order into the
         // sets.
         if (obj.hasOwnProperty('sortDirections')) {
-          if (obj.sortDirections[fieldIndex] === commonConstants.sortDescending) {
+          var sortDirection = obj.sortDirections[fieldIndex];
+          if (sortDirection === commonConstants.sortDescending) {
             obj.unique[fieldIndex].reverse();
             obj.visibleUnique[fieldIndex].reverse();
-          } else {
+          } else if (sortDirection === commonConstants.sortAscending){
             obj.unique[fieldIndex].sort();
             obj.visibleUnique[fieldIndex].sort();
           }
@@ -1278,10 +1279,11 @@ if(!visualisations) {
       // If there isn't then the order will be insertion order into the
       // sets.
       if (data.hasOwnProperty('keySortDirection')) {
-        if (data.keySortDirection === commonConstants.sortDescending) {
+        var sortDirection = data.keySortDirection;
+        if (sortDirection === commonConstants.sortDescending) {
           data.uniqueKeys.reverse();
           data.visibleUniqueKeys.reverse();
-        } else {
+        } else if (sortDirection === commonConstants.sortDescending) {
           data.uniqueKeys.sort();
           data.visibleUniqueKeys.sort();
         }
