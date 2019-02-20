@@ -1157,17 +1157,18 @@ if(!visualisations) {
     return unNestedData;
   }
 
-  // Pass in a data tree and an array of field positions types and it  will add a 'unique' property at each nest level
-  // containing a sparse array (one value per ordinal field) with each value being an array
-  // of the unique values for that field at that level.  Similar to the way min/max/sum work
-  // in the data tree.  The optional filter func arg allows you to pass a function that will filter on the type and/or field position
-  // to determine which fields to process.
-  commonFunctions.computeUniqueValues = function(data, typeAndFieldIndexFilterFunc) {
+  // pass in a data tree and an array of field positions types and it  will add 
+  // a 'unique' property at each nest level containing a sparse array (one value 
+  // per ordinal field) with each value being an array of the unique values for 
+  // that field at that level.  similar to the way min/max/sum work in the data 
+  // tree.  The optional filter func arg allows you to pass a function that will 
+  // filter on the type and/or field position to determine which fields to process.
+  commonfunctions.computeuniquevalues = function(data, typeandfieldindexfilterfunc) {
 
     var makeAddUniqueValueFunc = function(fieldIndex) {
       var fieldIndex = fieldIndex;
-      // recursive function to walk the data tree computing the unique values of the given
-      // fieldIndex at each level
+      // recursive function to walk the data tree computing the unique values of 
+      // the given fieldIndex at each level
       var addUniqueValues = function(obj) {
         if(!obj.hasOwnProperty("unique")) {
           obj.unique = [];
@@ -1175,24 +1176,23 @@ if(!visualisations) {
         if(!obj.hasOwnProperty("visibleUnique")) {
           obj.visibleUnique = [];
         }
-        // TODO the problem with using maps is that we lose the original order of the data.
-        // If no order is specified in the data structure then sort a-z by default
-        var valuesMap = {};
-        var visibleValuesMap = {};
+        var uniqueValues = new Set();
+        var uniqueVisibleValues = new Set();
         if(obj.values && obj.values.length > 0) {
           if(obj.values[0].hasOwnProperty('min')) {
             // This obj has another level of nesting under it so process the level below
             obj.values.forEach(makeAddUniqueValueFunc(fieldIndex));
 
-            // now compute the unique values for this level based on the unique values of the level below.
+            // now compute the unique values for this level based on the unique 
+            // values of the level below.
             obj.values.forEach(function(childObj) {
               childObj.unique[fieldIndex].forEach(function(uniqueVal) {
-                valuesMap[uniqueVal] = 1;
+                uniqueValues.add(uniqueVal);
               })
             });
             obj.visibleValues().forEach(function(childObj) {
               childObj.visibleUnique[fieldIndex].forEach(function(uniqueVal) {
-                visibleValuesMap[uniqueVal] = 1;
+                uniqueVisibleValues.add(uniqueVal);
               })
             });
 
@@ -1201,24 +1201,28 @@ if(!visualisations) {
             // Each item in the 'values' array is an array of point values
             // Therefore need to compute the unique values for this level
             obj.values.forEach(function(valueData) {
-              valuesMap[valueData[fieldIndex]] = 1;
+              uniqueValues.add(valueData[fieldIndex]);
             });
             obj.visibleValues().forEach(function(valueData) {
-              visibleValuesMap[valueData[fieldIndex]] = 1;
+              uniqueVisibleValues.add(valueData[fieldIndex]);
             });
           }
         }
-        // Need to sort the unique values else they end up coming out in an inconsistent order
-        obj.unique[fieldIndex] = d3.keys(valuesMap);
-        obj.unique[fieldIndex].sort();
+        // Now augment our data object with the unique value arrays
+        obj.unique[fieldIndex] = Array.from(uniqueValues);
+        obj.visibleUnique[fieldIndex] = Array.from(uniqueVisibleValues);
 
-        obj.visibleUnique[fieldIndex] = d3.keys(visibleValuesMap);
-        obj.visibleUnique[fieldIndex].sort();
-
-        // Respect the sort order from the viz settings if these is one
-        if (obj.hasOwnProperty('sortDirections') && obj.sortDirections[fieldIndex] === commonConstants.sortDescending) {
-          obj.unique[fieldIndex].reverse();
-          obj.visibleUnique[fieldIndex].reverse();
+        // Respect the sort order from the viz settings if there is one
+        // If there isn't then the order will be insertion order into the
+        // sets.
+        if (obj.hasOwnProperty('sortDirections')) {
+          if (obj.sortDirections[fieldIndex] === commonConstants.sortDescending) {
+            obj.unique[fieldIndex].reverse();
+            obj.visibleUnique[fieldIndex].reverse();
+          } else {
+            obj.unique[fieldIndex].sort();
+            obj.visibleUnique[fieldIndex].sort();
+          }
         }
       };
       return addUniqueValues;
@@ -1227,7 +1231,9 @@ if(!visualisations) {
     // use the types array to loop round so we process each field,
     // optionally filtering whether we process the field or not
     data.types.forEach(function(type, fieldIndex) {
-      if(typeof(typeAndFieldIndexFilterFunc) === "undefined" || typeAndFieldIndexFilterFunc(type, fieldIndex)) {
+      if(typeof(typeAndFieldIndexFilterFunc) === "undefined" 
+        || typeAndFieldIndexFilterFunc(type, fieldIndex)) {
+
         makeAddUniqueValueFunc(fieldIndex)(data);
       }
     });
@@ -1241,12 +1247,12 @@ if(!visualisations) {
       data.values[0].values && data.values[0].values.length > 0 &&
       data.values[0].values[0] && data.values[0].values[0].key) {
 
-      var keyMap = {};
-      var visibleKeyMap = {};
+      var uniqueKeys = new Set();
+      var uniqueVisiblekeys = new Set();
       data.values.forEach(function(childObj) {
         childObj.values.forEach(function(grandChildObj) {
 
-          keyMap[grandChildObj.key] = 1;
+          uniqueKeys.add(grandChildObj.key);
 
           // now do the same for the next level down from our original starting point
           // i.e. we are always finding keys from 2 levels below where we are
@@ -1256,7 +1262,7 @@ if(!visualisations) {
       data.visibleValues().forEach(function(childObj) {
         childObj.visibleValues().forEach(function(grandChildObj) {
 
-          visibleKeyMap[grandChildObj.key] = 1;
+          uniqueVisiblekeys.add(grandChildObj.key);
 
           // now do the same for the next level down from our original starting point
           // i.e. we are always finding keys from 2 levels below where we are
@@ -1264,19 +1270,21 @@ if(!visualisations) {
         });
       });
 
-      // Need to sort the unique values else they end up coming out in an inconsistent order
-      // TODO if the dashbaord settings are for unsorted series then we should probably put the
-      // keys in the order in which they came, however we are then trying to merge the keys from a
-      // number of grid cells each of which might be in a different order, thus it may not be possible
-      data.uniqueKeys = d3.keys(keyMap);
-      data.uniqueKeys.sort();
-      data.visibleUniqueKeys = d3.keys(visibleKeyMap);
-      data.visibleUniqueKeys.sort();
+      // Now augment our data object with the unique key arrays
+      data.uniqueKeys = Array.from(uniqueKeys);
+      data.visibleUniqueKeys = Array.from(uniqueVisiblekeys);
 
       // Respect the sort order from the viz settings if there is one
-      if (data.hasOwnProperty('keySortDirection') && data.keySortDirection === commonConstants.sortDescending){
-        data.uniqueKeys.reverse();
-        data.visibleUniqueKeys.reverse();
+      // If there isn't then the order will be insertion order into the
+      // sets.
+      if (data.hasOwnProperty('keySortDirection')) {
+        if (data.keySortDirection === commonConstants.sortDescending) {
+          data.uniqueKeys.reverse();
+          data.visibleUniqueKeys.reverse();
+        } else {
+          data.uniqueKeys.sort();
+          data.visibleUniqueKeys.sort();
+        }
       }
     }
   };
