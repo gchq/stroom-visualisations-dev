@@ -2,7 +2,7 @@ language: minimal
 dist: xenial
 sudo: false
 
-script: "./stroom-content-builder/buildImportBundle.sh"
+script: ./travis.script.sh
 
 deploy:
   - provider: pages
