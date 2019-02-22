@@ -18,7 +18,8 @@ deploy:
       # travis encrypt "github oath token goes in these quotes" --add deploy.api-key -r gchq/stroom-visualisations-dev
       secure: Tn7PV41PmSY317LmdJHChC8D+vkpKDn+GEkJj2fsu40vRGD7al2pBjUGlMaEbCy2v0pPM5AyeYX0hmqSgW5lzkBH20cDQeRP1fNU9MsCIJM7tj5Fa3Kera8yFM0Rscp5UZbHpTTugzB8Teh119a7rN8LcuQMNNzU7NGskQOXqWU6wpGMZOfebV/rt7CF/t0jENGacK4/unLebMy1VozcQF43XT8swZWqT0eMmoEK92t+wyR4dJemxZ1rHCsghNWTmWfzl+W3AvigjbQ25UBqTVO/5wstwFx+JE9PoUb6SFaXXslJASe06OtrXn0malNt37suek8ndkAx4EaIAJRyMWJH2IGlKAdbbE9yJOuDv+8SFkcy2vmGudhguzU9c1aADojr03gm4rTH3W4X2CgPyT37bt6/Ra7eNevQIfK1NJ66fIbkiku9ZFeMgg0Wi2XVK5Nmy8KFdZ2QDSNGebXtjsPe4KouM0FSV6mKN1DZtXTlRFCYjmaiCFyKXKT1sdtCTtp6yuYmZV3rMjh67K33WaSJxkGXwPAtbxI4Ozw388Ptt7WSWHkHErsczW1IyXVi9qk0s9zoCu3Hoz5xS+QrU2CF5Xtx4n/ffErFX7JKQDB5fUIJ3ntuGvi6M3037MR5p2XOL5yrsmAdmrpmAKG3hODS9hZ+IPeroAU46CuhsIo=
     file_glob: true
-    file: "./stroom-content-artifacts/*.zip"
+    # Pick up all .zip and .zip.sha256 files
+    file: "./stroom-content-artifacts/*.zip*"
     skip_cleanup: true
     on:
       tags: true
