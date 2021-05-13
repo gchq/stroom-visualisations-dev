@@ -20,20 +20,22 @@
 	<link rel="stylesheet" type="text/css" href="./css/roboto.css">
 	<link rel="stylesheet" type="text/css" href="./css/font-awesome.css">
 
-        <!--3rd party dependencies -->
-        <script src="./d3/d3.js" charset="utf-8"></script>
+	<!--3rd party dependencies -->
+	<script src="./vis.js" charset="utf-8"></script>
+	<script src="./d3/d3.js" charset="utf-8"></script>
 	<script src="./chroma/chroma.js" charset="utf-8"></script>
 	<script src="./d3-grid/d3-grid.js" charset="utf-8"></script>
 	<script src="./d3-tip/index.js" charset="utf-8"></script>
 	<script src="./jshashes/hashes.js" charset="utf-8"></script>
+	<script src="./underscore/underscore.js" charset="utf-8"></script>
 
-        <!--Common code -->
-        <script src="./vis/Common.js" charset="utf-8"></script>
-        <script src="./vis/GenericGrid.js" charset="utf-8"></script>
-        <script src="./vis/TestData.js" charset="utf-8"></script>
-        <script src="./vis/TestVis.js" charset="utf-8"></script>
+	<!--Common code -->
+	<script src="./vis/Common.js" charset="utf-8"></script>
+	<script src="./vis/GenericGrid.js" charset="utf-8"></script>
+	<script src="./vis/TestData.js" charset="utf-8"></script>
+	<script src="./vis/TestVis.js" charset="utf-8"></script>
 
-        <!--Individual visualisations -->
+	<!--Individual visualisations -->
 	<script src="./vis/Stroom.js" charset="utf-8"></script>
 	<script src="./vis/BarChart.js" charset="utf-8"></script>
 	<script src="./vis/Bubble.js" charset="utf-8"></script>
@@ -57,6 +59,8 @@
 	<script src="./vis/TrafficLights.js" charset="utf-8"></script>
 	<script src="./vis/Tree.js" charset="utf-8"></script>
 	<script src="./vis/TreeMap.js" charset="utf-8"></script>
+	<script src="./vis/TimeSeries.js" charset="utf-8"></script>
+	<script src="./vis/TimeSeriesCSS.js" charset="utf-8"></script>
 	<script src="./vis/ZoomableTreeMap.js" charset="utf-8"></script>
 </head>
 <body onload="changeVis();" onresize="autoResize()">
@@ -80,7 +84,7 @@
 			<option value="HourDaySessionMap">Hour Day Session Map</option>
 			<option value="LineChart">Line Chart</option>
 			<option value="LineChart-Stateful">Linechart (Stateful)</option>
-                        <option value="RAGStatus-GreenRed" >RAG Status (Green-Red)</option>
+			<option value="RAGStatus-GreenRed" >RAG Status (Green-Red)</option>
 			<option value="RAGStatus-RedGreen" >RAG Status (Red-Green)</option>
 			<option value="RadialTree" >Radial Tree [BROKEN]</option>
 			<option value="Scatter">Scatter</option>
@@ -91,10 +95,11 @@
 			<option value="Stroom">Stroom</option>
 			<option value="TextValue" >Text Value</option>
 			<option value="TrafficLights-GreenRed" >Traffic Lights (Green-Red)</option>
-                        <option value="TrafficLights-RedGreen" >Traffic Lights (Red-Green)</option>
+			<option value="TrafficLights-RedGreen" >Traffic Lights (Red-Green)</option>
 			<option value="Tree" >Tree [BROKEN]</option>
-                        <option value="TreeMap">Tree Map</option>
-                        <option value="ZoomableTreeMap" >Zoomable Tree Map [BROKEN]</option>
+			<option value="TreeMap">Tree Map</option>
+			<option value="TimeSeries">Time Series</option>
+			<option value="ZoomableTreeMap" >Zoomable Tree Map [BROKEN]</option>
 		</select>
 		<button onclick="resize()">Resize</button>
 		<input id="autoResize" type="checkbox" checked="checked">Auto resize</input>

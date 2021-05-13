@@ -73,6 +73,9 @@ visualisations.Doughnut= function(containerNode) {
     var filteredPieData = [];
     var showLabels = false;
 
+    // Selection support
+    var selection = [];
+
     //one off initialisation of all the local variables, including
     //appending various static dom elements
     var initialise = function() {
@@ -87,8 +90,16 @@ visualisations.Doughnut= function(containerNode) {
 
         if (typeof(tip) == "undefined") {
             inverseHighlight = commonFunctions.inverseHighlight();
+
+            inverseHighlight.toSelectionItem = function(d) {
+              return {
+                key: d.name,
+                name: d.name,
+              };
+            }
+
             tip = inverseHighlight.tip()
-                .html(function(tipData) { 
+                .html(function(tipData) {
                     var html = inverseHighlight.htmlBuilder()
                         .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
                         .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
@@ -172,7 +183,7 @@ visualisations.Doughnut= function(containerNode) {
             if (context) {
                 if (context.color) {
                     colour = context.color;
-                } 
+                }
             }
 
             //#########################################################
@@ -207,7 +218,7 @@ visualisations.Doughnut= function(containerNode) {
                     delete context.color;
                 }
 
-                //Get grid to construct the grid cells and for each one call back into a 
+                //Get grid to construct the grid cells and for each one call back into a
                 //new instance of this to build the visualisation in the cell
                 //The last array arg allows you to synchronise the scales of fields
                 grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
@@ -277,8 +288,8 @@ visualisations.Doughnut= function(containerNode) {
             total += element.value;
             var preFilterPercentage = element.value / preFilterTotal * 100;
             //if (preFilterPercentage <= pieFilterPercentThreshold) {
-                //console.log("preFilterTotal: " + preFilterTotal + 
-                    //" element.value: " + element.value + 
+                //console.log("preFilterTotal: " + preFilterTotal +
+                    //" element.value: " + element.value +
                     //" preFilterPercentage: " + preFilterPercentage);
             //}
             //return (element.value > -10000);
@@ -326,8 +337,8 @@ visualisations.Doughnut= function(containerNode) {
 
             //new or updated data
             paths
-                .attr("class", commonFunctions.makeColouredElementClassStringFunc(function(d) { 
-                    return d.name; 
+                .attr("class", commonFunctions.makeColouredElementClassStringFunc(function(d) {
+                    return d.name;
                 }))
                 .attr("fill", fillFunc)
                 .transition()
@@ -601,6 +612,30 @@ visualisations.Doughnut= function(containerNode) {
         return null;
     };
 
+    var select = function(d) {
+        // selection = [selection..., d];
+
+        const index = selection.indexOf(d);
+        if (index > -1) {
+            selection.splice(index, 1);
+        } else {
+            selection.push(d);
+        }
+
+        // console.log(d);
+        // console.log(d.name);
+        // console.log('new test');
+        //stroomLink('title=title&params=userId%3D' + d.name, 'DASHBOARD')
+
+        // stroom.dashboard(null, 'userId=' + d.name)
+
+        // var obj = {userId: d.name};
+        // stroom.select(obj);
+        // stroom.select(d);
+
+        stroom.select(selection);
+    };
+
     var update = function(duration) {
         if (pieData && pieData.length > 0) {
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element);
@@ -655,6 +690,7 @@ visualisations.Doughnut= function(containerNode) {
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(null, pieData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            commonFunctions.addDelegateEvent(svg, "click", "path", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "path"));
         }
     };
 

@@ -11,6 +11,7 @@ Folder./VisualisationsStagingArea/Dependencies/D3/=7bb52581-c452-4162-b5ca-49be2
 Folder./VisualisationsStagingArea/Dependencies/D3-Grid/=d17738ff-e6a4-4755-b08f-32185a784771
 Folder./VisualisationsStagingArea/Dependencies/D3-Tip/=7ca5615d-f6bd-42d4-8286-497a2d907d73
 Folder./VisualisationsStagingArea/Dependencies/JSHashes/=a98d122f-ea31-4599-9174-2a62974c41d6
+Folder./Visualisations/Version3/Dependencies/Underscore/=e775ebd9-46ad-4b38-b525-ffab63b98e53
 
 #UUIDs for each script entity
 Script.Common=07c79b56-d73e-434a-87c1-93a0f19b9463
@@ -36,6 +37,8 @@ Script.Scatter=897cbda0-79f1-4d50-aab1-62b9b0ba3bc8
 Script.SeriesSessionMap=8e716b8f-8b7a-4088-b8b3-e533727e3e91
 Script.StackedArea=bc3a5eee-4684-4021-9a66-6427b81ed512
 Script.TextValue=40b089a8-c1c7-4a2d-b190-36576fd7fce0
+Script.TimeSeries=aa7029ff-b6f5-434d-81a9-9c53fe4116aa
+Script.TimeSeriesCSS=70a4d9ba-eb1f-4b02-9304-50d5d6efcc82
 Script.TrafficLights=0dbaf3a4-ab76-4f69-914a-62382c42bbcb
 
 ##UUIDs for each visualisation entity
@@ -54,4 +57,5 @@ Visualisation.Scatter=677c4ffc-2579-48e3-803d-af280eb09638
 Visualisation.SeriesSessionMap=ae7bcf2b-6e0d-409d-9c69-dab3f8c4a035
 Visualisation.StackedArea=85538160-be8d-45f3-a9ed-ac95dc85dc05
 Visualisation.TextValue=4cc4e224-4102-4cb0-8fce-d915ae266d9a
+Visualisation.TimeSeries=083f905e-0f04-45a6-9b77-5a0852bc513a
 Visualisation.TrafficLights=aada0adc-0a2d-4b15-8417-df8c3372b221

@@ -95,8 +95,17 @@ if (!visualisations) {
             //Set up the bar highlighting and hover tip
             if (typeof(tip) == "undefined") {
                 inverseHighlight = commonFunctions.inverseHighlight();
+
+                inverseHighlight.toSelectionItem = function(d) {
+                  const iso = new Date(d[0]).toISOString();
+                  return {
+                    key: iso,
+                    x: iso,
+                  };
+                }
+
                 tip = inverseHighlight.tip()
-                    .html(function(tipData) { 
+                    .html(function(tipData) {
                         var html = inverseHighlight.htmlBuilder()
                             .addTipEntry("Name",commonFunctions.autoFormat(tipData.key, visSettings.seriesDateFormat))
                             .addTipEntry("X",commonFunctions.autoFormat(xSettings.getValue(tipData.values[0])))
@@ -166,7 +175,7 @@ if (!visualisations) {
                 if (context) {
                     if (context.color) {
                         colour = context.color;
-                    } 
+                    }
                 }
 
                 //#########################################################
@@ -197,8 +206,8 @@ if (!visualisations) {
                         maxSeriesPerGridCell = d3.max(data.values, function(gridCellData) {
                             return gridCellData.values.length;
                         });
-                        if (maxSeriesPerGridCell === 1 && 
-                            (data.types[0] == commonConstants.dataTypeGeneral || data.types[0] == commonConstants.dataTypeText) && 
+                        if (maxSeriesPerGridCell === 1 &&
+                            (data.types[0] == commonConstants.dataTypeGeneral || data.types[0] == commonConstants.dataTypeText) &&
                             !commonFunctions.isTrue(settings.synchSeries)
                         ) {
                             legendKeyField = 0;
@@ -211,7 +220,7 @@ if (!visualisations) {
                         }
                     }
 
-                    //Get grid to construct the grid cells and for each one call back into a 
+                    //Get grid to construct the grid cells and for each one call back into a
                     //new instance of this to build the visualisation in the cell
                     //The last array arg allows you to synchronise the scales of fields
                     grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
@@ -219,7 +228,7 @@ if (!visualisations) {
             }
         };
 
-        //Public entry point for the Grid to call back in to set the cell level data on the cell level 
+        //Public entry point for the Grid to call back in to set the cell level data on the cell level
         //visualisation instance.
         //data will only contain the branch of the tree for this cell
         this.setDataInsideGrid = function(context, settings, data) {
@@ -246,12 +255,12 @@ if (!visualisations) {
             }
 
             //colour scale and fill function depend on whether the series are synched, whether the values
-            //are ordinal or not and how many series we have 
+            //are ordinal or not and how many series we have
             if (
               (
-                maxSeriesPerGridCell == 1 && 
+                maxSeriesPerGridCell == 1 &&
                 (data.types[0] == commonConstants.dataTypeGeneral || data.types[0] == commonConstants.dataTypeText)
-              ) && 
+              ) &&
               !commonFunctions.isTrue(settings.synchSeries) ){
                 if (typeof(context) === "undefined" || typeof(context.color) === "undefined") {
                     commonFunctions.setColourDomain(colour, data, 0, "VALUE");
@@ -288,9 +297,9 @@ if (!visualisations) {
 
                 xSettings = commonFunctions.createAxis(visData.types[0], 0, width);
                 xScale = xSettings.scale;
-                
+
                 if (visData.types[0] == commonConstants.dataTypeDateTime && bucketSizeMs) {
-                    //bucketised charts are a special case and we need to add the size of the bucket on to the 
+                    //bucketised charts are a special case and we need to add the size of the bucket on to the
                     //end of the x scale to account for the last bucket's width
                     xSettings.setExplicitRangeDomain(visibleValues[0].min[0], visibleValues[0].max[0] + bucketSizeMs);
                 } else {
@@ -392,15 +401,15 @@ if (!visualisations) {
 
                             if (isNaN(x)) {
                                 //dumpPoint(point);
-                                console.log("INVALID X DATA - point[0]: " + point[0] + 
-                                    " x: " + x + 
+                                console.log("INVALID X DATA - point[0]: " + point[0] +
+                                    " x: " + x +
                                     " scale.domain(): [" + xScale.domain() + "]" +
                                     " key: " + seriesData.key);
                             }
                             if (isNaN(y)) {
                                 //dumpPoint(point);
-                                console.log("INVALID Y DATA - point[1]: " + point[1] + 
-                                    " y: " + y + 
+                                console.log("INVALID Y DATA - point[1]: " + point[1] +
+                                    " y: " + y +
                                     " scale.domain(): [" + yScale.domain() + "]" +
                                     " key: " + seriesData.key);
                             }
@@ -418,16 +427,22 @@ if (!visualisations) {
                         });
 
                         commonFunctions.addDelegateEvent(
-                            e, 
-                            "mouseover", 
-                            "rect", 
+                            e,
+                            "mouseover",
+                            "rect",
                             inverseHighlight.makeInverseHighlightMouseOverHandler(seriesData.key, visData.types, seriesContainer, "rect"));
 
                         commonFunctions.addDelegateEvent(
-                            e, 
-                            "mouseout", 
-                            "rect", 
+                            e,
+                            "mouseout",
+                            "rect",
                             inverseHighlight.makeInverseHighlightMouseOutHandler(seriesContainer, "rect"));
+
+                        commonFunctions.addDelegateEvent(
+                            e,
+                            "click",
+                            "rect",
+                            inverseHighlight.makeInverseHighlightMouseClickHandler(seriesContainer, "rect"));
                     });
                 }
             }

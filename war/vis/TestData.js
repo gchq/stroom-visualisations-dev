@@ -57,6 +57,7 @@ function TestData() {
     var VIS_TYPE_STATEFUL_SESSION_MAP = "SeriesSessionMap-Stateful";
     var VIS_TYPE_STROOM = "Stroom";
     var VIS_TYPE_TEXT_VALUE = "TextValue";
+    var VIS_TYPE_TIME_SERIES = "TimeSeries";
     var VIS_TYPE_TRAFFIC_LIGHTS_GR = "TrafficLights-GreenRed";
     var VIS_TYPE_TRAFFIC_LIGHTS_RG = "TrafficLights-RedGreen";
     var VIS_TYPE_TREE = "Tree";
@@ -84,6 +85,7 @@ function TestData() {
         VIS_TYPE_STATEFUL_SESSION_MAP,
         VIS_TYPE_STROOM,
         VIS_TYPE_TEXT_VALUE,
+        VIS_TYPE_TIME_SERIES,
         VIS_TYPE_TRAFFIC_LIGHTS_GR,
         VIS_TYPE_TRAFFIC_LIGHTS_RG
     ];

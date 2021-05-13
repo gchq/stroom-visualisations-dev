@@ -250,6 +250,7 @@ if(!visualisations) {
   commonConstants.heatMapColours = commonConstants.heatMapColourRanges.greenyBlues;
   commonConstants.classVisColouredElement = "vis-coloured-element";
 
+
   // Common Functions
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -423,22 +424,44 @@ if(!visualisations) {
       }
     }
 
+    const selection = [];
+
+    inverseHighlight.toSelectionItem = function(d) {
+      return d;
+    }
+
+    const highlightItem = function(d) {
+        const selectionItem = inverseHighlight.toSelectionItem(d);
+        const selected = selection.find(({key}) => key === selectionItem.key);
+        const e = d3.select(this).node();
+
+        e.style.transition = "opacity 0.15s ease";
+        if(typeof(highlight) == "undefined" || highlight === null || highlight === e) {
+          e.style.opacity = selection.length == 0 || selected ? 1 : 0.1;
+        } else {
+          e.style.opacity = selected ? 0.6 : 0.1;
+        }
+    }
+
     /*
      * Changes the opacity of all elements matching cssSelector that descend from
      * node.
      */
-    var updateInverseHighlight = function(node, cssSelector) {
-      var elements = node.selectAll(cssSelector);
+    const updateInverseHighlight = function(node, cssSelector) {
+      const elements = node.selectAll(cssSelector);
+      elements.each(highlightItem);
+    };
 
-      elements.each(function(d) {
-        var e = d3.select(this).node();
-        e.style.transition = "opacity 0.15s ease";
-        if(typeof(highlight) == "undefined" || highlight === null || highlight === e) {
-          e.style.opacity = 1;
+    const select = function(d) {
+        const selectionItem = inverseHighlight.toSelectionItem(d);
+        const index = selection.findIndex(({key}) => key === selectionItem.key);
+        if (index > -1) {
+            selection.splice(index, 1);
         } else {
-          e.style.opacity = 0.1;
+            selection.push(selectionItem);
         }
-      });
+
+        stroom.select(selection);
     };
 
     /*
@@ -498,6 +521,14 @@ if(!visualisations) {
         }
       };
       return inverseHighlightMouseOutHandler;
+    }
+
+    inverseHighlight.makeInverseHighlightMouseClickHandler = function(node, cssSelector) {
+      const inverseHighlightMouseClickHandler = function(d) {
+        select(d);
+        updateInverseHighlight(node, cssSelector);
+      };
+      return inverseHighlightMouseClickHandler;
     }
 
     return inverseHighlight;
