@@ -16,14 +16,10 @@ deploy:
     api-key:
       # encrypted github oauth token
       # travis encrypt "github oath token goes in these quotes" --add deploy.api-key -r gchq/stroom-visualisations-dev
-      secure: qGZbhFQQEmpudGUbDBSy/iBp8xg4NllawLsLYkpwTuoTVIqosVwc/+6fCgN0HgMwrsmUWY0VRtbs78OX9wzeLPrhrzA4E6vO4eAOWuZlqsZ3tgFrCkVH40EEL0eiGtOyuJT6YUUKJAs7leYO7ZLR6of9uu+XWwSBSCN1YSllp+V9+R05kuE4sVXHgLy/ZMgeQ8fr0gLCQMBTIQoepIOiPgx356ET0NRPyRe6xTriBVVUnkEQAplPAC0C89PGKoSN0rpj2Yi5p8JoLtVGVYES7wireGMJBC9/P8Ovx4Hehs+Ax9MVtX4NsOqEaHwR8jftogeMikdwDaR4UbUrdp13PI5Fqs5Ks4qummd0tklk9+SG1pgdehNVEjha0ycnEe1z2y/Kyb5COI4795koy0+D4HxQ8xHHElHWnwHNqngOLCaYVxXmccTl+da/4/H5TulKxR2BnivRKOEEqKJ6x8a7XiqtJDpI8FA+GpXwd5Ii5YOvlf4F23KqKty5JwvIKcyvF8b12jdmuSI3DDAW8+UfjrJt2CMfBFmlkldyUK/CnwI1XB4fn3kv6lcgFKXenu8Pli+Ffa7ifU1pe+O+P9yo1yYnxb9F5uRyA/QpVCUgAGW3RW8d7pM2Z4+ybwCvk8mH7TbFR9QkKBAT0JJ77/Bu18871JhGao9KTqXO2pjQtAY=
+      secure: bh04l/7WruYQ2dKaSjubHJsmMdRCgsoX7cM0XznSc0BLAepvwv4h/uCQKT1T6cIXo8pr3EtzXpHghfd+vqlBSAG25cuURFT7S62CdqQdTG6SLsaBTnnpXRqL8YKYr0jlTVmZy+eA3QT5+lrWzQVYMVk+MHSDZkRb1d3lakSqJez2zFrv7cBM9qTTWQXM5qKmyAACxi/x8TBIfYhOgLfmpgcDb/oAfwMgpYr4c8t6H1TWqDqGMFQ8tZdVnXIt841dnKSWEapq6phUeRZfhQ2LZoYO6Pz16AsjyaaHoPNtrs+usnxoCxM2TueYxJC4jpkkxVmU1e7qhTsZLS42IGl53eM7rOWpp6ijtfherP6f6sw0qUcFwqnOAHAXIBjqm3cAYxUpZGiOiSAIzykOsAJzNlxjiaPR8DqrNvcSFHrm0Ud3HCo1qx39aXN1HG4VIOwdgajIZVvI19fg9vhnRVvDI5uIfPcyfRHvFT1dMq/Y8qWoZryLP5283WQOKom7dKgw8E7FJYx0CisK8uFHTj34WHCOlJmTF8OvxWTAtXqsUAEKSPy8N5V5utXhd4sdlvqG1rL3dsBjkYepYNSJE+xELyPyhlkP+Jma7DWvi1rG5g8w3h/Gw8j+lh//HPqKrQ3PKqNAGm3NdrQHC/sPJiWYymhAgdXZBtNWPj/r9U8Fq2M=
     file_glob: true
     # Pick up all .zip and .zip.sha256 files
     file: "./stroom-content-artifacts/*.zip*"
     skip_cleanup: true
     on:
       tags: true
-
-
-
-
