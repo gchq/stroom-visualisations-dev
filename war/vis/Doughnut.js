@@ -136,7 +136,7 @@ visualisations.Doughnut= function(containerNode) {
         // =========================================================
 
         // WHITE CIRCLE BEHIND LABELS
-        whiteCircle = center_group.append("svg:circle").attr("fill", "white");
+        whiteCircle = center_group.append("svg:circle").attr("fill", "var(--page-background-color)");
 
         // "TOTAL" LABEL
         totalLabel = center_group.append("svg:text").attr("class", "label");
@@ -329,7 +329,7 @@ visualisations.Doughnut= function(containerNode) {
             //new data
             paths.enter()
                 .append("svg:path")
-                .attr("stroke", "white")
+                .attr("stroke", "var(--page-background-color)")
                 .attr( "stroke-width", 1)
                 .transition()
                 .duration(tweenDuration)
