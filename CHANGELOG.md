@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [v3.3.0] - 2021-05-25
+
+* Added time series visualisation.
+
+* Improves CSS and added support for stroom themes.
+
+
 ## [v3.2.1] - 2019-02-20
 
 * Fix incorrect sort direction logic in computeUniqueValues.
@@ -101,7 +108,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.0...HEAD
+[v3.3.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.1...v3.3.0
 [v3.2.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.0...v3.2.1
 [v3.2.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.1.0...v3.2.0
 [v3.1.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.0.8...v3.1.0
