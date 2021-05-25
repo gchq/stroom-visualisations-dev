@@ -41,6 +41,7 @@ Script.TextValue=a2765cd2-8081-4230-8c16-05127a3a102d
 Script.TimeSeries=aa7029ff-b6f5-434d-81a9-9c53fe4116ac
 Script.TimeSeriesCSS=70a4d9ba-eb1f-4b02-9304-50d5d6efcc86
 Script.TrafficLights=bee10b7d-023d-487a-af83-414ee1b7174f
+Script.Underscore=efc9a7f3-2aba-4eb0-a4fd-2130cbfe1a4d
 
 ##UUIDs for each visualisation entity
 Visualisation.BarChart=547b440d-4bb1-4d3b-86b7-ff2e41b49311

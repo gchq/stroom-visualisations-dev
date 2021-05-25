@@ -374,22 +374,29 @@ for env in "${environments[@]}"; do
     baseScriptName=$(basename "${file}" | sed "s/${scriptFileSuffix}$//")
     echo -e "${YELLOW}baseScriptName: ${BLUE}${baseScriptName}${NC}"
 
-    if [[ "${baseScriptName}" = "CSS" ]]; then
+    if [[ "${baseScriptName}" =~ CSS$ ]]; then
       #special case for CSS as its js file has to be generated from a raw css file
       #as Stroom cannot load a CSS directly
 
-          #Generate the css javascript file and copy it into the target dir
-          #do it in a sub shell to avoid any name clashes
-          inputCssFile=${cssFilesDir}/vis.css
-          sourceScriptJsFile=${cssFilesDir}/visCssStr.js
-          echo -e "${YELLOW}inputCssFile: ${BLUE}${inputCssFile}${NC}"
-          echo -e "${YELLOW}sourceScriptJsFile: ${BLUE}${sourceScriptJsFile}${NC}"
-          #sourceScriptJsFile="${cssFilesDir}/$outputCssJsFile" 
-          . "${cssFilesDir}/makeCssStr.sh" "$inputCssFile" "$sourceScriptJsFile"
-          getGitComitHashForFile "${inputCssFile}"
-        else
-          sourceScriptJsFile="${visJsFilesDir}/${baseScriptName}.js" 
-          getGitComitHashForFile "${sourceScriptJsFile}"
+      if [[ "${baseScriptName}" = "CSS" ]]; then
+        # vis.css is non-standard
+        inputCssFile="${cssFilesDir}/vis.css"
+        sourceScriptJsFile="${cssFilesDir}/visCssStr.js"
+      else
+        inputCssFile="${cssFilesDir}/${baseScriptName}.css"
+        sourceScriptJsFile="${cssFilesDir}/${baseScriptName}Str.js"
+      fi
+
+      #Generate the css javascript file and copy it into the target dir
+      #do it in a sub shell to avoid any name clashes
+      echo -e "${YELLOW}inputCssFile: ${BLUE}${inputCssFile}${NC}"
+      echo -e "${YELLOW}sourceScriptJsFile: ${BLUE}${sourceScriptJsFile}${NC}"
+      #sourceScriptJsFile="${cssFilesDir}/$outputCssJsFile" 
+      . "${cssFilesDir}/makeCssStr.sh" "$inputCssFile" "$sourceScriptJsFile"
+      getGitComitHashForFile "${inputCssFile}"
+    else
+      sourceScriptJsFile="${visJsFilesDir}/${baseScriptName}.js" 
+      getGitComitHashForFile "${sourceScriptJsFile}"
     fi
 
     destScriptJsFile="${osPath}/${baseScriptName}.Script.resource.js"
