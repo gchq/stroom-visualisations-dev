@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright 2016 Crown Copyright
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+<meta character="utf-8">
+<style>
+body {
+	font-family: Helvetica;
+	font-size;
+}
+.rect {
+	fill: #222;
+}
+</style>
+
+<html>
+<body>
+<script src="../d3/d3.js" charset="utf-8"></script>
+<script src="../d3-grid/d3-grid.js" charset="utf-8"></script>
+<script>
+var rects = [];
+var width = 960;
+var height = 500;
+	var rectGrid = d3.layout.grid()
+	.bands()
+.size([360, 360])
+	.padding([0.1, 0.1]);
+
+	var svgGrid = d3.select("body")
+	.append("svg")
+	.attr({
+width: width,
+height: height
+})
+.append("g")
+//.attr("transform", "translate(70,70)");
+
+var tick = setInterval(push, 1000);
+
+
+function update() {
+	var rect = svgGrid.selectAll(".rect")
+		.data(rectGrid(rects));
+
+	rect.enter()
+		.append("rect")
+		.attr("class","rect")
+		.attr("width", rectGrid.nodeSize()[0])
+		.attr("height", rectGrid.nodeSize()[1])
+		.attr("transform", function(d) {
+				return "translate(" + (d.x + 0) + ", " + d.y + ")"; 
+				} )
+	.style("opacity", 1e-6);
+
+	rect.transition()
+		.attr("width", rectGrid.nodeSize()[0])
+		.attr("height", rectGrid.nodeSize()[1])
+		.attr("transform", function(d) {
+				return "translate(" + (d.x + 0) + ", " + d.y + ")"; 
+				} )
+	.style("opacity", 1);
+
+	rect.exit()
+		.transition()
+		.style("opacity", 1e-6)
+		.remove();
+
+	console.log("Grid props - width:" 
+			+ rectGrid.nodeSize()[0] 
+			+ " height:" + rectGrid.nodeSize()[1] 
+			+ " rows:" + Math.round((rectGrid.size()[1] / rectGrid.nodeSize()[1]))
+			+ " cols:" + Math.round((rectGrid.size()[0] / rectGrid.nodeSize()[0])));
+}
+
+function push() {
+	rects.push({});
+	update();
+	if (rects.length > 128) {
+		clearInterval(tick);
+		tick = setInterval(pop,1000);
+	}
+}
+
+function pop() {
+	rects.pop();
+	update();
+	if (rects.length < 2) {
+		clearInterval(tick);
+		tick = setInterval(push,1000);
+	}
+}
+</script>
+</body></html>
