@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v3.3.2] - 2021-05-26
+
+* Fixed time series visualisation name.
+
 
 ## [v3.3.1] - 2021-05-25
 
@@ -113,7 +117,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.2...HEAD
+[v3.3.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.1...v3.3.2
 [v3.3.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.0...v3.3.1
 [v3.3.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.1...v3.3.0
 [v3.2.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.0...v3.2.1
