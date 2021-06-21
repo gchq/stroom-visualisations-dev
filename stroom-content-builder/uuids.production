@@ -12,6 +12,7 @@ Folder./Visualisations/Version3/Dependencies/D3/=bb697193-79f8-445c-b2b4-05b1709
 Folder./Visualisations/Version3/Dependencies/D3-Grid/=69a408fa-877d-40d7-b36b-80d5e11f07a0
 Folder./Visualisations/Version3/Dependencies/D3-Tip/=aa92daee-f36e-4abf-a8cc-1ff4d778d7d3
 Folder./Visualisations/Version3/Dependencies/JSHashes/=6338fe38-3a3b-407d-ab4a-cb169d7c7db1
+Folder./Visualisations/Version3/Dependencies/Leaflet/=d87999a3-9240-4f15-9024-1ed6562b2be3
 Folder./Visualisations/Version3/Dependencies/Underscore/=e775ebd9-46ad-4b38-b525-ffab63b98e50
 
 #UUIDs for each script entity
@@ -22,6 +23,7 @@ Script.D3=61cc6424-9899-4f38-ad77-f4204f9de166
 Script.D3-Grid=cac6a6cd-1874-4932-a51c-e16ef9303f0c
 Script.D3-Tip=4f336f7d-5357-4fb3-a42b-88c967588e0a
 Script.JSHashes=72c19c4d-25d7-4bfd-bd1e-fb0ba6dc86bb
+Script.Leaflet=7e997977-765a-45b8-bddd-4bfdb0af95ad
 
 Script.BarChart=dac25a4c-7a4e-4e7e-b861-74e16edd1b60
 Script.Bubble=866a3f1d-26e3-44d1-819e-968bc767a4af
@@ -29,6 +31,7 @@ Script.DayWeekHeatMap=abb0e349-b61a-4946-9231-86d5a98596c7
 Script.Doughnut=213eb661-579e-4c08-b7a5-1355d7b782f8
 Script.Gauge=0c160d8b-92a2-4840-8fbf-622735b9ff6a
 Script.GenericGrid=5d4252d6-6f13-4f24-9481-9e98e038747c
+Script.GeoMap=7b0aa49c-8467-4e66-b152-b8cd8a134d65
 Script.HourDayMultiHeatMap=f51ae8dc-ceda-43e0-813a-b2735c9fad25
 Script.HourDayPointMap=e733aa62-ede1-4530-bd05-5702de05f9fd
 Script.HourDaySessionMap=69305470-0ff8-4797-9f6e-baf52123547f
@@ -50,6 +53,7 @@ Visualisation.DayWeekHeatMap=195fbed2-5a75-456f-bd98-f2dd184b94f9
 Visualisation.Doughnut=ce55cb67-22ef-4146-b866-f8ba955b9ba6
 Visualisation.Gauge=d23d4513-30f1-4c07-bc85-dafd4538d4df
 Visualisation.GenericGrid=95cc423e-3148-47cd-8c44-75b66801f03f
+Visualisation.Geomap=7b0aa49c-8467-4e66-b152-b8cd8a134d65
 Visualisation.HourDayMultiHeatMap=aad53ec0-c33d-4430-b2b2-5a83eccb13e7
 Visualisation.HourDayPointMap=4a6f5935-4e75-4579-8f74-112fbe8aee88
 Visualisation.HourDaySessionMap=63a3a18a-3651-4833-ba82-6a2d6794f5f4
