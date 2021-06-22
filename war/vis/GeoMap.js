@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * Produces a grid of 'stroom' logos using each of the colours in the
- * categoryGoogle colour range.
- */
 
 if (!visualisations) {
     var visualisations = {};
@@ -33,8 +29,15 @@ if (!visualisations) {
 
         this.element = window.document.createElement("div");
         this.element.setAttribute("id", "leaflet-map");
-        //this.element.setAttribute("style", "height: 100px");
-
+        
+        //Load the library stylesheet
+        //Equivalent HTML would be
+        //<link rel="stylesheet" href="./leaflet/leaflet.css"/>
+        var linkElement = window.document.createElement('link');
+        linkElement.setAttribute('rel', 'stylesheet');
+        linkElement.setAttribute('type', 'text/css');
+        linkElement.setAttribute('href', 'leaflet/leaflet.css');
+        window.document.getElementsByTagName('head')[0].appendChild(linkElement);
        
         this.start = function() {
             
@@ -49,7 +52,7 @@ if (!visualisations) {
 
             if (this.mymap == undefined) {
                 this.mymap = L.map("leaflet-map").setView([51.505, -0.09], 13);
-                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                   }).addTo(this.mymap);
             }
