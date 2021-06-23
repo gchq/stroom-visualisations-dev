@@ -31,13 +31,13 @@ if (!visualisations) {
         this.element.setAttribute("id", "leaflet-map");
         
         //Load the library stylesheet
-        //Equivalent HTML would be
         //<link rel="stylesheet" href="./leaflet/leaflet.css"/>
         var linkElement = window.document.createElement('link');
         linkElement.setAttribute('rel', 'stylesheet');
         linkElement.setAttribute('type', 'text/css');
         linkElement.setAttribute('href', 'leaflet/leaflet.css');
-        window.document.getElementsByTagName('head')[0].appendChild(linkElement);
+       
+       window.document.getElementsByTagName('head')[0].appendChild(linkElement);
        
         this.start = function() {
             
@@ -57,11 +57,11 @@ if (!visualisations) {
                   }).addTo(this.mymap);
             }
 
-            if (data && data !==null) {
-                //#########################################################
-                //Perform any visualisation specific data manipulation here
-                //#########################################################
-
+            if (data && data !== null) {
+                var vals = data.values[0].values[0].values;
+                for (const val of vals) {
+                  var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])]).addTo(this.mymap);      
+                }
             }
         };
 
@@ -72,7 +72,7 @@ if (!visualisations) {
         this.getLegendKeyField = function() {
             return 0;
         };
-
+        
     };
 
 
