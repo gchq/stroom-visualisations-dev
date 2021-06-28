@@ -41,6 +41,7 @@ function TestData() {
     var VIS_TYPE_FORCE_CANVAS = "ForceCanvas";
     var VIS_TYPE_GAUGE_GR = "Gauge-GreenRed";
     var VIS_TYPE_GAUGE_RG = "Gauge-RedGreen";
+    var VIS_TYPE_GEOMAP = "GeoMap";
     var VIS_TYPE_HOUR_DAY_HEAT_MAP = "HourDayHeatMap";
     var VIS_TYPE_HOUR_DAY_MULTI_HEAT_MAP = "HourDayMultiHeatMap";
     var VIS_TYPE_HOUR_DAY_POINT_MAP = "HourDayPointMap";
@@ -73,6 +74,7 @@ function TestData() {
         VIS_TYPE_DOUGHNUT, 
         VIS_TYPE_GAUGE_GR,
         VIS_TYPE_GAUGE_RG,
+        VIS_TYPE_GEOMAP,
         VIS_TYPE_HOUR_DAY_POINT_MAP,
         VIS_TYPE_HOUR_DAY_SESSION_MAP,
         VIS_TYPE_LINE_CHART,
@@ -278,6 +280,14 @@ function TestData() {
         } else if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
             seriesCount = 1;
             nestValues = true;
+        } else if (visType == VIS_TYPE_GEOMAP) {
+            seriesCount = Math.round(Math.random() * 20);
+            nestValues = true;
+            valueFunctions[0] = generateTextValue;
+            valueFunctions[1] = generateLatitudeValue;
+            valueFunctions[2] = generateLongitudeValue;
+            valueCountLimit = 3;
+            fieldZeroType = commonConstants.dataTypeGeneral;
         } else {
             // define a random number of series
             seriesCount = Math.max(1, Math.round(Math.random() * maxSeries));
@@ -446,6 +456,14 @@ function TestData() {
 
         var generateFloatValue = function(i) {
             return Math.random() * randomMaxVal;
+        };
+
+        var generateLatitudeValue = function(i) {
+            return Math.random() + 51;
+        };
+
+        var generateLongitudeValue = function(i) {
+            return Math.random() - 0.5;
         };
 
         var createGeneralBasedValues = function(visType, pass, randomMaxVal) {

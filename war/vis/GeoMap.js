@@ -18,6 +18,8 @@
 if (!visualisations) {
     var visualisations = {};
 }
+
+
 //IIFE to prvide shared scope for sharing state and constants between the controller 
 //object and each grid cell object instance
 (function(){
@@ -25,19 +27,54 @@ if (!visualisations) {
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
 
+
+    var hashString = function(input) {
+        var hash = 0, i, chr;
+        if (input.length === 0) return hash;
+        for (i = 0; i < input.length; i++) {
+          chr   = input.charCodeAt(i);
+          hash  = ((hash << 5) - hash) + chr;
+          hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+      };
+    var markerColours = ['red', 'darkred', 'orange', 'green', 'darkgreen', 'blue', 'purple', 'darkpurple', 'cadetblue'];
+        
+    var markerColour = function (seriesName) {
+        return markerColours[hashString(seriesName) % markerColours.length];
+    }
+
+
     visualisations.GeoMap = function() {
+        var addCss = function(cssPath) {
+            var linkElement = window.document.createElement('link');
+            linkElement.setAttribute('rel', 'stylesheet');
+            linkElement.setAttribute('type', 'text/css');
+            linkElement.setAttribute('href', cssPath);
+           
+            window.document.getElementsByTagName('head')[0].appendChild(linkElement);
+        }
+        var addJs = function(jsPath) {
+            var scriptElement = window.document.createElement('script');
+            scriptElement.setAttribute('type', 'text/javascript');
+            scriptElement.setAttribute('src', jsPath);
+           
+            window.document.getElementsByTagName('head')[0].appendChild(scriptElement);
+        }
+
+          // Create a colour set.
+        var color = d3.scale.category20();
 
         this.element = window.document.createElement("div");
         this.element.setAttribute("id", "leaflet-map");
         
         //Load the library stylesheet
-        //<link rel="stylesheet" href="./leaflet/leaflet.css"/>
-        var linkElement = window.document.createElement('link');
-        linkElement.setAttribute('rel', 'stylesheet');
-        linkElement.setAttribute('type', 'text/css');
-        linkElement.setAttribute('href', 'leaflet/leaflet.css');
-       
-       window.document.getElementsByTagName('head')[0].appendChild(linkElement);
+        addCss('leaflet/leaflet.css');
+        
+        //Load additional resources
+        addCss('leaflet/extras/awesome-markers/leaflet.awesome-markers.css');
+
+        addJs('leaflet/extras/awesome-markers/leaflet.awesome-markers.js');
        
         this.start = function() {
             
@@ -45,6 +82,27 @@ if (!visualisations) {
            
         }
 
+        this.setGridCellLevelData = function(context, settings, data) {
+            if (data && data !== null) {
+                const seriesArray = data.values;
+
+                for (const series of seriesArray){
+                    const colour = markerColour (series.key);
+                    const vals = series.values;
+                    
+                    var markerIcon = L.AwesomeMarkers.icon({
+                        icon: 'map-marker',
+                        prefix: 'fa',
+                        markerColor: colour
+                    });
+
+                    for (const val of vals) {
+                        var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon}).addTo(this.mymap);      
+                    }
+                }
+            
+            }
+        };
      
         //Public method for setting the data on the visualisation(s) as a whole
         //This is the entry point from Stroom
@@ -58,10 +116,12 @@ if (!visualisations) {
             }
 
             if (data && data !== null) {
-                var vals = data.values[0].values[0].values;
-                for (const val of vals) {
-                  var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])]).addTo(this.mymap);      
+                const gridSeriesArray = data.values;
+
+                for (const gridSeries of gridSeriesArray){
+                    this.setGridCellLevelData(context, settings, gridSeries);
                 }
+            
             }
         };
 
