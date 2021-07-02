@@ -141,6 +141,9 @@ function TestData() {
 
         } else if (GRIDABLE_VISUALISATIONS.indexOf(visType) != -1) {
             var maxGridCells = 25;
+            // if (visType == VIS_TYPE_GEOMAP || visType == VIS_TYPE_FLOOR_MAP) {
+            //     maxGridCells = 9;
+            // }
             if (addGridSeries){
                 var seriesCount = Math.max(1, Math.round(Math.random() * maxGridCells));
                 //var seriesCount = 2;
@@ -594,20 +597,24 @@ function TestData() {
             data.max = [];
             data.sum = [];
 
-            for (i=0; i<data.values[0].length; i++){
+            if (!data.values || data.values.length > 0){
+                for (i=0; i<data.values[0].length; i++){
 
-                data.min[i] = d3.min(data.values, function(d) {
-                    return d[i];
-                });
+                    data.min[i] = d3.min(data.values, function(d) {
+                        return d[i];
+                    });
+    
+                    data.max[i] = d3.max(data.values, function(d) {
+                        return d[i];
+                    });
+    
+                    data.sum[i] = d3.sum(data.values, function(d) {
+                        return d[i];
+                    });
+                }
 
-                data.max[i] = d3.max(data.values, function(d) {
-                    return d[i];
-                });
-
-                data.sum[i] = d3.sum(data.values, function(d) {
-                    return d[i];
-                });
             }
+
         };
 
         function computeNestedAggregates(data) {
@@ -615,19 +622,21 @@ function TestData() {
             data.max = [];
             data.sum = [];
 
-            for (i=0; i<data.values[0].min.length; i++){
+            if (!data.values || data.values.length > 0){
+                for (i=0; i<data.values[0].min.length; i++){
 
-                data.min[i] = d3.min(data.values, function(d) {
-                    return d.min[i];
-                });
+                    data.min[i] = d3.min(data.values, function(d) {
+                        return d.min[i];
+                    });
 
-                data.max[i] = d3.max(data.values, function(d) {
-                    return d.max[i];
-                });
+                    data.max[i] = d3.max(data.values, function(d) {
+                        return d.max[i];
+                    });
 
-                data.sum[i] = d3.sum(data.values, function(d) {
-                    return d.sum[i];
-                });
+                    data.sum[i] = d3.sum(data.values, function(d) {
+                        return d.sum[i];
+                    });
+                }
             }
         };
 

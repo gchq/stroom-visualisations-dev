@@ -66,7 +66,19 @@ if (!visualisations) {
         var color = d3.scale.category20();
 
         this.element = window.document.createElement("div");
-        this.element.setAttribute("id", "leaflet-geomap");
+        const mapNum =  Math.floor((Math.random() * 1000) % 1000);
+        this.elementName = "leaflet-geomap-" + mapNum;
+        this.element.setAttribute("id", this.elementName);
+        this.element.style.display = "grid";
+        this.element.style.gridTemplateColumns = "auto";
+        this.element.style.gridGap = "5px 5px";
+
+        // for (var i = 0; i < 8; i++){
+        //     const gridElement = window.document.createElement("div");
+        //     const gridMapElementName = this.elementName + "-" + i;
+        //     gridElement.setAttribute("id", gridMapElementName);
+        //     this.element.appendChild(gridElement);
+        // }
         
         //Load the library stylesheet
         addCss('leaflet/leaflet.css');
@@ -82,8 +94,9 @@ if (!visualisations) {
            
         }
 
-        this.setGridCellLevelData = function(context, settings, data) {
+        this.setGridCellLevelData = function(map, context, settings, data) {
             if (data && data !== null) {
+       
                 const seriesArray = data.values;
 
                 for (var i = 0; i < seriesArray.length; i++){
@@ -103,30 +116,83 @@ if (!visualisations) {
                         });
 
                     
-                        var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon}).addTo(this.mymap);      
+                        var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon})
+                        .addTo(map);      
                     }
                 }
             
             }
         };
+
+        this.gridKeys = {};
+
+        this.removeOldGridCells = function (gridSeriesArray) {
+            newGridKeys = {};
+            for (const gridSeries of gridSeriesArray) {
+                newGridKeys[hashString(gridSeries.key)] = gridSeries.key;
+            }
+
+            for (const hashKey in this.gridKeys) {
+                if (! newGridKeys[hashKey]) {
+                    const elemToRemoveId = this.elementName + "-" + hashKey;
+                    const elemToRemove = document.getElementById(elemToRemoveId);
+                    elemToRemove.remove();
+                }
+            }
+
+            this.gridKeys = newGridKeys;
+        }
      
         //Public method for setting the data on the visualisation(s) as a whole
         //This is the entry point from Stroom
         this.setData = function(context, settings, data) {
-            if (this.mymap == undefined) {
-                this.mymap = L.map("leaflet-geomap")
-                .setView([parseFloat(settings.initialLatitude), parseFloat(settings.initialLongitude)], 
-                    settings.initialZoomLevel);
-                L.tileLayer(settings.tileServerUrl, {
-                    attribution: settings.tileServerAttribution
-                  }).addTo(this.mymap);
-            }
+            
 
             if (data && data !== null) {
                 const gridSeriesArray = data.values;
 
-                for (const gridSeries of gridSeriesArray){
-                    this.setGridCellLevelData(context, settings, gridSeries);
+                this.removeOldGridCells(gridSeriesArray);
+
+                this.element.style.gridTemplateColumns = "auto";
+
+                if (gridSeriesArray.length > 2) {
+                    this.element.style.gridTemplateColumns = "auto auto";
+                }
+
+                if (gridSeriesArray.length > 5) {
+                    this.element.style.gridTemplateColumns = "auto auto auto";
+                }
+
+                if (gridSeriesArray.length > 9) {
+                    this.element.style.gridTemplateColumns = "auto auto auto auto";
+                }
+
+                if (gridSeriesArray.length > 16) {
+                    this.element.style.gridTemplateColumns = "auto auto auto auto auto";
+                }
+
+                for (var i = 0; i < gridSeriesArray.length; i++){
+                    const gridSeries = gridSeriesArray[i];
+                    const gridMapElementName = this.elementName + "-" + hashString(gridSeries.key);
+                    if (this[gridMapElementName] == undefined) {
+    
+                        const gridElement = window.document.createElement("div");
+                        gridElement.setAttribute("id", gridMapElementName);
+                        this.element.appendChild(gridElement);
+                    
+                        // const gridElement = window.document.createElement("div");
+                        // gridElement.setAttribute("id", gridMapElementName);
+                        // this.element.appendChild(gridElement);
+                  
+                        this[gridMapElementName] = L.map(gridMapElementName)
+                        .setView([parseFloat(settings.initialLatitude), parseFloat(settings.initialLongitude)], 
+                            settings.initialZoomLevel);
+                        L.tileLayer(settings.tileServerUrl, {
+                            attribution: settings.tileServerAttribution
+                          }).addTo(this[gridMapElementName]);
+                    }
+
+                    this.setGridCellLevelData(this[gridMapElementName], context, settings, gridSeries);
                 }
             
             }
