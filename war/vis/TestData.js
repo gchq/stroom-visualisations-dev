@@ -37,6 +37,7 @@ function TestData() {
     var VIS_TYPE_BUBBLE_NESTED = "Bubble-nested";
     var VIS_TYPE_DAY_WEEK_HEAT_MAP = "DayWeekHeatMap";
     var VIS_TYPE_DOUGHNUT = "Doughnut";
+    var VIS_TYPE_FLOOR_MAP = "FloorMap";
     var VIS_TYPE_FORCE = "Force";
     var VIS_TYPE_FORCE_CANVAS = "ForceCanvas";
     var VIS_TYPE_GAUGE_GR = "Gauge-GreenRed";
@@ -71,7 +72,8 @@ function TestData() {
         VIS_TYPE_BAR_CHART_ORDINAL,
         VIS_TYPE_BUBBLE_FLAT,
         VIS_TYPE_BUBBLE_NESTED,
-        VIS_TYPE_DOUGHNUT, 
+        VIS_TYPE_DOUGHNUT,
+        VIS_TYPE_FLOOR_MAP,
         VIS_TYPE_GAUGE_GR,
         VIS_TYPE_GAUGE_RG,
         VIS_TYPE_GEOMAP,
@@ -254,7 +256,7 @@ function TestData() {
             valueCountLimit = 1;
         } else if (visType === VIS_TYPE_TEXT_VALUE) {
             seriesCount = 1;
-            valueFunctions[0] = generateRadomTextValue;
+            valueFunctions[0] = generateRandomTextValue;
             fieldZeroType = commonConstants.dataTypeGeneral;
             valueCountLimit = 1;
         } else if (visType == VIS_TYPE_HOUR_DAY_HEAT_MAP  || visType == VIS_TYPE_DAY_WEEK_HEAT_MAP) {
@@ -280,8 +282,16 @@ function TestData() {
         } else if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
             seriesCount = 1;
             nestValues = true;
+        } else if (visType == VIS_TYPE_FLOOR_MAP) {
+            seriesCount = Math.round(Math.random() * 5);
+            nestValues = true;
+            valueFunctions[0] = generateTextValue;
+            valueFunctions[1] = generateXValue;
+            valueFunctions[2] = generateYValue;
+            valueCountLimit = 3;
+            fieldZeroType = commonConstants.dataTypeGeneral;
         } else if (visType == VIS_TYPE_GEOMAP) {
-            seriesCount = Math.round(Math.random() * 20);
+            seriesCount = Math.round(Math.random() * 5);
             nestValues = true;
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateLatitudeValue;
@@ -366,7 +376,7 @@ function TestData() {
                 }
             }
             data.values = values;
-            data.types = [fieldZeroType, commonConstants.dataTypeNumber];
+            data.types = [fieldZeroType, commonConstants.dataTypeNumber, commonConstants.dataTypeNumber];
 
             computeNestedAggregates(data);
 
@@ -450,7 +460,7 @@ function TestData() {
             return fullValue;
         };
 
-        var generateRadomTextValue = function(i) {
+        var generateRandomTextValue = function(i) {
             return buildExtraText(50);
         };
 
@@ -465,6 +475,28 @@ function TestData() {
         var generateLongitudeValue = function(i) {
             return Math.random() - 0.5;
         };
+
+        var generateXValue = function(i) {
+            return Math.random() * 1000;
+        };
+
+        var generateYValue = function(i) {
+            return Math.random() * 600;
+        };
+
+        var generateSiteValue = function(I) {
+            if (Math.random() > 0.5) {
+                return 'Site1';
+            }
+            return 'Site2';
+        }
+
+        var generateSiteValue = function(I) {
+            if (Math.random() > 0.5) {
+                return 'Site1';
+            }
+            return 'Site2';
+        }
 
         var createGeneralBasedValues = function(visType, pass, randomMaxVal) {
             var values = [];

@@ -19,6 +19,11 @@
                     "label": "Longitude"
                 },
                 {
+                    "id": "iconName",
+                    "type": "field",
+                    "label": "Icon Name"
+                },
+                {
                     "id": "series",
                     "type": "field",
                     "label": "Series"
@@ -33,6 +38,46 @@
         {
             "name": "GeoMap",
             "controls": [
+                {
+                    "id": "initialLatitude",
+                    "type": "text",
+                    "label": "Initial Latitude",
+                    "defaultValue": "51.0",
+                    "max": "85",
+                    "min": "-85"
+                },
+                {
+                    "id": "initialLongitude",
+                    "type": "text",
+                    "label": "Initial Longitude",
+                    "defaultValue": "0.0",
+                    "max": "+180",
+                    "min": "-180"
+                },
+                {
+                    "id": "initialZoomLevel",
+                    "type": "number",
+                    "label": "Initial Zoom Level",
+                    "defaultValue": "13",
+                    "max": "25",
+                    "min": "1"
+                },
+                {
+                    "id": "tileServerUrl",
+                    "type": "text",
+                    "label": "Tile Server URL",
+                    "defaultValue": "https://{s}.tile.osm.org/{z}/{x}/{y}.png",
+                    "max": "+180",
+                    "min": "-180"
+                },
+                {
+                    "id": "tileServerAttribution",
+                    "type": "text",
+                    "label": "Tile Server URL",
+                    "defaultValue": "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
+                    "max": "+180",
+                    "min": "-180"
+                },
                 {
                     "id": "maxValues",
                     "type": "number",
@@ -137,6 +182,9 @@
                             },
                             {
                                 "id": "${lon}"
+                            },
+                            {
+                                "id": "${iconName}"
                             }
                         ],
                         "limit": {

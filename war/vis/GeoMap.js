@@ -40,8 +40,8 @@ if (!visualisations) {
       };
     var markerColours = ['red', 'darkred', 'orange', 'green', 'darkgreen', 'blue', 'purple', 'darkpurple', 'cadetblue'];
         
-    var markerColour = function (seriesName) {
-        return markerColours[hashString(seriesName) % markerColours.length];
+    var markerColour = function (seriesNum) {
+        return markerColours[seriesNum % markerColours.length];
     }
 
 
@@ -66,7 +66,7 @@ if (!visualisations) {
         var color = d3.scale.category20();
 
         this.element = window.document.createElement("div");
-        this.element.setAttribute("id", "leaflet-map");
+        this.element.setAttribute("id", "leaflet-geomap");
         
         //Load the library stylesheet
         addCss('leaflet/leaflet.css');
@@ -86,17 +86,23 @@ if (!visualisations) {
             if (data && data !== null) {
                 const seriesArray = data.values;
 
-                for (const series of seriesArray){
-                    const colour = markerColour (series.key);
+                for (var i = 0; i < seriesArray.length; i++){
+                    const series = seriesArray[i];
+                    const colour = markerColour (i);
                     const vals = series.values;
-                    
-                    var markerIcon = L.AwesomeMarkers.icon({
-                        icon: 'map-marker',
-                        prefix: 'fa',
-                        markerColor: colour
-                    });
-
                     for (const val of vals) {
+                        var iconName = 'map-marker';
+                        if (val.length > 3 && val[3]) {
+                            iconName = val[3];
+                        }
+
+                        var markerIcon = L.AwesomeMarkers.icon({
+                            icon: iconName,
+                            prefix: 'fa',
+                            markerColor: colour
+                        });
+
+                    
                         var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon}).addTo(this.mymap);      
                     }
                 }
@@ -107,11 +113,12 @@ if (!visualisations) {
         //Public method for setting the data on the visualisation(s) as a whole
         //This is the entry point from Stroom
         this.setData = function(context, settings, data) {
-
             if (this.mymap == undefined) {
-                this.mymap = L.map("leaflet-map").setView([51.505, -0.09], 13);
-                L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                this.mymap = L.map("leaflet-geomap")
+                .setView([parseFloat(settings.initialLatitude), parseFloat(settings.initialLongitude)], 
+                    settings.initialZoomLevel);
+                L.tileLayer(settings.tileServerUrl, {
+                    attribution: settings.tileServerAttribution
                   }).addTo(this.mymap);
             }
 

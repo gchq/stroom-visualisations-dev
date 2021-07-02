@@ -159,6 +159,16 @@
                 settings.flattenSeries = "False";
             }
 
+            if (getVisType() == "GeoMap")
+            {
+                settings.initialLatitude = "51.5";
+                settings.initialLongitude = "0.0";
+                settings.initialZoomLevel = 13;
+                settings.tileServerUrl = "https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+                settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
+            }
+
+
             //For testing data where the grid series key is a dateTimeMs
             //settings.gridSeriesDateFormat = "GridFmt %A %d/%m/%y %H:%M";
             //settings.seriesDateFormat = "SeriesFmt %A %d/%m/%y %H:%M";
