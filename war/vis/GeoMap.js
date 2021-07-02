@@ -72,13 +72,6 @@ if (!visualisations) {
         this.element.style.display = "grid";
         this.element.style.gridTemplateColumns = "auto";
         this.element.style.gridGap = "5px 5px";
-
-        // for (var i = 0; i < 8; i++){
-        //     const gridElement = window.document.createElement("div");
-        //     const gridMapElementName = this.elementName + "-" + i;
-        //     gridElement.setAttribute("id", gridMapElementName);
-        //     this.element.appendChild(gridElement);
-        // }
         
         //Load the library stylesheet
         addCss('leaflet/leaflet.css');
@@ -179,10 +172,7 @@ if (!visualisations) {
                         const gridElement = window.document.createElement("div");
                         gridElement.setAttribute("id", gridMapElementName);
                         this.element.appendChild(gridElement);
-                    
-                        // const gridElement = window.document.createElement("div");
-                        // gridElement.setAttribute("id", gridMapElementName);
-                        // this.element.appendChild(gridElement);
+                
                   
                         this[gridMapElementName] = L.map(gridMapElementName)
                         .setView([parseFloat(settings.initialLatitude), parseFloat(settings.initialLongitude)], 
