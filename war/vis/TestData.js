@@ -141,9 +141,7 @@ function TestData() {
 
         } else if (GRIDABLE_VISUALISATIONS.indexOf(visType) != -1) {
             var maxGridCells = 25;
-            // if (visType == VIS_TYPE_GEOMAP || visType == VIS_TYPE_FLOOR_MAP) {
-            //     maxGridCells = 9;
-            // }
+
             if (addGridSeries){
                 var seriesCount = Math.max(1, Math.round(Math.random() * maxGridCells));
                 //var seriesCount = 2;

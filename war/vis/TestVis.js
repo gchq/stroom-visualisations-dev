@@ -168,6 +168,12 @@
                 settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
             }
 
+            if (getVisType() == "GeoMap")
+            {
+                //Copied from 
+                settings.floorDef = "";
+            }
+
 
             //For testing data where the grid series key is a dateTimeMs
             //settings.gridSeriesDateFormat = "GridFmt %A %d/%m/%y %H:%M";
