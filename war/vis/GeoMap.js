@@ -74,6 +74,7 @@ if (!visualisations) {
         this.element.style.gridGap = "5px 5px";
 
         this.markers = new Map();
+        this.maps = {};
         
         //Load the library stylesheet
         addCss('leaflet/leaflet.css');
@@ -89,13 +90,13 @@ if (!visualisations) {
            
         }
 
-        this.createKey = function (val){
+        this.createKey = function (gridName, val){
             //Just has locations as all markers are identical, so only one at a single location 
             //can be displayed at a time anyway
-            return hashString(val[1] + val[2]);
+            return hashString(gridName + val[1] + val[2]);
         }
 
-        this.setGridCellLevelData = function(map, context, settings, data) {
+        this.setGridCellLevelData = function(map, gridName, context, settings, data) {
             if (data && data !== null) {
        
                 const seriesArray = data.values;
@@ -105,7 +106,7 @@ if (!visualisations) {
                     const colour = markerColour (i);
                     const vals = series.values;
                     for (const val of vals) {
-                        const dataKey = this.createKey(val);
+                        const dataKey = this.createKey(gridName, val);
                         if (!this.markers.has (dataKey)) {
                             var iconName = 'map-marker';
                             if (val.length > 3 && val[3]) {
@@ -197,22 +198,23 @@ if (!visualisations) {
                         gridMapElementName = this.elementName + "-" + hashString(gridSeries.key);
                     }
                     
-                    if (this[gridMapElementName] == undefined) {
+                    if (this.maps[gridMapElementName] == undefined) {
     
                         const gridElement = window.document.createElement("div");
                         gridElement.setAttribute("id", gridMapElementName);
                         this.element.appendChild(gridElement);
                 
                   
-                        this[gridMapElementName] = L.map(gridMapElementName)
+                        this.maps[gridMapElementName] = L.map(gridMapElementName)
                         .setView([parseFloat(settings.initialLatitude), parseFloat(settings.initialLongitude)], 
                             settings.initialZoomLevel);
                         L.tileLayer(settings.tileServerUrl, {
                             attribution: settings.tileServerAttribution
-                          }).addTo(this[gridMapElementName]);
+                          }).addTo(this.maps[gridMapElementName]);
                     }
 
-                    this.setGridCellLevelData(this[gridMapElementName], context, settings, gridSeries);
+                    this.setGridCellLevelData(this.maps[gridMapElementName], gridMapElementName, 
+                        context, settings, gridSeries);
                 }
             
             }
