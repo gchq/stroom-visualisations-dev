@@ -36,7 +36,7 @@ if (!visualisations) {
           hash  = ((hash << 5) - hash) + chr;
           hash |= 0; // Convert to 32bit integer
         }
-        return hash;
+        return Math.abs(hash);
       };
     var markerColours = ['red', 'darkred', 'orange', 'green', 'darkgreen', 'blue', 'purple', 'darkpurple', 'cadetblue'];
         
@@ -72,6 +72,8 @@ if (!visualisations) {
         this.element.style.display = "grid";
         this.element.style.gridTemplateColumns = "auto";
         this.element.style.gridGap = "5px 5px";
+
+        this.markers = new Map();
         
         //Load the library stylesheet
         addCss('leaflet/leaflet.css');
@@ -87,6 +89,12 @@ if (!visualisations) {
            
         }
 
+        this.createKey = function (val){
+            //Just has locations as all markers are identical, so only one at a single location 
+            //can be displayed at a time anyway
+            return hashString(val[1] + val[2]);
+        }
+
         this.setGridCellLevelData = function(map, context, settings, data) {
             if (data && data !== null) {
        
@@ -97,20 +105,27 @@ if (!visualisations) {
                     const colour = markerColour (i);
                     const vals = series.values;
                     for (const val of vals) {
-                        var iconName = 'map-marker';
-                        if (val.length > 3 && val[3]) {
-                            iconName = val[3];
+                        const dataKey = this.createKey(val);
+                        if (!this.markers.has (dataKey)) {
+                            var iconName = 'map-marker';
+                            if (val.length > 3 && val[3]) {
+                                iconName = val[3];
+                            }
+    
+                            var markerIcon = L.AwesomeMarkers.icon({
+                                icon: iconName,
+                                prefix: 'fa',
+                                markerColor: colour
+                            });
+    
+                            var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon})
+                            .addTo(map); 
+
+                            this.markers.set(dataKey, marker);
+                        } else {
+                            // console.log("Not updating marker " + val[1] + ":" + val[2]);
                         }
-
-                        var markerIcon = L.AwesomeMarkers.icon({
-                            icon: iconName,
-                            prefix: 'fa',
-                            markerColor: colour
-                        });
-
                     
-                        var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon})
-                        .addTo(map);      
                     }
                 }
             
@@ -120,7 +135,13 @@ if (!visualisations) {
         this.gridKeys = {};
 
         this.removeOldGridCells = function (gridSeriesArray) {
-            newGridKeys = {};
+
+            if (!gridSeriesArray || 
+                (gridSeriesArray.length == 1 && !gridSeriesArray[0].key)) {
+                return;
+            }
+
+            var newGridKeys = {};
             for (const gridSeries of gridSeriesArray) {
                 newGridKeys[hashString(gridSeries.key)] = gridSeries.key;
             }
@@ -129,7 +150,10 @@ if (!visualisations) {
                 if (! newGridKeys[hashKey]) {
                     const elemToRemoveId = this.elementName + "-" + hashKey;
                     const elemToRemove = document.getElementById(elemToRemoveId);
-                    elemToRemove.remove();
+
+                    if (elemToRemove) {
+                        elemToRemove.remove();
+                    }
                 }
             }
 
@@ -166,7 +190,13 @@ if (!visualisations) {
 
                 for (var i = 0; i < gridSeriesArray.length; i++){
                     const gridSeries = gridSeriesArray[i];
-                    const gridMapElementName = this.elementName + "-" + hashString(gridSeries.key);
+
+                    var gridMapElementName = this.elementName;
+                    if (gridSeriesArray.length > 1 || gridSeriesArray[0].key){
+                        //There is a grid key, so more than one element
+                        gridMapElementName = this.elementName + "-" + hashString(gridSeries.key);
+                    }
+                    
                     if (this[gridMapElementName] == undefined) {
     
                         const gridElement = window.document.createElement("div");
