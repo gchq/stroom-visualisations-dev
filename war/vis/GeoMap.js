@@ -28,7 +28,8 @@ if (!visualisations) {
     var commonConstants = visualisations.commonConstants;
 
 
-    var hashString = function(input) {
+    var hashString = function(data) {
+        input = "" + data;
         var hash = 0, i, chr;
         if (input.length === 0) return hash;
         for (i = 0; i < input.length; i++) {
@@ -73,7 +74,7 @@ if (!visualisations) {
         this.element.style.gridTemplateColumns = "auto";
         this.element.style.gridGap = "5px 5px";
 
-        this.markers = new Map();
+        this.markers = {};
         this.maps = {};
         
         //Load the library stylesheet
@@ -90,10 +91,10 @@ if (!visualisations) {
            
         }
 
-        this.createKey = function (gridName, val){
+        this.createDataKey = function (val){
             //Just has locations as all markers are identical, so only one at a single location 
             //can be displayed at a time anyway
-            return hashString(gridName + val[1] + val[2]);
+            return hashString(val[1] + val[2]);
         }
 
         this.setGridCellLevelData = function(map, gridName, context, settings, data) {
@@ -106,8 +107,13 @@ if (!visualisations) {
                     const colour = markerColour (i);
                     const vals = series.values;
                     for (const val of vals) {
-                        const dataKey = this.createKey(gridName, val);
-                        if (!this.markers.has (dataKey)) {
+                        const dataKey = this.createDataKey(val);
+
+                        if (!this.markers[gridName]) {
+                            this.markers[gridName] = new Map();
+                        }
+
+                        if (!this.markers[gridName].has (dataKey)) {
                             var iconName = 'map-marker';
                             if (val.length > 3 && val[3]) {
                                 iconName = val[3];
@@ -122,9 +128,9 @@ if (!visualisations) {
                             var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon})
                             .addTo(map); 
 
-                            this.markers.set(dataKey, marker);
+                            this.markers[gridName].set(dataKey, marker);
                         } else {
-                            // console.log("Not updating marker " + val[1] + ":" + val[2]);
+                             console.log("Not updating marker " + val[1] + ":" + val[2]);
                         }
                     
                     }
@@ -154,6 +160,9 @@ if (!visualisations) {
 
                     //Remove the map associted with the grid
                     delete this.maps[elemToRemoveId];
+
+                    //remove the markers associated with the grid
+                    delete this.markers[elemToRemoveId];
 
                     if (elemToRemove) {
                         elemToRemove.remove();
@@ -220,11 +229,15 @@ if (!visualisations) {
                         context, settings, gridSeries);
                 }
             
+
+                this.resize();
             }
         };
 
         this.resize = function() {
-            
+            for (const mapName in this.maps){
+                this.maps[mapName].invalidateSize();
+            }
         };
 
         this.getLegendKeyField = function() {
