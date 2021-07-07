@@ -287,9 +287,12 @@ function TestData() {
             seriesCount = Math.round(Math.random() * 5);
             nestValues = true;
             valueFunctions[0] = generateTextValue;
-            valueFunctions[1] = generateXValue;
-            valueFunctions[2] = generateYValue;
-            valueCountLimit = 3;
+            valueFunctions[1] = generateBuildingValue;
+            valueFunctions[2] = generateFloorValue;
+            valueFunctions[3] = generateXValue;
+            valueFunctions[4] = generateYValue;
+
+            valueCountLimit = 5;
             fieldZeroType = commonConstants.dataTypeGeneral;
         } else if (visType == VIS_TYPE_GEOMAP) {
             seriesCount = Math.round(Math.random() * 5);
@@ -478,25 +481,19 @@ function TestData() {
         };
 
         var generateXValue = function(i) {
-            return Math.random() * 1000;
+            return Math.random() * 100;
         };
 
         var generateYValue = function(i) {
-            return Math.random() * 600;
+            return Math.random() * 60;
         };
 
-        var generateSiteValue = function(I) {
-            if (Math.random() > 0.5) {
-                return 'Site1';
-            }
-            return 'Site2';
+        var generateBuildingValue = function(I) {
+            return 'Headquarters';
         }
 
-        var generateSiteValue = function(I) {
-            if (Math.random() > 0.5) {
-                return 'Site1';
-            }
-            return 'Site2';
+        var generateFloorValue = function(I) {
+            return 'Ground Floor';
         }
 
         var createGeneralBasedValues = function(visType, pass, randomMaxVal) {

@@ -168,10 +168,34 @@
                 settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
             }
 
-            if (getVisType() == "GeoMap")
+            if (getVisType() == "FloorMap")
             {
-                //Copied from 
-                settings.floorDef = "";
+                // settings.config = '\
+                // {\
+                //     "Headquarters": {\
+                //         "Ground Floor": "testfloorplans/building1-floor0.png",\
+                //         "First Floor": "testfloorplans/building1-floor1.png",\
+                //         "Second Floor": "testfloorplans/building1-floor2.png",\
+                //         "Third Floor": "testfloorplans/building1-floor3.png"\
+                //     },\
+                //     "Downtown": {\
+                //         "Basement": "testfloorplans/building2-floorb.png",\
+                //         "North Tower": "testfloorplans/building2-floorn.png",\
+                //         "South Tower": "testfloorplans/building2-floors.png"\
+                //     }\
+                // }\
+                // ';
+
+                settings.config = '\
+                {\
+                    "Headquarters": {\
+                        "Ground Floor": {\
+                            "image": "testfloorplans/building1-floor0.png",\
+                            "width": 100, \
+                            "height": 60}\
+                    }\
+                }\
+                ';    
             }
 
 
