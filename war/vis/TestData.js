@@ -480,20 +480,55 @@ function TestData() {
             return Math.random() - 0.5;
         };
 
-        var generateXValue = function(i) {
-            return Math.random() * 100;
+        var generateXValue = function(i, random) {
+            const randomInt = Math.floor(random  * 1000);
+
+            if (randomInt % 2 == 0)  {
+                return Math.random() * 100;
+            } else {
+                return Math.random() * 40;
+            }
         };
 
         var generateYValue = function(i) {
             return Math.random() * 60;
         };
 
-        var generateBuildingValue = function(I) {
-            return 'Headquarters';
+        var generateBuildingValue = function(i, random) {
+            const randomInt = Math.floor(random  * 1000);
+
+            if (randomInt % 2 == 0) {
+                return 'Headquarters';
+            } else {
+                return 'Downtown';
+            }
+            
         }
 
-        var generateFloorValue = function(I) {
-            return 'Ground Floor';
+        var generateFloorValue = function(i, random) {
+
+            const randomInt = Math.floor(random  * 1000);
+            if (randomInt % 2 == 0)  {
+                const floor = randomInt % 8;
+                if (floor == 0) {
+                    return "Ground Floor";
+                } else if (floor == 2) {
+                    return "First Floor";
+                } else if  (floor == 4) {
+                    return "Second Floor";
+                } else {
+                    return "Third Floor";
+                }
+            } else {
+                const floor = randomInt % 5;
+                if (floor == 1) {
+                    return "Basement";
+                } else if (floor == 3) {
+                    return "North Tower";
+                } else {
+                    return "South Tower";
+                }
+            }
         }
 
         var createGeneralBasedValues = function(visType, pass, randomMaxVal) {
@@ -505,8 +540,9 @@ function TestData() {
                     if (Math.random() > 0.1) {
                         var value = [];
 
+                        const randomNumber = Math.random();
                         valueFunctions.forEach(function(valueFunction, j) {
-                            value[j] = valueFunction(i);
+                            value[j] = valueFunction(i, randomNumber);
                         });
 
                         values.push(value);
