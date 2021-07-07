@@ -152,6 +152,9 @@ if (!visualisations) {
                     const elemToRemoveId = this.elementName + "-" + hashKey;
                     const elemToRemove = document.getElementById(elemToRemoveId);
 
+                    //Remove the map associted with the grid
+                    delete this.maps[elemToRemoveId];
+
                     if (elemToRemove) {
                         elemToRemove.remove();
                     }
