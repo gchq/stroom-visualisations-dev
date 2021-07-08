@@ -258,6 +258,9 @@ if (!visualisations) {
                     //Delete the markers associated with this grid
                     delete this.markers[elemToRemoveId];
 
+                    //Delete the layer controls associated with this grid
+                    delete this.layerControls[elemToRemoveId] 
+
                     //Remove all layers that are associated with this grid
                     for (const layer in this.layers) {
                         if (layer.startsWith(elemToRemoveId)) {
