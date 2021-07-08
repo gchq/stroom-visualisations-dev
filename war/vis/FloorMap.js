@@ -87,7 +87,10 @@ if (!visualisations) {
         this.markers = {};
         this.maps = {}; //1 map per grid cell
         this.layerControls = {};//1 control per map
+        this.currentLayer = {}; //1 layer name per map
         this.layers = {}; // 1 layer per floor per map
+        this.currentLayer = {};
+        this.boundsMap = new Map(); //layer name to bounds
 
         //Load the library stylesheet
         addCss('leaflet/leaflet.css');
@@ -118,6 +121,7 @@ if (!visualisations) {
             return building + "." + floor;
         }
 
+        
         this.setGridCellLevelData = function(gridName, context, settings, data) {
 
             const config = JSON.parse(settings.config);
@@ -166,8 +170,10 @@ if (!visualisations) {
                                 continue;
                             }
 
+                            const layerLabel = this.createLayerLabel(buildingId, floorId);
                             //Pairs of "lat,lon" (y, x) rather than x,y
                             const bounds = [[0,0], [floorConfig.height, floorConfig.width]];
+                            this.boundsMap.set(layerLabel, bounds);
         
                             const imageUrl = floorConfig.image;
                             
@@ -185,20 +191,28 @@ if (!visualisations) {
                                 this.maps[gridName] = L.map(gridName,
                                     {
                                     crs: L.CRS.Simple,
-                                    minZoom: -5
+                                    minZoom: 0
                                     }
                                 );
-                            
+
+                                this.currentLayer[gridName] = layerLabel;
+                                
+                                const vis = this; //Allow this to be accessed within closure
+                                this.maps[gridName].on('baselayerchange',function (e) {
+                                    vis.currentLayer[gridName] = e.name;
+                                    vis.resize();
+                                  });
+                                
 
                                 this.layers[layerId].addTo(this.maps[gridName]);
-                                this.maps[gridName].fitBounds (bounds);
-
+                                
                                 this.layerControls[gridName] = L.control.layers(null, null, {sortLayers: true})
                                     .addTo(this.maps[gridName]);
+                                
                             }
 
-                            this.layerControls[gridName].addBaseLayer(this.layers[layerId], 
-                                this.createLayerLabel(buildingId, floorId));
+                            this.layerControls[gridName].addBaseLayer(this.layers[layerId], layerLabel);
+                            
                             
                         }
                
@@ -252,14 +266,11 @@ if (!visualisations) {
                 if (! newGridKeys[hashKey]) {
                     const elemToRemoveId = this.elementName + "-" + hashKey;
 
-                    //Remove the map associated with this grid
+                    //Remove the resources associated with this grid that are not now needed
                     delete this.maps[elemToRemoveId];
-
-                    //Delete the markers associated with this grid
                     delete this.markers[elemToRemoveId];
-
-                    //Delete the layer controls associated with this grid
-                    delete this.layerControls[elemToRemoveId] 
+                    delete this.layerControls[elemToRemoveId];
+                    delete this.currentLayer[elemToRemoveId];
 
                     //Remove all layers that are associated with this grid
                     for (const layer in this.layers) {
@@ -325,6 +336,7 @@ if (!visualisations) {
 
         this.resize = function() {
             for (const mapName in this.maps){
+                this.maps[mapName].fitBounds(this.boundsMap.get(this.currentLayer[mapName]));
                 this.maps[mapName].invalidateSize();
             }
         };
