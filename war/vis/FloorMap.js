@@ -86,6 +86,7 @@ if (!visualisations) {
         
         this.markers = {};
         this.maps = {}; //1 map per grid cell
+        this.layerControls = {};//1 control per map
         this.layers = {}; // 1 layer per floor per map
 
         //Load the library stylesheet
@@ -111,6 +112,10 @@ if (!visualisations) {
 
         this.createLayerKey = function (gridName, building, floor){
             return gridName + building + floor;
+        }
+
+        this.createLayerLabel = function (building, floor){
+            return building + "." + floor;
         }
 
         this.setGridCellLevelData = function(gridName, context, settings, data) {
@@ -186,11 +191,15 @@ if (!visualisations) {
                             
 
                                 this.layers[layerId].addTo(this.maps[gridName]);
-                                this.maps[gridName].fitBounds (bounds);  
-                                    
-                            }
-                            
+                                this.maps[gridName].fitBounds (bounds);
 
+                                this.layerControls[gridName] = L.control.layers(null, null, {sortLayers: true})
+                                    .addTo(this.maps[gridName]);
+                            }
+
+                            this.layerControls[gridName].addBaseLayer(this.layers[layerId], 
+                                this.createLayerLabel(buildingId, floorId));
+                            
                         }
                
                         const dataKey = this.createDataKey(val);
