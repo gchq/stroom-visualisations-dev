@@ -130,7 +130,7 @@ if (!visualisations) {
 
                             this.markers[gridName].set(dataKey, marker);
                         } else {
-                             console.log("Not updating marker " + val[1] + ":" + val[2]);
+                            //  console.log("Not updating marker " + val[1] + ":" + val[2]);
                         }
                     
                     }
