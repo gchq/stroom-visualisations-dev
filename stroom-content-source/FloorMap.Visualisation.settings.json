@@ -19,12 +19,12 @@
                     "label": "Floor"
                 },
                 {
-                    "id": "x",
+                    "id": "xPos",
                     "type": "field",
                     "label": "X position"
                 },
                 {
-                    "id": "y",
+                    "id": "yPos",
                     "type": "field",
                     "label": "Y position"
                 },
@@ -154,10 +154,16 @@
                                 }
                             },
                             {
-                                "id": "${lat}"
+                                "id": "${building}"
                             },
                             {
-                                "id": "${lon}"
+                                "id": "${floor}"
+                            },
+                            {
+                                "id": "${xPos}"
+                            },
+                            {
+                                "id": "${yPos}"
                             },
                             {
                                 "id": "${iconName}"
