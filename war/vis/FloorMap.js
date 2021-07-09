@@ -39,7 +39,8 @@ if (!visualisations) {
     var commonConstants = visualisations.commonConstants;
 
 
-    var hashString = function(input) {
+    var hashString = function(data) {
+        input = "" + data;
         var hash = 0, i, chr;
         if (input.length === 0) return hash;
         for (i = 0; i < input.length; i++) {
