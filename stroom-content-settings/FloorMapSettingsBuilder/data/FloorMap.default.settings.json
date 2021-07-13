@@ -1,0 +1,189 @@
+{
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "name",
+                    "type": "field",
+                    "label": "Name"
+                },
+                {
+                    "id": "building",
+                    "type": "field",
+                    "label": "Building"
+                },
+                {
+                    "id": "floor",
+                    "type": "field",
+                    "label": "Floor"
+                },
+                {
+                    "id": "xPos",
+                    "type": "field",
+                    "label": "X position"
+                },
+                {
+                    "id": "yPos",
+                    "type": "field",
+                    "label": "Y position"
+                },
+                {
+                    "id": "iconName",
+                    "type": "field",
+                    "label": "Icon Name"
+                },
+                {
+                    "id": "series",
+                    "type": "field",
+                    "label": "Series"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series"
+                }
+            ]
+        },
+        {
+            "name": "FloorMap",
+            "controls": [
+              {
+                  "id": "config",
+                  "type": "text",
+                  "label": "Configuration JSON",
+                  "defaultValue": "{}"
+                },
+                {
+                    "id": "maxValues",
+                    "type": "number",
+                    "label": "Max Values",
+                    "defaultValue": "500",
+                    "max": "10000",
+                    "min": "1"
+                },
+                {
+                    "id": "maxSeries",
+                    "type": "number",
+                    "label": "Max Series",
+                    "defaultValue": "100",
+                    "min": "1",
+                    "max": "10000"
+                },
+                {
+                    "id": "sortSeries",
+                    "type": "selection",
+                    "label": "Sort Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "maxGridSeries",
+                    "type": "number",
+                    "label": "Max Grid Series",
+                    "defaultValue": "25",
+                    "min": "1",
+                    "max": "25"
+                },
+                {
+                    "id": "sortGridSeries",
+                    "type": "selection",
+                    "label": "Sort Grid Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "synchSeries",
+                    "type": "selection",
+                    "label": "Synch Series",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id" : "showLabels",
+                    "type" : "selection",
+                    "label" : "Show Labels",
+                    "values" : [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue" : "False"
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "id": "${gridSeries}",
+                    "sort": {
+                        "direction": "${sortGridSeries}",
+                        "enabled": "true",
+                        "priority": 0
+                    }
+                },
+                "nest": {
+                    "key": {
+                        "id": "${series}",
+                        "sort": {
+                            "direction": "${sortSeries}",
+                            "enabled": "true",
+                            "priority": 1
+                        }
+                    },
+                    "values": {
+                        "fields": [
+                            {
+                                "id": "${name}",
+                                "sort": {
+                                    "direction": "Ascending",
+                                    "enabled": "true",
+                                    "priority": 2
+                                }
+                            },
+                            {
+                                "id": "${building}"
+                            },
+                            {
+                                "id": "${floor}"
+                            },
+                            {
+                                "id": "${xPos}"
+                            },
+                            {
+                                "id": "${yPos}"
+                            },
+                            {
+                                "id": "${iconName}"
+                            }
+                        ],
+                        "limit": {
+                            "enabled": "true",
+                            "size": "${maxValues}"
+                        }
+                    },
+                    "limit": {
+                        "enabled": "true",
+                        "size": "${maxSeries}"
+                    }
+                },
+                "limit": {
+                    "enabled": "true",
+                    "size": "${maxGridSeries}"
+                }
+            }
+        }
+    }
+}
