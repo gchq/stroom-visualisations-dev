@@ -20,9 +20,9 @@ function processConfig () {
     CONFIG_DIR=$(dirname "$CONFIG_FILE")
 
     while IFS= read -r line  || [ -n "$line" ]; do
-        if [[ "$line" =~ .+ ]]
+        if [[ "$line" =~ [^[:space:]]+ ]]
         then    
-            if [[ "$line" =~ .*image.?:.* ]] 
+            if [[ "$line" =~ image.?: ]] 
             then 
                 echo -n '\"image\": \"'
                 image=$(echo -n $line | cut -d ':' -f 2 | sed 's/ //g' | sed 's/"//g' | sed 's/,//g')
@@ -34,7 +34,7 @@ function processConfig () {
                     encodeImage "$CONFIG_DIR"/"$image" #Relative path
                 fi
                 echo -n '\"'
-                [[ "$line" =~ .*, ]] && echo -n ','
+                [[ "$line" =~ ,[[:space:]]*$ ]] && echo -n ','
             else
                 echo -n $line | sed 's/"/\\"/g'
             fi
@@ -49,9 +49,9 @@ OUTPUT_FILE="$3"
 
 
 while IFS= read line  || [ -n "$line" ]; do
-  if [[ "$line" =~ .+ ]]
+  if [[ "$line" =~ [^[:space:]]+ ]]
   then
-    if [[ "$line" =~ .*defaultValue.?:.?\"\{\}\" ]]
+    if [[ "$line" =~ defaultValue.?:.?\"\{\}\" ]]
     then
       echo -n '            "defaultValue": "'
       processConfig "$CONFIG_FILE"
