@@ -47,13 +47,13 @@ while IFS= read line  || [ -n "$line" ]; do
   then
     if [[ "$line" =~ .*defaultValue.?:.?\"\{\}\" ]]
     then
-      echo -n '                "defaultValue": "'
+      echo -n '            "defaultValue": "'
       processConfig "$CONFIG_FILE"
       echo -n '"'
       [[ "$line" =~ .*, ]] && echo -n ','
       echo
     else
-      echo $line
+      echo "$line"
     fi
   fi
 done < "$SETTINGS_FILE"
