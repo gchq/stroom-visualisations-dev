@@ -26,7 +26,13 @@ function processConfig () {
             then 
                 echo -n '\"image\": \"'
                 image=$(echo -n $line | cut -d ':' -f 2 | sed 's/ //g' | sed 's/"//g' | sed 's/,//g')
-                encodeImage "$CONFIG_DIR"/"$image"
+
+                if [[ "$image" =~ ^/.* ]] 
+                then
+                    encodeImage "$image" #Absolute path to image
+                else
+                    encodeImage "$CONFIG_DIR"/"$image" #Relative path
+                fi
                 echo -n '\"'
                 [[ "$line" =~ .*, ]] && echo -n ','
             else
