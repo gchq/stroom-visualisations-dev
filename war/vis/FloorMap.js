@@ -124,8 +124,10 @@ if (!visualisations) {
 
         
         this.setGridCellLevelData = function(gridName, context, settings, data) {
-
-            const config = JSON.parse(settings.config);
+            if (!this.config) {
+                this.config = JSON.parse(settings.config);
+            }
+            
             if (data && data !== null) {
 
                 const seriesArray = data.values;
@@ -141,7 +143,7 @@ if (!visualisations) {
 
                         if (!this.layers[layerId]) {
                             
-                            const buildingConfig = config[buildingId];
+                            const buildingConfig = this.config[buildingId];
                             if (!buildingConfig) {
                                 console.log ('Configuration not found for building "' + buildingId + '"');
                                 continue;

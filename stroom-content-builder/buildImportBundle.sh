@@ -23,7 +23,8 @@ set -e
 shopt -s globstar
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-sourceDir="$scriptDir/../stroom-content-source"
+#sourceDir="$scriptDir/../stroom-content-source"
+sourceDir="$scriptDir/../stroom-content-local"
 targetDir="$scriptDir/../stroom-content-target"
 artifactDir="$scriptDir/../stroom-content-artifacts"
 visJsFilesDir="$scriptDir/../war/vis"
@@ -119,7 +120,7 @@ getGitComitHashForFile() {
 }
 
 getDateForGitCommit() {
-  local commitHash=$1
+  local commitHash=${commitHash:=.}
 
   commitDate="$(git show -s --format=%ci "${commitHash}")"
 }

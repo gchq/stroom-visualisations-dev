@@ -141,25 +141,26 @@
             } 
 
             settings.stateChange = null;
+            const visType = getVisType();
 
-            if (getVisType() == "SeriesSessionMap-Stateful")
+            if (visType == "SeriesSessionMap-Stateful")
             {
                 settings.stateChange = "Not a real field";
             }
 
-            if (getVisType() == "LineChart-Stateful")
+            if (visType == "LineChart-Stateful")
             {
                 settings.stateCounting = "True";
             }
 
-            if (getVisType() == "Bubble-flat")
+            if (visType == "Bubble-flat")
             {
                 settings.flattenSeries = "True";
             } else {
                 settings.flattenSeries = "False";
             }
 
-            if (getVisType() == "GeoMap")
+            if (visType == "GeoMap")
             {
                 settings.initialLatitude = "51.5";
                 settings.initialLongitude = "0.0";
@@ -168,7 +169,7 @@
                 settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
             }
 
-            if (getVisType() == "FloorMap")
+            if (visType== "FloorMap" || visType == "LocalFloorMap")
             {
                 settings.config = '\
                 {\
