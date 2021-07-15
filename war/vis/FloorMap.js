@@ -125,7 +125,11 @@ if (!visualisations) {
         
         this.setGridCellLevelData = function(gridName, context, settings, data) {
             if (!this.config) {
-                this.config = JSON.parse(settings.config);
+                if (localFloorMapConfig) {
+                    this.config = localFloorMapConfig;
+                } else {
+                    this.config = JSON.parse(settings.config);
+                }
             }
             
             if (data && data !== null) {

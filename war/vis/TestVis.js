@@ -169,44 +169,52 @@
                 settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
             }
 
-            if (visType== "FloorMap" || visType == "LocalFloorMap")
+            if (visType == 'FloorMap')
             {
-                settings.config = '\
-                {\
-                    "Headquarters": {\
-                        "Ground Floor": {\
-                            "image": "testfloorplans/building1-floor0.png",\
-                            "width": 100, \
-                            "height": 60},\
-                        "First Floor": {\
-                            "image": "testfloorplans/building1-floor1.png",\
-                            "width": 100, \
-                            "height": 60},\
-                        "Second Floor": {\
-                            "image": "testfloorplans/building1-floor2.png",\
-                            "width": 100, \
-                            "height": 60},\
-                        "Third Floor": {\
-                            "image": "testfloorplans/building1-floor3.png",\
-                            "width": 100, \
-                            "height": 60}\
-                    },\
-                    "Downtown": {\
-                        "Basement": {\
-                            "image": "testfloorplans/building2-floorb.png",\
-                            "width": 40, \
-                            "height": 60},\
-                        "North Tower": {\
-                            "image": "testfloorplans/building2-floorn.png",\
-                            "width": 40, \
-                            "height": 60},\
-                        "South Tower": {\
-                            "image": "testfloorplans/building2-floors.png",\
-                            "width": 40, \
-                            "height": 60}\
-                        }\
-                }\
-                ';    
+                settings.config = '';
+
+                localFloorMapConfig = {
+                    "Headquarters": {
+                        "Ground Floor": {
+                            "image": "testfloorplans/building1-floor0.png",
+                            "width": 100,
+                            "height": 60
+                        },
+                        "First Floor": {
+                            "image": "testfloorplans/building1-floor1.png",
+                            "width": 100,
+                            "height": 60
+                        },
+                        "Second Floor": {
+                            "image": "testfloorplans/building1-floor2.png",
+                            "width": 100,
+                            "height": 60
+                        },
+                        "Third Floor": {
+                            "image": "testfloorplans/building1-floor3.png",
+                            "width": 100,
+                            "height": 60
+                        }
+                    },
+                    "Downtown": {
+                        "Basement": {
+                            "image": "testfloorplans/building2-floorb.png",
+                            "width": 40,
+                            "height": 60
+                        },
+                        "North Tower": {
+                            "image": "testfloorplans/building2-floorn.png",
+                            "width": 40,
+                            "height": 60
+                        },
+                        "South Tower": {
+                            "image": "testfloorplans/building2-floors.png",
+                            "width": 40,
+                            "height": 60
+                        }
+                    }
+                };
+
             }
 
 
