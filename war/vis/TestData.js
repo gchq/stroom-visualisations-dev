@@ -292,8 +292,10 @@ function TestData() {
             valueFunctions[3] = generateFloorValue;
             valueFunctions[4] = generateXValue;
             valueFunctions[5] = generateYValue;
+            valueFunctions[6] = generateIconValue;
+            valueFunctions[7] = generateSeriesValue;
 
-            valueCountLimit = 6;
+            valueCountLimit = 8;
             fieldZeroType = commonConstants.dataTypeGeneral;
         } else if (visType == VIS_TYPE_GEOMAP) {
             seriesCount = Math.round(Math.random() * 5);
@@ -301,7 +303,9 @@ function TestData() {
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateLatitudeValue;
             valueFunctions[2] = generateLongitudeValue;
-            valueCountLimit = 3;
+            valueFunctions[3] = generateIconValue;
+            valueFunctions[4] = generateSeriesValue;
+            valueCountLimit = 5;
             fieldZeroType = commonConstants.dataTypeGeneral;
         } else {
             // define a random number of series
@@ -493,6 +497,23 @@ function TestData() {
 
         var generateYValue = function(i) {
             return Math.random() * 60;
+        };
+
+        var generateIconValue = function(i) {
+            if (i % 2 == 0) {
+                return 'coffee';
+            } else {
+                return 'camera';
+            }
+        };
+
+
+        var generateSeriesValue = function(i) {
+            if (i % 2 == 0) {
+                return 'Coffee Shops';
+            } else {
+                return 'Points of Interest';
+            }
         };
 
         var generateBuildingValue = function(i, random) {

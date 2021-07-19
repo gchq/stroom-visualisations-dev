@@ -39,7 +39,6 @@ if (!visualisations) {
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
 
-
     var hashString = function(data) {
         input = "" + data;
         var hash = 0, i, chr;
@@ -51,11 +50,11 @@ if (!visualisations) {
         }
         return Math.abs(hash);
       };
-    var markerColours = ['red', 'darkred', 'orange', 'green', 'darkgreen', 'blue', 'purple', 'darkpurple', 'cadetblue'];
+    // var markerColours = ['red', 'darkred', 'orange', 'green', 'darkgreen', 'blue', 'purple', 'darkpurple', 'cadetblue'];
         
-    var markerColour = function (seriesNum) {
-        return markerColours[seriesNum % markerColours.length];
-    }
+    // var markerColour = function (seriesNum) {
+    //     return markerColours[seriesNum % markerColours.length];
+    // }
 
 
     visualisations.FloorMap = function() {
@@ -137,7 +136,7 @@ if (!visualisations) {
 
                 for (var i = 0; i < seriesArray.length; i++){
                     const series = seriesArray[i];
-                    const colour = markerColour (i);
+                    
                     const vals = series.values;
                     for (const val of vals) {
                         const campusId = val[floormapIndexCampus];
@@ -239,7 +238,12 @@ if (!visualisations) {
                                 iconName = val[floormapIndexIcon];
                             }
     
-                            var markerHtml = "<div style='background-color:#4838cc;' class='marker-pin'></div><i class='fa fa-"
+                            var colour = color (iconName);
+                            if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
+                                colour = color(val[floormapIndexSeries]);
+                            }
+
+                            var markerHtml = "<div style='background-color:" + colour + "' class='marker-pin'></div><i class='fa fa-"
                               + iconName + " awesome'>";
                                                             
                             var markerIcon = L.divIcon({
