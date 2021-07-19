@@ -45,7 +45,7 @@ The visualiation sorts alphabetically and allows the user to select
 between floors for which data is available.
 
 The width and height defined for each floor must be in the same
-units of distance that X and Y will be provided by the Stroom dashboard.
+units of distance that are used for the X and Y coordinates that are provided by the Stroom dashboard.
 
 An example configuration file `data/example/example.json` is provided.
 
