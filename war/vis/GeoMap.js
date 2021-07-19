@@ -27,6 +27,13 @@ if (!visualisations) {
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
 
+    //Indicies of attributes within the data value array
+    const geomapIndexName = 0;
+    const geomapIndexLatitude = 1;
+    const geomapIndexLongitude = 2;
+    const geomapIndexIcon = 3;
+    const geomapIndexSeries = 4;
+    const geomapIndexGridSeries = 5;
 
     var hashString = function(data) {
         input = "" + data;
@@ -88,7 +95,7 @@ if (!visualisations) {
         this.createDataKey = function (val){
             //Just has locations as all markers are identical, so only one at a single location 
             //can be displayed at a time anyway
-            return hashString(val[1] + val[2]);
+            return hashString(val[geomapIndexLatitude] + val[geomapIndexLongitude]);
         }
 
         this.setGridCellLevelData = function(map, gridName, context, settings, data) {
@@ -111,13 +118,13 @@ if (!visualisations) {
                             var iconName = 'map-marker';
 
 
-                            if (val.length > 3 && val[3]) {
-                                iconName = val[3];
+                            if (val.length > geomapIndexIcon && val[geomapIndexIcon]) {
+                                iconName = val[geomapIndexIcon];
                             }
 
                             var colour = color (iconName);
-                            if (val.length > 4 && val[4]) {
-                                colour = color(val[4]);
+                            if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                                colour = color(val[geomapIndexSeries]);
                             }
     
                             var markerHtml = "<div style='background-color:" + colour + "' class='marker-pin'></div><i class='fa fa-"
@@ -130,9 +137,20 @@ if (!visualisations) {
                                 iconAnchor: [15, 42]
                                 });
     
-                            var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon})
-                            .addTo(map); 
+                            var marker = L.marker([parseFloat(val[geomapIndexLatitude]),parseFloat(val[geomapIndexLongitude])], {icon: markerIcon})
+                                .addTo(map); 
 
+                            if (val.length > geomapIndexName && val[geomapIndexName]){
+                                var popupHeading = "Information";
+                                if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                                    popupHeading = val[geomapIndexSeries];
+                                }
+                                
+                                const popupDetail = val[geomapIndexName];
+                                
+                                marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
+                            }
+                            
                             this.markers[gridName].set(dataKey, marker);
                         } else {
                             //  console.log("Not updating marker " + val[1] + ":" + val[2]);

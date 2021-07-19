@@ -249,7 +249,20 @@ if (!visualisations) {
                            
                             //Position is y,x deriving from latlon
                             var marker = L.marker([parseFloat(val[floormapIndexY]),
-                                parseFloat(val[floormapIndexX])], {icon: markerIcon}); 
+                                parseFloat(val[floormapIndexX])], {icon: markerIcon});
+
+                            //Add popup details
+                            if (val.length > floormapIndexName && val[floormapIndexName]){
+                                var popupHeading = "Information";
+                                if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
+                                    popupHeading = val[floormapIndexSeries];
+                                }
+                                
+                                const popupDetail = val[floormapIndexName];
+                                
+                                marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
+                            }
+                            
                             this.layers[layerId].addLayer(marker);
                             this.markers[gridName].set(dataKey, marker);
                         } else {
