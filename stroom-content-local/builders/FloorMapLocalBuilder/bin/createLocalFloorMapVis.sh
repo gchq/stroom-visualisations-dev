@@ -74,7 +74,7 @@ cat "$CONFIG_FILE" | \
     # echo "PAth: $datapath"
     # echo "IMAGE: $image"
     IFS='/' read -r campus_untidy building floor discard <<< "$datapath"
-    campus=`echo "$campus_untidy" | tr -d '\" '`
+    campus=`echo "$campus_untidy" | tr -d '\"' | sed -E 's/^\s+//g'`
     # echo "Cam: $campus"
     # echo "Bui: $building"
     # echo "Floor: $floor"
