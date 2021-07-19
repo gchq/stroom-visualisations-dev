@@ -43,14 +43,20 @@ OUTPUT_VIS="$2"
 OUTPUT_VIS_NO_SPACES=$(echo -n "$OUTPUT_VIS" | tr ' ' _)
 SCRIPT_UUID="$3"
 VIS_UUID="$4"
+
+echo "Script UUID: $SCRIPT_UUID"
+echo "Visualisation UUID: $VIS_UUID"
+
 LOCALFLOORMAPCONFIG_LITERAL="localFloorMapConfig"
 
 CONFIG_DIR=$(dirname "$CONFIG_FILE")
 
-VIS_DIRECTORY="Visualisations/Local"
+VIS_ROOT="Visualisations"
+VIS_DIRECTORY="$VIS_ROOT/Local"
 
 #Normally FloorMapLocalBuilder/output/...
-OUTPUT_DIR="$CONFIG_DIR/../../output/$OUTPUT_VIS/$VIS_DIRECTORY"
+OUTPUT_ROOT="../output/$OUTPUT_VIS"
+OUTPUT_DIR="$OUTPUT_ROOT/$VIS_DIRECTORY"
 mkdir -p "$OUTPUT_DIR"
 
 SCRIPT_NAME="$OUTPUT_VIS_NO_SPACES.Script.$SCRIPT_UUID"
@@ -59,7 +65,7 @@ VIS_NAME="$OUTPUT_VIS_NO_SPACES.Visualisation.$VIS_UUID"
 ##There are 6 files to create with similar names
 ##Create the Script.js
 SCRIPT_JS="$OUTPUT_DIR"/"$SCRIPT_NAME".js
-echo -n "const $LOCALFLOORMAPCONFIG_LITERAL = " > "$SCRIPT_JS"
+echo -n "$LOCALFLOORMAPCONFIG_LITERAL = " > "$SCRIPT_JS"
 cat "$CONFIG_FILE" | jq | grep -v '\"image\":' |grep -v '^}$' >> "$SCRIPT_JS"
 echo "};" >> "$SCRIPT_JS"
 
@@ -113,3 +119,8 @@ processTemplate "Visualisation.meta" "$OUTPUT_DIR"/"$OUTPUT_VIS_NO_SPACES.Visual
 processTemplate "Visualisation.node" "$OUTPUT_DIR"/"$OUTPUT_VIS_NO_SPACES.Visualisation.$VISUALISATION_UUID.node"\
   "$OUTPUT_VIS" "$SCRIPT_UUID" "$VIS_UUID" `uuidgen`
 
+#Create zip archive for import into Stroom
+cd "$OUTPUT_ROOT"
+
+echo "Writing '$OUTPUT_ROOT/$OUTPUT_VIS_NO_SPACES.zip'"
+zip -qr "$OUTPUT_VIS_NO_SPACES.zip" "$VIS_ROOT"
