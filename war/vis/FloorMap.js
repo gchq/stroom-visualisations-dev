@@ -26,13 +26,14 @@ if (!visualisations) {
 
     //Indicies of attributes within the data value array
     const floormapIndexName = 0;
-    const floormapIndexBuilding = 1;
-    const floormapIndexFloor = 2;
-    const floormapIndexX = 3;
-    const floormapIndexY = 4;
-    const floormapIndexIcon = 5;
-    const floormapIndexSeries = 6;
-    const floormapIndexGridSeries = 7;
+    const floormapIndexCampus = 1;
+    const floormapIndexBuilding = 2;
+    const floormapIndexFloor = 3;
+    const floormapIndexX = 4;
+    const floormapIndexY = 5;
+    const floormapIndexIcon = 6;
+    const floormapIndexSeries = 7;
+    const floormapIndexGridSeries = 8;
     
 
     var commonFunctions = visualisations.commonFunctions;
@@ -110,16 +111,16 @@ if (!visualisations) {
         this.createDataKey = function (val){
             //Just has locations as all markers are identical, so only one at a single location 
             //can be displayed at a time anyway
-            return hashString("" + val[floormapIndexBuilding] + val[floormapIndexFloor] 
+            return hashString("" + val[floormapIndexCampus] + val[floormapIndexBuilding] + val[floormapIndexFloor] 
                 + val[floormapIndexX] + val[floormapIndexY]);
         }
 
-        this.createLayerKey = function (gridName, building, floor){
-            return gridName + building + floor;
+        this.createLayerKey = function (gridName, campus, building, floor){
+            return gridName + campus + building + floor;
         }
 
-        this.createLayerLabel = function (building, floor){
-            return building + "." + floor;
+        this.createLayerLabel = function (campus, building, floor){
+            return campus + "." + building + "." + floor;
         }
 
         
@@ -141,13 +142,19 @@ if (!visualisations) {
                     const colour = markerColour (i);
                     const vals = series.values;
                     for (const val of vals) {
+                        const campusId = val[floormapIndexCampus];
                         const buildingId = val[floormapIndexBuilding];
                         const floorId = val[floormapIndexFloor];
-                        const layerId = this.createLayerKey(gridName, buildingId, floorId);
+                        const layerId = this.createLayerKey(gridName, campusId, buildingId, floorId);
 
                         if (!this.layers[layerId]) {
-                            
-                            const buildingConfig = this.config[buildingId];
+                            const campusConfig = this.config[campusId];
+                            if (!campusConfig) {
+                                console.log ('Configuration not found for building group "' + campusId + '"');
+                                continue;
+                            }
+
+                            const buildingConfig = campusConfig[buildingId];
                             if (!buildingConfig) {
                                 console.log ('Configuration not found for building "' + buildingId + '"');
                                 continue;
@@ -177,7 +184,7 @@ if (!visualisations) {
                                 continue;
                             }
 
-                            const layerLabel = this.createLayerLabel(buildingId, floorId);
+                            const layerLabel = this.createLayerLabel(campusId, buildingId, floorId);
                             //Pairs of "lat,lon" (y, x) rather than x,y
                             const bounds = [[0,0], [floorConfig.height, floorConfig.width]];
                             this.boundsMap.set(layerLabel, bounds);

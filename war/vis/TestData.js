@@ -287,12 +287,13 @@ function TestData() {
             seriesCount = Math.round(Math.random() * 5);
             nestValues = true;
             valueFunctions[0] = generateTextValue;
-            valueFunctions[1] = generateBuildingValue;
-            valueFunctions[2] = generateFloorValue;
-            valueFunctions[3] = generateXValue;
-            valueFunctions[4] = generateYValue;
+            valueFunctions[1] = generateCampusValue;
+            valueFunctions[2] = generateBuildingValue;
+            valueFunctions[3] = generateFloorValue;
+            valueFunctions[4] = generateXValue;
+            valueFunctions[5] = generateYValue;
 
-            valueCountLimit = 5;
+            valueCountLimit = 6;
             fieldZeroType = commonConstants.dataTypeGeneral;
         } else if (visType == VIS_TYPE_GEOMAP) {
             seriesCount = Math.round(Math.random() * 5);
@@ -503,6 +504,10 @@ function TestData() {
                 return 'Downtown';
             }
             
+        }
+
+        var generateCampusValue = function(i, random) {
+            return "The Campus";
         }
 
         var generateFloorValue = function(i, random) {
