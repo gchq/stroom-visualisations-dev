@@ -1,0 +1,20 @@
+{
+  "type" : "Script",
+  "uuid" : "%%SCRIPT_UUID%%",
+  "name" : "%%NAME%%",
+  "version" : "%%RANDOM_UUID%%",
+  "description" : "",
+  "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "7e997977-765a-45b8-bddd-4bfdb0af95ad",
+    "name" : "Leaflet"
+  }, {
+    "type" : "Script",
+    "uuid" : "eece3dfa-3a4b-432b-9b9c-009aade6bd98",
+    "name" : "FloorMap"
+  } ]
+}
