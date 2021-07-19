@@ -32,7 +32,7 @@ function processTemplate () {
     cat "$TEMPLATE" | \
       sed "s/%%NAME%%/$NAME/g" | \
       sed "s/%%SCRIPT_UUID%%/$SCRIPT_UUID/g" | \
-      sed "s/%%VISUALISATION_UUID%%/$VISUALISATION_U         UID/g" | \
+      sed "s/%%VISUALISATION_UUID%%/$VISUALISATION_UUID/g" | \
       sed "s/%%RANDOM_UUID%%/$RANDOM_UUID/g" \
       > "$OUTPUT_FILE"
 }
