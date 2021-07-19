@@ -98,10 +98,8 @@ if (!visualisations) {
         addCss('leaflet/leaflet.css');
         
         //Load additional resources
-        addCss('leaflet/extras/awesome-markers/leaflet.awesome-markers.css');
-
-        addJs('leaflet/extras/awesome-markers/leaflet.awesome-markers.js');
-       
+        addCss('leaflet/leaflet-fontawesome-markers.css');
+        
         this.start = function() {
             
 
@@ -241,12 +239,16 @@ if (!visualisations) {
                                 iconName = val[floormapIndexIcon];
                             }
     
-                            var markerIcon = L.AwesomeMarkers.icon({
-                                icon: iconName,
-                                prefix: 'fa',
-                                markerColor: colour
+                            var markerHtml = "<div style='background-color:#4838cc;' class='marker-pin'></div><i class='fa fa-"
+                              + iconName + " awesome'>";
+                                                            
+                            var markerIcon = L.divIcon({
+                                className: 'custom-div-icon',
+                            html: markerHtml,
+                            iconSize: [30, 42],
+                            iconAnchor: [15, 42]
                             });
-    
+                           
                             //Position is y,x deriving from latlon
                             var marker = L.marker([parseFloat(val[floormapIndexY]),
                                 parseFloat(val[floormapIndexX])], {icon: markerIcon}); 
