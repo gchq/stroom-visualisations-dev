@@ -39,11 +39,7 @@ if (!visualisations) {
         }
         return Math.abs(hash);
       };
-    var markerColours = ['red', 'darkred', 'orange', 'green', 'darkgreen', 'blue', 'purple', 'darkpurple', 'cadetblue'];
-        
-    var markerColour = function (seriesNum) {
-        return markerColours[seriesNum % markerColours.length];
-    }
+
 
 
     visualisations.GeoMap = function() {
@@ -81,9 +77,7 @@ if (!visualisations) {
         addCss('leaflet/leaflet.css');
         
         //Load additional resources
-        addCss('leaflet/extras/awesome-markers/leaflet.awesome-markers.css');
-
-        addJs('leaflet/extras/awesome-markers/leaflet.awesome-markers.js');
+        addCss('leaflet/leaflet-fontawesome-markers.css');
        
         this.start = function() {
             
@@ -104,7 +98,6 @@ if (!visualisations) {
 
                 for (var i = 0; i < seriesArray.length; i++){
                     const series = seriesArray[i];
-                    const colour = markerColour (i);
                     const vals = series.values;
                     for (const val of vals) {
                         const dataKey = this.createDataKey(val);
@@ -114,16 +107,28 @@ if (!visualisations) {
                         }
 
                         if (!this.markers[gridName].has (dataKey)) {
+                          
                             var iconName = 'map-marker';
+
+
                             if (val.length > 3 && val[3]) {
                                 iconName = val[3];
                             }
+
+                            var colour = color (iconName);
+                            if (val.length > 4 && val[4]) {
+                                colour = color(val[4]);
+                            }
     
-                            var markerIcon = L.AwesomeMarkers.icon({
-                                icon: iconName,
-                                prefix: 'fa',
-                                markerColor: colour
-                            });
+                            var markerHtml = "<div style='background-color:" + colour + "' class='marker-pin'></div><i class='fa fa-"
+                            + iconName + " awesome'>";
+                                                          
+                            var markerIcon = L.divIcon({
+                                className: 'custom-div-icon',
+                                html: markerHtml,
+                                iconSize: [30, 42],
+                                iconAnchor: [15, 42]
+                                });
     
                             var marker = L.marker([parseFloat(val[1]),parseFloat(val[2])], {icon: markerIcon})
                             .addTo(map); 

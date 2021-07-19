@@ -50,12 +50,6 @@ if (!visualisations) {
         }
         return Math.abs(hash);
       };
-    // var markerColours = ['red', 'darkred', 'orange', 'green', 'darkgreen', 'blue', 'purple', 'darkpurple', 'cadetblue'];
-        
-    // var markerColour = function (seriesNum) {
-    //     return markerColours[seriesNum % markerColours.length];
-    // }
-
 
     visualisations.FloorMap = function() {
         var addCss = function(cssPath) {
