@@ -23,8 +23,7 @@ set -e
 shopt -s globstar
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#sourceDir="$scriptDir/../stroom-content-source"
-sourceDir="$scriptDir/../stroom-content-local"
+sourceDir="$scriptDir/../stroom-content-source"
 targetDir="$scriptDir/../stroom-content-target"
 artifactDir="$scriptDir/../stroom-content-artifacts"
 visJsFilesDir="$scriptDir/../war/vis"
