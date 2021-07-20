@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "%%VISUALISATION_UUID%%",
+  "name" : "%%NAME%%",
+  "version" : "%%RANDOM_UUID%%",
+  "description" : "FloorMap visualisation with locally defined floor plans.",
+  "functionName" : "visualisations.FloorMap",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "%%SCRIPT_UUID%%",
+    "name" : "%%NAME%%"
+  }
+}

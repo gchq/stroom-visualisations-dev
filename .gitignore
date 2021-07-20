@@ -2,6 +2,7 @@ TestVis/.classpath
 **/.project
 /gwt-unitCache/
 /.settings/
+**/output/
 .idea
 *.swp
 stroom-content-target

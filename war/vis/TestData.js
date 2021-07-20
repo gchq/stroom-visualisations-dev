@@ -37,10 +37,12 @@ function TestData() {
     var VIS_TYPE_BUBBLE_NESTED = "Bubble-nested";
     var VIS_TYPE_DAY_WEEK_HEAT_MAP = "DayWeekHeatMap";
     var VIS_TYPE_DOUGHNUT = "Doughnut";
+    var VIS_TYPE_FLOOR_MAP = "FloorMap";
     var VIS_TYPE_FORCE = "Force";
     var VIS_TYPE_FORCE_CANVAS = "ForceCanvas";
     var VIS_TYPE_GAUGE_GR = "Gauge-GreenRed";
     var VIS_TYPE_GAUGE_RG = "Gauge-RedGreen";
+    var VIS_TYPE_GEOMAP = "GeoMap";
     var VIS_TYPE_HOUR_DAY_HEAT_MAP = "HourDayHeatMap";
     var VIS_TYPE_HOUR_DAY_MULTI_HEAT_MAP = "HourDayMultiHeatMap";
     var VIS_TYPE_HOUR_DAY_POINT_MAP = "HourDayPointMap";
@@ -70,9 +72,11 @@ function TestData() {
         VIS_TYPE_BAR_CHART_ORDINAL,
         VIS_TYPE_BUBBLE_FLAT,
         VIS_TYPE_BUBBLE_NESTED,
-        VIS_TYPE_DOUGHNUT, 
+        VIS_TYPE_DOUGHNUT,
+        VIS_TYPE_FLOOR_MAP,
         VIS_TYPE_GAUGE_GR,
         VIS_TYPE_GAUGE_RG,
+        VIS_TYPE_GEOMAP,
         VIS_TYPE_HOUR_DAY_POINT_MAP,
         VIS_TYPE_HOUR_DAY_SESSION_MAP,
         VIS_TYPE_LINE_CHART,
@@ -137,6 +141,7 @@ function TestData() {
 
         } else if (GRIDABLE_VISUALISATIONS.indexOf(visType) != -1) {
             var maxGridCells = 25;
+
             if (addGridSeries){
                 var seriesCount = Math.max(1, Math.round(Math.random() * maxGridCells));
                 //var seriesCount = 2;
@@ -252,7 +257,7 @@ function TestData() {
             valueCountLimit = 1;
         } else if (visType === VIS_TYPE_TEXT_VALUE) {
             seriesCount = 1;
-            valueFunctions[0] = generateRadomTextValue;
+            valueFunctions[0] = generateRandomTextValue;
             fieldZeroType = commonConstants.dataTypeGeneral;
             valueCountLimit = 1;
         } else if (visType == VIS_TYPE_HOUR_DAY_HEAT_MAP  || visType == VIS_TYPE_DAY_WEEK_HEAT_MAP) {
@@ -278,6 +283,30 @@ function TestData() {
         } else if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
             seriesCount = 1;
             nestValues = true;
+        } else if (visType == VIS_TYPE_FLOOR_MAP) {
+            seriesCount = Math.round(Math.random() * 5);
+            nestValues = true;
+            valueFunctions[0] = generateTextValue;
+            valueFunctions[1] = generateCampusValue;
+            valueFunctions[2] = generateBuildingValue;
+            valueFunctions[3] = generateFloorValue;
+            valueFunctions[4] = generateXValue;
+            valueFunctions[5] = generateYValue;
+            valueFunctions[6] = generateIconValue;
+            valueFunctions[7] = generateSeriesValue;
+
+            valueCountLimit = 8;
+            fieldZeroType = commonConstants.dataTypeGeneral;
+        } else if (visType == VIS_TYPE_GEOMAP) {
+            seriesCount = Math.round(Math.random() * 5);
+            nestValues = true;
+            valueFunctions[0] = generateTextValue;
+            valueFunctions[1] = generateLatitudeValue;
+            valueFunctions[2] = generateLongitudeValue;
+            valueFunctions[3] = generateIconValue;
+            valueFunctions[4] = generateSeriesValue;
+            valueCountLimit = 5;
+            fieldZeroType = commonConstants.dataTypeGeneral;
         } else {
             // define a random number of series
             seriesCount = Math.max(1, Math.round(Math.random() * maxSeries));
@@ -356,7 +385,7 @@ function TestData() {
                 }
             }
             data.values = values;
-            data.types = [fieldZeroType, commonConstants.dataTypeNumber];
+            data.types = [fieldZeroType, commonConstants.dataTypeNumber, commonConstants.dataTypeNumber];
 
             computeNestedAggregates(data);
 
@@ -440,13 +469,93 @@ function TestData() {
             return fullValue;
         };
 
-        var generateRadomTextValue = function(i) {
+        var generateRandomTextValue = function(i) {
             return buildExtraText(50);
         };
 
         var generateFloatValue = function(i) {
             return Math.random() * randomMaxVal;
         };
+
+        var generateLatitudeValue = function(i) {
+            return Math.random() + 51;
+        };
+
+        var generateLongitudeValue = function(i) {
+            return Math.random() - 0.5;
+        };
+
+        var generateXValue = function(i, random) {
+            const randomInt = Math.floor(random  * 1000);
+
+            if (randomInt % 2 == 0)  {
+                return Math.random() * 100;
+            } else {
+                return Math.random() * 40;
+            }
+        };
+
+        var generateYValue = function(i) {
+            return Math.random() * 60;
+        };
+
+        var generateIconValue = function(i) {
+            if (i % 2 == 0) {
+                return 'coffee';
+            } else {
+                return 'camera';
+            }
+        };
+
+
+        var generateSeriesValue = function(i) {
+            if (i % 2 == 0) {
+                return 'Coffee Shops';
+            } else {
+                return 'Points of Interest';
+            }
+        };
+
+        var generateBuildingValue = function(i, random) {
+            const randomInt = Math.floor(random  * 1000);
+
+            if (randomInt % 2 == 0) {
+                return 'Headquarters';
+            } else {
+                return 'Downtown';
+            }
+            
+        }
+
+        var generateCampusValue = function(i, random) {
+            return "The Campus";
+        }
+
+        var generateFloorValue = function(i, random) {
+
+            const randomInt = Math.floor(random  * 1000);
+            if (randomInt % 2 == 0)  {
+                const floor = randomInt % 8;
+                if (floor == 0) {
+                    return "Ground Floor";
+                } else if (floor == 2) {
+                    return "First Floor";
+                } else if  (floor == 4) {
+                    return "Second Floor";
+                } else {
+                    return "Third Floor";
+                }
+            } else {
+                const floor = randomInt % 5;
+                if (floor == 1) {
+                    return "Basement";
+                } else if (floor == 3) {
+                    return "North Tower";
+                } else {
+                    return "South Tower";
+                }
+            }
+        }
 
         var createGeneralBasedValues = function(visType, pass, randomMaxVal) {
             var values = [];
@@ -457,8 +566,9 @@ function TestData() {
                     if (Math.random() > 0.1) {
                         var value = [];
 
+                        const randomNumber = Math.random();
                         valueFunctions.forEach(function(valueFunction, j) {
-                            value[j] = valueFunction(i);
+                            value[j] = valueFunction(i, randomNumber);
                         });
 
                         values.push(value);
@@ -544,20 +654,24 @@ function TestData() {
             data.max = [];
             data.sum = [];
 
-            for (i=0; i<data.values[0].length; i++){
+            if (!data.values || data.values.length > 0){
+                for (i=0; i<data.values[0].length; i++){
 
-                data.min[i] = d3.min(data.values, function(d) {
-                    return d[i];
-                });
+                    data.min[i] = d3.min(data.values, function(d) {
+                        return d[i];
+                    });
+    
+                    data.max[i] = d3.max(data.values, function(d) {
+                        return d[i];
+                    });
+    
+                    data.sum[i] = d3.sum(data.values, function(d) {
+                        return d[i];
+                    });
+                }
 
-                data.max[i] = d3.max(data.values, function(d) {
-                    return d[i];
-                });
-
-                data.sum[i] = d3.sum(data.values, function(d) {
-                    return d[i];
-                });
             }
+
         };
 
         function computeNestedAggregates(data) {
@@ -565,19 +679,21 @@ function TestData() {
             data.max = [];
             data.sum = [];
 
-            for (i=0; i<data.values[0].min.length; i++){
+            if (!data.values || data.values.length > 0){
+                for (i=0; i<data.values[0].min.length; i++){
 
-                data.min[i] = d3.min(data.values, function(d) {
-                    return d.min[i];
-                });
+                    data.min[i] = d3.min(data.values, function(d) {
+                        return d.min[i];
+                    });
 
-                data.max[i] = d3.max(data.values, function(d) {
-                    return d.max[i];
-                });
+                    data.max[i] = d3.max(data.values, function(d) {
+                        return d.max[i];
+                    });
 
-                data.sum[i] = d3.sum(data.values, function(d) {
-                    return d.sum[i];
-                });
+                    data.sum[i] = d3.sum(data.values, function(d) {
+                        return d.sum[i];
+                    });
+                }
             }
         };
 

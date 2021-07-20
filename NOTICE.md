@@ -1,4 +1,4 @@
-Copyright 2016 Crown Copyright
+Copyright 2016-2021 Crown Copyright
 
 This software project uses libraries which fall under several licences. The purpose of this _NOTICE.md_ file is to contain notices that are required by copyright owners and their licences.
 
@@ -17,6 +17,7 @@ See the file _LICENCE.txt_ for licencing information for this project.
 | Font Awesome code                         | 4.4.0            | MIT           |
 | graph-js                                  | n/a              | MIT Custom    |
 | jshashes                                  | n/a              | BSD Custom    |
+| LeafletJS                                 | 1.7.1            | BSD 2 Clause  |
 | roboto font                               | n/a              | AL 2.0        |
 | three-js                                  | 71               | MIT Custom    |
 

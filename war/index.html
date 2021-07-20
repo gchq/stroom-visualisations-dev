@@ -16,7 +16,7 @@
 -->
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="./css/vis.css">
+	<link rel="stylesheet" type="text/css" href="./css/vis.css"/>
 
 	<!--3rd party dependencies -->
 	<script src="./vis.js" charset="utf-8"></script>
@@ -25,6 +25,8 @@
 	<script src="./d3-grid/d3-grid.js" charset="utf-8"></script>
 	<script src="./d3-tip/index.js" charset="utf-8"></script>
 	<script src="./jshashes/hashes.js" charset="utf-8"></script>
+	<script src="./leaflet/leaflet.js" charset="utf-8"></script>
+	<link rel="stylesheet" href="./leaflet/leaflet.css"/>
 	<script src="./underscore/underscore.js" charset="utf-8"></script>
 
 	<!--Common code -->
@@ -39,9 +41,11 @@
 	<script src="./vis/Bubble.js" charset="utf-8"></script>
 	<script src="./vis/DayWeekHeatMap.js" charset="utf-8"></script>
 	<script src="./vis/Doughnut.js" charset="utf-8"></script>
+	<script src="./vis/FloorMap.js" charset="utf-8"></script>
 	<script src="./vis/Force.js" charset="utf-8"></script>
 	<script src="./vis/ForceCanvas2.js" charset="utf-8"></script>
 	<script src="./vis/Gauge.js" charset="utf-8"></script>
+	<script src="./vis/GeoMap.js" charset="utf-8"></script>
 	<script src="./vis/HourDayHeatMap.js" charset="utf-8"></script>
 	<script src="./vis/HourDayMultiHeatMap.js" charset="utf-8"></script>
 	<script src="./vis/HourDayPointMap.js" charset="utf-8"></script>
@@ -72,10 +76,12 @@
 			<option value="Bubble-nested"  >Bubble (Nested)</option>
 			<option value="DayWeekHeatMap">Day/Week Heat Map</option>
 			<option value="Doughnut">Doughnut</option>
+			<option value="FloorMap">FloorMap</option>
 			<option value="Force">Force [BROKEN]</option>
 			<option value="ForceCanvas">Force Canvas [BROKEN]</option>
 			<option value="Gauge-GreenRed">Gauge (Green-Red)</option>
 			<option value="Gauge-RedGreen">Gauge (Red-Green)</option>
+			<option value="GeoMap">GeoMap</option>
 			<option value="HourDayHeatMap">Hour/Day Heat Map</option>
 			<option value="HourDayMultiHeatMap">Hour/Day Multi Heat Map</option>
 			<option value="HourDayPointMap">Hour/Day Point Map</option>

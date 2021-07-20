@@ -141,23 +141,84 @@
             } 
 
             settings.stateChange = null;
+            const visType = getVisType();
 
-            if (getVisType() == "SeriesSessionMap-Stateful")
+            if (visType == "SeriesSessionMap-Stateful")
             {
                 settings.stateChange = "Not a real field";
             }
 
-            if (getVisType() == "LineChart-Stateful")
+            if (visType == "LineChart-Stateful")
             {
                 settings.stateCounting = "True";
             }
 
-            if (getVisType() == "Bubble-flat")
+            if (visType == "Bubble-flat")
             {
                 settings.flattenSeries = "True";
             } else {
                 settings.flattenSeries = "False";
             }
+
+            if (visType == "GeoMap")
+            {
+                settings.initialLatitude = "51.5";
+                settings.initialLongitude = "0.0";
+                settings.initialZoomLevel = 13;
+                settings.tileServerUrl = "https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+                settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
+            }
+
+            if (visType == 'FloorMap')
+            {
+                settings.config = '';
+
+                localFloorMapConfig = {
+                    "The Campus": {
+                        "Headquarters": {
+                            "Ground Floor": {
+                                "image": "testfloorplans/building1-floor0.png",
+                                "width": 100,
+                                "height": 60
+                            },
+                            "First Floor": {
+                                "image": "testfloorplans/building1-floor1.png",
+                                "width": 100,
+                                "height": 60
+                            },
+                            "Second Floor": {
+                                "image": "testfloorplans/building1-floor2.png",
+                                "width": 100,
+                                "height": 60
+                            },
+                            "Third Floor": {
+                                "image": "testfloorplans/building1-floor3.png",
+                                "width": 100,
+                                "height": 60
+                            }
+                        },
+                        "Downtown": {
+                            "Basement": {
+                                "image": "testfloorplans/building2-floorb.png",
+                                "width": 40,
+                                "height": 60
+                            },
+                            "North Tower": {
+                                "image": "testfloorplans/building2-floorn.png",
+                                "width": 40,
+                                "height": 60
+                            },
+                            "South Tower": {
+                                "image": "testfloorplans/building2-floors.png",
+                                "width": 40,
+                                "height": 60
+                            }
+                        }
+                    }
+                };
+
+            }
+
 
             //For testing data where the grid series key is a dateTimeMs
             //settings.gridSeriesDateFormat = "GridFmt %A %d/%m/%y %H:%M";

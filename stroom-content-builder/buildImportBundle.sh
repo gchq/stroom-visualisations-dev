@@ -119,7 +119,7 @@ getGitComitHashForFile() {
 }
 
 getDateForGitCommit() {
-  local commitHash=$1
+  local commitHash=${commitHash:=.}
 
   commitDate="$(git show -s --format=%ci "${commitHash}")"
 }

@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v3.4.0] - 2021-07-20
+
+* Added `GeoMap` - LeafletJS based mapping visualisation for lat/lon data
+* Added `FloorMap` - LeafletJS visualiation for x/y coord data on floorplans
+
 ## [v3.3.2] - 2021-05-26
 
 * Fixed time series visualisation name.
@@ -117,7 +122,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.2...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.4.0...HEAD
+[v3.4.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.2...v3.4.0
 [v3.3.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.1...v3.3.2
 [v3.3.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.0...v3.3.1
 [v3.3.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.2.1...v3.3.0
