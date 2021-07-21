@@ -180,6 +180,9 @@
                 },
                 {
                   "id": "${iconName}"
+                },
+                {
+                  "id": "${series}"
                 }
               ],
               "limit": {
