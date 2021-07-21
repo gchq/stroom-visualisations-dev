@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Updated documentation and default settings for GeoMap and FloorMap
+
 
 ## [v3.4.0] - 2021-07-20
 
