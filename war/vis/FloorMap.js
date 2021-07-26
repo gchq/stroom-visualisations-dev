@@ -82,8 +82,10 @@ if (!visualisations) {
         this.markers = {};
         this.maps = {}; //1 map per grid cell
         this.layerControls = {};//1 control per map
+        this.drawControls = {}; // 1 control per map
         this.currentLayer = {}; //1 layer name per map
         this.layers = {}; // 1 layer per floor per map
+        this.zoneLayers = {}; 
         this.currentLayer = {};
         this.boundsMap = new Map(); //layer name to bounds
 
@@ -109,7 +111,7 @@ if (!visualisations) {
         }
 
         this.createLayerKey = function (gridName, campus, building, floor){
-            return gridName + campus + building + floor;
+            return gridName + "." + campus + "." + building + "." + floor;
         }
 
         this.createLayerLabel = function (campus, building, floor){
@@ -129,6 +131,7 @@ if (!visualisations) {
             if (data && data !== null) {
 
                 const seriesArray = data.values;
+                const vis = this; //Allow this to be accessed within closures
 
                 for (var i = 0; i < seriesArray.length; i++){
                     const series = seriesArray[i];
@@ -189,7 +192,7 @@ if (!visualisations) {
                             
                             this.layers[layerId] = L.layerGroup([image]);
 
-                            if (!this.maps[gridName]) {
+                            if (!this.maps[gridName]) { //Init the map
                             
                                 const gridElement = window.document.createElement("div");
                                 gridElement.setAttribute("id", gridName);
@@ -204,85 +207,121 @@ if (!visualisations) {
 
                                 this.currentLayer[gridName] = layerLabel;
                                 
-                                const vis = this; //Allow this to be accessed within closure
-                                this.maps[gridName].on('baselayerchange',function (e) {
-                                    vis.currentLayer[gridName] = e.name;
-                                    vis.resize();
-                                  });
+                                // this.maps[gridName].on('baselayerchange',function (e) {
+                                //     vis.currentLayer[gridName] = e.name;
+                                //     vis.resize();
+                                //   });
                                 
 
                                 this.layers[layerId].addTo(this.maps[gridName]);
                                 
                                 this.layerControls[gridName] = L.control.layers(null, null, {sortLayers: true})
                                     .addTo(this.maps[gridName]);
-
-                                
-                                //Create drawing tools for editing zones
-    var drawnItems = new L.FeatureGroup(); //This must be by floor rather than global
-    this.maps[gridName].addLayer(drawnItems);
-                            
-                                    // Set the title to show on the polygon button
-    L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
-
-    var drawControl = new L.Control.Draw({
-        position: 'topright',
-        draw: {
-            polyline: false,
-            poly: {
-                
-                // drawError: {
-                //     color: '#e1e100', // Color the shape will turn when intersects
-                //     message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-                // },
-                // shapeOptions: {
-                //     color: '#bada55'
-                // },
-                allowIntersection: false // Restricts shapes to simple polygons
-            },
-            circle: false,
-            marker: false,
-            circlemarker: false,
-            rectangle: false
-        },
-        edit: {
-            featureGroup: drawnItems,
-            remove: true,
-            poly: {
-            //     drawError: {
-            //         color: '#e1e100', // Color the shape will turn when intersects
-            //         message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-            //     },
-                allowIntersection: false
-            }
-        }
-    });
-    this.maps[gridName].addControl(drawControl);
-
-    this.maps[gridName].on(L.Draw.Event.CREATED, function (e) {
-        var type = e.layerType,
-                layer = e.layer;
-
-        if (type === 'marker') {
-            layer.bindPopup('A popup!');
-        }
-
-        drawnItems.addLayer(layer);
-    });
-
-    this.maps[gridName].on(L.Draw.Event.EDITED, function (e) {
-        var layers = e.layers;
-        var countOfEditedLayers = 0;
-        layers.eachLayer(function (layer) {
-            countOfEditedLayers++;
-        });
-        console.log("Edited " + countOfEditedLayers + " layers");
-    });
-
                                 
                             }
 
                             this.layerControls[gridName].addBaseLayer(this.layers[layerId], layerLabel);
+                        
+
+                            //Create drawing tools for editing zones
+                             // Set the title to show on the polygon button
+                               L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
+                   
+                           
+                               this.maps[gridName].on(L.Draw.Event.CREATED, function (e) {
+                                   var type = e.layerType,
+                                    layer = e.layer;
+                           
+                                    const myLayerId = gridName + "." + e.name;
+                                       console.log('Looking for ' + myLayerId);
+                                       if (!vis.zoneLayers[myLayerId]) {
+                                        vis.zoneLayers[myLayerId] = new L.FeatureGroup(); 
+                                        
+                                        console.log('CREATE Created layer ' + myLayerId);
+                                    }
+                                       vis.zoneLayers[myLayerId].addLayer(layer);
+                               });
+                           
+                               this.maps[gridName].on(L.Draw.Event.EDITED, function (e) {
+                                   var layers = e.layers;
+                                   var countOfEditedLayers = 0;
+                                   layers.eachLayer(function (layer) {
+                                       countOfEditedLayers++;
+                                   });
+                                   console.log("Edited " + countOfEditedLayers + " layers");
+                               });
+                           
+
+                               //Callback for change of base layer (floor)
+                               this.maps[gridName].on('baselayerchange', function(e) {
+                                const myLayerId = gridName + "." + e.name;
                             
+
+                               
+                                if (!vis.zoneLayers[myLayerId]) {
+                                    vis.zoneLayers[myLayerId] = new L.FeatureGroup(); 
+                                    
+                                    console.log('EDIT Created layer ' + myLayerId);
+                                }
+
+                                if (vis.currentLayer[gridName] != e.name) {
+                                    vis.currentLayer[gridName] = e.name;
+                                    for (zonesForLevel in vis.zoneLayers) {
+                                        if (vis.maps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
+                                            // < Awesome here, could store the active layer
+                                            console.log ("Removing drawing layer");
+                                            vis.maps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
+                                        }
+                                    }
+                                    
+                                    console.log ("Adding drawing layer " + myLayerId);
+                                    vis.maps[gridName].addLayer(vis.zoneLayers[myLayerId]);
+                                }
+                                if (vis.drawControls[gridName])
+                                {
+                                    vis.maps[gridName].removeControl (vis.drawControls[gridName]);
+                                }
+
+                                vis.drawControls[gridName] = new L.Control.Draw({
+                                    position: 'topright',
+                                    draw: {
+                                        polyline: false,
+                                        poly: {
+                                            
+                                            // drawError: {
+                                            //     color: '#e1e100', // Color the shape will turn when intersects
+                                            //     message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                                            // },
+                                            // shapeOptions: {
+                                            //     color: '#bada55'
+                                            // },
+                                            allowIntersection: false // Restricts shapes to simple polygons
+                                        },
+                                        circle: false,
+                                        marker: false,
+                                        circlemarker: false,
+                                        rectangle: false
+                                    },
+                                    edit: {
+                                        featureGroup: vis.zoneLayers[myLayerId],
+                                        remove: true,
+                                        poly: {
+                                        //     drawError: {
+                                        //         color: '#e1e100', // Color the shape will turn when intersects
+                                        //         message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                                        //     },
+                                            allowIntersection: false
+                                        }
+                                    }
+                                }); 
+
+                                vis.maps[gridName].addControl(vis.drawControls[gridName]);
+
+                                // vis.currentLayer[gridName] = e.name;
+                                vis.resize();
+
+                                  
+                                 });
                             
                         }
                
