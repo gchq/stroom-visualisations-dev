@@ -92,6 +92,8 @@ if (!visualisations) {
         
         //Load additional resources
         addCss('leaflet/leaflet-fontawesome-markers.css');
+        addJs('leaflet/plugins/Leaflet.draw/leaflet.draw-src.js');
+        addCss('leaflet/plugins/Leaflet.draw/leaflet.draw.css');
         
         this.start = function() {
             
@@ -213,6 +215,69 @@ if (!visualisations) {
                                 
                                 this.layerControls[gridName] = L.control.layers(null, null, {sortLayers: true})
                                     .addTo(this.maps[gridName]);
+
+                                
+                                //Create drawing tools for editing zones
+    var drawnItems = new L.FeatureGroup(); //This must be by floor rather than global
+    this.maps[gridName].addLayer(drawnItems);
+                            
+                                    // Set the title to show on the polygon button
+    L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
+
+    var drawControl = new L.Control.Draw({
+        position: 'topright',
+        draw: {
+            polyline: false,
+            poly: {
+                
+                // drawError: {
+                //     color: '#e1e100', // Color the shape will turn when intersects
+                //     message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                // },
+                // shapeOptions: {
+                //     color: '#bada55'
+                // },
+                allowIntersection: false // Restricts shapes to simple polygons
+            },
+            circle: false,
+            marker: false,
+            circlemarker: false,
+            rectangle: false
+        },
+        edit: {
+            featureGroup: drawnItems,
+            remove: true,
+            poly: {
+            //     drawError: {
+            //         color: '#e1e100', // Color the shape will turn when intersects
+            //         message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+            //     },
+                allowIntersection: false
+            }
+        }
+    });
+    this.maps[gridName].addControl(drawControl);
+
+    this.maps[gridName].on(L.Draw.Event.CREATED, function (e) {
+        var type = e.layerType,
+                layer = e.layer;
+
+        if (type === 'marker') {
+            layer.bindPopup('A popup!');
+        }
+
+        drawnItems.addLayer(layer);
+    });
+
+    this.maps[gridName].on(L.Draw.Event.EDITED, function (e) {
+        var layers = e.layers;
+        var countOfEditedLayers = 0;
+        layers.eachLayer(function (layer) {
+            countOfEditedLayers++;
+        });
+        console.log("Edited " + countOfEditedLayers + " layers");
+    });
+
                                 
                             }
 
