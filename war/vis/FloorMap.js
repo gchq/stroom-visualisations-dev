@@ -19,6 +19,20 @@ if (!visualisations) {
     var visualisations = {};
 }
 
+const allFloorMapZones = {};
+
+function renameFloormapZone (elementId, originalName, campus, building, floor) {
+    const textField = window.document.getElementById(elementId);
+    const newName = textField.value;
+
+    if (newName == originalName) {
+        console.log("No change to zone name" + originalName);
+        return;
+    }
+    
+    allFloorMapZones[campus][building][floor][originalName].name = newName;
+}
+
 
 //IIFE to prvide shared scope for sharing state and constants between the controller 
 //object and each grid cell object instance
@@ -51,6 +65,8 @@ if (!visualisations) {
         return Math.abs(hash);
       };
 
+ 
+    
     visualisations.FloorMap = function() {
         var addCss = function(cssPath) {
             var linkElement = window.document.createElement('link');
@@ -86,7 +102,6 @@ if (!visualisations) {
         this.currentLayer = {}; //1 layer name per map
         this.layers = {}; // 1 layer per floor per map
         this.zoneLayers = {}; 
-        this.currentLayer = {};
         this.boundsMap = new Map(); //layer name to bounds
 
         //Load the library stylesheet
@@ -225,13 +240,49 @@ if (!visualisations) {
                                     layer = e.layer;
                            
                                     const myLayerId = gridName + "." + vis.currentLayer[gridName];
-                                       console.log('Looking for ' + myLayerId);
-                                    //    if (!vis.zoneLayers[myLayerId]) {
-                                    //     vis.zoneLayers[myLayerId] = new L.FeatureGroup(); 
-                                        
-                                    //     console.log('CREATE Created layer ' + myLayerId);
-                                    // }
-                                       vis.zoneLayers[myLayerId].addLayer(layer);
+                                  
+
+                                    //HERE
+                                    //HERE
+                                    //HERE
+                                    //HERE
+                                    //HERE
+                                    //HERE
+                                    //HERE
+                                    // layer.bindPopup('<button onclick="clicky(\'' + myLayerId + '\')">Rename</button>');
+                                   
+                                    vis.zoneLayers[myLayerId].addLayer(layer);
+
+                                    //Find the name of the zone
+                                    
+                                    var tokens = vis.currentLayer[gridName].split('.');
+                                    if (!allFloorMapZones[tokens[0]]){
+                                        allFloorMapZones[tokens[0]] = {};
+                                    }
+                                    if (!allFloorMapZones[tokens[0]][tokens[1]]){
+                                        allFloorMapZones[tokens[0]][tokens[1]] = {};
+                                    }
+                                    if (!allFloorMapZones[tokens[0]][tokens[1]][tokens[2]]){
+                                        allFloorMapZones[tokens[0]][tokens[1]][tokens[2]] = {};
+                                    }
+                                    //find the first unused zone name
+                                    var z = 1;
+                                    var zoneName = '';
+                                    do {
+                                        zoneName = ['Unnamed Zone ' + z++];
+                                    } while (allFloorMapZones[tokens[0]][tokens[1]][tokens[2]][zoneName]);
+
+                                    allFloorMapZones[tokens[0]][tokens[1]][tokens[2]][zoneName] = {points: layer.getLatLngs()};
+
+                                    const elementId = "floorMapTextField" +  Math.floor((Math.random() * 100000) % 100000)
+
+                                    var script = '<input type="text" id="' + elementId + '"' +
+                                    ' value=\"' + zoneName + '\" />  <button onclick="renameFloormapZone(\'' + elementId + '\',\'' +
+                                    zoneName + "\',\'" + tokens[0] + "\',\'" + tokens[1] + "\',\'" + tokens[2] +
+                                    '\')">Rename</button>';
+                                    console.log(script);
+                                    layer.bindPopup(script);
+
                                });
                            
                                this.maps[gridName].on(L.Draw.Event.EDITED, function (e) {
@@ -442,6 +493,12 @@ if (!visualisations) {
                     for (const layer in this.layers) {
                         if (layer.startsWith(elemToRemoveId)) {
                             delete this.layers[layer];
+                        }
+                    }
+
+                    for (const zoneLayer in this.zoneLayers) {
+                        if (zoneLayer.startsWith(elemToRemoveId)) {
+                            delete this.layers[zoneLayer];
                         }
                     }
 
