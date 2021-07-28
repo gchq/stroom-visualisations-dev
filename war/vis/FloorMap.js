@@ -219,11 +219,7 @@ if (!visualisations) {
                                     .addTo(this.maps[gridName]);
 
                             
-                                                                //Create drawing tools for editing zones
-                             // Set the title to show on the polygon button
-                               L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
-                   
-                           
+                                                    
                                this.maps[gridName].on(L.Draw.Event.CREATED, function (e) {
                                    var type = e.layerType,
                                     layer = e.layer;
@@ -279,19 +275,42 @@ if (!visualisations) {
                                     vis.maps[gridName].removeControl (vis.drawControls[gridName]);
                                 }
 
+                                                                     //Configure leaflet.draw library for zones rather than generic shapes
+                               L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
+                            
+                               L.drawLocal.draw.handlers.polygon.tooltip.start = 'Click to start drawing zone.';
+                               L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Click to continue drawing zone.';
+                               L.drawLocal.draw.handlers.polygon.tooltip.end = 'Click first point to close this zone.';
+                               L.drawLocal.draw.handlers.polygon.error =  'Zones cannot intersect themselves.';
+                               L.drawLocal.edit.toolbar.buttons.edit = 'Edit zones';
+                               L.drawLocal.edit.toolbar.buttons.editDisabled = 'No zones to edit';
+                               L.drawLocal.edit.toolbar.buttons.remove = 'Delete zones';
+                            
+
                                 vis.drawControls[gridName] = new L.Control.Draw({
-                                    position: 'topright',
+                                    position: 'bottomleft',
                                     draw: {
                                         polyline: false,
                                         poly: {
                                             
-                                            // drawError: {
-                                            //     color: '#e1e100', // Color the shape will turn when intersects
-                                            //     message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-                                            // },
-                                            // shapeOptions: {
-                                            //     color: '#bada55'
-                                            // },
+                                            drawError: {
+                                                // color: '#e1e100', // Color the shape will turn when intersects
+                                                message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                                            },
+                                            shapeOptions: {
+                                                color: 'green'
+                                            },
+                                            allowIntersection: false // Restricts shapes to simple polygons
+                                        },
+                                        polygon: {
+                                            
+                                            drawError: {
+                                                // color: '#e1e100', // Color the shape will turn when intersects
+                                                message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                                            },
+                                            shapeOptions: {
+                                                color: 'green'
+                                            },
                                             allowIntersection: false // Restricts shapes to simple polygons
                                         },
                                         circle: false,
@@ -299,18 +318,30 @@ if (!visualisations) {
                                         circlemarker: false,
                                         rectangle: false
                                     },
+                                   
                                     edit: {
+                                       
                                         featureGroup: vis.zoneLayers[myLayerId],
                                         remove: true,
                                         poly: {
-                                        //     drawError: {
-                                        //         color: '#e1e100', // Color the shape will turn when intersects
-                                        //         message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-                                        //     },
+                                            error: {
+                                                // color: '#e1e100', // Color the shape will turn when intersects
+                                                message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                                            },
+                                            allowIntersection: false
+                                        },
+                                        polygon: {
+                                            error: {
+                                                // color: '#e1e100', // Color the shape will turn when intersects
+                                                message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                                            },
                                             allowIntersection: false
                                         }
                                     }
                                 }); 
+
+
+
 
                                 vis.maps[gridName].addControl(vis.drawControls[gridName]);
 
