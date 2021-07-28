@@ -217,13 +217,9 @@ if (!visualisations) {
                                 
                                 this.layerControls[gridName] = L.control.layers(null, null, {sortLayers: true})
                                     .addTo(this.maps[gridName]);
-                                
-                            }
 
-                            this.layerControls[gridName].addBaseLayer(this.layers[layerId], layerLabel);
-                        
-
-                            //Create drawing tools for editing zones
+                            
+                                                                //Create drawing tools for editing zones
                              // Set the title to show on the polygon button
                                L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
                    
@@ -232,13 +228,13 @@ if (!visualisations) {
                                    var type = e.layerType,
                                     layer = e.layer;
                            
-                                    const myLayerId = gridName + "." + e.name;
+                                    const myLayerId = gridName + "." + vis.currentLayer[gridName];
                                        console.log('Looking for ' + myLayerId);
-                                       if (!vis.zoneLayers[myLayerId]) {
-                                        vis.zoneLayers[myLayerId] = new L.FeatureGroup(); 
+                                    //    if (!vis.zoneLayers[myLayerId]) {
+                                    //     vis.zoneLayers[myLayerId] = new L.FeatureGroup(); 
                                         
-                                        console.log('CREATE Created layer ' + myLayerId);
-                                    }
+                                    //     console.log('CREATE Created layer ' + myLayerId);
+                                    // }
                                        vis.zoneLayers[myLayerId].addLayer(layer);
                                });
                            
@@ -261,6 +257,7 @@ if (!visualisations) {
                                 if (!vis.zoneLayers[myLayerId]) {
                                     vis.zoneLayers[myLayerId] = new L.FeatureGroup(); 
                                     
+                                    vis.zoneLayers[myLayerId].addTo(vis.maps[gridName]);
                                     console.log('EDIT Created layer ' + myLayerId);
                                 }
 
@@ -322,6 +319,13 @@ if (!visualisations) {
 
                                   
                                  });
+                                
+                            }
+
+                            this.layerControls[gridName].addBaseLayer(this.layers[layerId], layerLabel);
+                        
+
+
                             
                         }
                
