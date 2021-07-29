@@ -388,6 +388,19 @@ function createPopupForFloormapZone(layer) {
 
                                     const zoneDictionaryUuid = vis.config[campusId][buildingId][floorId].zoneDictionaryUuid;
 
+                                    var differentFloor = false;
+                                    if (vis.currentLayer[gridName] != e.name) {
+                                        vis.currentLayer[gridName] = e.name;
+                                        differentFloor = true;
+                                        for (zonesForLevel in vis.zoneLayers) {
+                                            if (allFloorMapMaps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
+                                                // < Awesome here, could store the active layer
+                                                console.log("Removing drawing layer");
+                                                allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
+                                            }
+                                        }
+                                    }
+
                                     if (zoneDictionaryUuid) {
                                         if (!vis.zoneLayers[myLayerId]) {
                                             vis.zoneLayers[myLayerId] = new L.FeatureGroup();
@@ -395,16 +408,7 @@ function createPopupForFloormapZone(layer) {
                                             vis.zoneLayers[myLayerId].addTo(allFloorMapMaps[gridName]);
                                         }
 
-                                        if (vis.currentLayer[gridName] != e.name) {
-                                            vis.currentLayer[gridName] = e.name;
-                                            for (zonesForLevel in vis.zoneLayers) {
-                                                if (allFloorMapMaps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
-                                                    // < Awesome here, could store the active layer
-                                                    console.log("Removing drawing layer");
-                                                    allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
-                                                }
-                                            }
-
+                                        if (differentFloor) {
                                             console.log("Adding drawing layer " + myLayerId);
                                             allFloorMapMaps[gridName].addLayer(vis.zoneLayers[myLayerId]);
                                         }
