@@ -244,6 +244,22 @@ function createPopupForFloormapZone (layer) {
                                 gridElement.setAttribute("id", gridName);
                                 this.element.appendChild(gridElement);
                             
+                                //Create save button
+                                const button = window.document.createElement("button");
+                                gridElement.appendChild(button);
+                                const icon = window.document.createElement("i");
+                                icon.classList.add("fa", "fa-save");
+                                button.style.position = "absolute";
+                                button.style.width = "30px";
+                                button.style.height = "30px";
+                                button.style.bottom = "20px";
+                                button.style.right = "5px";
+                                button.style.zIndex = "1000";
+                                button.classList.add("leaflet-bar");
+                                button.title = "Save all zones";
+
+                                button.appendChild(icon);
+
                                 allFloorMapMaps[gridName] = L.map(gridName,
                                     {
                                     crs: L.CRS.Simple,
