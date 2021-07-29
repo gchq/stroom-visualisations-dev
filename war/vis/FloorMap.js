@@ -20,6 +20,7 @@ if (!visualisations) {
 }
 
 const allFloorMapZones = {};
+const allFloorMapMaps = {}; //1 map per grid cell
 
 function renameFloormapZone (mapId, elementId, originalName, campus, building, floor) {
     const textField = window.document.getElementById(elementId);
@@ -32,6 +33,7 @@ function renameFloormapZone (mapId, elementId, originalName, campus, building, f
     }
     
     allFloorMapZones[mapId][campus][building][floor][originalName].name = newName;
+    allFloorMapMaps[mapId].closePopup();
 }
 
 function getFloormapZoneName (mapId, campus, building, floor, zoneId) {
@@ -42,12 +44,6 @@ function getFloormapZoneName (mapId, campus, building, floor, zoneId) {
 }
 
 function createPopupForFloormapZone (layer) {
-
-                // var html = '<input type="text" id="' + elementId + '"' +
-                                    //     ' value=eval(renameFloormapZone()) />  <button onclick="renameFloormapZone(\'' +
-                                    //     gridName + "\',\'" + elementId + '\',\'' +
-                                    //     zoneName + "\',\'" + tokens[0] + "\',\'" + tokens[1] + "\',\'" + tokens[2] +
-                                    //     '\')">Rename</button>';
     const span = window.document.createElement('span');
     
     const textField = window.document.createElement('input');
@@ -131,7 +127,7 @@ function createPopupForFloormapZone (layer) {
         this.element.style.gridGap = "5px 5px";
         
         this.markers = {};
-        this.maps = {}; //1 map per grid cell
+        
         this.layerControls = {};//1 control per map
         this.drawControls = {}; // 1 control per map
         this.currentLayer = {}; //1 layer name per map
@@ -242,13 +238,13 @@ function createPopupForFloormapZone (layer) {
                             
                             this.layers[layerId] = L.layerGroup([image]);
 
-                            if (!this.maps[gridName]) { //Init the map
+                            if (!allFloorMapMaps[gridName]) { //Init the map
                             
                                 const gridElement = window.document.createElement("div");
                                 gridElement.setAttribute("id", gridName);
                                 this.element.appendChild(gridElement);
                             
-                                this.maps[gridName] = L.map(gridName,
+                                allFloorMapMaps[gridName] = L.map(gridName,
                                     {
                                     crs: L.CRS.Simple,
                                     minZoom: 0
@@ -257,20 +253,20 @@ function createPopupForFloormapZone (layer) {
 
                                 this.currentLayer[gridName] = layerLabel;
                                 
-                                // this.maps[gridName].on('baselayerchange',function (e) {
+                                // allFloorMapMaps[gridName].on('baselayerchange',function (e) {
                                 //     vis.currentLayer[gridName] = e.name;
                                 //     vis.resize();
                                 //   });
                                 
 
-                                this.layers[layerId].addTo(this.maps[gridName]);
+                                this.layers[layerId].addTo(allFloorMapMaps[gridName]);
                                 
                                 this.layerControls[gridName] = L.control.layers(null, null, {sortLayers: true})
-                                    .addTo(this.maps[gridName]);
+                                    .addTo(allFloorMapMaps[gridName]);
 
                             
                                                     
-                               this.maps[gridName].on(L.Draw.Event.CREATED, function (e) {
+                               allFloorMapMaps[gridName].on(L.Draw.Event.CREATED, function (e) {
                                    var type = e.layerType,
                                     layer = e.layer;
                            
@@ -315,7 +311,7 @@ function createPopupForFloormapZone (layer) {
 
                                });
                            
-                               this.maps[gridName].on(L.Draw.Event.EDITED, function (e) {
+                               allFloorMapMaps[gridName].on(L.Draw.Event.EDITED, function (e) {
                                    var layers = e.layers;
                                    var countOfEditedLayers = 0;
                                    layers.eachLayer(function (layer) {
@@ -325,7 +321,7 @@ function createPopupForFloormapZone (layer) {
                                });
 
                                //Callback for change of base layer (floor)
-                               this.maps[gridName].on('baselayerchange', function(e) {
+                               allFloorMapMaps[gridName].on('baselayerchange', function(e) {
                                 const myLayerId = gridName + "." + e.name;
                             
 
@@ -333,26 +329,26 @@ function createPopupForFloormapZone (layer) {
                                 if (!vis.zoneLayers[myLayerId]) {
                                     vis.zoneLayers[myLayerId] = new L.FeatureGroup(); 
                                     
-                                    vis.zoneLayers[myLayerId].addTo(vis.maps[gridName]);
+                                    vis.zoneLayers[myLayerId].addTo(allFloorMapMaps[gridName]);
                                     console.log('EDIT Created layer ' + myLayerId);
                                 }
 
                                 if (vis.currentLayer[gridName] != e.name) {
                                     vis.currentLayer[gridName] = e.name;
                                     for (zonesForLevel in vis.zoneLayers) {
-                                        if (vis.maps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
+                                        if (allFloorMapMaps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
                                             // < Awesome here, could store the active layer
                                             console.log ("Removing drawing layer");
-                                            vis.maps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
+                                            allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
                                         }
                                     }
                                     
                                     console.log ("Adding drawing layer " + myLayerId);
-                                    vis.maps[gridName].addLayer(vis.zoneLayers[myLayerId]);
+                                    allFloorMapMaps[gridName].addLayer(vis.zoneLayers[myLayerId]);
                                 }
                                 if (vis.drawControls[gridName])
                                 {
-                                    vis.maps[gridName].removeControl (vis.drawControls[gridName]);
+                                    allFloorMapMaps[gridName].removeControl (vis.drawControls[gridName]);
                                 }
 
                                                                      //Configure leaflet.draw library for zones rather than generic shapes
@@ -423,7 +419,7 @@ function createPopupForFloormapZone (layer) {
 
 
 
-                                vis.maps[gridName].addControl(vis.drawControls[gridName]);
+                                allFloorMapMaps[gridName].addControl(vis.drawControls[gridName]);
 
                                 // vis.currentLayer[gridName] = e.name;
                                 vis.resize();
@@ -513,7 +509,7 @@ function createPopupForFloormapZone (layer) {
                     const elemToRemoveId = this.elementName + "-" + hashKey;
 
                     //Remove the resources associated with this grid that are not now needed
-                    delete this.maps[elemToRemoveId];
+                    delete allFloorMapMaps[elemToRemoveId];
                     delete this.markers[elemToRemoveId];
                     delete this.layerControls[elemToRemoveId];
                     delete this.currentLayer[elemToRemoveId];
@@ -587,9 +583,9 @@ function createPopupForFloormapZone (layer) {
         };
 
         this.resize = function() {
-            for (const mapName in this.maps){
-                this.maps[mapName].fitBounds(this.boundsMap.get(this.currentLayer[mapName]));
-                this.maps[mapName].invalidateSize();
+            for (const mapName in allFloorMapMaps){
+                allFloorMapMaps[mapName].fitBounds(this.boundsMap.get(this.currentLayer[mapName]));
+                allFloorMapMaps[mapName].invalidateSize();
             }
         };
 
