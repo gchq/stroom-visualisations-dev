@@ -21,7 +21,7 @@ if (!visualisations) {
 
 const allFloorMapZones = {};
 
-function renameFloormapZone (elementId, originalName, campus, building, floor) {
+function renameFloormapZone (mapId, elementId, originalName, campus, building, floor) {
     const textField = window.document.getElementById(elementId);
     const newName = textField.value;
 
@@ -30,7 +30,7 @@ function renameFloormapZone (elementId, originalName, campus, building, floor) {
         return;
     }
     
-    allFloorMapZones[campus][building][floor][originalName].name = newName;
+    allFloorMapZones[mapId][campus][building][floor][originalName].name = newName;
 }
 
 
@@ -254,32 +254,35 @@ function renameFloormapZone (elementId, originalName, campus, building, floor) {
                                     vis.zoneLayers[myLayerId].addLayer(layer);
 
                                     //Find the name of the zone
-                                    
+                                    if (!allFloorMapZones[gridName]){
+                                        allFloorMapZones[gridName] = {};
+                                    }
                                     var tokens = vis.currentLayer[gridName].split('.');
-                                    if (!allFloorMapZones[tokens[0]]){
-                                        allFloorMapZones[tokens[0]] = {};
+                                    if (!allFloorMapZones[gridName][tokens[0]]){
+                                        allFloorMapZones[gridName][tokens[0]] = {};
                                     }
-                                    if (!allFloorMapZones[tokens[0]][tokens[1]]){
-                                        allFloorMapZones[tokens[0]][tokens[1]] = {};
+                                    if (!allFloorMapZones[gridName][tokens[0]][tokens[1]]){
+                                        allFloorMapZones[gridName][tokens[0]][tokens[1]] = {};
                                     }
-                                    if (!allFloorMapZones[tokens[0]][tokens[1]][tokens[2]]){
-                                        allFloorMapZones[tokens[0]][tokens[1]][tokens[2]] = {};
+                                    if (!allFloorMapZones[gridName][tokens[0]][tokens[1]][tokens[2]]){
+                                        allFloorMapZones[gridName][tokens[0]][tokens[1]][tokens[2]] = {};
                                     }
                                     //find the first unused zone name
                                     var z = 1;
                                     var zoneName = '';
                                     do {
                                         zoneName = ['Unnamed Zone ' + z++];
-                                    } while (allFloorMapZones[tokens[0]][tokens[1]][tokens[2]][zoneName]);
+                                    } while (allFloorMapZones[gridName][tokens[0]][tokens[1]][tokens[2]][zoneName]);
 
-                                    allFloorMapZones[tokens[0]][tokens[1]][tokens[2]][zoneName] = {points: layer.getLatLngs()};
+                                    allFloorMapZones[gridName][tokens[0]][tokens[1]][tokens[2]][zoneName] = {points: layer.getLatLngs()};
 
                                     const elementId = "floorMapTextField" +  Math.floor((Math.random() * 100000) % 100000)
 
                                     var script = '<input type="text" id="' + elementId + '"' +
-                                    ' value=\"' + zoneName + '\" />  <button onclick="renameFloormapZone(\'' + elementId + '\',\'' +
-                                    zoneName + "\',\'" + tokens[0] + "\',\'" + tokens[1] + "\',\'" + tokens[2] +
-                                    '\')">Rename</button>';
+                                        ' value=\"' + zoneName + '\" />  <button onclick="renameFloormapZone(\'' +
+                                        gridName + "\',\'" + elementId + '\',\'' +
+                                        zoneName + "\',\'" + tokens[0] + "\',\'" + tokens[1] + "\',\'" + tokens[2] +
+                                        '\')">Rename</button>';
                                     console.log(script);
                                     layer.bindPopup(script);
 
