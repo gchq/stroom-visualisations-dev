@@ -381,7 +381,7 @@ function createPopupForFloormapZone(layer) {
                                 allFloorMapMaps[gridName].on('baselayerchange', function (e) {
                                     const myLayerId = gridName + "." + e.name;
                                     //todo change currentLayer from string into structure, then convert to string as required
-                                    var tokens = vis.currentLayer[gridName].split('.');
+                                    var tokens = e.name.split('.');
                                     const campusId = tokens[0];
                                     const buildingId = tokens[1];
                                     const floorId = tokens[2];
