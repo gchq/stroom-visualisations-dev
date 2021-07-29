@@ -26,13 +26,48 @@ function renameFloormapZone (mapId, elementId, originalName, campus, building, f
     const newName = textField.value;
 
     if (newName == originalName) {
-        console.log("No change to zone name" + originalName);
+        //Might be changing name back
+        delete allFloorMapZones[mapId][campus][building][floor][originalName].name;
         return;
     }
     
     allFloorMapZones[mapId][campus][building][floor][originalName].name = newName;
 }
 
+function getFloormapZoneName (mapId, campus, building, floor, zoneId) {
+    if (allFloorMapZones[mapId][campus][building][floor][zoneId].name) {
+        return  allFloorMapZones[mapId][campus][building][floor][zoneId].name;
+    }
+    return zoneId;
+}
+
+function createPopupForFloormapZone (layer) {
+
+                // var html = '<input type="text" id="' + elementId + '"' +
+                                    //     ' value=eval(renameFloormapZone()) />  <button onclick="renameFloormapZone(\'' +
+                                    //     gridName + "\',\'" + elementId + '\',\'' +
+                                    //     zoneName + "\',\'" + tokens[0] + "\',\'" + tokens[1] + "\',\'" + tokens[2] +
+                                    //     '\')">Rename</button>';
+    const span = window.document.createElement('span');
+    
+    const textField = window.document.createElement('input');
+    textField.setAttribute("type", "text");
+    const currentName = getFloormapZoneName(layer.floorMapDetails.mapId, layer.floorMapDetails.campusId, 
+        layer.floorMapDetails.buildingId, layer.floorMapDetails.floorId, layer.floorMapDetails.zoneId);
+    textField.value = currentName;
+    textField.id = layer.floorMapDetails.renameTextFieldId;
+    span.appendChild(textField);
+
+    const button = window.document.createElement('button');
+    button.innerHTML = "Rename";
+    button.onclick = function (){renameFloormapZone(layer.floorMapDetails.mapId,
+        layer.floorMapDetails.renameTextFieldId, layer.floorMapDetails.zoneId,
+        layer.floorMapDetails.campusId, 
+        layer.floorMapDetails.buildingId, layer.floorMapDetails.floorId)};
+    span.appendChild(button);
+
+    return span;
+}
 
 //IIFE to prvide shared scope for sharing state and constants between the controller 
 //object and each grid cell object instance
@@ -240,16 +275,6 @@ function renameFloormapZone (mapId, elementId, originalName, campus, building, f
                                     layer = e.layer;
                            
                                     const myLayerId = gridName + "." + vis.currentLayer[gridName];
-                                  
-
-                                    //HERE
-                                    //HERE
-                                    //HERE
-                                    //HERE
-                                    //HERE
-                                    //HERE
-                                    //HERE
-                                    // layer.bindPopup('<button onclick="clicky(\'' + myLayerId + '\')">Rename</button>');
                                    
                                     vis.zoneLayers[myLayerId].addLayer(layer);
 
@@ -276,15 +301,17 @@ function renameFloormapZone (mapId, elementId, originalName, campus, building, f
 
                                     allFloorMapZones[gridName][tokens[0]][tokens[1]][tokens[2]][zoneName] = {points: layer.getLatLngs()};
 
-                                    const elementId = "floorMapTextField" +  Math.floor((Math.random() * 100000) % 100000)
+                                    const elementId = "floorMapTextField" +  Math.floor((Math.random() * 100000) % 100000);
 
-                                    var script = '<input type="text" id="' + elementId + '"' +
-                                        ' value=\"' + zoneName + '\" />  <button onclick="renameFloormapZone(\'' +
-                                        gridName + "\',\'" + elementId + '\',\'' +
-                                        zoneName + "\',\'" + tokens[0] + "\',\'" + tokens[1] + "\',\'" + tokens[2] +
-                                        '\')">Rename</button>';
-                                    console.log(script);
-                                    layer.bindPopup(script);
+                                    layer.floorMapDetails = {};
+                                    layer.floorMapDetails.renameTextFieldId = elementId;
+                                    layer.floorMapDetails.mapId = gridName;
+                                    layer.floorMapDetails.zoneId = zoneName;
+                                    layer.floorMapDetails.campusId = tokens[0];
+                                    layer.floorMapDetails.buildingId = tokens[1];
+                                    layer.floorMapDetails.floorId = tokens[2];
+                                    
+                                    layer.bindPopup(createPopupForFloormapZone);
 
                                });
                            
@@ -296,7 +323,6 @@ function renameFloormapZone (mapId, elementId, originalName, campus, building, f
                                    });
                                    console.log("Edited " + countOfEditedLayers + " layers");
                                });
-                           
 
                                //Callback for change of base layer (floor)
                                this.maps[gridName].on('baselayerchange', function(e) {
