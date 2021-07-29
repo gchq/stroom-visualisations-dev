@@ -201,17 +201,20 @@
                             "Basement": {
                                 "image": "testfloorplans/building2-floorb.png",
                                 "width": 40,
-                                "height": 60
+                                "height": 60,
+                                "zoneDictionaryUuid": "_testFloormap"
                             },
                             "North Tower": {
                                 "image": "testfloorplans/building2-floorn.png",
                                 "width": 40,
-                                "height": 60
+                                "height": 60,
+                                "zoneDictionaryUuid": "_testFloormap"
                             },
                             "South Tower": {
                                 "image": "testfloorplans/building2-floors.png",
                                 "width": 40,
-                                "height": 60
+                                "height": 60,
+                                "zoneDictionaryUuid": "_testFloormap"
                             }
                         }
                     }
