@@ -22,16 +22,16 @@ if (!visualisations) {
 const allFloorMapZones = {};
 const allFloorMapMaps = {}; //1 map per grid cell
 
-function renameFloormapZone(dictionaryUuid, mapId, elementId, zoneId, campus, building, floor) {
+function renameFloormapZone(zoneDictionaryUuid, mapId, elementId, zoneId, campus, building, floor) {
     const textField = window.document.getElementById(elementId);
     const newName = textField.value;
 
-    allFloorMapZones[dictionaryUuid][campus][building][floor][zoneId].name = newName;
+    allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name = newName;
     allFloorMapMaps[mapId].closePopup();
 }
 
-function getFloormapZoneName(dictionaryUuid, campus, building, floor, zoneId) {
-    return allFloorMapZones[dictionaryUuid][campus][building][floor][zoneId].name;
+function getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId) {
+    return allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name;
 }
 
 function createPopupForFloormapZone(layer) {
@@ -39,7 +39,7 @@ function createPopupForFloormapZone(layer) {
 
     const textField = window.document.createElement('input');
     textField.setAttribute("type", "text");
-    const currentName = getFloormapZoneName(layer.floorMapDetails.dictionaryUuid, layer.floorMapDetails.campusId,
+    const currentName = getFloormapZoneName(layer.floorMapDetails.zoneDictionaryUuid, layer.floorMapDetails.campusId,
         layer.floorMapDetails.buildingId, layer.floorMapDetails.floorId, layer.floorMapDetails.zoneId);
     textField.value = currentName;
     textField.id = layer.floorMapDetails.renameTextFieldId;
@@ -48,7 +48,7 @@ function createPopupForFloormapZone(layer) {
     const button = window.document.createElement('button');
     button.innerHTML = "Rename";
     button.onclick = function () {
-        renameFloormapZone(layer.floorMapDetails.dictionaryUuid, layer.floorMapDetails.mapId,
+        renameFloormapZone(layer.floorMapDetails.zoneDictionaryUuid, layer.floorMapDetails.mapId,
             layer.floorMapDetails.renameTextFieldId, layer.floorMapDetails.zoneId,
             layer.floorMapDetails.campusId,
             layer.floorMapDetails.buildingId, layer.floorMapDetails.floorId)
@@ -56,6 +56,180 @@ function createPopupForFloormapZone(layer) {
     span.appendChild(button);
 
     return span;
+}
+
+function floormapZoneCreated (vis, gridName, e) {
+    var type = e.layerType,
+        layer = e.layer;
+
+
+    const myLayerId = gridName + "." + vis.currentLayer[gridName];
+    
+    vis.zoneLayers[myLayerId].addLayer(layer);
+
+    //todo change currentLayer from string into structure, then convert to string as required
+    const tokens = vis.currentLayer[gridName].split('.');
+    const campusId = tokens[0];
+    const buildingId = tokens[1];
+    const floorId = tokens[2];
+
+    const zoneDictionaryUuid = vis.config[campusId][buildingId][floorId].zoneDictionaryUuid;
+
+    if (!zoneDictionaryUuid) {
+        return;
+    }
+
+    //Find the name of the zone
+    if (!allFloorMapZones[zoneDictionaryUuid]) {
+        allFloorMapZones[zoneDictionaryUuid] = {};
+    }
+
+    if (!allFloorMapZones[zoneDictionaryUuid][campusId]) {
+        allFloorMapZones[zoneDictionaryUuid][campusId] = {};
+    }
+    if (!allFloorMapZones[zoneDictionaryUuid][campusId][buildingId]) {
+        allFloorMapZones[zoneDictionaryUuid][campusId][buildingId] = {};
+    }
+    if (!allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId]) {
+        allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId] = [];
+    }
+    
+    allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].push( { name: 'Unnamed Zone', points: layer.getLatLngs() });
+
+    const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
+
+    layer.floorMapDetails = {};
+    layer.floorMapDetails.renameTextFieldId = elementId;
+    layer.floorMapDetails.mapId = gridName;
+    layer.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
+    layer.floorMapDetails.campusId = campusId;
+    layer.floorMapDetails.buildingId = buildingId;
+    layer.floorMapDetails.floorId = floorId;
+    layer.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
+
+    layer.bindPopup(createPopupForFloormapZone);
+
+}
+
+function floormapBaseLayerChanged (vis, gridName, e) {
+    const myLayerId = gridName + "." + e.name;
+    //todo change currentLayer from string into structure, then convert to string as required
+    var tokens = e.name.split('.');
+    const campusId = tokens[0];
+    const buildingId = tokens[1];
+    const floorId = tokens[2];
+
+    const zoneDictionaryUuid = vis.config[campusId][buildingId][floorId].zoneDictionaryUuid;
+
+    var differentFloor = false;
+    if (vis.currentLayer[gridName] != e.name) {
+        vis.currentLayer[gridName] = e.name;
+        differentFloor = true;
+        for (zonesForLevel in vis.zoneLayers) {
+            if (allFloorMapMaps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
+                // < Awesome here, could store the active layer
+                console.log("Removing drawing layer");
+                allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
+            }
+        }
+    }
+
+    if (zoneDictionaryUuid) {
+        if (!vis.zoneLayers[myLayerId]) {
+            vis.zoneLayers[myLayerId] = new L.FeatureGroup();
+
+            vis.zoneLayers[myLayerId].addTo(allFloorMapMaps[gridName]);
+        }
+
+        if (differentFloor) {
+            console.log("Adding drawing layer " + myLayerId);
+            allFloorMapMaps[gridName].addLayer(vis.zoneLayers[myLayerId]);
+        }
+    }
+
+    if (vis.drawControls[gridName]) {
+        allFloorMapMaps[gridName].removeControl(vis.drawControls[gridName]);
+    }
+
+    if (zoneDictionaryUuid) {
+        //Configure leaflet.draw library for zones rather than generic shapes
+        L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
+
+        L.drawLocal.draw.handlers.polygon.tooltip.start = 'Click to start drawing zone.';
+        L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Click to continue drawing zone.';
+        L.drawLocal.draw.handlers.polygon.tooltip.end = 'Click first point to close this zone.';
+        L.drawLocal.draw.handlers.polygon.error = 'Zones cannot intersect themselves.';
+        L.drawLocal.edit.toolbar.buttons.edit = 'Edit zones';
+        L.drawLocal.edit.toolbar.buttons.editDisabled = 'No zones to edit';
+        L.drawLocal.edit.toolbar.buttons.remove = 'Delete zones';
+
+
+        vis.drawControls[gridName] = new L.Control.Draw({
+            position: 'bottomleft',
+            draw: {
+                polyline: false,
+                poly: {
+
+                    drawError: {
+                        // color: '#e1e100', // Color the shape will turn when intersects
+                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                    },
+                    shapeOptions: {
+                        color: 'green'
+                    },
+                    allowIntersection: false // Restricts shapes to simple polygons
+                },
+                polygon: {
+
+                    drawError: {
+                        // color: '#e1e100', // Color the shape will turn when intersects
+                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                    },
+                    shapeOptions: {
+                        color: 'green'
+                    },
+                    allowIntersection: false // Restricts shapes to simple polygons
+                },
+                circle: false,
+                marker: false,
+                circlemarker: false,
+                rectangle: false
+            },
+
+            edit: {
+
+                featureGroup: vis.zoneLayers[myLayerId],
+                remove: true,
+                poly: {
+                    error: {
+                        // color: '#e1e100', // Color the shape will turn when intersects
+                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                    },
+                    allowIntersection: false
+                },
+                polygon: {
+                    error: {
+                        // color: '#e1e100', // Color the shape will turn when intersects
+                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
+                    },
+                    allowIntersection: false
+                }
+            }
+        });
+
+
+
+
+        allFloorMapMaps[gridName].addControl(vis.drawControls[gridName]);
+
+    }
+
+
+
+    // vis.currentLayer[gridName] = e.name;
+    vis.resize();
+
+
 }
 
 //IIFE to prvide shared scope for sharing state and constants between the controller 
@@ -157,43 +331,69 @@ function createPopupForFloormapZone(layer) {
             return campus + "." + building + "." + floor;
         }
 
-        this.loadZoneDictionary = function(dictionaryUuid) {
-            allFloorMapZones[dictionaryUuid] = {};
+        this.loadZoneDictionary = function(zoneDictionaryUuid) {
+            allFloorMapZones[zoneDictionaryUuid] = {};
 
-            if (dictionaryUuid == '_testFloormap') {
+            if (zoneDictionaryUuid == '_testFloormap') {
                 //TestVis hardcoded test data
-                allFloorMapZones[dictionaryUuid]['The Campus'] = {};
-                allFloorMapZones[dictionaryUuid]['The Campus']['Downtown'] = {};
-                allFloorMapZones[dictionaryUuid]['The Campus']['Downtown']['Basement'] = [{
-                    name: 'The Dungeon',
-                    points: [[1.0, 1.0],[10.0, 1.0],[10.0, 10.0], [1.0, 10.0]]
+                allFloorMapZones[zoneDictionaryUuid]['The Campus'] = {};
+                allFloorMapZones[zoneDictionaryUuid]['The Campus']['Downtown'] = {};
+                allFloorMapZones[zoneDictionaryUuid]['The Campus']['Downtown']['Basement'] = [{
+                    name: 'Ritual Area',
+                    points: [[15.0,24.0],
+                    [13.0,18.0],
+                    [5.0,18.0],
+                    [11.0, 13.0],
+                    [7.0, 7.0],
+                    [15.0,12.0],
+                    [20.0,8.0],
+                    [20.0,14.0],
+                    [25.0,18.0],
+                    [17.0, 18.0]]
                 }];
-
+                allFloorMapZones[zoneDictionaryUuid]['The Campus']['Downtown']['North Tower'] = [{
+                    name: 'Dragon Landing Zone',
+                    points: [[51.3, 11.5],
+                    [51.3, 29.5],
+                    [40.0, 29.5],
+                    [40.0, 11.5]]
+                }];
                 
             } else {
-                console.log("Loading " + dictionaryUuid);
+                console.log("Loading " + zoneDictionaryUuid);
             }
         }
 
         this.initialiseZonesForLayer = function (gridName, campusId, buildingId, floorId, layerId) {
-            const dictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
-            if (dictionaryUuid){
-                if (!allFloorMapZones[dictionaryUuid]) {
-                    this.loadZoneDictionary (dictionaryUuid);
+            const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
+            if (zoneDictionaryUuid){
+                if (!allFloorMapZones[zoneDictionaryUuid]) {
+                    this.loadZoneDictionary (zoneDictionaryUuid);
                 }
-                if (allFloorMapZones[dictionaryUuid]) {
-                    if (allFloorMapZones[dictionaryUuid][campusId]) {
-                        if (allFloorMapZones[dictionaryUuid][campusId][buildingId]) {
-                            if (allFloorMapZones[dictionaryUuid][campusId][buildingId][floorId]) {
+                if (allFloorMapZones[zoneDictionaryUuid]) {
+                    if (allFloorMapZones[zoneDictionaryUuid][campusId]) {
+                        if (allFloorMapZones[zoneDictionaryUuid][campusId][buildingId]) {
+                            if (allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId]) {
                                     //There are zones defined for this floor, create them and add to layer
-                                for (const zone of allFloorMapZones[dictionaryUuid][campusId][buildingId][floorId]) {
+                                for (const zone of allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId]) {
                                     const polygon = L.polygon(zone.points);
+                                    const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
 
+                                    polygon.floorMapDetails = {};
+                                    polygon.floorMapDetails.renameTextFieldId = elementId;
+                                    polygon.floorMapDetails.mapId = gridName;
+                                    polygon.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
+                                    polygon.floorMapDetails.campusId = campusId;
+                                    polygon.floorMapDetails.buildingId = buildingId;
+                                    polygon.floorMapDetails.floorId = floorId;
+                                    polygon.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
                                     if (!this.zoneLayers[layerId]) {
                                         this.zoneLayers[layerId] = new L.FeatureGroup();
 
                                         // this.zoneLayers[layerId].addTo(allFloorMapMaps[gridName]);
                                     }
+                                    
+                                    polygon.bindPopup(createPopupForFloormapZone);
                                     this.zoneLayers[layerId].addLayer(polygon);
                                 }
                                 
@@ -304,7 +504,7 @@ function createPopupForFloormapZone(layer) {
                                 this.layerControls[gridName] = L.control.layers(null, null, { sortLayers: true })
                                     .addTo(allFloorMapMaps[gridName]);
 
-                                if (this.config[campusId][buildingId][floorId].dictionaryUuid) {
+                                if (this.config[campusId][buildingId][floorId].zoneDictionaryUuid) {
                                     //Create save zones button
                                     const button = window.document.createElement("button");
                                     gridElement.appendChild(button);
@@ -323,181 +523,15 @@ function createPopupForFloormapZone(layer) {
                                 }
                                 
 
+                                //Register callback for creation of draw layer (zone)
                                 allFloorMapMaps[gridName].on(L.Draw.Event.CREATED, function (e) {
-                                    var type = e.layerType,
-                                        layer = e.layer;
-
-
-                                    const myLayerId = gridName + "." + vis.currentLayer[gridName];
-                                    
-                                    vis.zoneLayers[myLayerId].addLayer(layer);
-
-                                    //todo change currentLayer from string into structure, then convert to string as required
-                                    const tokens = vis.currentLayer[gridName].split('.');
-                                    const campusId = tokens[0];
-                                    const buildingId = tokens[1];
-                                    const floorId = tokens[2];
-
-                                    const zoneDictionaryUuid = vis.config[campusId][buildingId][floorId].dictionaryUuid;
-
-                                    if (!zoneDictionaryUuid) {
-                                        return;
-                                    }
-
-                                    //Find the name of the zone
-                                    if (!allFloorMapZones[zoneDictionaryUuid]) {
-                                        allFloorMapZones[zoneDictionaryUuid] = {};
-                                    }
-
-                                    if (!allFloorMapZones[zoneDictionaryUuid][campusId]) {
-                                        allFloorMapZones[zoneDictionaryUuid][campusId] = {};
-                                    }
-                                    if (!allFloorMapZones[zoneDictionaryUuid][campusId][buildingId]) {
-                                        allFloorMapZones[zoneDictionaryUuid][campusId][buildingId] = {};
-                                    }
-                                    if (!allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId]) {
-                                        allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId] = [];
-                                    }
-                                    
-                                    allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].push( { name: 'Unamed Zone', points: layer.getLatLngs() });
-
-                                    const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
-
-                                    layer.floorMapDetails = {};
-                                    layer.floorMapDetails.renameTextFieldId = elementId;
-                                    layer.floorMapDetails.mapId = gridName;
-                                    layer.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
-                                    layer.floorMapDetails.campusId = campusId;
-                                    layer.floorMapDetails.buildingId = buildingId;
-                                    layer.floorMapDetails.floorId = floorId;
-                                    layer.floorMapDetails.dictionaryUuid = zoneDictionaryUuid;
-
-                                    layer.bindPopup(createPopupForFloormapZone);
-
-                                });
+                                    floormapZoneCreated(vis, gridName, e);});
 
 
                                 //Callback for change of base layer (floor)
-                                allFloorMapMaps[gridName].on('baselayerchange', function (e) {
-                                    const myLayerId = gridName + "." + e.name;
-                                    //todo change currentLayer from string into structure, then convert to string as required
-                                    var tokens = e.name.split('.');
-                                    const campusId = tokens[0];
-                                    const buildingId = tokens[1];
-                                    const floorId = tokens[2];
+                                allFloorMapMaps[gridName].on('baselayerchange',  function (e) {
+                                    floormapBaseLayerChanged(vis, gridName, e);});
 
-                                    const zoneDictionaryUuid = vis.config[campusId][buildingId][floorId].zoneDictionaryUuid;
-
-                                    var differentFloor = false;
-                                    if (vis.currentLayer[gridName] != e.name) {
-                                        vis.currentLayer[gridName] = e.name;
-                                        differentFloor = true;
-                                        for (zonesForLevel in vis.zoneLayers) {
-                                            if (allFloorMapMaps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
-                                                // < Awesome here, could store the active layer
-                                                console.log("Removing drawing layer");
-                                                allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
-                                            }
-                                        }
-                                    }
-
-                                    if (zoneDictionaryUuid) {
-                                        if (!vis.zoneLayers[myLayerId]) {
-                                            vis.zoneLayers[myLayerId] = new L.FeatureGroup();
-
-                                            vis.zoneLayers[myLayerId].addTo(allFloorMapMaps[gridName]);
-                                        }
-
-                                        if (differentFloor) {
-                                            console.log("Adding drawing layer " + myLayerId);
-                                            allFloorMapMaps[gridName].addLayer(vis.zoneLayers[myLayerId]);
-                                        }
-                                    }
-
-                                    if (vis.drawControls[gridName]) {
-                                        allFloorMapMaps[gridName].removeControl(vis.drawControls[gridName]);
-                                    }
-
-                                    if (zoneDictionaryUuid) {
-                                        //Configure leaflet.draw library for zones rather than generic shapes
-                                        L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
-
-                                        L.drawLocal.draw.handlers.polygon.tooltip.start = 'Click to start drawing zone.';
-                                        L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Click to continue drawing zone.';
-                                        L.drawLocal.draw.handlers.polygon.tooltip.end = 'Click first point to close this zone.';
-                                        L.drawLocal.draw.handlers.polygon.error = 'Zones cannot intersect themselves.';
-                                        L.drawLocal.edit.toolbar.buttons.edit = 'Edit zones';
-                                        L.drawLocal.edit.toolbar.buttons.editDisabled = 'No zones to edit';
-                                        L.drawLocal.edit.toolbar.buttons.remove = 'Delete zones';
-
-
-                                        vis.drawControls[gridName] = new L.Control.Draw({
-                                            position: 'bottomleft',
-                                            draw: {
-                                                polyline: false,
-                                                poly: {
-
-                                                    drawError: {
-                                                        // color: '#e1e100', // Color the shape will turn when intersects
-                                                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-                                                    },
-                                                    shapeOptions: {
-                                                        color: 'green'
-                                                    },
-                                                    allowIntersection: false // Restricts shapes to simple polygons
-                                                },
-                                                polygon: {
-
-                                                    drawError: {
-                                                        // color: '#e1e100', // Color the shape will turn when intersects
-                                                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-                                                    },
-                                                    shapeOptions: {
-                                                        color: 'green'
-                                                    },
-                                                    allowIntersection: false // Restricts shapes to simple polygons
-                                                },
-                                                circle: false,
-                                                marker: false,
-                                                circlemarker: false,
-                                                rectangle: false
-                                            },
-
-                                            edit: {
-
-                                                featureGroup: vis.zoneLayers[myLayerId],
-                                                remove: true,
-                                                poly: {
-                                                    error: {
-                                                        // color: '#e1e100', // Color the shape will turn when intersects
-                                                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-                                                    },
-                                                    allowIntersection: false
-                                                },
-                                                polygon: {
-                                                    error: {
-                                                        // color: '#e1e100', // Color the shape will turn when intersects
-                                                        message: 'Zones cannot intersect themselves.' // Message that will show when intersect
-                                                    },
-                                                    allowIntersection: false
-                                                }
-                                            }
-                                        });
-
-
-
-
-                                        allFloorMapMaps[gridName].addControl(vis.drawControls[gridName]);
-
-                                    }
-
-
-
-                                    // vis.currentLayer[gridName] = e.name;
-                                    vis.resize();
-
-
-                                });
 
                             }
 
