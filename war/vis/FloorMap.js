@@ -359,8 +359,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             polygon.floorMapDetails.floorId = floor;
                             polygon.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
 
-
-                            const layerId = this.createLayerKey(gridName, campus, building, floor);
+                            const layerId = this.createLayerKey(gridName, campus, building, floor);                            
                             if (!this.zoneLayers[layerId]) {
                                 this.zoneLayers[layerId] = new L.FeatureGroup();
 
@@ -368,6 +367,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             }
                             
                             polygon.bindPopup(createPopupForFloormapZone);
+
                             this.zoneLayers[layerId].addLayer(polygon);
 
                         }
@@ -378,11 +378,20 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
         this.initialiseZonesForLayer = function (gridName, campusId, buildingId, floorId) {
             const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
+            
+            const layerId = this.createLayerKey(gridName, campusId, buildingId, floorId);
+            const layerLabel = this.createLayerLabel(campusId, buildingId, floorId);
+
             if (zoneDictionaryUuid){
                 
                 if (allFloorMapZones[zoneDictionaryUuid]) 
                 {
                     this.createPolygonsForLayer(gridName, zoneDictionaryUuid, allFloorMapZones[zoneDictionaryUuid]);
+
+                    if (this.currentLayer[gridName] == layerLabel) {
+                        console.log ("Adding " + layerId + " to " + gridName + " first time");
+                        allFloorMapMaps[gridName].addLayer(this.zoneLayers[layerId]);
+                    }
                 }
                 else
                 {
@@ -394,7 +403,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         allFloorMapZones[zoneDictionaryUuid] = content;
                 
                         this.createPolygonsForLayer(gridName, zoneDictionaryUuid, allFloorMapZones[zoneDictionaryUuid]);
-                       
+
+                        if (this.currentLayer[gridName] == layerLabel) {
+                            console.log ("Adding " + layerId + " to " + gridName + " next time");
+                            allFloorMapMaps[gridName].addLayer(this.zoneLayers[layerId]);
+                        }  
                     });    
                 }
                 
@@ -536,7 +549,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             this.initialiseZonesForLayer(gridName, campusId, buildingId, floorId, layerId);
 
                             this.layerControls[gridName].addBaseLayer(this.layers[layerId], layerLabel);
-
+                           
                         }
 
                         const dataKey = this.createDataKey(val);
