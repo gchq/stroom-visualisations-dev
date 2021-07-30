@@ -331,76 +331,73 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             return campus + "." + building + "." + floor;
         }
 
-        this.loadZoneDictionary = function(zoneDictionaryUuid) {
-            allFloorMapZones[zoneDictionaryUuid] = {};
+        this.zoneDictionaryResourceURL = function(zoneDictionaryUuid) {
+            if (zoneDictionaryUuid.startsWith('staticUrl:')) {
+                return zoneDictionaryUuid.split(':')[1];
 
-            if (zoneDictionaryUuid == '_testFloormap') {
-                //TestVis hardcoded test data
-                allFloorMapZones[zoneDictionaryUuid]['The Campus'] = {};
-                allFloorMapZones[zoneDictionaryUuid]['The Campus']['Downtown'] = {};
-                allFloorMapZones[zoneDictionaryUuid]['The Campus']['Downtown']['Basement'] = [{
-                    name: 'Ritual Area',
-                    points: [[15.0,24.0],
-                    [13.0,18.0],
-                    [5.0,18.0],
-                    [11.0, 13.0],
-                    [7.0, 7.0],
-                    [15.0,12.0],
-                    [20.0,8.0],
-                    [20.0,14.0],
-                    [25.0,18.0],
-                    [17.0, 18.0]]
-                }];
-                allFloorMapZones[zoneDictionaryUuid]['The Campus']['Downtown']['North Tower'] = [{
-                    name: 'Dragon Landing Zone',
-                    points: [[51.3, 11.5],
-                    [51.3, 29.5],
-                    [40.0, 29.5],
-                    [40.0, 11.5]]
-                }];
-                
             } else {
-                console.log("Loading " + zoneDictionaryUuid);
+                return "../api/dictionary/v1/" + zoneDictionaryUuid;
             }
+
         }
 
-        this.initialiseZonesForLayer = function (gridName, campusId, buildingId, floorId, layerId) {
-            const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
-            if (zoneDictionaryUuid){
-                if (!allFloorMapZones[zoneDictionaryUuid]) {
-                    this.loadZoneDictionary (zoneDictionaryUuid);
-                }
-                if (allFloorMapZones[zoneDictionaryUuid]) {
-                    if (allFloorMapZones[zoneDictionaryUuid][campusId]) {
-                        if (allFloorMapZones[zoneDictionaryUuid][campusId][buildingId]) {
-                            if (allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId]) {
-                                    //There are zones defined for this floor, create them and add to layer
-                                for (const zone of allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId]) {
-                                    const polygon = L.polygon(zone.points);
-                                    const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
+        this.createPolygonsForLayer = function (gridName, zoneDictionaryUuid, zoneDictionaryContent) {
+            for (const campus in zoneDictionaryContent){
+                for (const building in zoneDictionaryContent[campus]) {
+                    for (const floor in zoneDictionaryContent[campus][building]) {
+                        for (const zone of zoneDictionaryContent[campus][building][floor]) {
 
-                                    polygon.floorMapDetails = {};
-                                    polygon.floorMapDetails.renameTextFieldId = elementId;
-                                    polygon.floorMapDetails.mapId = gridName;
-                                    polygon.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
-                                    polygon.floorMapDetails.campusId = campusId;
-                                    polygon.floorMapDetails.buildingId = buildingId;
-                                    polygon.floorMapDetails.floorId = floorId;
-                                    polygon.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
-                                    if (!this.zoneLayers[layerId]) {
-                                        this.zoneLayers[layerId] = new L.FeatureGroup();
+                            const polygon = L.polygon(zone.points);
+                            const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
 
-                                        // this.zoneLayers[layerId].addTo(allFloorMapMaps[gridName]);
-                                    }
-                                    
-                                    polygon.bindPopup(createPopupForFloormapZone);
-                                    this.zoneLayers[layerId].addLayer(polygon);
-                                }
-                                
+                            polygon.floorMapDetails = {};
+                            polygon.floorMapDetails.renameTextFieldId = elementId;
+                            polygon.floorMapDetails.mapId = gridName;
+                            polygon.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campus][building][floor].length - 1;
+                            polygon.floorMapDetails.campusId = campus;
+                            polygon.floorMapDetails.buildingId = building;
+                            polygon.floorMapDetails.floorId = floor;
+                            polygon.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
+
+
+                            const layerId = this.createLayerKey(gridName, campus, building, floor);
+                            if (!this.zoneLayers[layerId]) {
+                                this.zoneLayers[layerId] = new L.FeatureGroup();
+
+                                // this.zoneLayers[layerId].addTo(allFloorMapMaps[gridName]);
                             }
+                            
+                            polygon.bindPopup(createPopupForFloormapZone);
+                            this.zoneLayers[layerId].addLayer(polygon);
+
                         }
                     }
                 }
+            }
+        }
+
+        this.initialiseZonesForLayer = function (gridName, campusId, buildingId, floorId) {
+            const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
+            if (zoneDictionaryUuid){
+                
+                if (allFloorMapZones[zoneDictionaryUuid]) 
+                {
+                    this.createPolygonsForLayer(gridName, zoneDictionaryUuid, allFloorMapZones[zoneDictionaryUuid]);
+                }
+                else
+                {
+                    
+                    const resource = this.zoneDictionaryResourceURL (zoneDictionaryUuid);
+
+                    fetch(resource).then(response => response.json()).then(content =>
+                    {
+                        allFloorMapZones[zoneDictionaryUuid] = content;
+                
+                        this.createPolygonsForLayer(gridName, zoneDictionaryUuid, allFloorMapZones[zoneDictionaryUuid]);
+                       
+                    });    
+                }
+                
             }
         }
 

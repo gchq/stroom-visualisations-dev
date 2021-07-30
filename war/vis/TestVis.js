@@ -202,19 +202,19 @@
                                 "image": "testfloorplans/building2-floorb.png",
                                 "width": 40,
                                 "height": 60,
-                                "zoneDictionaryUuid": "_testFloormap"
+                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
                             },
                             "North Tower": {
                                 "image": "testfloorplans/building2-floorn.png",
                                 "width": 40,
                                 "height": 60,
-                                "zoneDictionaryUuid": "_testFloormap"
+                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
                             },
                             "South Tower": {
                                 "image": "testfloorplans/building2-floors.png",
                                 "width": 40,
                                 "height": 60,
-                                "zoneDictionaryUuid": "_testFloormap"
+                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
                             }
                         }
                     }
