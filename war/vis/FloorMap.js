@@ -389,8 +389,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                     this.createPolygonsForLayer(gridName, zoneDictionaryUuid, allFloorMapZones[zoneDictionaryUuid]);
 
                     if (this.currentLayer[gridName] == layerLabel) {
-                        console.log ("Adding " + layerId + " to " + gridName + " first time");
-                        allFloorMapMaps[gridName].addLayer(this.zoneLayers[layerId]);
+                        if (this.zoneLayers[layerId]) {
+                            // console.log ("Adding " + layerId + " to " + gridName + " first time");
+                            allFloorMapMaps[gridName].addLayer(this.zoneLayers[layerId]);
+                        }
+                    
                     }
                 }
                 else
@@ -405,8 +408,10 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         this.createPolygonsForLayer(gridName, zoneDictionaryUuid, allFloorMapZones[zoneDictionaryUuid]);
 
                         if (this.currentLayer[gridName] == layerLabel) {
-                            console.log ("Adding " + layerId + " to " + gridName + " next time");
-                            allFloorMapMaps[gridName].addLayer(this.zoneLayers[layerId]);
+                            if (this.zoneLayers[layerId]) {
+                                // console.log ("Adding " + layerId + " to " + gridName + " next time");
+                                allFloorMapMaps[gridName].addLayer(this.zoneLayers[layerId]);
+                            }
                         }  
                     });    
                 }
