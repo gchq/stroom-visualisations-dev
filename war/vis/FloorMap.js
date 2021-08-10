@@ -19,9 +19,25 @@ if (!visualisations) {
     var visualisations = {};
 }
 
-var zonesModified = false;
+const modifiedZoneUuidMap = new Map();
 const allFloorMapZones = {};
 const allFloorMapMaps = {}; //1 map per grid cell
+
+
+function isZoneDictionaryResourceStatic (zoneDictionaryUuid) {
+    return zoneDictionaryUuid.startsWith('staticUrl:');
+}
+
+function zoneDictionaryResourceURL (zoneDictionaryUuid) {
+    if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
+        return zoneDictionaryUuid.split(':')[1];
+
+    } else {
+        return "../api/dictionary/v1/" + zoneDictionaryUuid;
+    }
+
+}
+
 
 function renameFloormapZone(zoneDictionaryUuid, mapId, elementId, zoneId, campus, building, floor) {
     const textField = window.document.getElementById(elementId);
@@ -40,20 +56,28 @@ function saveZones (){
 
     console.log ("Saving zones");
 
-    for (const zoneDictionaryUuid in allFloorMapZones) {
-        for (const campus in allFloorMapZones[zoneDictionaryUuid]){
-            for (const building in allFloorMapZones[zoneDictionaryUuid][campus]) {
-                for (const floor in allFloorMapZones[zoneDictionaryUuid][campus][building]) {
-                    for (const zone of allFloorMapZones[zoneDictionaryUuid][campus][building][floor]) {
+    for (const zoneDictionaryUuid of modifiedZoneUuidMap.keys()) {
 
-                        console.log ("Saving " + zone.name);
-                    }
-                }
+        const resource = zoneDictionaryResourceURL (zoneDictionaryUuid);
+        const toSave = allFloorMapZones[zoneDictionaryUuid];
+
+        if (modifiedZoneUuidMap.get(zoneDictionaryUuid) == true) {
+            if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
+                console.log ("Would save " + JSON.stringify(toSave));
+            } else {
+                fetch(resource, {method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(toSave),
+                }).then(response => response.json()).then(content => alert(content));
             }
         }
     }
 
-
+    for (const modifiedZoneDictionaryUuid of modifiedZoneUuidMap.keys()) {
+        modifiedZoneUuidMap.delete(modifiedZoneDictionaryUuid);
+    }
 }
 
 function createPopupForFloormapZone(layer) {
@@ -104,9 +128,11 @@ function floormapZoneEdited (vis, gridName, e) {
         }
         allFloorMapZones[layer.floorMapDetails.zoneDictionaryUuid][layer.floorMapDetails.campusId][layer.floorMapDetails.buildingId]
             [layer.floorMapDetails.floorId][layer.floorMapDetails.zoneId].points = layer.getLatLngs();
+
+        modifiedZoneUuidMap.set(layer.floorMapDetails.zoneDictionaryUuid, true);
     });
 
-    zonesModified = true;
+    
     enableSaveButtons();
 
 }
@@ -162,7 +188,7 @@ function floormapZoneCreated (vis, gridName, e) {
     layer.bindPopup(createPopupForFloormapZone);
 
     console.log("Create: Adding layer " + layer.floorMapDetails.zoneId +" to " + layer.floorMapDetails.mapId);
-    zonesModified = true;
+    modifiedZoneUuidMap.set(layer.floorMapDetails.zoneDictionaryUuid, true);
 
     enableSaveButtons();
 
@@ -388,16 +414,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             return campus + "." + building + "." + floor;
         }
 
-        this.zoneDictionaryResourceURL = function(zoneDictionaryUuid) {
-            if (zoneDictionaryUuid.startsWith('staticUrl:')) {
-                return zoneDictionaryUuid.split(':')[1];
-
-            } else {
-                return "../api/dictionary/v1/" + zoneDictionaryUuid;
-            }
-
-        }
-
         this.createPolygonsForLayer = function (gridName, zoneDictionaryUuid, zoneDictionaryContent) {
             
             if (this.zonesInitialisedForMap[gridName]) {
@@ -463,7 +479,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                 else
                 {
                     const vis = this;
-                    const resource = this.zoneDictionaryResourceURL (zoneDictionaryUuid);
+                    const resource = zoneDictionaryResourceURL (zoneDictionaryUuid);
 
                     setTimeout (function () {
                         if (!allFloorMapZones[zoneDictionaryUuid]) 
