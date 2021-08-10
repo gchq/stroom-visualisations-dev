@@ -140,11 +140,6 @@ function floormapZoneEdited (vis, gridName, e) {
 function floormapZoneCreated (vis, gridName, e) {
     const layer = e.layer;
 
-    const myLayerId = gridName + "." + vis.currentLayer[gridName];
-    
-    
-    vis.zoneLayers[myLayerId].addLayer(layer);
-
     //todo change currentLayer from string into structure, then convert to string as required
     const tokens = vis.currentLayer[gridName].split('.');
     const campusId = tokens[0];
@@ -156,6 +151,9 @@ function floormapZoneCreated (vis, gridName, e) {
     if (!zoneDictionaryUuid) {
         return;
     }
+
+    //Mark as dirty (need save)
+    modifiedZoneUuidMap.set(zoneDictionaryUuid, true);
 
     //Find the name of the zone
     if (!allFloorMapZones[zoneDictionaryUuid]) {
@@ -174,21 +172,29 @@ function floormapZoneCreated (vis, gridName, e) {
     
     allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].push( { name: 'Unnamed Zone', points: layer.getLatLngs() });
 
-    const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
+    const currentLayerId = vis.currentLayer[gridName];
 
-    layer.floorMapDetails = {};
-    layer.floorMapDetails.renameTextFieldId = elementId;
-    layer.floorMapDetails.mapId = gridName;
-    layer.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
-    layer.floorMapDetails.campusId = campusId;
-    layer.floorMapDetails.buildingId = buildingId;
-    layer.floorMapDetails.floorId = floorId;
-    layer.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
+    //Add a copy of the zone to appropriate floor of each trid
+    for (const zoneLayer in vis.zoneLayers) {
+        if (zoneLayer.endsWith(currentLayerId)) {
+            const polygon = L.polygon(layer.getLatLngs());
 
-    layer.bindPopup(createPopupForFloormapZone);
+            const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
 
-    console.log("Create: Adding layer " + layer.floorMapDetails.zoneId +" to " + layer.floorMapDetails.mapId);
-    modifiedZoneUuidMap.set(layer.floorMapDetails.zoneDictionaryUuid, true);
+            polygon.floorMapDetails = {};
+            polygon.floorMapDetails.renameTextFieldId = elementId;
+            polygon.floorMapDetails.mapId = gridName;
+            polygon.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
+            polygon.floorMapDetails.campusId = campusId;
+            polygon.floorMapDetails.buildingId = buildingId;
+            polygon.floorMapDetails.floorId = floorId;
+            polygon.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
+            
+            polygon.bindPopup(createPopupForFloormapZone);
+
+            vis.zoneLayers[zoneLayer].addLayer(polygon); 
+        }   
+    }
 
     enableSaveButtons();
 
