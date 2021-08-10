@@ -19,6 +19,7 @@ if (!visualisations) {
     var visualisations = {};
 }
 
+var zonesModified = false;
 const allFloorMapZones = {};
 const allFloorMapMaps = {}; //1 map per grid cell
 
@@ -32,6 +33,27 @@ function renameFloormapZone(zoneDictionaryUuid, mapId, elementId, zoneId, campus
 
 function getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId) {
     return allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name;
+}
+
+function saveZones (){
+    disableSaveButtons();
+
+    console.log ("Saving zones");
+
+    for (const zoneDictionaryUuid in allFloorMapZones) {
+        for (const campus in allFloorMapZones[zoneDictionaryUuid]){
+            for (const building in allFloorMapZones[zoneDictionaryUuid][campus]) {
+                for (const floor in allFloorMapZones[zoneDictionaryUuid][campus][building]) {
+                    for (const zone of allFloorMapZones[zoneDictionaryUuid][campus][building][floor]) {
+
+                        console.log ("Saving " + zone.name);
+                    }
+                }
+            }
+        }
+    }
+
+
 }
 
 function createPopupForFloormapZone(layer) {
@@ -59,6 +81,20 @@ function createPopupForFloormapZone(layer) {
 }
 
 
+function enableSaveButtons() {
+    const elements = window.document.getElementsByClassName("floormap-save-zone-button");
+    for (const element of elements){
+        element.disabled = false;
+    }
+}
+
+function disableSaveButtons() {
+    const elements = window.document.getElementsByClassName("floormap-save-zone-button");
+    for (const element of elements){
+        element.disabled = true;
+    }
+}
+
 function floormapZoneEdited (vis, gridName, e) {
     const myLayerId = gridName + "." + vis.currentLayer[gridName];
 
@@ -69,6 +105,9 @@ function floormapZoneEdited (vis, gridName, e) {
         allFloorMapZones[layer.floorMapDetails.zoneDictionaryUuid][layer.floorMapDetails.campusId][layer.floorMapDetails.buildingId]
             [layer.floorMapDetails.floorId][layer.floorMapDetails.zoneId].points = layer.getLatLngs();
     });
+
+    zonesModified = true;
+    enableSaveButtons();
 
 }
 
@@ -123,6 +162,9 @@ function floormapZoneCreated (vis, gridName, e) {
     layer.bindPopup(createPopupForFloormapZone);
 
     console.log("Create: Adding layer " + layer.floorMapDetails.zoneId +" to " + layer.floorMapDetails.mapId);
+    zonesModified = true;
+
+    enableSaveButtons();
 
 }
 
@@ -309,7 +351,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         this.element.style.gridGap = "5px 5px";
 
         this.markers = {};
-
         this.layerControls = {};//1 control per map
         this.drawControls = {}; // 1 control per map
         this.currentLayer = {}; //1 layer name per map
@@ -571,6 +612,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     button.style.zIndex = "1000";
                                     button.classList.add("leaflet-bar");
                                     button.title = "Save all zones";
+                                    button.classList.add("floormap-save-zone-button");
+                                    button.addEventListener("click", saveZones);
+                                    button.disabled = true;
 
                                     button.appendChild(icon);
                                 }
