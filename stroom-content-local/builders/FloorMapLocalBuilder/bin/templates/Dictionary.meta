@@ -1,7 +1,7 @@
 {
   "type" : "Dictionary",
   "uuid" : "%%ZONE_DICTIONARY_UUID%%",
-  "name" : "%%NAME%%",
+  "name" : "%%NAME%% Zones",
   "version" : "%%RANDOM_UUID%%",
   "description" : "Zones of floorplans."
 }
