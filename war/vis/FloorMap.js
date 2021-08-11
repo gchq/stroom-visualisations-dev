@@ -174,7 +174,7 @@ function floormapZoneCreated (vis, gridName, e) {
 
     const currentLayerId = vis.currentLayer[gridName];
 
-    //Add a copy of the zone to appropriate floor of each trid
+    //Add a copy of the zone to appropriate floor of each grid
     for (const zoneLayer in vis.zoneLayers) {
         if (zoneLayer.endsWith(currentLayerId)) {
             const polygon = L.polygon(layer.getLatLngs());
@@ -224,12 +224,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
     }
 
     if (zoneDictionaryUuid) {
-        if (!vis.zoneLayers[myLayerId]) {
-            vis.zoneLayers[myLayerId] = new L.FeatureGroup();
-
-            vis.zoneLayers[myLayerId].addTo(allFloorMapMaps[gridName]);
-        }
-
         if (differentFloor) {
             console.log("Adding drawing layer " + myLayerId);
             allFloorMapMaps[gridName].addLayer(vis.zoneLayers[myLayerId]);
@@ -657,6 +651,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                             }
 
+                            //Create the zone layer (actually not needed if no zone resource defined)
+                            if (!this.zoneLayers[layerId] ) {
+                                this.zoneLayers[layerId] = new L.FeatureGroup();                    
+                            }
+                            
                             //Load any zone data and create associated zone polygons
                             this.initialiseZonesForLayer(gridName, campusId, buildingId, floorId, layerId);
 
