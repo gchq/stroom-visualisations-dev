@@ -4,22 +4,26 @@
 			"Ground Floor": {
 				"image": "testfloorplans/building1-floor0.png",
 				"width": 100,
-				"height": 60
+				"height": 60,
+				"zoneDictionaryUuid": ""
 			},
 			"First Floor": {
 				"image": "testfloorplans/building1-floor1.png",
 				"width": 100,
-				"height": 60
+				"height": 60,
+				"zoneDictionaryUuid": ""
 			},
 			"Second Floor": {
 				"image": "testfloorplans/building1-floor2.png",
 				"width": 100,
-				"height": 60
+				"height": 60,
+				"zoneDictionaryUuid": ""
 			},
 			"Third Floor": {
 				"image": "testfloorplans/building1-floor3.png",
 				"width": 100,
-				"height": 60
+				"height": 60,
+				"zoneDictionaryUuid": ""
 			}
 		}
 	},
@@ -28,19 +32,22 @@
 			"Basement": {
 				"image": "testfloorplans/building2-floorb.png",
 				"width": 40,
-				"height": 60
+				"height": 60,
+				"zoneDictionaryUuid": ""
 			}
 		},
 		"Overground": {
 			"North Tower": {
 				"image": "testfloorplans/building2-floorn.png",
 				"width": 40,
-				"height": 60
+				"height": 60,
+				"zoneDictionaryUuid": ""
 			},
 			"South Tower": {
 				"image": "testfloorplans/building2-floors.png",
 				"width": 40,
-				"height": 60
+				"height": 60,
+				"zoneDictionaryUuid": ""
 			}
 		}
 	}

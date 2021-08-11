@@ -1,0 +1,4 @@
+name=%%NAME%%
+path=Visualisations/Local
+type=Dictionary
+uuid=%%ZONE_DICTIONARY_UUID%%
