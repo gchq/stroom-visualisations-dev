@@ -122,20 +122,39 @@ function disableSaveButtons() {
 function floormapZoneEdited (vis, gridName, e) {
     const myLayerId = gridName + "." + vis.currentLayer[gridName];
 
-    e.layers.eachLayer(function (layer) {
-        if (!layer.floorMapDetails) {
+    e.layers.eachLayer(function (updatedZone) {
+        if (!updatedZone.floorMapDetails) {
             console.log("No layer details found for edited layer");
         }
-        allFloorMapZones[layer.floorMapDetails.zoneDictionaryUuid][layer.floorMapDetails.campusId][layer.floorMapDetails.buildingId]
-            [layer.floorMapDetails.floorId][layer.floorMapDetails.zoneId].points = layer.getLatLngs();
+        allFloorMapZones[updatedZone.floorMapDetails.zoneDictionaryUuid][updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId]
+            [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].points = updatedZone.getLatLngs();
 
-        modifiedZoneUuidMap.set(layer.floorMapDetails.zoneDictionaryUuid, true);
+        modifiedZoneUuidMap.set(updatedZone.floorMapDetails.zoneDictionaryUuid, true);
+
+        updateZonePolygonInAllLayers (vis, updatedZone);
     });
 
     
     enableSaveButtons();
 
 }
+
+function updateZonePolygonInAllLayers(vis, updatedZonePolygon){
+    for (const zoneLayerId in vis.zoneLayers) {
+        const zoneLayer = vis.zoneLayers[zoneLayerId];
+
+        zoneLayer.getLayers().forEach(function (zone){
+            if (zone !== updatedZonePolygon && 
+                zone.floorMapDetails.campusId == updatedZonePolygon.floorMapDetails.campusId &&
+                zone.floorMapDetails.buildingId == updatedZonePolygon.floorMapDetails.buildingId &&
+                zone.floorMapDetails.floorId == updatedZonePolygon.floorMapDetails.floorId &&
+                zone.floorMapDetails.zoneId == updatedZonePolygon.floorMapDetails.zoneId) {
+                zone.setLatLngs (updatedZonePolygon.getLatLngs());
+            }
+        });
+    }
+}
+
 
 function floormapZoneCreated (vis, gridName, e) {
     const layer = e.layer;
