@@ -649,7 +649,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     button.title = "Save all zones";
                                     button.classList.add("floormap-save-zone-button");
                                     button.addEventListener("click", saveZones);
-                                    button.disabled = true;
+
+                                    const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
+                                    if (modifiedZoneUuidMap.get(zoneDictionaryUuid) != true) {
+                                        button.disabled = true;
+                                    }
 
                                     button.appendChild(icon);
                                 }
