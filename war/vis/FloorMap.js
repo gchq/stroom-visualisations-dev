@@ -65,7 +65,7 @@ function saveZones (){
             toSave = allFloorMapZones[zoneDictionaryUuid];
         } else {
             toSave = allFloorMapZoneDictionaryObjects[zoneDictionaryUuid];
-            toSave.data = JSON.stringify(allFloorMapZones[zoneDictionaryUuid]);
+            toSave.data = JSON.stringify(allFloorMapZones[zoneDictionaryUuid], null, 2);
         }
 
         if (modifiedZoneUuidMap.get(zoneDictionaryUuid) == true) {
@@ -137,7 +137,7 @@ function floormapZoneEdited (vis, gridName, e) {
 
     e.layers.eachLayer(function (updatedZone) {
         if (!updatedZone.floorMapDetails) {
-            console.log("No layer details found for edited layer");
+            console.log("No layer details found for edited zone");
         }
         allFloorMapZones[updatedZone.floorMapDetails.zoneDictionaryUuid][updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId]
             [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].points = updatedZone.getLatLngs();
@@ -145,6 +145,27 @@ function floormapZoneEdited (vis, gridName, e) {
         modifiedZoneUuidMap.set(updatedZone.floorMapDetails.zoneDictionaryUuid, true);
 
         updateZonePolygonInAllLayers (vis, updatedZone);
+    });
+
+    
+    enableSaveButtons();
+
+}
+
+
+function floormapZoneDeleted(vis, gridName, e) {
+    const myLayerId = gridName + "." + vis.currentLayer[gridName];
+
+    e.layers.eachLayer(function (updatedZone) {
+        if (!updatedZone.floorMapDetails) {
+            console.log("No layer details found for deleted zone");
+        }
+        allFloorMapZones[updatedZone.floorMapDetails.zoneDictionaryUuid][updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId]
+            [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].deleted = true;
+
+        modifiedZoneUuidMap.set(updatedZone.floorMapDetails.zoneDictionaryUuid, true);
+
+        deleteZonePolygonInAllLayers (vis, updatedZone);
     });
 
     
@@ -163,6 +184,22 @@ function updateZonePolygonInAllLayers(vis, updatedZonePolygon){
                 zone.floorMapDetails.floorId == updatedZonePolygon.floorMapDetails.floorId &&
                 zone.floorMapDetails.zoneId == updatedZonePolygon.floorMapDetails.zoneId) {
                 zone.setLatLngs (updatedZonePolygon.getLatLngs());
+            }
+        });
+    }
+}
+
+function deleteZonePolygonInAllLayers(vis, deletedZonePolygon){
+    for (const zoneLayerId in vis.zoneLayers) {
+        const zoneLayer = vis.zoneLayers[zoneLayerId];
+
+        zoneLayer.getLayers().forEach(function (zone){
+            if (zone !== deletedZonePolygon && 
+                zone.floorMapDetails.campusId == deletedZonePolygon.floorMapDetails.campusId &&
+                zone.floorMapDetails.buildingId == deletedZonePolygon.floorMapDetails.buildingId &&
+                zone.floorMapDetails.floorId == deletedZonePolygon.floorMapDetails.floorId &&
+                zone.floorMapDetails.zoneId == deletedZonePolygon.floorMapDetails.zoneId) {
+            zoneLayer.removeLayer(zone);
             }
         });
     }
@@ -458,14 +495,18 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             for (const campus in zoneDictionaryContent){
                 for (const building in zoneDictionaryContent[campus]) {
                     for (const floor in zoneDictionaryContent[campus][building]) {
-                        for (const zone of zoneDictionaryContent[campus][building][floor]) {
+                        for (var zoneId = 0; zoneId < zoneDictionaryContent[campus][building][floor].length; zoneId++) {
+                            const zone =  zoneDictionaryContent[campus][building][floor][zoneId];
+                            if (zone.deleted) {
+                                continue; //tombstone
+                            }
                             const polygon = L.polygon(zone.points);
                             const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
 
                             polygon.floorMapDetails = {};
                             polygon.floorMapDetails.renameTextFieldId = elementId;
                             polygon.floorMapDetails.mapId = gridName;
-                            polygon.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campus][building][floor].length - 1;
+                            polygon.floorMapDetails.zoneId = zoneId;
                             polygon.floorMapDetails.campusId = campus;
                             polygon.floorMapDetails.buildingId = building;
                             polygon.floorMapDetails.floorId = floor;
@@ -678,12 +719,17 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                 
 
                                 //Register callback for creation of draw layer (zone)
-                                allFloorMapMaps[gridName].on(L.Draw.Event.CREATED, function (e) {
+                                allFloorMapMaps[gridName].on('draw:created', function (e) {
                                     floormapZoneCreated(vis, gridName, e);});
 
-                                    //Register callback for creation of draw layer (zone)
-                                allFloorMapMaps[gridName].on(L.Draw.Event.EDITED, function (e) {
+                                    //Register callback for edit of draw layer (zone)
+                                allFloorMapMaps[gridName].on('draw:edited', function (e) {
                                     floormapZoneEdited(vis, gridName, e);});
+
+                                //Register callback for deletion of draw layer (zone)
+                                allFloorMapMaps[gridName].on('draw:deleted', function (e) {
+                                    floormapZoneDeleted(vis, gridName, e);});
+
 
                                 //Callback for change of base layer (floor)
                                 allFloorMapMaps[gridName].on('baselayerchange',  function (e) {
