@@ -55,7 +55,7 @@ function getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId
 function saveZones (){
     disableSaveButtons();
 
-    console.log ("Saving zones");
+    // console.log ("Saving zones");
 
     for (const zoneDictionaryUuid of modifiedZoneUuidMap.keys()) {
 
@@ -286,7 +286,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         for (zonesForLevel in vis.zoneLayers) {
             if (allFloorMapMaps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
                 // < Awesome here, could store the active layer
-                console.log("Removing drawing layer");
+                // console.log("Removing drawing layer");
                 allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
             }
         }
@@ -294,7 +294,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
     if (zoneDictionaryUuid) {
         if (differentFloor) {
-            console.log("Adding drawing layer " + myLayerId);
+            // console.log("Adding drawing layer " + myLayerId);
             allFloorMapMaps[gridName].addLayer(vis.zoneLayers[myLayerId]);
         }
     }
@@ -521,7 +521,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                             this.zoneLayers[layerId].addLayer(polygon);
 
-                            console.log("Init: Adding layer " + polygon.floorMapDetails.floorId + " / " + polygon.floorMapDetails.zoneId +" to " + polygon.floorMapDetails.mapId);
+                            // console.log("Init: Adding layer " + polygon.floorMapDetails.floorId + " / " + polygon.floorMapDetails.zoneId +" to " + polygon.floorMapDetails.mapId);
 
                         }
                     }
