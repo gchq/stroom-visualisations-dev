@@ -3,5 +3,5 @@
   "uuid" : "%%ZONE_DICTIONARY_UUID%%",
   "name" : "%%NAME%% Zones",
   "version" : "%%RANDOM_UUID%%",
-  "description" : "Zones of floorplans."
+  "description" : "Zones of floorplans for local floormap visualisation %%NAME%%."
 }
