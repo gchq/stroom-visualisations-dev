@@ -21,6 +21,7 @@ if (!visualisations) {
 
 const modifiedZoneUuidMap = new Map();
 const allFloorMapZones = {};
+const allFloorMapZoneDictionaryObjects = {}; //As fetched from Stroom
 const allFloorMapMaps = {}; //1 map per grid cell
 
 
@@ -59,18 +60,30 @@ function saveZones (){
     for (const zoneDictionaryUuid of modifiedZoneUuidMap.keys()) {
 
         const resource = zoneDictionaryResourceURL (zoneDictionaryUuid);
-        const toSave = allFloorMapZones[zoneDictionaryUuid];
+        var toSave;
+        if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
+            toSave = allFloorMapZones[zoneDictionaryUuid];
+        } else {
+            toSave = allFloorMapZoneDictionaryObjects[zoneDictionaryUuid];
+            toSave.data = JSON.stringify(allFloorMapZones[zoneDictionaryUuid]);
+        }
 
         if (modifiedZoneUuidMap.get(zoneDictionaryUuid) == true) {
             if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
                 console.log ("Would save " + JSON.stringify(toSave));
             } else {
-                fetch(resource, {method: 'POST',
+                fetch(resource, {method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(toSave),
-                }).then(response => response.json()).then(content => alert(content));
+                }).then(response => {
+                    if (response.ok) {
+                        alert ("Zones saved successfully");
+                    } else {
+                        response.text().then(content => alert("Error saving zones!\n" + content));
+                    }
+                });
             }
         }
     }
@@ -504,9 +517,14 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         if (!allFloorMapZones[zoneDictionaryUuid]) 
                         {
                             fetch(resource).then(response => response.json()).then(content =>
-                                {       
-                                    allFloorMapZones[zoneDictionaryUuid] = content;
-                        
+                                {   
+                                    if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
+                                        allFloorMapZones[zoneDictionaryUuid] = content;
+                                    } else {
+                                        allFloorMapZoneDictionaryObjects[zoneDictionaryUuid] = content;
+                                        allFloorMapZones[zoneDictionaryUuid] = JSON.parse(content.data);
+                                    }
+                                    
                                     vis.createPolygonsForLayer(gridName, zoneDictionaryUuid, allFloorMapZones[zoneDictionaryUuid]);
                                 
                                     if (vis.currentLayer[gridName] == layerLabel) {
