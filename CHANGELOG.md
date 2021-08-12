@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.5.0] - 2021-08-12
+
 * Changed `FloorMap` - user now creates a local vis using a utility
 * Changed `FloorMap` - supports creation of zones (requires Leaflet.draw)
 
@@ -131,7 +134,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.4.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.5.0...HEAD
+[v3.5.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.4.1...v3.5.0
 [v3.4.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.4.0...v3.4.1
 [v3.4.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.2...v3.4.0
 [v3.3.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.3.1...v3.3.2
