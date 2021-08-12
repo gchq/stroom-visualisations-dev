@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Changed `FloorMap` - user now creates a local vis using a utility
+* Changed `FloorMap` - supports creation of zones (requires Leaflet.draw)
+
 
 ## [v3.4.1] - 2021-07-21
 

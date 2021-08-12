@@ -17,7 +17,8 @@ See the file _LICENCE.txt_ for licencing information for this project.
 | Font Awesome code                         | 4.4.0            | MIT           |
 | graph-js                                  | n/a              | MIT Custom    |
 | jshashes                                  | n/a              | BSD Custom    |
-| LeafletJS                                 | 1.7.1            | BSD 2 Clause  |
+| LeafletJS                                 | 1.7.1            | Custom        |
+| Leaflet.draw                              | 1.0.3            | MIT Custom    |
 | roboto font                               | n/a              | AL 2.0        |
 | three-js                                  | 71               | MIT Custom    |
 
