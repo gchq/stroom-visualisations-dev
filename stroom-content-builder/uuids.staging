@@ -23,6 +23,9 @@ Script.D3-Grid=a75c1250-36ff-4d2a-bf22-35403d128dd9
 Script.D3-Tip=0641e21c-a796-4d08-9426-1809c25977b5
 Script.JSHashes=86e5a2ad-f9da-4dcd-8d55-60e691b5a0f9
 Script.Leaflet=7e997977-765a-45b8-bddd-4bfdb0af95ad
+Script.LeafletCSS=3738c270-82c6-4c00-a8ba-deec80e8d3df
+Script.LeafletDraw=954ebc89-998b-4bdd-971f-15482af9e8d7
+Script.LeafletDrawCSS=d39ce800-a946-4f33-8872-7f2e6f0ae8e7
 
 Script.BarChart=9a423385-7d3a-4e74-b67a-96d2943b0c9f
 Script.Bubble=1fe1f036-4c6f-45cd-b68c-bf688a4c4a7e
