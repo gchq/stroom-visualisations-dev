@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Fix Leaflet and L.draw CSS JS dependencies.
 
 ## [v3.6.1] - 2021-08-17
 
