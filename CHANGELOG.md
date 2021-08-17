@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.6.1] - 2021-08-17
+
 * Make Leaflet and L.draw CSS into JS dependencies (including image data).
 
 
@@ -147,7 +150,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1...HEAD
+[v3.6.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.0...v3.6.1
 [v3.6.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.5.1...v3.6.0
 [v3.5.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.5.0...v3.5.1
 [v3.5.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.4.1...v3.5.0
