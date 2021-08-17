@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Make Leaflet and L.draw CSS into JS dependencies (including image data).
+
 
 ## [v3.6.0] - 2021-08-17
 
