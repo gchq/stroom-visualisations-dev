@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+* Fixed CSS dependencies.
+
+
 ## [v3.5.1] - 2021-08-12
 
 * Changed `FloorMap` - Removed unnecessary console output.

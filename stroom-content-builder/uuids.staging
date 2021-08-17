@@ -16,13 +16,16 @@ Folder./VisualisationsStagingArea/Dependencies/Underscore/=e775ebd9-46ad-4b38-b5
 
 #UUIDs for each script entity
 Script.Common=07c79b56-d73e-434a-87c1-93a0f19b9463
-Script.CSS=c9d6bd0b-b9f5-42d1-8de2-23c09c1dd9c3
 Script.Chroma=a73633f1-2ae3-4d0e-933d-f7648d2b3d79
+Script.CSS=c9d6bd0b-b9f5-42d1-8de2-23c09c1dd9c3
 Script.D3=a509c403-5bea-482e-a335-d275593e1dcb
 Script.D3-Grid=a75c1250-36ff-4d2a-bf22-35403d128dd9
 Script.D3-Tip=0641e21c-a796-4d08-9426-1809c25977b5
+Script.FontAwesomeCSS=042335c6-01fc-4101-b622-2b84a5d960b0
 Script.JSHashes=86e5a2ad-f9da-4dcd-8d55-60e691b5a0f9
-Script.Leaflet=7e997977-765a-45b8-bddd-4bfdb0af95ad
+Script.Leaflet=61539f5b-34f8-4157-a3c6-ee3b31960df9
+Script.RobotoCSS=39d19f11-f5e2-4cd6-93f7-89b909dbb6a5
+Script.ThemeCSS=e6915727-63e0-4415-a09f-85031f319e6c
 
 Script.BarChart=9a423385-7d3a-4e74-b67a-96d2943b0c9f
 Script.Bubble=1fe1f036-4c6f-45cd-b68c-bf688a4c4a7e

@@ -15,14 +15,6 @@
  */
 @CHARSET "UTF-8";
 
-@import url("theme.css");
-
-/* Font Awesome */
-@import url("font-awesome.css");
-
-/* Roboto Font */
-@import url("roboto.css");
-
 html, body {
   width: 100%;
   height: 100%;
