@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 * Fixed CSS dependencies.
+* Added Local Visualisation Builders archive to build
 
 
 ## [v3.5.1] - 2021-08-12
