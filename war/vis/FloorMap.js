@@ -454,13 +454,13 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         this.zonesInitialisedForMap = {} // Property for each initialised map
         this.boundsMap = new Map(); //layer name to bounds
 
-        //Load the library stylesheet
-        addCss('leaflet/leaflet.css');
+        // //Load the library stylesheet
+        // addCss('leaflet/leaflet.css');
 
-        //Load additional resources
-        addCss('leaflet/leaflet-fontawesome-markers.css');
-        addJs('leaflet/plugins/Leaflet.draw/leaflet.draw-src.js');
-        addCss('leaflet/plugins/Leaflet.draw/leaflet.draw.css');
+        // //Load additional resources
+        // addCss('leaflet/leaflet-fontawesome-markers.css');
+        // addJs('leaflet/plugins/Leaflet.draw/leaflet.draw-src.js');
+        // addCss('leaflet/plugins/Leaflet.draw/leaflet.draw.css');
 
         this.start = function () {
 

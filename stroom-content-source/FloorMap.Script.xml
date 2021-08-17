@@ -4,6 +4,7 @@
 	&lt;docs&gt;
         @@DEPENDENCY#Common@@
         @@DEPENDENCY#Leaflet@@
+        @@DEPENDENCY#LeafletDraw@@
 	&lt;/docs&gt;
     </dependenciesXML>
     <description>Git commit: @@GIT_COMMIT@@
