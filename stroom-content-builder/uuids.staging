@@ -24,12 +24,13 @@ Script.D3-Tip=0641e21c-a796-4d08-9426-1809c25977b5
 Script.FontAwesomeCSS=042335c6-01fc-4101-b622-2b84a5d960b0
 Script.JSHashes=86e5a2ad-f9da-4dcd-8d55-60e691b5a0f9
 Script.Leaflet=61539f5b-34f8-4157-a3c6-ee3b31960df9
-Script.RobotoCSS=39d19f11-f5e2-4cd6-93f7-89b909dbb6a5
-Script.ThemeCSS=e6915727-63e0-4415-a09f-85031f319e6c
-Script.Leaflet=7e997977-765a-45b8-bddd-4bfdb0af95ad
 Script.LeafletCSS=3738c270-82c6-4c00-a8ba-deec80e8d3df
 Script.LeafletDraw=954ebc89-998b-4bdd-971f-15482af9e8d7
 Script.LeafletDrawCSS=d39ce800-a946-4f33-8872-7f2e6f0ae8e7
+Script.LeafletFontAwesomeMarkersCSS=91c1d199-3e88-4323-93d2-c60be5ce4939
+Script.RobotoCSS=39d19f11-f5e2-4cd6-93f7-89b909dbb6a5
+Script.ThemeCSS=e6915727-63e0-4415-a09f-85031f319e6c
+
 
 Script.BarChart=9a423385-7d3a-4e74-b67a-96d2943b0c9f
 Script.Bubble=1fe1f036-4c6f-45cd-b68c-bf688a4c4a7e
