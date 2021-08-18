@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.6.1-2] - 2021-08-18
+
 * Fix Leaflet and L.draw CSS JS dependencies.
 
 ## [v3.6.1-1] - 2021-08-17
@@ -155,7 +158,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-2...HEAD
+[v3.6.1-2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-1...v3.6.1-2
 [v3.6.1-1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1...v3.6.1-1
 [v3.6.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.0...v3.6.1
 [v3.6.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.5.1...v3.6.0
