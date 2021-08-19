@@ -108,32 +108,46 @@ if (!visualisations) {
                         }
 
                         if (!this.markers[gridName].has (dataKey)) {
+                            var marker;
+                            const lat = parseFloat(val[geomapIndexLatitude]);
+                            const lon = parseFloat(val[geomapIndexLongitude]);
                           
-                            var iconName = 'map-marker';
-
-
-                            if (val.length > geomapIndexIcon && val[geomapIndexIcon]) {
-                                iconName = val[geomapIndexIcon];
-                            }
-
-                            var colour = color (iconName);
+                            var colour = undefined;
                             if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
                                 colour = color(val[geomapIndexSeries]);
                             }
-    
-                            var markerHtml = "<div style='background-color:" + colour + "' class='marker-pin'></div><i class='fa fa-"
-                            + iconName + " awesome'>";
-                                                          
-                            var markerIcon = L.divIcon({
-                                className: 'custom-div-icon',
-                                html: markerHtml,
-                                iconSize: [30, 42],
-                                iconAnchor: [15, 42]
-                                });
-    
-                            var marker = L.marker([parseFloat(val[geomapIndexLatitude]),parseFloat(val[geomapIndexLongitude])], {icon: markerIcon})
-                                .addTo(map); 
 
+                            if (val.length > geomapIndexIcon && val[geomapIndexIcon]) {
+                                const iconName = val[geomapIndexIcon];
+
+                                if (!colour) {
+                                    colour = color(iconName);
+                                }
+                                var markerHtml = "<div style='background-color:" + colour + 
+                                    "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
+
+                                var markerIcon = L.divIcon({
+                                    className: 'custom-div-icon',
+                                    html: markerHtml,
+                                    iconSize: [30, 42],
+                                    iconAnchor: [15, 42]
+                                });
+
+                                marker = L.marker([lat,lon], { icon: markerIcon });
+
+                            } else {
+                                //Use small circles rather than icons
+                                if (!colour) {
+                                    colour = "red";
+                                }
+
+                                marker = L.circleMarker([lat,lon], {radius: 5, 
+                                    stroke: false,
+                                    fillOpacity: 1.0,
+                                    color: colour, fill: true});
+                            }
+
+                            //Add popup details
                             if (val.length > geomapIndexName && val[geomapIndexName]){
                                 var popupHeading = "Information";
                                 if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
@@ -144,7 +158,7 @@ if (!visualisations) {
                                 
                                 marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
                             }
-                            
+                            marker.addTo(map);
                             this.markers[gridName].set(dataKey, marker);
                         } else {
                             //  console.log("Not updating marker " + val[1] + ":" + val[2]);

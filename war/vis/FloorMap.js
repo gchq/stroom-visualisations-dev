@@ -748,11 +748,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             this.markers[gridName] = new Map();
                         }
 
-                        var marker;
-                        const x = parseFloat(val[floormapIndexX]);
-                        const y = parseFloat(val[floormapIndexY]);
-
                         if (!this.markers[gridName].has(dataKey)) {
+                            var marker;
+                            const x = parseFloat(val[floormapIndexX]);
+                            const y = parseFloat(val[floormapIndexY]);
+
                             var colour = undefined;
                             if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
                                 colour = color(val[floormapIndexSeries]);
@@ -783,6 +783,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     colour = "red";
                                 }
 
+                                //Position is y,x deriving from latlon
                                 marker = L.circleMarker([y,x], {radius: 5, 
                                     stroke: false,
                                     fillOpacity: 1.0,
