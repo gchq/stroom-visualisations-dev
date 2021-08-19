@@ -87,14 +87,6 @@
                     "min": "1"
                 },
                 {
-                    "id": "maxSeries",
-                    "type": "number",
-                    "label": "Max Series",
-                    "defaultValue": "100",
-                    "min": "1",
-                    "max": "10000"
-                },
-                {
                     "id": "sortSeries",
                     "type": "selection",
                     "label": "Sort Series",
@@ -106,14 +98,6 @@
                     "defaultValue": "Ascending"
                 },
                 {
-                    "id": "maxGridSeries",
-                    "type": "number",
-                    "label": "Max Grid Series",
-                    "defaultValue": "25",
-                    "min": "1",
-                    "max": "25"
-                },
-                {
                     "id": "sortGridSeries",
                     "type": "selection",
                     "label": "Sort Grid Series",
@@ -123,26 +107,6 @@
                         "Descending"
                     ],
                     "defaultValue": "Ascending"
-                },
-                {
-                    "id": "synchSeries",
-                    "type": "selection",
-                    "label": "Synch Series",
-                    "values": [
-                        "True",
-                        "False"
-                    ],
-                    "defaultValue": "True"
-                },
-                {
-                    "id" : "showLabels",
-                    "type" : "selection",
-                    "label" : "Show Labels",
-                    "values" : [
-                        "True",
-                        "False"
-                    ],
-                    "defaultValue" : "False"
                 }
             ]
         }
