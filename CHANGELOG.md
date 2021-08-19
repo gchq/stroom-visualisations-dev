@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* FloorMap - Make zone editing configurable.
 * FloorMap/GeoMap - use small circle markers if icon not set in data.
 
 ## [v3.6.1-2] - 2021-08-18
