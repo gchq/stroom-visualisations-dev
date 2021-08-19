@@ -54,6 +54,16 @@
         "name": "FloorMap",
         "controls": [
           {
+            "id": "isEditZoneModeEnabled",
+            "type": "selection",
+            "label": "Enable Zone Editing",
+            "values": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "False"
+          },
+          {
             "id": "sortSeries",
             "type": "selection",
             "label": "Sort Series",

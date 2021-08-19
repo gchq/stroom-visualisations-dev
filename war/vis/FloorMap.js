@@ -303,7 +303,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         allFloorMapMaps[gridName].removeControl(vis.drawControls[gridName]);
     }
 
-    if (zoneDictionaryUuid) {
+    if (vis.isEditZoneModeEnabled && zoneDictionaryUuid) {
         //Configure leaflet.draw library for zones rather than generic shapes
         L.drawLocal.draw.toolbar.buttons.polygon = 'Draw new zone';
 
@@ -436,6 +436,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
         // Create a colour set.
         var color = d3.scale.category20();
+
+        //Whether to allow zones to be edited.
+        this.isEditZoneModeEnabled = false;
 
         this.element = window.document.createElement("div");
         const mapNum = Math.floor((Math.random() * 1000) % 1000);
@@ -685,7 +688,8 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                 this.layerControls[gridName] = L.control.layers(null, null, { sortLayers: true })
                                     .addTo(allFloorMapMaps[gridName]);
 
-                                if (this.config[campusId][buildingId][floorId].zoneDictionaryUuid) {
+                                if (this.isEditZoneModeEnabled &&
+                                        this.config[campusId][buildingId][floorId].zoneDictionaryUuid) {
                                     //Create save zones button
                                     const button = window.document.createElement("button");
                                     gridElement.appendChild(button);
@@ -867,6 +871,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         //This is the entry point from Stroom
         this.setData = function (context, settings, data) {
 
+            if (settings && settings.isEditZoneModeEnabled && settings.isEditZoneModeEnabled == 'True') {
+                this.isEditZoneModeEnabled = true;
+            }
 
             if (data && data !== null) {
                 const gridSeriesArray = data.values;

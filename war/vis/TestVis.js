@@ -173,6 +173,8 @@
             {
                 settings.config = '';
 
+                settings.isEditZoneModeEnabled = 'True';
+
                 localFloorMapConfig = {
                     "The Campus": {
                         "Headquarters": {

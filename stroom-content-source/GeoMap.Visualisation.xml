@@ -2,12 +2,14 @@
 <visualisation>
     <description>Basic mapping visualisation.
     <![CDATA[
-The tileserver is confgurable.
+The geo tile server is configurable.
 
-It is typical to have to change Stroom's content security policy to allow this visualisation to connect to the tileserver.
+It is typical to have to change Stroom's content security policy to allow this visualisation to connect to the tile server.
 
-E.g. to use OpenSteetView maps, you can change the property security.webContent.contentSecurityPolicy to somthing that includes the tile server for image data, e.g.
-"default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; img-src 'self' data: https://*.tile.osm.org; style-src 'self' 'unsafe-inline'; frame-ancestors 'self';"
+E.g. to use OpenSteetView maps, you can change the property security.webContent.contentSecurityPolicy to something that includes the tile server for image data to:
+
+default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; img-src 'self' data: https://*.tile.osm.org; style-src 'self' 'unsafe-inline'; frame-ancestors 'self';
+
 ]]>
         </description>
     <functionName>visualisations.GeoMap</functionName>
