@@ -2,12 +2,12 @@
 <script>
     <dependenciesXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
 	&lt;docs&gt;
-    @@DEPENDENCY#LeafletCSS@@
-    @@DEPENDENCY#LeafletFontAwesomeMarkersCSS@@
+    @@DEPENDENCY#Leaflet@@
+    @@DEPENDENCY#LeafletDrawCSS@@
 	&lt;/docs&gt;
     </dependenciesXML>
-    <description>Library for geographic mapping</description>
-    <name>Leaflet</name>
+    <description>leaflet.draw plugin for LeafletJS</description>
+    <name>LeafletDraw</name>
     <uuid>@@UUID@@</uuid>
 </script>
 

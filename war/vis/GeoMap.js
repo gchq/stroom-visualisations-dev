@@ -79,13 +79,7 @@ if (!visualisations) {
 
         this.markers = {};
         this.maps = {};
-        
-        //Load the library stylesheet
-        addCss('leaflet/leaflet.css');
-        
-        //Load additional resources
-        addCss('leaflet/leaflet-fontawesome-markers.css');
-       
+               
         this.start = function() {
             
 

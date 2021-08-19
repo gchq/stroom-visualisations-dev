@@ -24,6 +24,7 @@ shopt -s globstar
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 sourceDir="$scriptDir/../stroom-content-source"
+localBuildersDir="$scriptDir/../stroom-content-local/builders"
 targetDir="$scriptDir/../stroom-content-target"
 artifactDir="$scriptDir/../stroom-content-artifacts"
 visJsFilesDir="$scriptDir/../war/vis"
@@ -478,9 +479,18 @@ for env in "${environments[@]}"; do
   # Now zip all the target output
   pushd "${targetDir}" > /dev/null
   zip -9  -q -r -m  "${zipFileName}" ./*
+
+  #Zip up the local content builders
+  pushd "${localBuildersDir}" > /dev/null
+  localBuildersZipFileName="${artifactDir}/localVisualisationBuilders-${version}.zip" 
+  zip -q -r  "${localBuildersZipFileName}" ./*
+  popd > /dev/null
+
+
   popd > /dev/null
 
 done
+
 
 echo -e ""
 echo -e "${GREEN}Done!"
