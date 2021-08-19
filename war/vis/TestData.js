@@ -500,10 +500,14 @@ function TestData() {
         };
 
         var generateIconValue = function(i) {
-            if (i % 2 == 0) {
-                return 'coffee';
+            if (i % 5 == 0) {
+                return null;
             } else {
-                return 'camera';
+                if (i % 2 == 0) {
+                    return 'coffee';
+                } else {
+                    return 'camera';
+                }
             }
         };
 

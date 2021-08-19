@@ -748,30 +748,46 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             this.markers[gridName] = new Map();
                         }
 
-                        if (!this.markers[gridName].has(dataKey)) {
-                            var iconName = 'map-marker';
-                            if (val.length > floormapIndexIcon && val[floormapIndexIcon]) {
-                                iconName = val[floormapIndexIcon];
-                            }
+                        var marker;
+                        const x = parseFloat(val[floormapIndexX]);
+                        const y = parseFloat(val[floormapIndexY]);
 
-                            var colour = color(iconName);
+                        if (!this.markers[gridName].has(dataKey)) {
+                            var colour = undefined;
                             if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
                                 colour = color(val[floormapIndexSeries]);
                             }
 
-                            var markerHtml = "<div style='background-color:" + colour + "' class='marker-pin'></div><i class='fa fa-"
-                                + iconName + " awesome'>";
+                            if (val.length > floormapIndexIcon && val[floormapIndexIcon]) {
+                                const iconName = val[floormapIndexIcon];
 
-                            var markerIcon = L.divIcon({
-                                className: 'custom-div-icon',
-                                html: markerHtml,
-                                iconSize: [30, 42],
-                                iconAnchor: [15, 42]
-                            });
+                                if (!colour) {
+                                    colour = color(iconName);
+                                }
+                                var markerHtml = "<div style='background-color:" + colour + 
+                                    "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
 
-                            //Position is y,x deriving from latlon
-                            var marker = L.marker([parseFloat(val[floormapIndexY]),
-                            parseFloat(val[floormapIndexX])], { icon: markerIcon });
+                                var markerIcon = L.divIcon({
+                                    className: 'custom-div-icon',
+                                    html: markerHtml,
+                                    iconSize: [30, 42],
+                                    iconAnchor: [15, 42]
+                                });
+
+                                //Position is y,x deriving from latlon
+                                marker = L.marker([y,x], { icon: markerIcon });
+
+                            } else {
+                                //Use small circles rather than icons
+                                if (!colour) {
+                                    colour = "red";
+                                }
+
+                                marker = L.circleMarker([y,x], {radius: 5, 
+                                    stroke: false,
+                                    fillOpacity: 1.0,
+                                    color: colour, fill: true});
+                            }
 
                             //Add popup details
                             if (val.length > floormapIndexName && val[floormapIndexName]) {
