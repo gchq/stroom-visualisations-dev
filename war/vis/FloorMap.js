@@ -137,7 +137,7 @@ function floormapZoneEdited (vis, gridName, e) {
 
     e.layers.eachLayer(function (updatedZone) {
         if (!updatedZone.floorMapDetails) {
-            console.log("No layer details found for edited zone");
+            console.error("No layer details found for edited zone");
         }
         allFloorMapZones[updatedZone.floorMapDetails.zoneDictionaryUuid][updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId]
             [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].points = updatedZone.getLatLngs();
@@ -158,7 +158,7 @@ function floormapZoneDeleted(vis, gridName, e) {
 
     e.layers.eachLayer(function (updatedZone) {
         if (!updatedZone.floorMapDetails) {
-            console.log("No layer details found for deleted zone");
+            console.error("No layer details found for deleted zone");
         }
         allFloorMapZones[updatedZone.floorMapDetails.zoneDictionaryUuid][updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId]
             [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].deleted = true;
@@ -286,7 +286,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         for (zonesForLevel in vis.zoneLayers) {
             if (allFloorMapMaps[gridName].hasLayer(vis.zoneLayers[zonesForLevel])) {
                 // < Awesome here, could store the active layer
-                // console.log("Removing drawing layer");
                 allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
             }
         }
@@ -294,7 +293,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
     if (zoneDictionaryUuid) {
         if (differentFloor) {
-            // console.log("Adding drawing layer " + myLayerId);
             allFloorMapMaps[gridName].addLayer(vis.zoneLayers[myLayerId]);
         }
     }
@@ -456,6 +454,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         this.zoneLayers = {};
         this.zonesInitialisedForMap = {} // Property for each initialised map
         this.boundsMap = new Map(); //layer name to bounds
+        this.oneTimeAlerts = new Map(); //Alerts that have been raised already
   
         
         this.start = function () {
@@ -517,8 +516,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                             this.zoneLayers[layerId].addLayer(polygon);
 
-                            // console.log("Init: Adding layer " + polygon.floorMapDetails.floorId + " / " + polygon.floorMapDetails.zoneId +" to " + polygon.floorMapDetails.mapId);
-
                         }
                     }
                 }
@@ -539,7 +536,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                     if (this.currentLayer[gridName] == layerLabel) {
                         if (this.zoneLayers[layerId]) {
-                            // console.log ("Adding " + layerId + " to " + gridName + " first time");
                             allFloorMapMaps[gridName].addLayer(this.zoneLayers[layerId]);
                         }
                     
@@ -566,7 +562,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                 
                                     if (vis.currentLayer[gridName] == layerLabel) {
                                         if (vis.zoneLayers[layerId]) {
-                                            // console.log ("Adding " + layerId + " to " + gridName + " next time");
                                             allFloorMapMaps[gridName].addLayer(vis.zoneLayers[layerId]);
                                         }
                                     }  
@@ -576,7 +571,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                 
                             if (vis.currentLayer[gridName] == layerLabel) {
                                 if (vis.zoneLayers[layerId]) {
-                                    // console.log ("Adding " + layerId + " to " + gridName + " next time");
                                     allFloorMapMaps[gridName].addLayer(vis.zoneLayers[layerId]);
                                 }
                             }  
@@ -617,37 +611,72 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         if (!this.layers[layerId]) {
                             const campusConfig = this.config[campusId];
                             if (!campusConfig) {
-                                console.log('Configuration not found for building group "' + campusId + '"');
+                                const msg = 'Error: Configuration not found for building group "' + campusId + '"';
+                                if (!this.oneTimeAlerts.get(msg)) {
+                                    alert (msg);
+                                    this.oneTimeAlerts.set(msg, true);
+                                }
+
                                 continue;
                             }
 
                             const buildingConfig = campusConfig[buildingId];
                             if (!buildingConfig) {
-                                console.log('Configuration not found for building "' + buildingId + '"');
+                                const msg = 'Error: Configuration not found for building "' + buildingId + '"'
+                                    + " of building group " + '"' + campusId + '"';
+                                if (!this.oneTimeAlerts.get(msg)) {
+                                    alert (msg);
+                                    this.oneTimeAlerts.set(msg, true);
+                                }
+
                                 continue;
                             }
                             const floorConfig = buildingConfig[floorId];
-                            if (!buildingConfig) {
-                                console.log('Configuration not found for floor "' + floorId +
-                                    '" of building "' + buildingId + '"');
+                            if (!floorConfig) {
+                                const msg = 'Error: Configuration not found for floor "' + floorId +
+                                    '" of building "' + buildingId + '"'
+                                    + " of building group " + '"' + campusId + '"';
+                                if (!this.oneTimeAlerts.get(msg)) {
+                                    alert (msg);
+                                    this.oneTimeAlerts.set(msg, true);
+                                }
+
                                 continue;
                             }
 
                             if (!floorConfig.width) {
-                                console.log('Property width not defined for floor "' + floorId +
-                                    '" of building "' + buildingId + '"');
+                                const msg = 'Error: Property width not defined for floor "' + floorId +
+                                    '" of building "' + buildingId + '"'
+                                    + " of building group " + '"' + campusId + '"';
+                                if (!this.oneTimeAlerts.get(msg)) {
+                                    alert (msg);
+                                    this.oneTimeAlerts.set(msg, true);
+                                }
+
                                 continue;
                             }
 
                             if (!floorConfig.height) {
-                                console.log('Property height not defined for floor "' + floorId +
-                                    '" of building "' + buildingId + '"');
+                                const msg = 'Error: Property height not defined for floor "' + floorId +
+                                    '" of building "' + buildingId + '"'
+                                    + " of building group " + '"' + campusId + '"';
+                                if (!this.oneTimeAlerts.get(msg)) {
+                                    alert (msg);
+                                    this.oneTimeAlerts.set(msg, true);
+                                }
+
                                 continue;
                             }
 
                             if (!floorConfig.image) {
-                                console.log('Property image not defined for floor "' + floorId +
-                                    '" of building "' + buildingId + '"');
+                                const msg = 'Error: Property image not defined for floor "' + floorId +
+                                    '" of building "' + buildingId + '"'
+                                    + " of building group " + '"' + campusId + '"';
+                                if (!this.oneTimeAlerts.get(msg)) {
+                                    alert (msg);
+                                    this.oneTimeAlerts.set(msg, true);
+                                }
+
                                 continue;
                             }
 
