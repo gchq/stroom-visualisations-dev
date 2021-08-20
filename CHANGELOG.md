@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* 
+* FloorMap - Fix bug in handling config provided via settings vice js.
 * FloorMap - Make zone editing configurable.
 * FloorMap/GeoMap - use small circle markers if icon not set in data.
 

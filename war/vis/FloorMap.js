@@ -591,10 +591,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
         this.setGridCellLevelData = function (gridName, context, settings, data) {
             if (!this.config) {
-                if (localFloorMapConfig) {
-                    this.config = localFloorMapConfig;
-                } else {
+                if (settings.config.length > 10 && typeof localFloorMapConfig !== undefined) {
+                    //Configuration JSON has been manually provided in config rather than js
                     this.config = JSON.parse(settings.config);
+                } else {
+                  this.config = localFloorMapConfig;
                 }
             }
 
