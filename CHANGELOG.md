@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Fix gh-44 FloorMap - Apply changed marker settings without having to save.
+* Fix gh-45 FloorMap - Update markers when dashboard filters are applied.
 * Fix gh-43 FloorMap - Save zones only works once.
 
 

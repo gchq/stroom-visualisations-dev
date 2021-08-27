@@ -295,7 +295,15 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                 allFloorMapMaps[gridName].removeLayer(vis.zoneLayers[zonesForLevel]);
             }
         }
+        for (markersForLevel in vis.markerLayers) {
+            if (allFloorMapMaps[gridName].hasLayer(vis.markerLayers[markersForLevel])) {
+                // < Awesome here, could store the active layer
+                allFloorMapMaps[gridName].removeLayer(vis.markerLayers[markersForLevel]);
+            }
+        }
     }
+
+    allFloorMapMaps[gridName].addLayer(vis.markerLayers[myLayerId]);
 
     if (zoneDictionaryUuid) {
         if (differentFloor) {
@@ -452,7 +460,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         this.element.style.gridTemplateColumns = "auto";
         this.element.style.gridGap = "5px 5px";
 
-        this.markers = {};
+        this.markerLayers = {};//1 layer per floor per map
         this.layerControls = {};//1 control per map
         this.drawControls = {}; // 1 control per map
         this.currentLayer = {}; //1 layer name per map
@@ -600,6 +608,12 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             }
 
             if (data && data !== null) {
+                //Clear all marker layers associated with this map
+                for (markerLayerId in this.markerLayers) {
+                    if (markerLayerId.startsWith(gridName)){
+                        this.markerLayers[markerLayerId].clearLayers();
+                    }
+                }
 
                 const seriesArray = data.values;
                 const vis = this; //Allow this to be accessed within closures
@@ -772,8 +786,12 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             }
 
                             //Create the zone layer (actually not needed if no zone resource defined)
-                            if (!this.zoneLayers[layerId] ) {
+                            if (!this.zoneLayers[layerId]) {
                                 this.zoneLayers[layerId] = new L.FeatureGroup();                    
+                            }
+
+                            if (!this.markerLayers[layerId]) {
+                                this.markerLayers[layerId] = L.layerGroup();                    
                             }
                             
                             //Load any zone data and create associated zone polygons
@@ -784,70 +802,65 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         }
 
                         const dataKey = this.createDataKey(val);
-                        if (!this.markers[gridName]) {
-                            this.markers[gridName] = new Map();
+                        
+                        
+
+                        
+                        var marker;
+                        const x = parseFloat(val[floormapIndexX]);
+                        const y = parseFloat(val[floormapIndexY]);
+
+                        var colour = undefined;
+                        if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
+                            colour = color(val[floormapIndexSeries]);
                         }
 
-                        if (!this.markers[gridName].has(dataKey)) {
-                            var marker;
-                            const x = parseFloat(val[floormapIndexX]);
-                            const y = parseFloat(val[floormapIndexY]);
+                        if (val.length > floormapIndexIcon && val[floormapIndexIcon]) {
+                            const iconName = val[floormapIndexIcon];
 
-                            var colour = undefined;
-                            if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
-                                colour = color(val[floormapIndexSeries]);
+                            if (!colour) {
+                                colour = color(iconName);
                             }
+                            var markerHtml = "<div style='background-color:" + colour + 
+                                "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
 
-                            if (val.length > floormapIndexIcon && val[floormapIndexIcon]) {
-                                const iconName = val[floormapIndexIcon];
+                            var markerIcon = L.divIcon({
+                                className: 'custom-div-icon',
+                                html: markerHtml,
+                                iconSize: [30, 42],
+                                iconAnchor: [15, 42]
+                            });
 
-                                if (!colour) {
-                                    colour = color(iconName);
-                                }
-                                var markerHtml = "<div style='background-color:" + colour + 
-                                    "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
+                            //Position is y,x deriving from latlon
+                            marker = L.marker([y,x], { icon: markerIcon });
 
-                                var markerIcon = L.divIcon({
-                                    className: 'custom-div-icon',
-                                    html: markerHtml,
-                                    iconSize: [30, 42],
-                                    iconAnchor: [15, 42]
-                                });
-
-                                //Position is y,x deriving from latlon
-                                marker = L.marker([y,x], { icon: markerIcon });
-
-                            } else {
-                                //Use small circles rather than icons
-                                if (!colour) {
-                                    colour = "red";
-                                }
-
-                                //Position is y,x deriving from latlon
-                                marker = L.circleMarker([y,x], {radius: 5, 
-                                    stroke: false,
-                                    fillOpacity: 1.0,
-                                    color: colour, fill: true});
-                            }
-
-                            //Add popup details
-                            if (val.length > floormapIndexName && val[floormapIndexName]) {
-                                var popupHeading = "Information";
-                                if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
-                                    popupHeading = val[floormapIndexSeries];
-                                }
-
-                                const popupDetail = val[floormapIndexName];
-
-                                marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
-                            }
-
-                            this.layers[layerId].addLayer(marker);
-                            this.markers[gridName].set(dataKey, marker);
                         } else {
-                            // console.log("Not updating marker " + val[1] + ":" + val[2]);
+                            //Use small circles rather than icons
+                            if (!colour) {
+                                colour = "red";
+                            }
+
+                            //Position is y,x deriving from latlon
+                            marker = L.circleMarker([y,x], {radius: 5, 
+                                stroke: false,
+                                fillOpacity: 1.0,
+                                color: colour, fill: true});
                         }
 
+                        //Add popup details
+                        if (val.length > floormapIndexName && val[floormapIndexName]) {
+                            var popupHeading = "Information";
+                            if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
+                                popupHeading = val[floormapIndexSeries];
+                            }
+
+                            const popupDetail = val[floormapIndexName];
+
+                            marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
+                        }
+
+                        this.markerLayers[layerId].addLayer(marker);
+                        
                     }
                 }
 
@@ -874,7 +887,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                     //Remove the resources associated with this grid that are not now needed
                     delete allFloorMapMaps[elemToRemoveId];
-                    delete this.markers[elemToRemoveId];
+
                     delete this.layerControls[elemToRemoveId];
                     delete this.currentLayer[elemToRemoveId];
                     delete this.zonesInitialisedForMap[elemToRemoveId];
@@ -888,9 +901,16 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                     for (const zoneLayer in this.zoneLayers) {
                         if (zoneLayer.startsWith(elemToRemoveId)) {
-                            delete this.layers[zoneLayer];
+                            delete this.zoneLayers[zoneLayer];
                         }
                     }
+
+                    for (const markerLayer in this.markerLayers) {
+                        if (markerLayer.startsWith(elemToRemoveId)) {
+                            delete this.markerLayers[markerLayer];
+                        }
+                    }
+
 
                     const elemToRemove = document.getElementById(elemToRemoveId);
 
