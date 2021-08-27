@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.7.1] - 2021-08-27
+
 * Fix gh-44 FloorMap - Apply changed marker settings without having to save.
 * Fix gh-45 FloorMap - Update markers when dashboard filters are applied.
 * Fix gh-43 FloorMap - Save zones only works once.
@@ -169,7 +172,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.1...HEAD
+[v3.7.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.0...v3.7.1
 [v3.7.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-2...v3.7.0
 [v3.6.1-2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-1...v3.6.1-2
 [v3.6.1-1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1...v3.6.1-1
