@@ -79,7 +79,13 @@ function saveZones (){
                     body: JSON.stringify(toSave),
                 }).then(response => {
                     if (response.ok) {
-                        alert ("Zones saved successfully");
+                        response.json().then(content =>
+                            {
+                                //Pick up the updated version of the zone to future updates.
+                                allFloorMapZoneDictionaryObjects[zoneDictionaryUuid] = content;
+
+                                alert ("Zones saved successfully");
+                            });
                     } else {
                         response.text().then(content => alert("Error saving zones!\n" + content));
                     }

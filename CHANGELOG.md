@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Fix gh-43 FloorMap - Save zones only works once.
+
 
 ## [v3.7.0] - 2021-08-20
 
