@@ -145,8 +145,14 @@ function floormapZoneEdited (vis, gridName, e) {
         if (!updatedZone.floorMapDetails) {
             console.error("No layer details found for edited zone");
         }
+
+        const latLngs = updatedZone.getLatLngs()[0];
+
         allFloorMapZones[updatedZone.floorMapDetails.zoneDictionaryUuid][updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId]
-            [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].points = updatedZone.getLatLngs();
+            [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].points =
+                latLngs.map(latLng => { 
+                    return ({x: latLng.lng, y: latLng.lat}); 
+                });
 
         modifiedZoneUuidMap.set(updatedZone.floorMapDetails.zoneDictionaryUuid, true);
 
@@ -245,7 +251,8 @@ function floormapZoneCreated (vis, gridName, e) {
         allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId] = [];
     }
     
-    allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].push( { name: 'Unnamed Zone', points: layer.getLatLngs() });
+    allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].push( { name: 'Unnamed Zone', 
+        points: layer.getLatLngs()[0].map(latLng => { return ({x: latLng.lng, y: latLng.lat}); })});
 
     const currentLayerId = vis.currentLayer[gridName];
 
@@ -509,7 +516,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             if (zone.deleted) {
                                 continue; //tombstone
                             }
-                            const polygon = L.polygon(zone.points);
+                            if (!zone.points instanceof Array) {
+                                continue;
+                            }
+                            const points = zone.points.map(point => [point.y, point.x]);
+                            const polygon = L.polygon(points);
                             const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
 
                             polygon.floorMapDetails = {};
