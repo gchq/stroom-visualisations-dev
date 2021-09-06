@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Fix gh-47 FloorMap - Zone format incorrect (lat/lng vice x/y)
 
 ## [v3.7.1] - 2021-08-27
 
