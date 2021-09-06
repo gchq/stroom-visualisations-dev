@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.8.0] - 2021-09-06
+
 * Fix gh-47 FloorMap - Zone format incorrect (lat/lng vice x/y)
 
 ## [v3.7.1] - 2021-08-27
@@ -173,7 +176,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.0...HEAD
+[v3.8.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.1...v3.8.0
 [v3.7.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.0...v3.7.1
 [v3.7.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-2...v3.7.0
 [v3.6.1-2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-1...v3.6.1-2
