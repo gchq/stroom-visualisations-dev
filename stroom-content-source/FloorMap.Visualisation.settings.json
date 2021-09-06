@@ -64,6 +64,15 @@
             "defaultValue": "False"
           },
           {
+            "id": "maxValues",
+            "type": "number",
+            "label": "Max Values",
+            "defaultValue": "10000",
+            "max": "500000",
+            "min": "1"
+        },
+
+          {
             "id": "sortSeries",
             "type": "selection",
             "label": "Sort Series",
@@ -158,12 +167,12 @@
             },
             "limit": {
               "enabled": "true",
-              "size": "${maxSeries}"
+              "size": "100"
             }
           },
           "limit": {
             "enabled": "true",
-            "size": "${maxGridSeries}"
+            "size": "25"
           }
         }
       }

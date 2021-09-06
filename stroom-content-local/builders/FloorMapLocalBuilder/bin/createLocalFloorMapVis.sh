@@ -5,6 +5,7 @@ then
     echo "Run this script from the directory in which it resides."
     echo "Usage: createLocalFloorMapVis.sh <configuration json> <output vis name> <script uuid> <vis uuid> <zone dictionary uuid>"
     echo "Example: ./createLocalFloorMapVis.sh ../data/example/example.json \"My Local FloorMap\" \`uuidgen\` \`uuidgen\` \`uuidgen\`"
+    echo
     exit 1
 fi
 
@@ -54,8 +55,8 @@ CONFIG_DIR=$(dirname "$CONFIG_FILE")
 VIS_ROOT="Visualisations"
 VIS_DIRECTORY="$VIS_ROOT/Local"
 
-#Normally FloorMapLocalBuilder/output/...
-OUTPUT_ROOT="../output/$OUTPUT_VIS"
+#Normally stroom-content-local/output
+OUTPUT_ROOT="../../../output/$OUTPUT_VIS"
 OUTPUT_DIR="$OUTPUT_ROOT/$VIS_DIRECTORY"
 
 if [ -d "$OUTPUT_ROOT" ]; then
