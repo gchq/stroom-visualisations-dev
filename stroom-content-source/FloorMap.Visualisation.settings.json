@@ -64,14 +64,23 @@
             "defaultValue": "False"
           },
           {
+            "id": "isShowTagsEnabled",
+            "type": "selection",
+            "label": "Show Zone Tags",
+            "values": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "False"
+          },
+          {
             "id": "maxValues",
             "type": "number",
             "label": "Max Values",
             "defaultValue": "10000",
             "max": "500000",
             "min": "1"
-        },
-
+          },
           {
             "id": "sortSeries",
             "type": "selection",

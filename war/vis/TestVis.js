@@ -234,6 +234,14 @@
             // of data
             randomMax = Math.pow(10, Math.floor(Math.random() * 8));
 
+            if ((Math.floor(Math.random()  * 1000) % 3) == 0) {
+                settings.isEditZoneModeEnabled = "False";
+            }
+
+            if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+                settings.isShowTagsEnabled = "True";
+            }
+
             testData = new TestData();
 
             dat = testData.create(getVisType(), pass++, useGridSeries, settings, randomMax);

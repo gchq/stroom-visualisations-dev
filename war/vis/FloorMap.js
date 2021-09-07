@@ -46,6 +46,10 @@ function renameFloormapZone(zoneDictionaryUuid, mapId, elementId, zoneId, campus
 
     allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name = newName;
     allFloorMapMaps[mapId].closePopup();
+
+    modifiedZoneUuidMap.set(zoneDictionaryUuid, true);
+
+    enableSaveButtons();
 }
 
 function getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId) {
@@ -97,6 +101,22 @@ function saveZones (){
     for (const modifiedZoneDictionaryUuid of modifiedZoneUuidMap.keys()) {
         modifiedZoneUuidMap.delete(modifiedZoneDictionaryUuid);
     }
+}
+
+function getFloormapZonePopupHtml(zoneDictionaryUuid, campus, building, floor, zoneId, isShowTagsEnabled) {
+    const zoneName = getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId);
+    const nameLines = zoneName.split("#");
+
+    //First Line is bold, tags below
+    var html = "<b>" + nameLines[0] + "</b>";
+
+    if (isShowTagsEnabled) {
+        for (var i = 1; i < nameLines.length; i++) {
+            html +=  "<br/>" + "#" + nameLines[i];
+        }    
+    }
+    
+    return html;
 }
 
 function createPopupForFloormapZone(layer) {
@@ -262,17 +282,24 @@ function floormapZoneCreated (vis, gridName, e) {
             const polygon = L.polygon(layer.getLatLngs());
 
             const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
+            const zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
 
             polygon.floorMapDetails = {};
             polygon.floorMapDetails.renameTextFieldId = elementId;
             polygon.floorMapDetails.mapId = gridName;
-            polygon.floorMapDetails.zoneId = allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].length - 1;
+            polygon.floorMapDetails.zoneId = zoneId;
             polygon.floorMapDetails.campusId = campusId;
             polygon.floorMapDetails.buildingId = buildingId;
             polygon.floorMapDetails.floorId = floorId;
             polygon.floorMapDetails.zoneDictionaryUuid = zoneDictionaryUuid;
             
-            polygon.bindPopup(createPopupForFloormapZone);
+            if (vis.isEditZoneModeEnabled) {
+                polygon.bindPopup(createPopupForFloormapZone);
+            } else {
+                polygon.bindPopup(getFloormapZonePopupHtml(zoneDictionaryUuid, campusId, 
+                    buildingId, floorId, zoneId, vis.isShowTagsEnabled));
+            }
+            
 
             vis.zoneLayers[zoneLayer].addLayer(polygon); 
         }   
@@ -459,6 +486,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         //Whether to allow zones to be edited.
         this.isEditZoneModeEnabled = false;
 
+        //Whether to hide tags in zone names
+        this.isShowTagsEnabled = false;
+
         this.element = window.document.createElement("div");
         const mapNum = Math.floor((Math.random() * 1000) % 1000);
         this.elementName = "leaflet-floormap-" + mapNum;
@@ -537,7 +567,12 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                 this.zoneLayers[layerId] = new L.FeatureGroup();
                             }
                             
-                            polygon.bindPopup(createPopupForFloormapZone);
+                            if (this.isEditZoneModeEnabled) {
+                                polygon.bindPopup(createPopupForFloormapZone);
+                            } else {
+                                polygon.bindPopup(getFloormapZonePopupHtml(zoneDictionaryUuid, campus, building, 
+                                    floor, zoneId, this.isShowTagsEnabled));
+                            }
 
                             this.zoneLayers[layerId].addLayer(polygon);
 
@@ -940,6 +975,14 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
             if (settings && settings.isEditZoneModeEnabled && settings.isEditZoneModeEnabled == 'True') {
                 this.isEditZoneModeEnabled = true;
+            } else {
+                this.isEditZoneModeEnabled = false;
+            }
+
+            if (settings && settings.isShowTagsEnabled && settings.isShowTagsEnabled == 'True') {
+                this.isShowTagsEnabled = true;
+            } else {
+                this.isShowTagsEnabled = false;
             }
 
             if (data && data !== null) {
