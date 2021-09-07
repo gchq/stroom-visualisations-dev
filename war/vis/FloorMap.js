@@ -102,8 +102,8 @@ function saveZones (){
         if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
             toSave = copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid]);
         } else {
-            toSave = copyZonesWithoutDeleted(allFloorMapZoneDictionaryObjects[zoneDictionaryUuid]);
-            toSave.data = JSON.stringify(allFloorMapZones[zoneDictionaryUuid], null, 2);
+            toSave = allFloorMapZoneDictionaryObjects[zoneDictionaryUuid];
+            toSave.data = JSON.stringify(copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid]), null, 2);
         }
 
         if (modifiedZoneUuidMap.get(zoneDictionaryUuid) == true) {
