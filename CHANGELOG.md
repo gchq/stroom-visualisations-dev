@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Fix gh-50 Save button not enabled after rename zone.
+* Improve support for analytic tags within zone names.
+
 
 ## [v3.8.0] - 2021-09-06
 
