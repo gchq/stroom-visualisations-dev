@@ -56,6 +56,40 @@ function getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId
     return allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name;
 }
 
+//Clone the zones, but don't clone any marked deleted
+function copyZonesWithoutDeleted(originalZones){
+    var result = {};
+
+    for (const campus in originalZones){
+        for (const building in originalZones[campus]) {
+            for (const floor in originalZones[campus][building]) {
+                for (var zoneId = 0; zoneId < originalZones[campus][building][floor].length; zoneId++) {
+                    const zone =  originalZones[campus][building][floor][zoneId];
+                    if (zone.deleted) {
+                        continue; //tombstone
+                    }
+                    if (!zone.points instanceof Array) {
+                        continue;
+                    }
+
+                    if (!result[campus]) {
+                        result[campus] = {};
+                    }
+                    if (!result[campus][building]) {
+                        result[campus][building] = {};
+                    }
+                    if (!result[campus][building][floor]) {
+                        result[campus][building][floor] = [];
+                    }
+                    result[campus][building][floor].push(zone);
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 function saveZones (){
     disableSaveButtons();
 
@@ -66,9 +100,9 @@ function saveZones (){
         const resource = zoneDictionaryResourceURL (zoneDictionaryUuid);
         var toSave;
         if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
-            toSave = allFloorMapZones[zoneDictionaryUuid];
+            toSave = copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid]);
         } else {
-            toSave = allFloorMapZoneDictionaryObjects[zoneDictionaryUuid];
+            toSave = copyZonesWithoutDeleted(allFloorMapZoneDictionaryObjects[zoneDictionaryUuid]);
             toSave.data = JSON.stringify(allFloorMapZones[zoneDictionaryUuid], null, 2);
         }
 
@@ -784,8 +818,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                 this.layerControls[gridName] = L.control.layers(null, null, { sortLayers: true })
                                     .addTo(allFloorMapMaps[gridName]);
 
-                                if (this.isEditZoneModeEnabled &&
-                                        this.config[campusId][buildingId][floorId].zoneDictionaryUuid) {
+                                if (this.isEditZoneModeEnabled ) {
                                     //Create save zones button
                                     const button = window.document.createElement("button");
                                     gridElement.appendChild(button);
@@ -803,8 +836,10 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     button.addEventListener("click", saveZones);
 
                                     const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
-                                    if (modifiedZoneUuidMap.get(zoneDictionaryUuid) != true) {
-                                        button.disabled = true;
+
+                                    button.disabled = true;
+                                    if (zoneDictionaryUuid && modifiedZoneUuidMap.get(zoneDictionaryUuid)) {
+                                        button.disabled = false;
                                     }
 
                                     button.appendChild(icon);
@@ -956,7 +991,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             delete this.markerLayers[markerLayer];
                         }
                     }
-
 
                     const elemToRemove = document.getElementById(elemToRemoveId);
 
