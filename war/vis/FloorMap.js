@@ -154,6 +154,8 @@ function getFloormapZonePopupHtml(zoneDictionaryUuid, campus, building, floor, z
 }
 
 function createPopupForFloormapZone(layer) {
+    const div = window.document.createElement('div');
+
     const span = window.document.createElement('span');
 
     const textField = window.document.createElement('input');
@@ -174,7 +176,13 @@ function createPopupForFloormapZone(layer) {
     };
     span.appendChild(button);
 
-    return span;
+    div.appendChild(span);
+
+    const text =  window.document.createElement('p');
+    text.innerText = "Note: Analytic #tags follow visible name.";
+    div.appendChild(text);
+
+    return div;
 }
 
 
