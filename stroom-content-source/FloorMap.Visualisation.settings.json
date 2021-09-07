@@ -66,7 +66,7 @@
           {
             "id": "isShowTagsEnabled",
             "type": "selection",
-            "label": "Show Zone Tags",
+            "label": "List Analyic Tags When Showing Zone Name",
             "values": [
                 "True",
                 "False"
