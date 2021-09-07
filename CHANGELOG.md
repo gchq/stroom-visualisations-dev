@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.8.1] - 2021-09-07
+
 * Fix gh-50 Save button not enabled after rename zone.
 * Improve support for analytic tags within zone names.
 
@@ -179,7 +182,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.1...HEAD
+[v3.8.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.0...v3.8.1
 [v3.8.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.1...v3.8.0
 [v3.7.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.0...v3.7.1
 [v3.7.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.6.1-2...v3.7.0
