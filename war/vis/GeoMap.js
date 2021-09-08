@@ -78,7 +78,7 @@ if (!visualisations) {
         this.element.style.gridTemplateColumns = "auto";
         this.element.style.gridGap = "5px 5px";
 
-        this.markers = {};
+        this.markerLayers = {};//1 layer per  map 
         this.maps = {};
                
         this.start = function() {
@@ -87,84 +87,77 @@ if (!visualisations) {
            
         }
 
-        this.createDataKey = function (val){
-            //Just has locations as all markers are identical, so only one at a single location 
-            //can be displayed at a time anyway
-            return hashString(val[geomapIndexLatitude] + val[geomapIndexLongitude]);
-        }
-
         this.setGridCellLevelData = function(map, gridName, context, settings, data) {
             if (data && data !== null) {
        
+                if (this.markerLayers[gridName]){
+                    this.markerLayers[gridName].clearLayers();
+                } else {
+                    this.markerLayers[gridName] = L.layerGroup();
+                    map.addLayer(this.markerLayers[gridName]);
+                }
+                
                 const seriesArray = data.values;
 
                 for (var i = 0; i < seriesArray.length; i++){
                     const series = seriesArray[i];
                     const vals = series.values;
                     for (const val of vals) {
-                        const dataKey = this.createDataKey(val);
-
-                        if (!this.markers[gridName]) {
-                            this.markers[gridName] = new Map();
+                 
+        
+                       
+                        var marker;
+                        const lat = parseFloat(val[geomapIndexLatitude]);
+                        const lon = parseFloat(val[geomapIndexLongitude]);
+                        
+                        var colour = undefined;
+                        if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                            colour = color(val[geomapIndexSeries]);
                         }
 
-                        if (!this.markers[gridName].has (dataKey)) {
-                            var marker;
-                            const lat = parseFloat(val[geomapIndexLatitude]);
-                            const lon = parseFloat(val[geomapIndexLongitude]);
-                          
-                            var colour = undefined;
-                            if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
-                                colour = color(val[geomapIndexSeries]);
+                        if (val.length > geomapIndexIcon && val[geomapIndexIcon]) {
+                            const iconName = val[geomapIndexIcon];
+
+                            if (!colour) {
+                                colour = color(iconName);
                             }
+                            var markerHtml = "<div style='background-color:" + colour + 
+                                "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
 
-                            if (val.length > geomapIndexIcon && val[geomapIndexIcon]) {
-                                const iconName = val[geomapIndexIcon];
+                            var markerIcon = L.divIcon({
+                                className: 'custom-div-icon',
+                                html: markerHtml,
+                                iconSize: [30, 42],
+                                iconAnchor: [15, 42]
+                            });
 
-                                if (!colour) {
-                                    colour = color(iconName);
-                                }
-                                var markerHtml = "<div style='background-color:" + colour + 
-                                    "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
+                            marker = L.marker([lat,lon], { icon: markerIcon });
 
-                                var markerIcon = L.divIcon({
-                                    className: 'custom-div-icon',
-                                    html: markerHtml,
-                                    iconSize: [30, 42],
-                                    iconAnchor: [15, 42]
-                                });
-
-                                marker = L.marker([lat,lon], { icon: markerIcon });
-
-                            } else {
-                                //Use small circles rather than icons
-                                if (!colour) {
-                                    colour = "red";
-                                }
-
-                                marker = L.circleMarker([lat,lon], {radius: 5, 
-                                    stroke: false,
-                                    fillOpacity: 1.0,
-                                    color: colour, fill: true});
-                            }
-
-                            //Add popup details
-                            if (val.length > geomapIndexName && val[geomapIndexName]){
-                                var popupHeading = "Information";
-                                if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
-                                    popupHeading = val[geomapIndexSeries];
-                                }
-                                
-                                const popupDetail = val[geomapIndexName];
-                                
-                                marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
-                            }
-                            marker.addTo(map);
-                            this.markers[gridName].set(dataKey, marker);
                         } else {
-                            //  console.log("Not updating marker " + val[1] + ":" + val[2]);
+                            //Use small circles rather than icons
+                            if (!colour) {
+                                colour = "red";
+                            }
+
+                            marker = L.circleMarker([lat,lon], {radius: 5, 
+                                stroke: false,
+                                fillOpacity: 1.0,
+                                color: colour, fill: true});
                         }
-                    
+
+                        //Add popup details
+                        if (val.length > geomapIndexName && val[geomapIndexName]){
+                            var popupHeading = "Information";
+                            if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                                popupHeading = val[geomapIndexSeries];
+                            }
+                            
+                            const popupDetail = val[geomapIndexName];
+                            
+                            marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
+                        }
+
+                        this.markerLayers[gridName].addLayer(marker);
                     }
                 }
             
@@ -194,7 +187,7 @@ if (!visualisations) {
                     delete this.maps[elemToRemoveId];
 
                     //remove the markers associated with the grid
-                    delete this.markers[elemToRemoveId];
+                    delete this.markerLayers[elemToRemoveId];
 
                     if (elemToRemove) {
                         elemToRemove.remove();
