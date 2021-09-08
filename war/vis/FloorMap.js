@@ -39,7 +39,6 @@ function zoneDictionaryResourceURL (zoneDictionaryUuid) {
 
 }
 
-
 function renameFloormapZone(zoneDictionaryUuid, mapId, elementId, zoneId, campus, building, floor) {
     const textField = window.document.getElementById(elementId);
     const newName = textField.value;
@@ -531,6 +530,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         //Whether to hide tags in zone names
         this.isShowTagsEnabled = false;
 
+        this.gridCount = 0;
         this.element = window.document.createElement("div");
         const mapNum = Math.floor((Math.random() * 1000) % 1000);
         this.elementName = "leaflet-floormap-" + mapNum;
@@ -1062,7 +1062,10 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                     this.setGridCellLevelData(gridMapElementName, context, settings, gridSeries);
                 }
 
-                this.resize();
+                if (gridSeriesArray.length != this.gridCount){
+                    this.gridCount = gridSeriesArray.length;
+                    this.resize();
+                }
             }
         };
 

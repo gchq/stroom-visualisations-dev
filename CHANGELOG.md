@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Fix gh-52 - Map zooming out when new data arrives
 
 ## [v3.8.1] - 2021-09-07
 
