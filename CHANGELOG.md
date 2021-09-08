@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.9.0] - 2021-09-08
+
 * gh-48 FloorMap - Tags for zones
 * Fix gh-53 GeoMap - Markers not updating when display settings change.
 * Fix gh-52 FloorMap/GeoMap - Map zooming out when new data arrives
@@ -185,7 +188,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.9.0...HEAD
+[v3.9.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.1...v3.9.0
 [v3.8.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.0...v3.8.1
 [v3.8.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.1...v3.8.0
 [v3.7.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.0...v3.7.1
