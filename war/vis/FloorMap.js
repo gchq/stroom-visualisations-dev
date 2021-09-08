@@ -41,9 +41,14 @@ function zoneDictionaryResourceURL (zoneDictionaryUuid) {
 
 function renameFloormapZone(zoneDictionaryUuid, mapId, elementId, zoneId, campus, building, floor) {
     const textField = window.document.getElementById(elementId);
-    const newName = textField.value;
+    const newName = textField.value.split("#");
 
-    allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name = newName;
+    allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name = newName[0];
+    allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].tags = [];
+    for (t = 1; t < newName.length; t++) {
+        allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].tags.push(newName[t].trim());
+    }
+
     allFloorMapMaps[mapId].closePopup();
 
     modifiedZoneUuidMap.set(zoneDictionaryUuid, true);
@@ -53,6 +58,29 @@ function renameFloormapZone(zoneDictionaryUuid, mapId, elementId, zoneId, campus
 
 function getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId) {
     return allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name;
+}
+
+function getFloormapZoneNameWithTags(zoneDictionaryUuid, campus, building, floor, zoneId) {
+    var result = allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].name;
+    
+    if (!allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].tags) {
+        return result;
+    }
+
+    for (const tag of allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].tags) {
+        result += " #" + tag;
+    }
+
+    return result;
+}
+
+function getFloormapZoneTags(zoneDictionaryUuid, campus, building, floor, zoneId) {
+    tags = allFloorMapZones[zoneDictionaryUuid][campus][building][floor][zoneId].tags;
+    if (tags) {
+        return tags;
+    }
+
+    return [];
 }
 
 //Clone the zones, but don't clone any marked deleted
@@ -138,14 +166,14 @@ function saveZones (){
 
 function getFloormapZonePopupHtml(zoneDictionaryUuid, campus, building, floor, zoneId, isShowTagsEnabled) {
     const zoneName = getFloormapZoneName(zoneDictionaryUuid, campus, building, floor, zoneId);
-    const nameLines = zoneName.split("#");
-
+    const zoneTags = getFloormapZoneTags(zoneDictionaryUuid, campus, building, floor, zoneId);
+    
     //First Line is bold, tags below
-    var html = "<b>" + nameLines[0] + "</b>";
+    var html = "<b>" + zoneName + "</b>";
 
     if (isShowTagsEnabled) {
-        for (var i = 1; i < nameLines.length; i++) {
-            html +=  "<br/>" + "#" + nameLines[i];
+        for (var i = 0; i < zoneTags.length; i++) {
+            html +=  "<br/>" + "#" + zoneTags[i];
         }    
     }
     
@@ -159,7 +187,7 @@ function createPopupForFloormapZone(layer) {
 
     const textField = window.document.createElement('input');
     textField.setAttribute("type", "text");
-    const currentName = getFloormapZoneName(layer.floorMapDetails.zoneDictionaryUuid, layer.floorMapDetails.campusId,
+    const currentName = getFloormapZoneNameWithTags(layer.floorMapDetails.zoneDictionaryUuid, layer.floorMapDetails.campusId,
         layer.floorMapDetails.buildingId, layer.floorMapDetails.floorId, layer.floorMapDetails.zoneId);
     textField.value = currentName;
     textField.id = layer.floorMapDetails.renameTextFieldId;

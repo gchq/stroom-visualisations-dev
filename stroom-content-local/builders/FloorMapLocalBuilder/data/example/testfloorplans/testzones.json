@@ -3,7 +3,7 @@
         "Downtown": {
             "Basement": [
                 {
-                    "name": "Ritual Area #scary #dirty",
+                    "name": "Ritual Area",
                     "points": [
                         {
                             "y": 15.0,
@@ -45,7 +45,8 @@
                             "y":  17.0,
                             "x": 18.0
                         }
-                    ]
+                    ],
+                    "tags": ["scary", "dingy", "music"]
                 }
             ],
             "North Tower": [

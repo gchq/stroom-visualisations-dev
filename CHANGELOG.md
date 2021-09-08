@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* gh-48 FloorMap - Tags for zones
 * Fix gh-53 GeoMap - Markers not updating when display settings change.
 * Fix gh-52 FloorMap/GeoMap - Map zooming out when new data arrives
 
