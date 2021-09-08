@@ -69,6 +69,7 @@ if (!visualisations) {
           // Create a colour set.
         var color = d3.scale.category20();
 
+        this.gridCount = 0;
         this.element = window.document.createElement("div");
         const mapNum =  Math.floor((Math.random() * 1000) % 1000);
         this.elementName = "leaflet-geomap-" + mapNum;
@@ -260,8 +261,10 @@ if (!visualisations) {
                         context, settings, gridSeries);
                 }
             
-
-                this.resize();
+                if (gridSeriesArray.length != this.gridCount){
+                    this.gridCount = gridSeriesArray.length;
+                    this.resize();
+                }
             }
         };
 
