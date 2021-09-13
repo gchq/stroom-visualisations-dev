@@ -292,10 +292,11 @@ function TestData() {
             valueFunctions[3] = generateFloorValue;
             valueFunctions[4] = generateXValue;
             valueFunctions[5] = generateYValue;
-            valueFunctions[6] = generateIconValue;
-            valueFunctions[7] = generateSeriesValue;
+            valueFunctions[6] = generateMilliEpochValue;
+            valueFunctions[7] = generateIconValue;
+            valueFunctions[8] = generateSeriesValue;
 
-            valueCountLimit = 8;
+            valueCountLimit = 9;
             fieldZeroType = commonConstants.dataTypeGeneral;
         } else if (visType == VIS_TYPE_GEOMAP) {
             seriesCount = Math.round(Math.random() * 5);
@@ -484,6 +485,10 @@ function TestData() {
         var generateLongitudeValue = function(i) {
             return Math.random() - 0.5;
         };
+
+        var generateMilliEpochValue = function(i, random) {
+            return Date.now() + random * 10000000 + (1000 * i);
+        }
 
         var generateXValue = function(i, random) {
             const randomInt = Math.floor(random  * 1000);

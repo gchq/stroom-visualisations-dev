@@ -239,6 +239,12 @@
             }
 
             if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+                settings.isColourByEventTimeEnabled = "False";
+            } else {
+                settings.isColourByEventTimeEnabled = "True";
+            }
+
+            if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
                 settings.isShowTagsEnabled = "True";
             } else {
                 settings.isShowTagsEnabled = "False";

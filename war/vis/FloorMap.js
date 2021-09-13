@@ -25,6 +25,25 @@ const allFloorMapZoneDictionaryObjects = {}; //As fetched from Stroom
 const allFloorMapMaps = {}; //1 map per grid cell
 
 
+function colorByEpochMilli (eventTime, minTime, maxTime) {
+    if (!eventTime) {
+        return undefined;
+    }
+
+    const midTime = (maxTime + minTime) / 2;
+    const halfDuration = (maxTime - minTime) / 2;
+    var rgbString;
+    if (eventTime < midTime) {
+        rgbString = "rgb(0, 255, " + Math.floor(((eventTime - minTime) * 255 / halfDuration)) 
+            + ")"; 
+    } else {
+        rgbString = "rgb(0, " + Math.floor(((maxTime -eventTime) * 255 / halfDuration)) 
+            + ", 255)"; 
+    }
+    
+    return rgbString;
+}
+
 function isZoneDictionaryResourceStatic (zoneDictionaryUuid) {
     return zoneDictionaryUuid.startsWith('staticUrl:');
 }
@@ -510,9 +529,10 @@ function floormapBaseLayerChanged (vis, gridName, e) {
     const floormapIndexFloor = 3;
     const floormapIndexX = 4;
     const floormapIndexY = 5;
-    const floormapIndexIcon = 6;
-    const floormapIndexSeries = 7;
-    const floormapIndexGridSeries = 8;
+    const floormapIndexEventTime = 6;
+    const floormapIndexIcon = 7;
+    const floormapIndexSeries = 8;
+    const floormapIndexGridSeries = 9;
 
 
     var commonFunctions = visualisations.commonFunctions;
@@ -557,6 +577,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
         //Whether to hide tags in zone names
         this.isShowTagsEnabled = false;
+
+        //Whether to colour the markers by event time.
+        this.colourByTimestamp = true;
 
         this.gridCount = 0;
         this.element = window.document.createElement("div");
@@ -731,6 +754,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                     }
                 }
 
+                const minEpochDate = data.min[floormapIndexEventTime];
+                const maxEpochDate = data.max[floormapIndexEventTime];
+                
                 const seriesArray = data.values;
                 const vis = this; //Allow this to be accessed within closures
 
@@ -928,7 +954,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         const y = parseFloat(val[floormapIndexY]);
 
                         var colour = undefined;
-                        if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
+                        if (this.colourByTimestamp && val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
+                            colour = colorByEpochMilli(val[floormapIndexEventTime], minEpochDate, maxEpochDate);
+                        } else if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
                             colour = color(val[floormapIndexSeries]);
                         }
 
@@ -971,9 +999,13 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                 popupHeading = val[floormapIndexSeries];
                             }
 
+                            if (val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
+                                popupHeading += ": " + commonFunctions.dateToStr(val[floormapIndexEventTime], settings.dateFormat);
+                            }
+
                             const popupDetail = val[floormapIndexName];
 
-                            marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
+                            marker.bindPopup('<p><b>' + popupHeading + '</b><br/>' + popupDetail + '</p>');
                         }
 
                         this.markerLayers[layerId].addLayer(marker);
@@ -1054,6 +1086,13 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             } else {
                 this.isShowTagsEnabled = false;
             }
+
+            if (settings && settings.isColourByEventTimeEnabled && settings.isColourByEventTimeEnabled == 'True') {
+                this.colourByTimestamp = true;
+            } else {
+                this.colourByTimestamp = false;
+            }
+
 
             if (data && data !== null) {
                 const gridSeriesArray = data.values;

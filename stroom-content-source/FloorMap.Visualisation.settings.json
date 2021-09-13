@@ -34,6 +34,11 @@
             "label": "Y position"
           },
           {
+            "id": "eventTime",
+            "type": "field",
+            "label": "Event Time"
+          },
+          {
             "id": "iconName",
             "type": "field",
             "label": "Icon Name"
@@ -72,6 +77,22 @@
                 "False"
             ],
             "defaultValue": "False"
+          },
+          {
+            "id": "isColourByEventTimeEnabled",
+            "type": "selection",
+            "label": "Colour by event time: green (earlier) to blue (later)",
+            "values": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "True"
+          },
+          {
+            "id": "dateFormat",
+            "type" : "text",
+            "label" : "Event Time Display Format (optional)",
+            "defaultValue" : ""
           },
           {
             "id": "maxValues",
@@ -163,10 +184,16 @@
                   "id": "${yPos}"
                 },
                 {
+                  "id": "${eventTime}"
+                },
+                {
                   "id": "${iconName}"
                 },
                 {
                   "id": "${series}"
+                },
+                {
+                  "id": "${gridSeries}"
                 }
               ],
               "limit": {
