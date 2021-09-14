@@ -1004,7 +1004,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                             if (val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
                                 popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[floormapIndexEventTime], dateFormat);
-                             
                             }                           
 
                             marker.bindPopup('<p><b>' + popupHeading + '</b>' + popupDetail + '</p>');

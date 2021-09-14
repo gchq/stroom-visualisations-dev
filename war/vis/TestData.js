@@ -304,9 +304,10 @@ function TestData() {
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateLatitudeValue;
             valueFunctions[2] = generateLongitudeValue;
-            valueFunctions[3] = generateIconValue;
-            valueFunctions[4] = generateSeriesValue;
-            valueCountLimit = 5;
+            valueFunctions[3] = generateMilliEpochValue;
+            valueFunctions[4] = generateIconValue;
+            valueFunctions[5] = generateSeriesValue;
+            valueCountLimit = 6;
             fieldZeroType = commonConstants.dataTypeGeneral;
         } else {
             // define a random number of series

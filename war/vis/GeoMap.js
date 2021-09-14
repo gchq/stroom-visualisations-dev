@@ -20,6 +20,25 @@ if (!visualisations) {
 }
 
 
+function colorByEpochMilli (eventTime, minTime, maxTime) {
+    if (!eventTime) {
+        return undefined;
+    }
+
+    const midTime = (maxTime + minTime) / 2;
+    const halfDuration = (maxTime - minTime) / 2;
+    var rgbString;
+    if (eventTime < midTime) {
+        rgbString = "rgb(0, 255, " + Math.floor(((eventTime - minTime) * 255 / halfDuration))
+            + ")";
+    } else {
+        rgbString = "rgb(0, " + Math.floor(((maxTime -eventTime) * 255 / halfDuration))
+            + ", 255)";
+    }
+
+    return rgbString;
+}
+
 //IIFE to prvide shared scope for sharing state and constants between the controller 
 //object and each grid cell object instance
 (function(){
@@ -31,9 +50,10 @@ if (!visualisations) {
     const geomapIndexName = 0;
     const geomapIndexLatitude = 1;
     const geomapIndexLongitude = 2;
-    const geomapIndexIcon = 3;
-    const geomapIndexSeries = 4;
-    const geomapIndexGridSeries = 5;
+    const geomapIndexEventTime = 3;
+    const geomapIndexIcon = 4;
+    const geomapIndexSeries = 5;
+    const geomapIndexGridSeries = 6;
 
     var hashString = function(data) {
         input = "" + data;
@@ -46,8 +66,6 @@ if (!visualisations) {
         }
         return Math.abs(hash);
       };
-
-
 
     visualisations.GeoMap = function() {
         var addCss = function(cssPath) {
@@ -69,6 +87,9 @@ if (!visualisations) {
           // Create a colour set.
         var color = d3.scale.category20();
 
+        //Whether to colour the markers by event time.
+        this.colourByTimestamp = true;
+
         this.gridCount = 0;
         this.element = window.document.createElement("div");
         const mapNum =  Math.floor((Math.random() * 1000) % 1000);
@@ -88,6 +109,12 @@ if (!visualisations) {
         }
 
         this.setGridCellLevelData = function(map, gridName, context, settings, data) {
+
+            var dateFormat = settings.dateFormat;
+            if (!dateFormat || dateFormat.length < 3) {
+                dateFormat = undefined;
+            }
+
             if (data && data !== null) {
        
                 if (this.markerLayers[gridName]){
@@ -111,7 +138,10 @@ if (!visualisations) {
                         const lon = parseFloat(val[geomapIndexLongitude]);
                         
                         var colour = undefined;
-                        if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                        if (this.colourByTimestamp && val.length > geomapIndexEventTime && val[geomapIndexEventTime]) {
+                            colour = colorByEpochMilli(val[geomapIndexEventTime],
+                                data.min[geomapIndexEventTime], data.max[geomapIndexEventTime]);
+                        } else if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
                             colour = color(val[geomapIndexSeries]);
                         }
 
@@ -146,16 +176,26 @@ if (!visualisations) {
                         }
 
                         //Add popup details
-                        if (val.length > geomapIndexName && val[geomapIndexName]){
-                            var popupHeading = "Information";
-                            if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
-                                popupHeading = val[geomapIndexSeries];
-                            }
-                            
-                            const popupDetail = val[geomapIndexName];
-                            
-                            marker.bindPopup('<p><b>' + popupHeading + '</b><br />' + popupDetail + '</p>');
+                        if ((val.length > geomapIndexName && val[geomapIndexName]) ||
+                        (val.length > geomapIndexSeries && val[geomapIndexSeries]) ||
+                        ((val.length > geomapIndexEventTime && val[geomapIndexEventTime])))  {
+                        var popupHeading = "Information";
+                        if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                            popupHeading = val[geomapIndexSeries];
                         }
+
+                        let popupDetail = "";
+                        if (val.length > geomapIndexName && val[geomapIndexName]){
+                            popupDetail += "<br/>" + val[geomapIndexName];
+                        }
+
+                        if (val.length > geomapIndexEventTime && val[geomapIndexEventTime]) {
+                            popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[geomapIndexEventTime], dateFormat);
+                         
+                        }                           
+
+                        marker.bindPopup('<p><b>' + popupHeading + '</b>' + popupDetail + '</p>');
+                    }
 
                         this.markerLayers[gridName].addLayer(marker);
                     }
@@ -201,7 +241,11 @@ if (!visualisations) {
         //Public method for setting the data on the visualisation(s) as a whole
         //This is the entry point from Stroom
         this.setData = function(context, settings, data) {
-            
+             if (settings && settings.isColourByEventTimeEnabled && settings.isColourByEventTimeEnabled == 'True') {
+                this.colourByTimestamp = true;
+            } else {
+                this.colourByTimestamp = false;
+            }
 
             if (data && data !== null) {
                 const gridSeriesArray = data.values;

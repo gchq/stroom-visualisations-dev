@@ -165,8 +165,14 @@
                 settings.initialLatitude = "51.5";
                 settings.initialLongitude = "0.0";
                 settings.initialZoomLevel = 13;
-                settings.tileServerUrl = "https://{s}.tile.osm.org/{z}/{x}/{y}.png"
-                settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
+                settings.tileServerUrl = "https://{s}.tile.osm.org/{z}/{x}/{y}.png";
+                settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors";
+
+                if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+                    settings.isColourByEventTimeEnabled = "False";
+                } else {
+                    settings.isColourByEventTimeEnabled = "True";
+                }
             }
 
             if (visType == 'FloorMap')

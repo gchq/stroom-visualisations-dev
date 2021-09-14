@@ -36,7 +36,7 @@
           {
             "id": "eventTime",
             "type": "field",
-            "label": "Event Time"
+            "label": "Event Time (optional)"
           },
           {
             "id": "iconName",

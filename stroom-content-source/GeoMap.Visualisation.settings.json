@@ -19,6 +19,11 @@
                     "label": "Longitude"
                 },
                 {
+                    "id": "eventTime",
+                    "type": "field",
+                    "label": "Event Time (optional)"
+                  },
+                {
                     "id": "iconName",
                     "type": "field",
                     "label": "Icon Name"
@@ -77,6 +82,16 @@
                     "defaultValue": "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
                     "max": "+180",
                     "min": "-180"
+                },
+                {
+                    "id": "isColourByEventTimeEnabled",
+                    "type": "selection",
+                    "label": "Colour by event time: green (earlier) to blue (later)",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
                 },
                 {
                     "id": "maxValues",
@@ -148,7 +163,16 @@
                                 "id": "${lon}"
                             },
                             {
+                                "id": "${eventTime}"
+                            },
+                            {
                                 "id": "${iconName}"
+                            },
+                            {
+                                "id": "${series}"
+                            },
+                            {
+                                "id": "${gridSeries}"
                             }
                         ],
                         "limit": {
