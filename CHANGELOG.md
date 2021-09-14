@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [v3.10.0] - 2021-09-14
+
 * FloorMap/Geomap - support colour by event time.
 
 ## [v3.9.0] - 2021-09-08
@@ -189,7 +192,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.9.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.10.0...HEAD
+[v3.10.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.9.0...v3.10.0
 [v3.9.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.1...v3.9.0
 [v3.8.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.0...v3.8.1
 [v3.8.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.7.1...v3.8.0
