@@ -34,13 +34,13 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
     const halfDuration = (maxTime - minTime) / 2;
     var rgbString;
     if (eventTime < midTime) {
-        rgbString = "rgb(0, 255, " + Math.floor(((eventTime - minTime) * 255 / halfDuration)) 
-            + ")"; 
+        rgbString = "rgb(0, 255, " + Math.floor(((eventTime - minTime) * 255 / halfDuration))
+            + ")";
     } else {
-        rgbString = "rgb(0, " + Math.floor(((maxTime -eventTime) * 255 / halfDuration)) 
-            + ", 255)"; 
+        rgbString = "rgb(0, " + Math.floor(((maxTime -eventTime) * 255 / halfDuration))
+            + ", 255)";
     }
-    
+
     return rgbString;
 }
 
@@ -746,6 +746,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                 }
             }
 
+            var dateFormat = settings.dateFormat;
+            if (!dateFormat || dateFormat.length < 3) {
+                dateFormat = undefined;
+            }
+
             if (data && data !== null) {
                 //Clear all marker layers associated with this map
                 for (markerLayerId in this.markerLayers) {
@@ -869,12 +874,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                                 this.currentLayer[gridName] = layerLabel;
 
-                                // allFloorMapMaps[gridName].on('baselayerchange',function (e) {
-                                //     vis.currentLayer[gridName] = e.name;
-                                //     vis.resize();
-                                //   });
-
-
                                 this.layers[layerId].addTo(allFloorMapMaps[gridName]);
 
                                 this.layerControls[gridName] = L.control.layers(null, null, { sortLayers: true })
@@ -945,10 +944,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         }
 
                         const dataKey = this.createDataKey(val);
-                        
-                        
 
-                        
                         var marker;
                         const x = parseFloat(val[floormapIndexX]);
                         const y = parseFloat(val[floormapIndexY]);
@@ -993,19 +989,25 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         }
 
                         //Add popup details
-                        if (val.length > floormapIndexName && val[floormapIndexName]) {
+                        if ((val.length > floormapIndexName && val[floormapIndexName]) ||
+                            (val.length > floormapIndexSeries && val[floormapIndexSeries]) ||
+                            ((val.length > floormapIndexEventTime && val[floormapIndexEventTime])))  {
                             var popupHeading = "Information";
                             if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
                                 popupHeading = val[floormapIndexSeries];
                             }
 
-                            if (val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
-                                popupHeading += ": " + commonFunctions.dateToStr(val[floormapIndexEventTime], settings.dateFormat);
+                            let popupDetail = "";
+                            if (val.length > floormapIndexName && val[floormapIndexName]){
+                                popupDetail += "<br/>" + val[floormapIndexName];
                             }
 
-                            const popupDetail = val[floormapIndexName];
+                            if (val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
+                                popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[floormapIndexEventTime], dateFormat);
+                             
+                            }                           
 
-                            marker.bindPopup('<p><b>' + popupHeading + '</b><br/>' + popupDetail + '</p>');
+                            marker.bindPopup('<p><b>' + popupHeading + '</b>' + popupDetail + '</p>');
                         }
 
                         this.markerLayers[layerId].addLayer(marker);

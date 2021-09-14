@@ -236,6 +236,9 @@
 
             if ((Math.floor(Math.random()  * 1000) % 3) == 0) {
                 settings.isEditZoneModeEnabled = "False";
+                settings.dateFormat = "";
+            } else {
+                settings.dateFormat = "%H:%M:%S on %A";
             }
 
             if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
