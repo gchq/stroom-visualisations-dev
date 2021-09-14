@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-* FloorMap - support colour by event time.
+* FloorMap/Geomap - support colour by event time.
 
 ## [v3.9.0] - 2021-09-08
 
