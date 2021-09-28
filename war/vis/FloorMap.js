@@ -103,13 +103,20 @@ function getFloormapZoneTags(zoneDictionaryUuid, campus, building, floor, zoneId
 }
 
 //Clone the zones, but don't clone any marked deleted
-function copyZonesWithoutDeleted(originalZones){
+function copyZonesWithoutDeleted(originalZones, config, flipYAxis){
     var result = {};
 
     for (const campus in originalZones){
         for (const building in originalZones[campus]) {
             for (const floor in originalZones[campus][building]) {
                 for (var zoneId = 0; zoneId < originalZones[campus][building][floor].length; zoneId++) {
+                    let height = 0;
+                    if (config[campus] && config[campus][building] && config[campus][building][floor]) {
+                        height = config[campus][building][floor].height;
+                    }
+                    if (height == 0) {
+                        alert ("Height not defined for " + campus + "." + building + "." + floor);
+                    }
                     const zone =  originalZones[campus][building][floor][zoneId];
                     if (zone.deleted) {
                         continue; //tombstone
@@ -127,7 +134,17 @@ function copyZonesWithoutDeleted(originalZones){
                     if (!result[campus][building][floor]) {
                         result[campus][building][floor] = [];
                     }
-                    result[campus][building][floor].push(zone);
+
+                    const zoneCopy = {
+                        tags: zone.tags,
+                        name: zone.name
+                    };
+                    if (flipYAxis){                    
+                        zoneCopy.points = zone.points.map(function (p) { return {x: p.x, y: height - p.y} });
+                    } else {
+                        zoneCopy.points = zone.points;
+                    }
+                    result[campus][building][floor].push(zoneCopy);
                 }
             }
         }
@@ -136,7 +153,7 @@ function copyZonesWithoutDeleted(originalZones){
     return result;
 }
 
-function saveZones (){
+function saveZones (config, flipYAxis){
     disableSaveButtons();
 
     // console.log ("Saving zones");
@@ -146,10 +163,11 @@ function saveZones (){
         const resource = zoneDictionaryResourceURL (zoneDictionaryUuid);
         var toSave;
         if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
-            toSave = copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid]);
+            toSave = copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid], config, flipYAxis);
         } else {
             toSave = allFloorMapZoneDictionaryObjects[zoneDictionaryUuid];
-            toSave.data = JSON.stringify(copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid]), null, 2);
+            toSave.data = JSON.stringify(copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid], 
+                config, flipYAxis), null, 2);
         }
 
         if (modifiedZoneUuidMap.get(zoneDictionaryUuid) == true) {
@@ -578,6 +596,9 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         //Whether to hide tags in zone names
         this.isShowTagsEnabled = false;
 
+        //Whether to flip the yAxis (i.e. origin in top left rather than bottom left)
+        this.isOriginTopLeft = false;
+
         //Whether to colour the markers by event time.
         this.colourByTimestamp = true;
 
@@ -634,6 +655,14 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             for (const campus in zoneDictionaryContent){
                 for (const building in zoneDictionaryContent[campus]) {
                     for (const floor in zoneDictionaryContent[campus][building]) {
+                        let height = 0;
+                        if (this.config[campus] && this.config[campus][building] && this.config[campus][building][floor]) {
+                            height = this.config[campus][building][floor].height;
+                        }
+                        if (height == 0) {
+                            alert ("Height not defined for " + campus + "." + building + "." + floor);
+                        }
+
                         for (var zoneId = 0; zoneId < zoneDictionaryContent[campus][building][floor].length; zoneId++) {
                             const zone =  zoneDictionaryContent[campus][building][floor][zoneId];
                             if (zone.deleted) {
@@ -642,7 +671,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             if (!zone.points instanceof Array) {
                                 continue;
                             }
-                            const points = zone.points.map(point => [point.y, point.x]);
+                            const points = zone.points.map(point => [(this.isOriginTopLeft) ? (height - point.y) : point.y, point.x]);
                             const polygon = L.polygon(points);
                             const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
 
@@ -737,15 +766,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
 
         this.setGridCellLevelData = function (gridName, context, settings, data) {
-            if (!this.config) {
-                if (settings.config.length > 10 && typeof localFloorMapConfig !== undefined) {
-                    //Configuration JSON has been manually provided in config rather than js
-                    this.config = JSON.parse(settings.config);
-                } else {
-                  this.config = localFloorMapConfig;
-                }
-            }
-
             var dateFormat = settings.dateFormat;
             if (!dateFormat || dateFormat.length < 3) {
                 dateFormat = undefined;
@@ -894,7 +914,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     button.classList.add("leaflet-bar");
                                     button.title = "Save all zones";
                                     button.classList.add("floormap-save-zone-button");
-                                    button.addEventListener("click", saveZones);
+                                    button.addEventListener("click", ()=>saveZones(this.config, this.isOriginTopLeft));
 
                                     const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
 
@@ -1094,6 +1114,20 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                 this.colourByTimestamp = false;
             }
 
+            if (settings && settings.originLocation && settings.originLocation == 'Top Left') {
+                this.isOriginTopLeft = true;
+            } else {
+                this.isOriginTopLeft = false;
+            }
+
+            if (!this.config) {
+                if (settings.config.length > 10 && typeof localFloorMapConfig !== undefined) {
+                    //Configuration JSON has been manually provided in config rather than js
+                    this.config = JSON.parse(settings.config);
+                } else {
+                  this.config = localFloorMapConfig;
+                }
+            }
 
             if (data && data !== null) {
                 const gridSeriesArray = data.values;
