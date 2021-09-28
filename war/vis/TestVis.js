@@ -181,6 +181,12 @@
 
                 settings.isEditZoneModeEnabled = 'True';
 
+                if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+                    settings.originLocation = "Top Left";
+                } else {
+                    settings.originLocation = "Bottom Left";
+                }
+
                 localFloorMapConfig = {
                     "The Campus": {
                         "Headquarters": {

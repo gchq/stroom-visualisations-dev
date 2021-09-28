@@ -89,6 +89,16 @@
             "defaultValue": "True"
           },
           {
+            "id": "originLocation",
+            "type": "selection",
+            "label": "Co-ordinate origin of images",
+            "values": [
+                "Bottom Left",
+                "Top Left"
+            ],
+            "defaultValue": "Bottom Left"
+          },
+          {
             "id": "dateFormat",
             "type" : "text",
             "label" : "Event Time Display Format (optional)",

@@ -103,20 +103,13 @@ function getFloormapZoneTags(zoneDictionaryUuid, campus, building, floor, zoneId
 }
 
 //Clone the zones, but don't clone any marked deleted
-function copyZonesWithoutDeleted(originalZones, config, flipYAxis){
+function copyZonesWithoutDeleted(originalZones){
     var result = {};
 
     for (const campus in originalZones){
         for (const building in originalZones[campus]) {
             for (const floor in originalZones[campus][building]) {
                 for (var zoneId = 0; zoneId < originalZones[campus][building][floor].length; zoneId++) {
-                    let height = 0;
-                    if (config[campus] && config[campus][building] && config[campus][building][floor]) {
-                        height = config[campus][building][floor].height;
-                    }
-                    if (height == 0) {
-                        alert ("Height not defined for " + campus + "." + building + "." + floor);
-                    }
                     const zone =  originalZones[campus][building][floor][zoneId];
                     if (zone.deleted) {
                         continue; //tombstone
@@ -134,17 +127,7 @@ function copyZonesWithoutDeleted(originalZones, config, flipYAxis){
                     if (!result[campus][building][floor]) {
                         result[campus][building][floor] = [];
                     }
-
-                    const zoneCopy = {
-                        tags: zone.tags,
-                        name: zone.name
-                    };
-                    if (flipYAxis){                    
-                        zoneCopy.points = zone.points.map(function (p) { return {x: p.x, y: height - p.y} });
-                    } else {
-                        zoneCopy.points = zone.points;
-                    }
-                    result[campus][building][floor].push(zoneCopy);
+                    result[campus][building][floor].push(zone);
                 }
             }
         }
@@ -153,7 +136,7 @@ function copyZonesWithoutDeleted(originalZones, config, flipYAxis){
     return result;
 }
 
-function saveZones (config, flipYAxis){
+function saveZones (){
     disableSaveButtons();
 
     // console.log ("Saving zones");
@@ -163,11 +146,10 @@ function saveZones (config, flipYAxis){
         const resource = zoneDictionaryResourceURL (zoneDictionaryUuid);
         var toSave;
         if (isZoneDictionaryResourceStatic(zoneDictionaryUuid)) {
-            toSave = copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid], config, flipYAxis);
+            toSave = copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid]);
         } else {
             toSave = allFloorMapZoneDictionaryObjects[zoneDictionaryUuid];
-            toSave.data = JSON.stringify(copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid], 
-                config, flipYAxis), null, 2);
+            toSave.data = JSON.stringify(copyZonesWithoutDeleted(allFloorMapZones[zoneDictionaryUuid]), null, 2);
         }
 
         if (modifiedZoneUuidMap.get(zoneDictionaryUuid) == true) {
@@ -272,12 +254,24 @@ function floormapZoneEdited (vis, gridName, e) {
             console.error("No layer details found for edited zone");
         }
 
+        let height = 0;
+        if (vis.config[updatedZone.floorMapDetails.campusId] && 
+            vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId] && 
+            vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId][updatedZone.floorMapDetails.floorId]) {
+            height = vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId][updatedZone.floorMapDetails.floorId].height;
+        }
+        if (height == 0) {
+            alert ("Height not defined for " + updatedZone.floorMapDetails.campusId + "." +
+              updatedZone.floorMapDetails.buildingId + "." + updatedZone.floorMapDetails.floorId);
+        }
+
         const latLngs = updatedZone.getLatLngs()[0];
 
         allFloorMapZones[updatedZone.floorMapDetails.zoneDictionaryUuid][updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId]
             [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].points =
                 latLngs.map(latLng => { 
-                    return ({x: latLng.lng, y: latLng.lat}); 
+                    return ({x: latLng.lng,
+                         y: (vis.isOriginTopLeft ? (height - latLng.lat) : latLng.lat)}); 
                 });
 
         modifiedZoneUuidMap.set(updatedZone.floorMapDetails.zoneDictionaryUuid, true);
@@ -376,9 +370,18 @@ function floormapZoneCreated (vis, gridName, e) {
     if (!allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId]) {
         allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId] = [];
     }
+
+    let height = 0;
+    if (vis.config[campusId] && vis.config[campusId][buildingId] && vis.config[campusId][buildingId][floorId]) {
+        height = vis.config[campusId][buildingId][floorId].height;
+    }
+    if (height == 0) {
+        alert ("Height not defined for " + campusId + "." + buildingId + "." + floorId);
+    }
     
     allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].push( { name: 'Unnamed Zone', 
-        points: layer.getLatLngs()[0].map(latLng => { return ({x: latLng.lng, y: latLng.lat}); })});
+        points: layer.getLatLngs()[0].map(latLng => { return ({x: latLng.lng, 
+            y: (vis.isOriginTopLeft ? (height - latLng.lat) : latLng.lat)}); })});
 
     const currentLayerId = vis.currentLayer[gridName];
 
@@ -966,8 +969,15 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         const dataKey = this.createDataKey(val);
 
                         var marker;
+                        let height = 0;
+                        if (this.config[campusId] && this.config[campusId][buildingId] && this.config[campusId][buildingId][floorId]) {
+                            height = this.config[campusId][buildingId][floorId].height;
+                        }
+                        if (height == 0) {
+                            alert ("Height not defined for " + campusId + "." + buildingId + "." + floorId);
+                        }
                         const x = parseFloat(val[floormapIndexX]);
-                        const y = parseFloat(val[floormapIndexY]);
+                        const y = this.isOriginTopLeft ? height - parseFloat(val[floormapIndexY]) : parseFloat(val[floormapIndexY]);
 
                         var colour = undefined;
                         if (this.colourByTimestamp && val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
