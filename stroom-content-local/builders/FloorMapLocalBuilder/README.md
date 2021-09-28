@@ -25,7 +25,7 @@ This is a JSON format file that is structured as follows:
   "Building Group or Campus Name": {
       "Building Name": {
           "Floor Name or Number": {
-              ...floor attributes (image path, width and height)
+              ...floor attributes (image path, width and height, isOriginTopLeft)
           }
       }
   } 
@@ -46,6 +46,9 @@ between floors for which data is available.
 
 The width and height defined for each floor must be in the same
 units of distance that are used for the X and Y coordinates that are provided by the Stroom dashboard.
+
+The default origin for the points on the image is bottom left, it can be changed to top left by
+setting the `isOriginTopLeft` property to `true` on a floor by floor basis.
 
 An example configuration file `data/example/example.json` is provided.
 
