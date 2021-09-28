@@ -33,6 +33,7 @@
 				"image": "testfloorplans/building2-floorb.png",
 				"width": 40,
 				"height": 60,
+				"isOriginTopLeft": true,
 				"zoneDictionaryUuid": ""
 			}
 		},

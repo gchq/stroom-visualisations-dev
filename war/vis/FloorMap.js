@@ -255,10 +255,15 @@ function floormapZoneEdited (vis, gridName, e) {
         }
 
         let height = 0;
+        let isOriginTopLeft = false;
+   
         if (vis.config[updatedZone.floorMapDetails.campusId] && 
             vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId] && 
             vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId][updatedZone.floorMapDetails.floorId]) {
             height = vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId][updatedZone.floorMapDetails.floorId].height;
+            if (vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId][updatedZone.floorMapDetails.floorId].isOriginTopLeft) {
+                isOriginTopLeft = vis.config[updatedZone.floorMapDetails.campusId][updatedZone.floorMapDetails.buildingId][updatedZone.floorMapDetails.floorId].isOriginTopLeft;
+            }
         }
         if (height == 0) {
             alert ("Height not defined for " + updatedZone.floorMapDetails.campusId + "." +
@@ -271,7 +276,7 @@ function floormapZoneEdited (vis, gridName, e) {
             [updatedZone.floorMapDetails.floorId][updatedZone.floorMapDetails.zoneId].points =
                 latLngs.map(latLng => { 
                     return ({x: latLng.lng,
-                         y: (vis.isOriginTopLeft ? (height - latLng.lat) : latLng.lat)}); 
+                         y: (isOriginTopLeft ? (height - latLng.lat) : latLng.lat)}); 
                 });
 
         modifiedZoneUuidMap.set(updatedZone.floorMapDetails.zoneDictionaryUuid, true);
@@ -372,8 +377,13 @@ function floormapZoneCreated (vis, gridName, e) {
     }
 
     let height = 0;
+    let isOriginTopLeft = false;
+    
     if (vis.config[campusId] && vis.config[campusId][buildingId] && vis.config[campusId][buildingId][floorId]) {
         height = vis.config[campusId][buildingId][floorId].height;
+        if (vis.config[campusId][buildingId][floorId].isOriginTopLeft) {
+            isOriginTopLeft = vis.config[campusId][buildingId][floorId].isOriginTopLeft;
+        }
     }
     if (height == 0) {
         alert ("Height not defined for " + campusId + "." + buildingId + "." + floorId);
@@ -381,7 +391,7 @@ function floormapZoneCreated (vis, gridName, e) {
     
     allFloorMapZones[zoneDictionaryUuid][campusId][buildingId][floorId].push( { name: 'Unnamed Zone', 
         points: layer.getLatLngs()[0].map(latLng => { return ({x: latLng.lng, 
-            y: (vis.isOriginTopLeft ? (height - latLng.lat) : latLng.lat)}); })});
+            y: (isOriginTopLeft ? (height - latLng.lat) : latLng.lat)}); })});
 
     const currentLayerId = vis.currentLayer[gridName];
 
@@ -599,9 +609,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
         //Whether to hide tags in zone names
         this.isShowTagsEnabled = false;
 
-        //Whether to flip the yAxis (i.e. origin in top left rather than bottom left)
-        this.isOriginTopLeft = false;
-
         //Whether to colour the markers by event time.
         this.colourByTimestamp = true;
 
@@ -659,8 +666,12 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                 for (const building in zoneDictionaryContent[campus]) {
                     for (const floor in zoneDictionaryContent[campus][building]) {
                         let height = 0;
+                        let isOriginTopLeft = false;
                         if (this.config[campus] && this.config[campus][building] && this.config[campus][building][floor]) {
                             height = this.config[campus][building][floor].height;
+                            if (this.config[campus][building][floor].isOriginTopLeft) {
+                                isOriginTopLeft = this.config[campus][building][floor].isOriginTopLeft;
+                            }
                         }
                         if (height == 0) {
                             alert ("Height not defined for " + campus + "." + building + "." + floor);
@@ -674,7 +685,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             if (!zone.points instanceof Array) {
                                 continue;
                             }
-                            const points = zone.points.map(point => [(this.isOriginTopLeft) ? (height - point.y) : point.y, point.x]);
+                            const points = zone.points.map(point => [(isOriginTopLeft) ? (height - point.y) : point.y, point.x]);
                             const polygon = L.polygon(points);
                             const elementId = "floorMapTextField" + Math.floor((Math.random() * 100000) % 100000);
 
@@ -917,7 +928,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     button.classList.add("leaflet-bar");
                                     button.title = "Save all zones";
                                     button.classList.add("floormap-save-zone-button");
-                                    button.addEventListener("click", ()=>saveZones(this.config, this.isOriginTopLeft));
+                                    button.addEventListener("click", ()=>saveZones());
 
                                     const zoneDictionaryUuid = this.config[campusId][buildingId][floorId].zoneDictionaryUuid;
 
@@ -970,14 +981,18 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                         var marker;
                         let height = 0;
+                        let isOriginTopLeft = false;
                         if (this.config[campusId] && this.config[campusId][buildingId] && this.config[campusId][buildingId][floorId]) {
                             height = this.config[campusId][buildingId][floorId].height;
+                            if (this.config[campusId][buildingId][floorId].isOriginTopLeft) {
+                                isOriginTopLeft = this.config[campusId][buildingId][floorId].isOriginTopLeft;
+                            }
                         }
                         if (height == 0) {
                             alert ("Height not defined for " + campusId + "." + buildingId + "." + floorId);
                         }
                         const x = parseFloat(val[floormapIndexX]);
-                        const y = this.isOriginTopLeft ? height - parseFloat(val[floormapIndexY]) : parseFloat(val[floormapIndexY]);
+                        const y = isOriginTopLeft ? height - parseFloat(val[floormapIndexY]) : parseFloat(val[floormapIndexY]);
 
                         var colour = undefined;
                         if (this.colourByTimestamp && val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
@@ -1122,12 +1137,6 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                 this.colourByTimestamp = true;
             } else {
                 this.colourByTimestamp = false;
-            }
-
-            if (settings && settings.originLocation && settings.originLocation == 'Top Left') {
-                this.isOriginTopLeft = true;
-            } else {
-                this.isOriginTopLeft = false;
             }
 
             if (!this.config) {

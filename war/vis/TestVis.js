@@ -216,7 +216,8 @@
                                 "image": "testfloorplans/building2-floorb.png",
                                 "width": 40,
                                 "height": 60,
-                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
+                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json",
+                                "isOriginTopLeft": true
                             },
                             "North Tower": {
                                 "image": "testfloorplans/building2-floorn.png",
