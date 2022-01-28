@@ -129,7 +129,7 @@ text.vis-cellVisualisation-icon {
   cursor: pointer;
   fill: var(--vis-icon__color);
   transition: opacity 0.25s ease-in-out;
-  opacity: 0.1;
+  opacity: 0.2;
 }
 
 svg.vis-cellVisualisation:hover text.vis-cellVisualisation-icon {
