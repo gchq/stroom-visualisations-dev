@@ -27,7 +27,7 @@ html, body {
 }
 
 text {
-  fill: var(--vis-text-color);
+  fill: var(--vis-text__color);
 }
 
 .vis {
@@ -51,18 +51,18 @@ text {
 
 .vis-axis path,line {
   fill: none;
-  stroke: var(--vis-axis-color);
+  stroke: var(--vis-axis__color);
   shape-rendering: crispEdges;
 }
 
 .vis-axis text {
   shape-rendering: crispEdges;
   font-size: 11px;
-  fill: var(--vis-axis-color);
+  fill: var(--vis-axis__color);
 }
 
 text.weekend {
-  fill: var(--vis-text-color-faint);
+  fill: var(--vis-text__color--faint);
 }
 
 .vis-series {
@@ -73,7 +73,7 @@ rect.vis-coloured-element {
 }
 
 .vis-barchart-element {
-  stroke: var(--vis-barchart-element-stroke);
+  stroke: var(--vis-barchart-element__stroke);
 }
 
 .vis-series path {
@@ -82,7 +82,7 @@ rect.vis-coloured-element {
 
 .vis-marker {
   position: absolute;
-  stroke: var(--vis-marker-stroke);
+  stroke: var(--vis-marker__stroke);
   stroke-width: 1.5px;
 }
 
@@ -96,19 +96,15 @@ rect.vis-coloured-element {
   position: absolute;
   left: 0px;
   top: 0px;
-  background-color: var(--vis-series-label-background-color);
+  background-color: var(--vis-series-label__background-color);
   white-space: nowrap;
 }
 
 svg.vis-cellVisualisation {
-  fill: var(--page-background-color);
+  fill: var(--vis__background-color);
 }
 
 rect.vis-cellVisualisation-border {
-  fill: var(--page-background-color);
-  stroke: var(--vis-text-color-faint);
-  stroke-width: 1px;
-  shape-rendering: crispEdges;
 }
 
 text.vis-cellVisualisation-seriesName {
@@ -131,13 +127,21 @@ text.vis-cellVisualisation-icon {
   font-family: FontAwesome;
   font-size: 14px;
   cursor: pointer;
-  /*fill: #ddd;*/
-  fill: var(--vis-icon-color);
-  transition: fill 0.4s;
+  fill: var(--vis-icon__color);
+  transition: opacity 0.25s ease-in-out;
+  opacity: 0.1;
+}
+
+svg.vis-cellVisualisation:hover text.vis-cellVisualisation-icon {
+    opacity: 1;
+}
+
+.vis:hover text.vis-cellVisualisation-icon {
+    opacity: 1;
 }
 
 text.vis-cellVisualisation-icon:hover {
-  fill: var(--vis-icon-color-hover);
+  fill: var(--vis-icon__color--hover);
 }
 
 .vis-glass {
@@ -242,8 +246,8 @@ html {
 .d3-tip { 
   line-height: 1.4;
   padding: 7px;
-  background: var(--vis-tip-background-color);
-  color: var(--vis-tip-text-color);
+  background: var(--vis-tip__background-color);
+  color: var(--vis-tip-text__color);
   border-radius: 4px;
   pointer-events: none;
   text-rendering: geometricPrecision;
@@ -351,5 +355,5 @@ html {
 }
 
 ::-webkit-scrollbar-corner {
-  background: trasnparent;
+  background: transparent;
 }

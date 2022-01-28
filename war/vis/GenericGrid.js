@@ -46,10 +46,10 @@ visualisations.GenericGrid = function(element) {
     var intraCellPadding = 5;
 
     var margin = {
-        top: 14,
-        right: interCellPadding,
-        bottom: interCellPadding,
-        left: interCellPadding
+        top: 20,
+        right: 0,
+        bottom: 0,
+        left: 0
     };
 
     var gridLayoutPadding = [0.05, 0.05];
@@ -472,8 +472,8 @@ visualisations.GenericGrid = function(element) {
                 //get the unique values for the designated key field over all grid cells
                 commonFunctions.computeUniqueValues(visData, function(type, index) {
                     return (
-                        index === legendKeyField || 
-                        visData.types[index] === commonConstants.dataTypeText || 
+                        index === legendKeyField ||
+                        visData.types[index] === commonConstants.dataTypeText ||
                         visData.types[index] === commonConstants.dataTypeGeneral);
                 });
 
@@ -692,9 +692,14 @@ visualisations.GenericGrid = function(element) {
                         //set up
                         var gridCell = d3.select(this);
                         if (requiresLegend) {
+                            var x = getCellWidth() - (interCellPadding + intraCellPadding + legendIconWidth);
+                            var y = interCellPadding + intraCellPadding + chartHeaderTextHeight - 4;
+                            if (visibleValues.length > 1) {
+                              x = x - zoomIconWidth - iconPadding;
+                            }
                             gridCell.selectAll(".vis-cellVisualisation-legendIcon")
-                                .attr("x", getCellWidth() - (interCellPadding + intraCellPadding + zoomIconWidth + iconPadding + legendIconWidth))
-                                .attr("y", interCellPadding + intraCellPadding + chartHeaderTextHeight - 4)
+                                .attr("x", x)
+                                .attr("y", y)
                                 .on("mousedown",makeLegendMouseHandler(this, d));
                         }
                     });
@@ -723,9 +728,7 @@ visualisations.GenericGrid = function(element) {
 
         var legendIcon = d3.select(this).select(".vis-cellVisualisation-legendIcon");
         if (commonFunctions.isTrue(visSettings.requiresLegend, true)){
-            legendIcon
-                .style("opacity", "1")
-                .style("cursor", "pointer");
+            legendIcon.style("cursor", "pointer");
         } else {
             legendIcon
                 .style("opacity", "0.2")
