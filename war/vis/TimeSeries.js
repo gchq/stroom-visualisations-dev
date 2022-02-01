@@ -78,7 +78,7 @@ visualisations.TimeSeries = function (containerNode) {
     vis = d3
       .select(element)
       .append("svg:svg")
-      .attr("transform", "translate(0, 20)")
+      .attr("transform", "translate(0, 30)")
       .attr("class", "metric-chart"); // CB -- "line-chart" -- CB //
     // brush = d3.svg.brush()
   };
@@ -552,7 +552,7 @@ visualisations.TimeSeries = function (containerNode) {
 
       var display_range_group = vis.append("g").attr("id", "buttons_group");
 
-      display_range_group.attr("transform", "translate(" + 0 + "," + 0 + ")");
+      display_range_group.attr("transform", "translate(" + 8 + "," + 0 + ")");
 
       var expl_text = display_range_group
         .append("text")
