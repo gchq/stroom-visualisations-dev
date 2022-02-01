@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+* Changes for refreshed UI.
+
 ## [v3.11.0] - 2021-09-28
 
 * gh-55 FloorMap - isOriginTopLeft added to floor config
