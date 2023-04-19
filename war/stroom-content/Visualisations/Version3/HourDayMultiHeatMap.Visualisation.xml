@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Version: SNAPSHOT
+Git commit: 42cd516461f3c8366e95a64d069a379fcb316669
+Git commit time: 2018-12-14 20:04:46 +0000</description>
+    <functionName>visualisations.HourDayMultiHeatMap</functionName>
+    <name>HourDayMultiHeatMap</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;f51ae8dc-ceda-43e0-813a-b2735c9fad25&lt;/uuid&gt;
+&lt;name&gt;HourDayMultiHeatMap&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML> 
+    <uuid>aad53ec0-c33d-4430-b2b2-5a83eccb13e7</uuid>
+</visualisation>
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>
+<![CDATA[A visualisation that can display locations of data on a floorplan.
+
+There can be a number of floorplans per building, a number of buildings per building group and there can be a number of building groups defined (e.g. one per campus).
+
+It is necessary to configure FloorMap with configuration for your installation but it is usually easier to create a local floormap visualisation that is configured for your installation.
+
+This can be achieved by cloning the stroom-visualisations-dev git repository, and following the instructions in stroom-content-local/builders/FloorMapLocalBuilder/README.md.
+]]>
+
+            </description>
+    <functionName>visualisations.FloorMap</functionName>
+    <name>FloorMap</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+      &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;eece3dfa-3a4b-432b-9b9c-009aade6bd98&lt;/uuid&gt;
+&lt;name&gt;FloorMap&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML>
+    <uuid>4ac9c3f6-d605-4903-b943-0f3be05f10d1</uuid>
+</visualisation>
+

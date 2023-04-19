@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+    <dependenciesXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+	&lt;docs&gt;
+	&lt;/docs&gt;
+    </dependenciesXML>
+    <description>Underscore is a JavaScript library that provides a whole mess of useful functional programming helpers without extending any built-in objects.</description>
+    <name>Underscore</name>
+    <uuid>efc9a7f3-2aba-4eb0-a4fd-2130cbfe1a4d</uuid>
+</script>
+

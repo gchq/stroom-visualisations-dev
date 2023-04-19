@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+    <dependenciesXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+	&lt;docs&gt;
+	&lt;/docs&gt;
+    </dependenciesXML>
+    <description>Javascript version of Leaflet CSS with embedded images</description>
+    <name>LeafletCSS</name>
+    <uuid>8b55a12d-50fd-43f3-b174-7197e97585a1</uuid>
+</script>
+

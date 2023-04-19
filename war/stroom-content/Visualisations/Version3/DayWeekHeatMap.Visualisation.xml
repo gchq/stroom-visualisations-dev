@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Version: SNAPSHOT
+Git commit: 42cd516461f3c8366e95a64d069a379fcb316669
+Git commit time: 2018-12-14 20:04:46 +0000</description>
+    <functionName>visualisations.DayWeekHeatMap</functionName>
+    <name>DayWeekHeatMap</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;abb0e349-b61a-4946-9231-86d5a98596c7&lt;/uuid&gt;
+&lt;name&gt;DayWeekHeatMap&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML> 
+    <uuid>195fbed2-5a75-456f-bd98-f2dd184b94f9</uuid>
+</visualisation>
+

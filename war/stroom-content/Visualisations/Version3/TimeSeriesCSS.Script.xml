@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+    <dependenciesXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+	&lt;docs&gt;
+	&lt;/docs&gt;
+    </dependenciesXML>
+    <description>Version: SNAPSHOT
+Git commit: 457abb17d5cc68d485c9c9a67e70b6f06d322c8e
+Git commit time: 2021-05-25 13:11:52 +0100</description>
+    <name>TimeSeriesCSS</name>
+    <uuid>70a4d9ba-eb1f-4b02-9304-50d5d6efcc86</uuid>
+</script>
+

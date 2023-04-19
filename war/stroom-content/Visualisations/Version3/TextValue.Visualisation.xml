@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Version: SNAPSHOT
+Git commit: aeb7a3a495f3110d45b710aa1fba4e9eb16d50c9
+Git commit time: 2018-12-18 16:35:23 +0000</description>
+    <functionName>visualisations.TextValue</functionName>
+    <name>TextValue</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;a2765cd2-8081-4230-8c16-05127a3a102d&lt;/uuid&gt;
+&lt;name&gt;TextValue&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML> 
+    <uuid>7e484d5d-29af-4776-b1c2-4cdad2d9ea1b</uuid>
+</visualisation>
+
