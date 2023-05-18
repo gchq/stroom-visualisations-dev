@@ -79,8 +79,21 @@ visualisations.Bubble = function(containerNode) {
         //Set up the bar highlighting and hover tip
         if (typeof(tip) == "undefined") {
             inverseHighlight = commonFunctions.inverseHighlight();
+
+            inverseHighlight.toSelectionItem = function(d) {
+              //console.log("selection");
+              //console.log(d);
+              var selection = {
+                key: d.name,
+                series: d.series,
+                value: d.value,
+              };
+              //console.log(selection);
+              return selection;
+            };
+
             tip = inverseHighlight.tip()
-                .html(function(tipData) { 
+                .html(function(tipData) {
                     var html = inverseHighlight.htmlBuilder()
                         .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
                         .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
@@ -131,7 +144,7 @@ visualisations.Bubble = function(containerNode) {
                     delete context.color;
                 }
 
-                //Get grid to construct the grid cells and for each one call back into a 
+                //Get grid to construct the grid cells and for each one call back into a
                 //new instance of this to build the visualisation in the cell
                 //The last array arg allows you to synchronise the scales of fields
                 grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
@@ -139,7 +152,7 @@ visualisations.Bubble = function(containerNode) {
         }
     };
 
-    //Public entry point for the Grid to call back in to set the cell level data on the cell level 
+    //Public entry point for the Grid to call back in to set the cell level data on the cell level
     //visualisation instance.
     //data will only contain the branch of the tree for this cell
     this.setDataInsideGrid = function(context, settings, data) {
@@ -185,9 +198,9 @@ visualisations.Bubble = function(containerNode) {
             svg.call(tip);
 
             //sort by the series name, and then the value of the bubble
-            //so bubbles of the same series are together and arranged in 
+            //so bubbles of the same series are together and arranged in
             //size order within the series set
-            bubbleLayout.sort(function(a, b) { 
+            bubbleLayout.sort(function(a, b) {
                 if (a.series < b.series) {
                     return -1;
                 } else if (a.series > b.series){
@@ -208,7 +221,7 @@ visualisations.Bubble = function(containerNode) {
             var nodes = svg.selectAll("g.vis-node-element")
                 .data(bubbleData, function(d) {
                     //compound data key
-                    var key = d.series + "~#~" + d.name; 
+                    var key = d.series + "~#~" + d.name;
                     //console.log("key: " + key);
                     return key;
                 });
@@ -237,7 +250,7 @@ visualisations.Bubble = function(containerNode) {
                             .style("pointer-events", "none")
                             .style("font-size", "20px")
                             .style("text-rendering", "geometricPrecision")
-                            .text(function(d) { 
+                            .text(function(d) {
                                 if (d.name != null) {
                                     return commonFunctions.autoFormat(d.name, visSettings.nameDateFormat);
                                 } else {
@@ -266,8 +279,8 @@ visualisations.Bubble = function(containerNode) {
                         .attr("r", function(d) {
                             return d.r;
                         })
-                        .style("fill", function(d) { 
-                            return colour(d.series); 
+                        .style("fill", function(d) {
+                            return colour(d.series);
                         });
 
                     if (commonFunctions.isTrue(visSettings.showLabels)){
@@ -307,6 +320,7 @@ visualisations.Bubble = function(containerNode) {
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "circle", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svg, "circle"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
+            commonFunctions.addDelegateEvent(svg, "click","circle", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "circle"));
 
             //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
             //pans or zooms

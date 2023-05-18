@@ -103,11 +103,11 @@ var cssStr = "" +
 "}" +
 "" +
 "svg.vis-cellVisualisation {" +
-"  fill: var(--page-background-color);" +
+"  fill: var(--vis__background-color);" +
 "}" +
 "" +
 "rect.vis-cellVisualisation-border {" +
-"  fill: var(--page-background-color);" +
+"  fill: var(--vis__background-color);" +
 "  stroke: var(--vis-text-color-faint);" +
 "  stroke-width: 1px;" +
 "  shape-rendering: crispEdges;" +

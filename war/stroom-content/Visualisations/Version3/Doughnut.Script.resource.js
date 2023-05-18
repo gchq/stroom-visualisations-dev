@@ -73,9 +73,6 @@ visualisations.Doughnut= function(containerNode) {
     var filteredPieData = [];
     var showLabels = false;
 
-    // Selection support
-    var selection = [];
-
     //one off initialisation of all the local variables, including
     //appending various static dom elements
     var initialise = function() {
@@ -128,7 +125,7 @@ visualisations.Doughnut= function(containerNode) {
         center_group = svg.append("svg:g").attr("class", "center_group");
 
 
-        // PLStroomHOLDER GRAY CIRCLE
+        // PLACEHOLDER GRAY CIRCLE
         paths = arc_group.append("svg:circle").attr("fill", "#EFEFEF");
 
         // =========================================================
@@ -136,7 +133,7 @@ visualisations.Doughnut= function(containerNode) {
         // =========================================================
 
         // WHITE CIRCLE BEHIND LABELS
-        whiteCircle = center_group.append("svg:circle").attr("fill", "var(--page-background-color)");
+        whiteCircle = center_group.append("svg:circle").attr("fill", "var(--vis__background-color)");
 
         // "TOTAL" LABEL
         totalLabel = center_group.append("svg:text").attr("class", "label");
@@ -313,7 +310,7 @@ visualisations.Doughnut= function(containerNode) {
         //};
 
         if (filteredPieData.length > 0) {
-            // REMOVE PLStroomHOLDER CIRCLE
+            // REMOVE PLACEHOLDER CIRCLE
             arc_group.selectAll("circle").remove();
 
             totalValue.transition()
@@ -329,7 +326,7 @@ visualisations.Doughnut= function(containerNode) {
             //new data
             paths.enter()
                 .append("svg:path")
-                .attr("stroke", "var(--page-background-color)")
+                .attr("stroke", "var(--vis__background-color)")
                 .attr( "stroke-width", 1)
                 .transition()
                 .duration(tweenDuration)
@@ -610,30 +607,6 @@ visualisations.Doughnut= function(containerNode) {
             }
         }
         return null;
-    };
-
-    var select = function(d) {
-        // selection = [selection..., d];
-
-        const index = selection.indexOf(d);
-        if (index > -1) {
-            selection.splice(index, 1);
-        } else {
-            selection.push(d);
-        }
-
-        // console.log(d);
-        // console.log(d.name);
-        // console.log('new test');
-        //stroomLink('title=title&params=userId%3D' + d.name, 'DASHBOARD')
-
-        // stroom.dashboard(null, 'userId=' + d.name)
-
-        // var obj = {userId: d.name};
-        // stroom.select(obj);
-        // stroom.select(d);
-
-        stroom.select(selection);
     };
 
     var update = function(duration) {
