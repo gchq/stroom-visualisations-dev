@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [v3.12-alpha.2] - 2023-05-18
+
+
 * Changes for refreshed UI.
 
 ## [v3.11.0] - 2021-09-28
@@ -199,7 +202,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.11.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...HEAD
+[v3.12-alpha.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.11.0...v3.12-alpha.2
 [v3.11.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.10.0...v3.11.0
 [v3.10.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.9.0...v3.10.0
 [v3.9.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.8.1...v3.9.0
