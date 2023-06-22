@@ -7,7 +7,7 @@ var cssStr = "" +
 "    --text-color: #000;" +
 "    --text-color-disabled: #666;" +
 "    --app-background-color: #d50101;" +
-"    --vis__background-color: #fff;" +
+"    --vis__background-color: var(--dashboard-panel__background-color);" +
 "    --border-color: #c5cde2;" +
 "    --input-background-color: #fff;" +
 "    --input-border-color: #c5cde2;" +
@@ -106,7 +106,7 @@ var cssStr = "" +
 "    --text-color: #e6e1dc;" +
 "    --text-color-disabled: #666;" +
 "    --app-background-color: #000;/*#19171d;*/" +
-"    --vis__background-color: #19171d;" +
+"    --vis__background-color: var(--dashboard-panel__background-color);" +
 "    --border-color: #555;" +
 "    --input-background-color: #333;" +
 "    --input-border-color: #555;" +
@@ -205,7 +205,7 @@ var cssStr = "" +
 "    --text-color: #abb0b6;" +
 "    --text-color-disabled: #666;" +
 "    --app-background-color: #000;" +
-"    --vis__background-color: #1b1d24;" +
+"    --vis__background-color: var(--dashboard-panel__background-color);" +
 "    --border-color: #14161b;" +
 "    --input-background-color: #262a32;" +
 "    --input-border-color: #191c21;" +
