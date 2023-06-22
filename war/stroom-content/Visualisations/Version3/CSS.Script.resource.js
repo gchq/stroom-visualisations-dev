@@ -107,10 +107,10 @@ var cssStr = "" +
 "}" +
 "" +
 "rect.vis-cellVisualisation-border {" +
-"  fill: var(--vis__background-color);" +
-"  stroke: var(--vis-text-color-faint);" +
-"  stroke-width: 1px;" +
-"  shape-rendering: crispEdges;" +
+//"  fill: var(--vis__background-color);" +
+//"  stroke: var(--vis-text-color-faint);" +
+//"  stroke-width: 1px;" +
+//"  shape-rendering: crispEdges;" +
 "}" +
 "" +
 "text.vis-cellVisualisation-seriesName {" +
