@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [v3.13] - 2024-03-22
+
+* Changes to fix issues with empty data.
+
+
 ## [v3.12-alpha.2] - 2023-05-18
 
-
 * Changes for refreshed UI.
+
 
 ## [v3.11.0] - 2021-09-28
 
