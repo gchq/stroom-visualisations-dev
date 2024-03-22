@@ -359,7 +359,9 @@ visualisations.GenericGrid = function(element) {
                     });
                 };
             } else {
-                d.visibleValues = [];
+                d.visibleValues = function() {
+                    return [];
+                };
             }
         }
         if (d.values && d.values.constructor === Array) {

@@ -670,14 +670,14 @@ if(!visualisations) {
 
     if(mode == "VALUE" && data.unique) {
       domain = data.unique[i];
-    } else if(mode == "SYNCHED_SERIES" && data.uniqueKeys) {
+    } else if (mode == "SYNCHED_SERIES" && data.uniqueKeys) {
       domain = data.uniqueKeys;
-    } else if(data.originalValues) {
+    } else if (data.originalValues) {
       // attempt to use all the series for the colour scale, not just the visible ones
       domain = data.originalValues.map(function(d) {
         return d.key;
       });
-    } else if(data.values && data.values[0].hasOwnProperty("key")) {
+    } else if (data.values && data.values.length > 0 && data.values[0].hasOwnProperty("key")) {
       domain = data.values.map(function(d) {
         return d.key;
       });
@@ -1188,17 +1188,17 @@ if(!visualisations) {
     return unNestedData;
   }
 
-  // Pass in a data tree and an array of field positions types and it  will add 
-  // a 'unique' property at each nest level containing a sparse array (one value 
-  // per ordinal field) with each value being an array of the unique values for 
-  // that field at that level.  Similar to the way min/max/sum work in the data 
-  // tree.  The optional filter func arg allows you to pass a function that will 
+  // Pass in a data tree and an array of field positions types and it  will add
+  // a 'unique' property at each nest level containing a sparse array (one value
+  // per ordinal field) with each value being an array of the unique values for
+  // that field at that level.  Similar to the way min/max/sum work in the data
+  // tree.  The optional filter func arg allows you to pass a function that will
   // filter on the type and/or field position to determine which fields to process.
   commonFunctions.computeUniqueValues = function(data, typeAndFieldIndexFilterFunc) {
 
     var makeAddUniqueValueFunc = function(fieldIndex) {
       var fieldIndex = fieldIndex;
-      // recursive function to walk the data tree computing the unique values of 
+      // recursive function to walk the data tree computing the unique values of
       // the given fieldIndex at each level
       var addUniqueValues = function(obj) {
         if(!obj.hasOwnProperty("unique")) {
@@ -1214,7 +1214,7 @@ if(!visualisations) {
             // This obj has another level of nesting under it so process the level below
             obj.values.forEach(makeAddUniqueValueFunc(fieldIndex));
 
-            // now compute the unique values for this level based on the unique 
+            // now compute the unique values for this level based on the unique
             // values of the level below.
             obj.values.forEach(function(childObj) {
               childObj.unique[fieldIndex].forEach(function(uniqueVal) {
@@ -1262,20 +1262,22 @@ if(!visualisations) {
 
     // use the types array to loop round so we process each field,
     // optionally filtering whether we process the field or not
-    data.types.forEach(function(type, fieldIndex) {
-      if(typeof(typeAndFieldIndexFilterFunc) === "undefined" 
-        || typeAndFieldIndexFilterFunc(type, fieldIndex)) {
+    if (data && data.types) {
+      data.types.forEach(function(type, fieldIndex) {
+        if(typeof(typeAndFieldIndexFilterFunc) === "undefined"
+          || typeAndFieldIndexFilterFunc(type, fieldIndex)) {
 
-        makeAddUniqueValueFunc(fieldIndex)(data);
-      }
-    });
+          makeAddUniqueValueFunc(fieldIndex)(data);
+        }
+      });
+    }
   }
 
   // returns an array of unique 'key' values for the second level of nesting in the
   // passed data tree.
   commonFunctions.computeUniqueKeys = function(data) {
     // make sure we have a key attribute for the first grand child
-    if(data && data.values && data.values.length > 0 && data.values[0] &&
+    if (data && data.values && data.values.length > 0 && data.values[0] &&
       data.values[0].values && data.values[0].values.length > 0 &&
       data.values[0].values[0] && data.values[0].values[0].key) {
 
@@ -1733,7 +1735,7 @@ if(!visualisations) {
   commonFunctions.truncateText = function(width, lengthFunc) {
     //console.log('Creating func with width ' + width);
 
-    // TODO need to rethink this as each we seem to get lots of different width varients building up in the cache
+    // TODO need to rethink this as each we seem to get lots of different width variants building up in the cache
     // for a gridded vis
     if(!commonFunctions.truncateTextCache.hasOwnProperty(width)) {
       commonFunctions.truncateTextCache[width] = {};
