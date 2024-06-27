@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "76cebdac-f75a-434c-9579-ce29f2bd3b57",
+  "name" : "Session",
+  "version" : "36df4b4e-9d0b-4be2-b5af-35865c920964",
+  "description" : "Version: SNAPSHOT\nGit commit: e564b3b8a53e902aec871ad897c29363c94f7118\nGit commit time: 2019-01-03 13:46:06 +0000",
+  "functionName" : "visualisations.Session",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "90fa3791-21f5-44fd-aff0-908cbcfd4e17",
+    "name" : "Session"
+  }
+}
