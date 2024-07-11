@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description></description>
+    <functionName>visualisations.ForceCanvas</functionName>
+    <name>Force</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+        &lt;doc&gt;
+        &lt;type&gt;Script&lt;/type&gt;
+        &lt;uuid&gt;ccceb661-579e-4c08-b7a5-1355d7b782f8&lt;/uuid&gt;
+        &lt;name&gt;ForceCanvas&lt;/name&gt;
+        &lt;/doc&gt;
+    </scriptRefXML>
+    <uuid>dddd4513-30f1-4c07-bc85-dafd4538d4df</uuid>
+</visualisation>
+
+
