@@ -243,8 +243,9 @@ function TestData() {
         var nestValues = false;
         var fieldZeroType = commonConstants.dataTypeDateTime;
 
-        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
+        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS || visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
             seriesCount = 1;
+            fieldZeroType = commonConstants.dataTypeNumber;
         } else if (visType === VIS_TYPE_DOUGHNUT) {
             seriesCount = 1;
             valueFunctions[0] = generateTextValue;
