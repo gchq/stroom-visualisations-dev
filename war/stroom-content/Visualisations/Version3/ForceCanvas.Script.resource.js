@@ -65,30 +65,30 @@ visualisations.ForceCanvas = function() {
 
     var newZoom = zoom - delta;
     newZoom = newZoom > 0.1 ? newZoom : 0.1;
-    
+
     if (newZoom !== zoom) {
 //      pan.x -= (mousepos.x / 2) * delta;
 //      var dx =  mousepos.x / width;
 //      var dy = mousepos.y / height;
-//      
+//
 //      if (delta > 0) {
 //        pan.x -= delta * mousepos.x;
 //        pan.y -= delta * mousepos.y;
 //      } else {
 //        pan.x += delta * mousepos.x;
-//        pan.y += delta * mousepos.y;        
+//        pan.y += delta * mousepos.y;
 //      }
-      
+
       zoom = newZoom;
     }
   });
 
-  //  
+  //
   // /* Zoom with mousewheel - keeping mouse position in same location*/
   // var zoom = 1.0;
   // var x = 0;
   // var y = 0;
-  //  
+  //
   //
   // function wheel(event) {
   // var delta = 0;
@@ -101,20 +101,20 @@ visualisations.ForceCanvas = function() {
   // var move = (delta<0) ? -delta * zoom_speed : 1/(delta*zoom_speed);
   // zoom = zoom - delta;
   // zoom = zoom > 0.1 ? zoom : 0.1;
-  //  
+  //
   // var mousex = current_mouse[0];
   // var mousey = current_mouse[1];
   //
   // //To do use mouse in zoom
-  //      
+  //
   // viewBox.height = height * zoom;
   // viewBox.width = width * zoom;
-  //      
+  //
   // viewBox.x= width > viewBox.width ? (width - viewBox.width )/ 2 : -
   // (viewBox.width - width) / 2;
   // viewBox.y= height > viewBox.height? (height - viewBox.height) /2 : -
   // (viewBox.height - height) / 2;
-  //      
+  //
   // //console.log("Mouse " + mousex + ", " + mousey);
   // var e = d3.event;
   //
@@ -156,7 +156,7 @@ visualisations.ForceCanvas = function() {
 
     // Clear the canvas.
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     // Draw all of the links.
     ctx.strokeStyle = 'grey';
     linksForForce.forEach(function(d) {
@@ -190,7 +190,7 @@ visualisations.ForceCanvas = function() {
         x : (d.x + pan.x) * zoom,
         y : (d.y + pan.y) * zoom
       };
-      
+
       // Don't bother drawing nodes that would be off screen.
       if (pos.x > -radius || pos.x < canvas.width + radius || pos.y > -radius
           || pos.y < canvas.height + radius) {
@@ -208,9 +208,9 @@ visualisations.ForceCanvas = function() {
   window.requestAnimationFrame(render);
 
   /**
-   * 
+   *
    * Set data follows
-   * 
+   *
    */
   this.setData = function(context, settings, data) {
     if (!data)
@@ -443,9 +443,9 @@ visualisations.ForceCanvas = function() {
 
     // force.on("tick", function() {
     // var radius = 10;
-    //      
+    //
     // ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //      
+    //
     // nodesForForce.forEach(function(d) {
     // ctx.beginPath();
     // ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI, false);
@@ -482,12 +482,12 @@ visualisations.ForceCanvas = function() {
   }; // Close function set data
   /**
    * End of set data
-   * 
+   *
    */
 
   /*
    * Update follows, called by set data and tick
-   * 
+   *
    */
   var update = function(duration) {
     if (!nodesForForce) {
