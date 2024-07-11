@@ -2,4 +2,5 @@
 
 body {
     background-color: var(--page__background-color);
+    color: var(--text-color);
 }
