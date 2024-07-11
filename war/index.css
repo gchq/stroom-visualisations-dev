@@ -1,0 +1,5 @@
+@import url("./css/vis.css");
+
+body {
+    background-color: var(--page__background-color);
+}
