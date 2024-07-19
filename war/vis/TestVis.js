@@ -18,6 +18,21 @@
         show(getVisType());
     }
 
+    this.changeTheme = function() {
+        const themeSelector = document.getElementById("themeSelector");
+        const selectedTheme = themeSelector.value;
+        const logo = document.getElementById("logo");
+
+        document.documentElement.classList.remove("stroom-theme-dark","stroom-theme-dark2","stroom-theme-light")
+        document.documentElement.classList.add(selectedTheme);
+
+        if (selectedTheme === "stroom-theme-light") {
+            logo.src = "images/logo_orange.svg";
+        } else {
+            logo.src = "images/logo.svg";
+        }
+    }
+
     function getVisType() {
         var visType = document.getElementById("visType");
         var index = visType.selectedIndex;
