@@ -14,19 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
 -->
-  <!-- TODO 
-    ~ merge with themeing
-	~ 1 large iframe on the right
-	~ all the messages from the parent panel
-	~ dependency management from the parent panel
-	~ revert back to TestVis instead of parent and iframe
-	~ use the stock vis.js from stroom instead of the edit here
-	~ use the VisFrame.java => create the methods in js to dress up the jsons being sent to vis.js
-	~ use testdata from parent which hopefully creates a data object which testvis will pass to vis.js
-	~ revert vis.html to identical to the stroom one
-	~ research serve lets
-	~ have a look at -> context {}? settings? within testdata
-  -->
 <html class="stroom stroom-theme-dark">
 <head>
 	<link rel="stylesheet" type="text/css" href="index.css"/>
@@ -155,19 +142,15 @@
 				<button onclick="addSeries()">S+</button>
 				<button onclick="removeSeries()">S-</button>
 				<button onclick="alterValues()">V</button>
-				<button onclick="saveSvg()">SVG</button>
+				<button onclick="saveSvg()">Save [Broken]</button>
 			</div>
 		</div>
 
-		<div id="container" class="control-group">
-		</div>
-			<div id="svgdataurl"></div>
-			<canvas width="1000" height="1000" style="display:none"></canvas>
+		<!-- <div id="container" class="control-group"></div> -->
+		<!-- <div id="svgdataurl"></div> -->
+		<!-- <canvas width="1000" height="1000" style="display:none"></canvas> -->
 	</body>
-    <div id="container" style="position:absolute;top:44px;left:0px;bottom:0px;right:0px">
 	</div>
-        <div id="svgdataurl"></div>
-        <canvas width="1000" height="1000" style="display:none"></canvas>
 
 	<div id="iframe">
 		

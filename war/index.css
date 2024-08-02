@@ -20,28 +20,17 @@ body {
     margin-bottom: 5px;
 }
 
-.control-group {
-    margin-bottom: 5px;
-}
-
 #logo {
     width: 146px;
     height: 35px;
     margin-bottom: 10px;
 }
 
-#container {
-    position: absolute;
-    top: 0px;
-    left: 250px;
-    bottom:0px;
-    right:0px
 /* The iframe will fill the container */
 #iframe iframe {
     position: absolute;
-    top: 70px;
-    bottom: 10px;
-    left: 0;
-    width: 100%;
+    left: 251px;
+    width: calc(100% - 251px);
     height: 100%;
+    border: none;
 }
