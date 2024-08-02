@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Version: SNAPSHOT
+Git commit: @@GIT_COMMIT@@
+	Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <functionName>visualisations.Stroom</functionName>
+    <name>Stroom</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;9b731b60-da6b-4a7e-aeb9-3653d381a181&lt;/uuid&gt;
+&lt;name&gt;Stroom&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML> 
+    <uuid>add661f3-9e4f-4a8c-a7d4-173096e2b7de</uuid>
+</visualisation>
