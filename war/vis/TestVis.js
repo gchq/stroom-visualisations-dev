@@ -18,9 +18,7 @@
     var visName;
     this.changeVis = function() {
         manageIframe();
-        // let visType = getVisType();
         visName = getVisName();
-        // let rawType = getRawType(visType);
         fetchAndInjectScripts(visName);
     }
     
@@ -35,9 +33,11 @@
         }
     }
 
+    // Default theme
+    let selectedTheme = "stroom-theme-dark"
     this.changeTheme = function() {
         const themeSelector = document.getElementById("themeSelector");
-        const selectedTheme = themeSelector.value;
+        selectedTheme = themeSelector.value;
         const logo = document.getElementById("logo");
 
         document.documentElement.classList.remove("stroom-theme-dark","stroom-theme-dark2","stroom-theme-light")
@@ -48,6 +48,7 @@
         } else {
             logo.src = "images/logo.svg";
         }
+        this.update();
     }
 
     function getVisType() {
@@ -64,15 +65,11 @@
         return value;
     }
 
-    function getRawType(type){
-        return type.split("-")[0];
-    }
-
     function manageIframe() {
         var iframe = document.getElementById('myIframe');
     
         if (iframe) {
-                iframe.parentNode.removeChild(iframe);
+            iframe.parentNode.removeChild(iframe);
         }
     
         var newIframe = document.createElement('iframe');
@@ -267,7 +264,7 @@
                functionName: "visualisationManager.setVisType",
                params: [
                 "visualisations." + visName,
-                "vis stroom-theme-dark"
+                "vis " + selectedTheme
                ]
             }
         };
