@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Version: SNAPSHOT
+    Git commit: @@GIT_COMMIT@@
+	Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <functionName>visualisations.TreeMap</functionName>
+    <name>TreeMap</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;fa5279fb-72b9-486c-870c-508e6e46973c&lt;/uuid&gt;
+&lt;name&gt;TreeMap&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML> 
+    <uuid>1b9465a3-71e0-4aac-b66d-471b06943fe6</uuid>
+</visualisation>
+

@@ -53,6 +53,10 @@ Script.TimeSeries=aa7029ff-b6f5-434d-81a9-9c53fe4116ac
 Script.TimeSeriesCSS=70a4d9ba-eb1f-4b02-9304-50d5d6efcc86
 Script.TrafficLights=bee10b7d-023d-487a-af83-414ee1b7174f
 Script.Underscore=efc9a7f3-2aba-4eb0-a4fd-2130cbfe1a4d
+Script.Stroom=9b731b60-da6b-4a7e-aeb9-3653d381a181
+Script.HourDayHeatMap=f6f6e556-2df2-4503-b745-3f3e23c47e05
+Script.SeriesHeatMap=c2bf6e51-009a-47f1-b8ef-7cd23d4e5d97
+Script.TreeMap=fa5279fb-72b9-486c-870c-508e6e46973c
 
 ##UUIDs for each visualisation entity
 Visualisation.BarChart=547b440d-4bb1-4d3b-86b7-ff2e41b49311
@@ -74,3 +78,7 @@ Visualisation.StackedArea=e4c3baee-2a5c-4d6e-93af-aadfe374835c
 Visualisation.TextValue=7e484d5d-29af-4776-b1c2-4cdad2d9ea1b
 Visualisation.TimeSeries=083f905e-0f04-45a6-9b77-5a0852bc513e
 Visualisation.TrafficLights=1eae814a-c11a-4cc5-865d-b906908a5b28
+Visualisation.Stroom=add661f3-9e4f-4a8c-a7d4-173096e2b7de
+Visualisation.HourDayHeatMap=0ea62e37-9e35-434f-9147-29a7891b1552
+Visualisation.SeriesHeatMap=46d6e887-b913-4365-896d-8c043c27e727
+Visualisation.TreeMap=1b9465a3-71e0-4aac-b66d-471b06943fe6

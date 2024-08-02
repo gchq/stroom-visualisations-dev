@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+    <dependenciesXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+	&lt;docs&gt;
+        &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;49a5f46c-f627-49ed-afb9-0066b99e235a&lt;/uuid&gt;
+&lt;name&gt;Common&lt;/name&gt;
+&lt;/doc&gt;
+        &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;5d4252d6-6f13-4f24-9481-9e98e038747c&lt;/uuid&gt;
+&lt;name&gt;GenericGrid&lt;/name&gt;
+&lt;/doc&gt;
+	&lt;/docs&gt;
+    </dependenciesXML>
+    <description>Version: SNAPSHOT
+    Git commit: @@GIT_COMMIT@@
+	Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <name>TreeMap</name>
+    <uuid>fa5279fb-72b9-486c-870c-508e6e46973c</uuid>
+</script>
+

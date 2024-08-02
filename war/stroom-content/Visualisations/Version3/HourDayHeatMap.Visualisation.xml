@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Version: SNAPSHOT
+Git commit: @@GIT_COMMIT@@
+Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <functionName>visualisations.HourDayHeatMap</functionName>
+    <name>HourDayHeatMap</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;f6f6e556-2df2-4503-b745-3f3e23c47e05&lt;/uuid&gt;
+&lt;name&gt;HourDayHeatMap&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML> 
+    <uuid>0ea62e37-9e35-434f-9147-29a7891b1552</uuid>
+</visualisation>
+

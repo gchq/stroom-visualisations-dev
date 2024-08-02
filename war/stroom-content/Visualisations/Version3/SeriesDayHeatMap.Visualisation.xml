@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<visualisation>
+    <description>Version: SNAPSHOT
+    Git commit: @@GIT_COMMIT@@
+	Git commit time: @@GIT_COMMIT_TIME@@</description>
+    <functionName>visualisations.SeriesDayHeatMap</functionName>
+    <name>SeriesDayHeatMap</name>
+    <scriptRefXML>&lt;?xml version="1.1" encoding="UTF-8"?&gt;
+           &lt;doc&gt;
+&lt;type&gt;Script&lt;/type&gt;
+&lt;uuid&gt;c2bf6e51-009a-47f1-b8ef-7cd23d4e5d97&lt;/uuid&gt;
+&lt;name&gt;SeriesDayHeatMap&lt;/name&gt;
+&lt;/doc&gt;
+    </scriptRefXML> 
+    <uuid>46d6e887-b913-4365-896d-8c043c27e727</uuid>
+</visualisation>
+
