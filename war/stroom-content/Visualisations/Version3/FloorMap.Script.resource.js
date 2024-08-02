@@ -1140,11 +1140,14 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             }
 
             if (!this.config) {
-                if (settings.config.length > 10 && typeof localFloorMapConfig !== undefined) {
+                if (typeof (localFloorMapConfig) !== "undefined"){
+                    this.config = localFloorMapConfig;
+                }
+                else if (typeof (settings.config) == "string" && settings.config.length > 10) {
                     //Configuration JSON has been manually provided in config rather than js
-                    this.config = JSON.parse(settings.config);
+                    this.config = JSON.parse(settings.config);                 
                 } else {
-                  this.config = localFloorMapConfig;
+                    console.error("Unable to process config of type " + typeof settings.config + " with no Local FloorMap config,");
                 }
             }
 

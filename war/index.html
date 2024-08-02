@@ -14,12 +14,24 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
 -->
+  <!-- TODO 
+    ~ merge with themeing
+	~ 1 large iframe on the right
+	~ all the messages from the parent panel
+	~ dependency management from the parent panel
+	~ revert back to TestVis instead of parent and iframe
+	~ use the stock vis.js from stroom instead of the edit here
+	~ use the VisFrame.java => create the methods in js to dress up the jsons being sent to vis.js
+	~ use testdata from parent which hopefully creates a data object which testvis will pass to vis.js
+	~ revert vis.html to identical to the stroom one
+	~ research serve lets
+	~ have a look at -> context {}? settings? within testdata
+  -->
 <html class="stroom stroom-theme-dark">
 <head>
 	<link rel="stylesheet" type="text/css" href="index.css"/>
 
 	<!--3rd party dependencies -->
-	<script src="./vis.js" charset="utf-8"></script>
 	<script src="stroom-content/Visualisations/Version3/Dependencies/D3/D3.Script.resource.js" charset="utf-8"></script>
 	<script src="stroom-content/Visualisations/Version3/Dependencies/Chroma/Chroma.Script.resource.js" charset="utf-8"></script>
 	<script src="stroom-content/Visualisations/Version3/Dependencies/D3-Grid/D3-Grid.Script.resource.js" charset="utf-8"></script>
@@ -39,30 +51,6 @@
 	<script src="stroom-content/Visualisations/Version3/ThemeCSS.Script.resource.js" charset="utf-8"></script>
 	<script src="./vis/TestData.js" charset="utf-8"></script>
 	<script src="./vis/TestVis.js" charset="utf-8"></script>
-
-	<!--Individual visualisations -->
-	<script src="./vis/Stroom.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/BarChart.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Bubble.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/DayWeekHeatMap.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Doughnut.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Force.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/ForceCanvas.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/FloorMap.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Gauge.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/GeoMap.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/HourDayMultiHeatMap.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/HourDayPointMap.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/HourDaySessionMap.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/LineChart.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/RAGStatus.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Scatter.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/SeriesSessionMap.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/StackedArea.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/TextValue.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/TrafficLights.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/TimeSeries.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/TimeSeriesCSS.Script.resource.js" charset="utf-8"></script>
 </head>
 <body onload="changeVis();" onresize="autoResize()">
 
@@ -138,5 +126,9 @@
 	</div>
         <div id="svgdataurl"></div>
         <canvas width="1000" height="1000" style="display:none"></canvas>
+
+	<div id="iframe">
+		
+	</div>
 </body>
 </html>
