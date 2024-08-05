@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TODO understand the frame and callback IDs
 (function() {
     var visName;
     this.changeVis = function() {
         manageIframe();
         visName = getVisName();
         fetchAndInjectScripts(visName);
+
+        // Should ideally work with callbacks to know when the vis has finished loading the scripts.
+        // Timeout to wait for script loading
+        setTimeout(function() {
+            setVisType();
+        }, 150);
     }
     
     function getVisName() {
@@ -48,7 +53,7 @@
         } else {
             logo.src = "images/logo.svg";
         }
-        this.update();
+        this.changeVis();
     }
 
     function getVisType() {
@@ -131,19 +136,16 @@
     function fetchAndParseXML(xmlName) {
         return new Promise((resolve, reject) => {
             const urls = dependencyUrls(xmlName);
-            const fetchPromises = urls.map(url => {
-                return fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw console.error("Fetch failed for " + url + ". Status: " + response.status);
-                        }
-                        return response.text().then(xmlText => ({ xmlText, url }));
-                    })
-                    .then(({ xmlText, url }) => {
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-                        return { xmlDoc, url };
-                    });
+            const fetchPromises = urls.map(async url => {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw console.log("Fetch failed for " + url + ". Status: " + response.status);
+                }
+                const xmlText = await response.text();
+                const { xmlText: xmlText_1, url: url_1 } = ({ xmlText, url });
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText_1, "application/xml");
+                return { xmlDoc, url };
             });
     
             Promise.any(fetchPromises)
@@ -151,7 +153,7 @@
                     resolve({ xmlDoc, url });
                 })
                 .catch(error => {
-                    reject(console.error);
+                    reject(console.log(error));
                 });
         });
     }
@@ -289,7 +291,6 @@
     }
 
     this.update = function() {
-        setVisType();
         //remove any d3-tip divs left in the dom otherwise they build up on on each
         //call, cluttering up the dom
         // d3.selectAll(".d3-tip")
