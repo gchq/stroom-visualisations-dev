@@ -128,7 +128,7 @@
     // as leafletDraw folder has LeafletDrawCSS.script.resource.js etc
     async function dependencyUrls(xmlName) {
         const baseName = xmlName.split('.')[0];
-        const directory = "stroom-content/Visualisations/Version3";
+        const directory = "stroom_content/Visualisations/Version3";
         const files = await fetchFileList(directory);
         const pattern = new RegExp(`^${baseName}\\.Script\\.[a-fA-F0-9-]{36}\\.meta$`);
         const metaFile = files.find(file => pattern.test(file));
