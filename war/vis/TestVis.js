@@ -15,16 +15,16 @@
  */
 (function() {
     var visName;
-    this.changeVis = function() {
+    this.changeVis = async function() {
         manageIframe();
         visName = getVisName();
-        fetchAndInjectScripts(visName);
+        await fetchAndInjectScripts(visName);
 
         // Should ideally work with callbacks to know when the vis has finished loading the scripts.
         // Timeout to wait for script loading
         setTimeout(function() {
             setVisType();
-        }, 150);
+        }, 250);
     }
     
     function getVisName() {
@@ -90,20 +90,20 @@
     let scriptQueue = [];
     let pendingFetches = 0;
 
-    async function fetchAndInjectScripts(xmlName) {
+    async function fetchAndInjectScripts(visName) {
         // Check if script is already loaded
-        if (loadedScripts.has(xmlName)) {
+        if (loadedScripts.has(visName)) {
           checkAndAssembleScripts();
           return;
         }
       
         pendingFetches++;
         try {
-          const { xmlDoc, url } = await fetchAndParseXML(xmlName);
-          const scripts = await loadDependencies(xmlDoc, url, xmlName);
+          const { metaText, url } = await fetchAndParseMeta(visName);
+          const scripts = await loadDependencies(metaText, url, visName);
           scriptQueue = scriptQueue.concat(scripts);
           // Mark the script as loaded after dependencies are processed
-          loadedScripts.add(xmlName);
+          loadedScripts.add(visName);
           pendingFetches--;
           checkAndAssembleScripts();
         } catch (error) {
@@ -115,84 +115,103 @@
       
 
     async function fetchFileList(directory) {
-        const apiEndpoint = `http://localhost:8888/${directory}`; // Replace with actual endpoint
-        const response = await fetch(apiEndpoint);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      }
-      
+        const apiEndpoint = `http://localhost:8888/${directory}`;
+        try {
+            const response = await fetch(apiEndpoint);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const text = await response.text();
+            // Parse the HTML and extract the href attributes
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            const links = doc.querySelectorAll('a[href]');
+            return Array.from(links).map(link => link.getAttribute('href'));
+            } catch (error) {
+                console.error(`Failed to fetch file list from ${apiEndpoint}:`, error);
+                throw error;
+            }
+    }
 
     // this isn't the best
     // as leafletDraw folder has LeafletDrawCSS.script.resource.js etc
-    async function dependencyUrls(xmlName) {
-        const baseName = xmlName.split('.')[0];
-        const directory = "stroom_content/Visualisations/Version3";
-        const files = await fetchFileList(directory);
-        const pattern = new RegExp(`^${baseName}\\.Script\\.[a-fA-F0-9-]{36}\\.meta$`);
-        const metaFile = files.find(file => pattern.test(file));
-        if (!metaFile) {
-          throw new Error(`No .meta file found for ${baseName}`);
-        }
-        const urls = [
-          `${directory}/${metaFile}`,
-          `${directory}/Dependencies/${baseName}/${baseName}.Script.xml`,
-          `${directory}/Dependencies/Leaflet/${baseName}.Script.xml`,
-          `${directory}/Dependencies/LeafletDraw/${baseName}.Script.xml`
+    async function dependencyUrls(visName) {
+        const baseName = visName.split('.')[0];
+        const baseUrls = [
+            "../stroom_content/Visualisations/Version3",
+            "../stroom_content/Visualisations/Version3/Dependencies/" + baseName,
+            "../stroom_content/Visualisations/Version3/Dependencies/Leaflet",
+            "../stroom_content/Visualisations/Version3/Dependencies/LeafletDraw"
         ];
+    
+        let urls = [];
+        for (const baseUrl of baseUrls) {
+            try {
+                const url = await getMetaFile(baseName, baseUrl);
+                if (url) {
+                    urls.push(url);
+                    break; // Exit the loop as soon as a valid URL is found
+                }
+            } catch (error) {
+                console.error(`Error fetching meta file from ${baseUrl}:`, error);
+            }
+        }
         return urls;
-      }
-      
-
-    async function fetchAndParseXML(xmlName) {
+    }
+    
+    async function getMetaFile(baseName, directory) {
         try {
-            const urls = await dependencyUrls(xmlName);
+            const files = await fetchFileList(directory);
+            const pattern = new RegExp(`^${baseName}\\.Script\\.[a-fA-F0-9-]{36}\\.meta$`);
+            const metaFile = files.find(file => pattern.test(file));
+            if (!metaFile) {
+                console.log(`No .meta file found for ${baseName} in ${directory}.`);
+                return null; // Return null if no meta file is found
+            }
+            return directory + "/" + metaFile;
+        } catch (error) {
+            console.error(`Error fetching file list from ${directory}:`, error);
+            return null; // Return null in case of an error fetching the file list
+        }
+    }    
+
+    async function fetchAndParseMeta(visName) {
+        try {
+            const urls = await dependencyUrls(visName);
             const fetchPromises = urls.map(async url => {
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Fetch failed for ${url}. Status: ${response.status}`);
             }
-            const xmlText = await response.text();
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-            return { xmlDoc, url };
+            const metaText = await response.text();
+            return { metaText, url };
             });
         
             const result = await Promise.any(fetchPromises);
             return result;
         } catch (error) {
-            console.error("Failed to fetch and parse XML:", error);
+            console.error("Failed to fetch and parse .meta:", error);
             throw error;
         }
     }      
 
-    function loadDependencies(dependenciesXML, baseUrl, xmlName) {
+    function loadDependencies(metaText, baseUrl, visName) {
         return new Promise((resolve, reject) => {
             const scripts = [];
-            let scriptUrl = baseUrl.replace(/\.xml$/, ".resource.js");
-            scriptUrl = scriptUrl.replace(xmlName, xmlName);
-            scripts.push({ name: xmlName, url: scriptUrl });
+            let scriptUrl = baseUrl.replace(/\.meta$/, ".js");
+            scripts.push({ name: visName, url: scriptUrl });
+            let metaJson = JSON.parse(metaText);
 
-            const scriptElement = dependenciesXML.querySelector('script');
-            if (!scriptElement) {
-                reject(console.error("No script element found"));
+            const dependenciesArray = metaJson.dependencies;
+            if (!dependenciesArray) {
+                reject(console.error("No dependencies found"));
                 return;
             }
     
-            const dependenciesString = scriptElement.querySelector('dependenciesXML').textContent;
-            if (!dependenciesString) {
-                reject(console.error("No dependenciesXML element found"));
-                return;
-            }
-    
-            const dependenciesParser = new DOMParser();
-            const dependenciesDoc = dependenciesParser.parseFromString(dependenciesString, 'application/xml');
-            const docElements = dependenciesDoc.getElementsByTagName('doc');
-    
-            for (let i = 0; i < docElements.length; i++) {
-                let type = docElements[i].getElementsByTagName('type')[0].textContent;
-                let name = docElements[i].getElementsByTagName('name')[0].textContent;
+            for (let i = 0; i < dependenciesArray.length; i++) {
+                let type = dependenciesArray[i].type;
+                let name = dependenciesArray[i].name;
+                name = name.replace(/-/g, '_');
     
                 if (type === 'Script') {
                     fetchAndInjectScripts(name); // Recursive call
