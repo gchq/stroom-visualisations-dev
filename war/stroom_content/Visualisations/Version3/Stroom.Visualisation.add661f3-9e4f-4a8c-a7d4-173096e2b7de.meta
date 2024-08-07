@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "add661f3-9e4f-4a8c-a7d4-173096e2b7de",
+  "name" : "Stroom",
+  "version" : "6797ce46-71f0-4adc-bd5d-8b7d94327c73",
+  "description" : "Version: SNAPSHOT\nGit commit: @@GIT_COMMIT@@\n\tGit commit time: @@GIT_COMMIT_TIME@@",
+  "functionName" : "visualisations.Stroom",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "9b731b60-da6b-4a7e-aeb9-3653d381a181",
+    "name" : "Stroom"
+  }
+}

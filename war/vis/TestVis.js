@@ -90,73 +90,82 @@
     let scriptQueue = [];
     let pendingFetches = 0;
 
-    function fetchAndInjectScripts(xmlName) {
+    async function fetchAndInjectScripts(xmlName) {
         // Check if script is already loaded
         if (loadedScripts.has(xmlName)) {
-            checkAndAssembleScripts();
-            return;
+          checkAndAssembleScripts();
+          return;
         }
-    
+      
         pendingFetches++;
-        fetchAndParseXML(xmlName)
-            .then(({ xmlDoc, url }) => {
-                loadDependencies(xmlDoc, url, xmlName)
-                    .then(scripts => {
-                        scriptQueue = scriptQueue.concat(scripts);
-                        // Mark the script as loaded after dependencies are processed
-                        loadedScripts.add(xmlName);
-                        pendingFetches--;
-                        checkAndAssembleScripts();
-                    })
-                    .catch(error => {
-                        console.error("Failed to load dependencies: ", error);
-                        pendingFetches--;
-                        checkAndAssembleScripts();
-                    });
-            })
-            .catch(error => {
-                console.error("Failed to fetch and parse XML: ", error);
-                pendingFetches--;
-                checkAndAssembleScripts();
-            });
-    }
+        try {
+          const { xmlDoc, url } = await fetchAndParseXML(xmlName);
+          const scripts = await loadDependencies(xmlDoc, url, xmlName);
+          scriptQueue = scriptQueue.concat(scripts);
+          // Mark the script as loaded after dependencies are processed
+          loadedScripts.add(xmlName);
+          pendingFetches--;
+          checkAndAssembleScripts();
+        } catch (error) {
+          console.error("Failed to fetch and inject scripts:", error);
+          pendingFetches--;
+          checkAndAssembleScripts();
+        }
+      }
+      
+
+    async function fetchFileList(directory) {
+        const apiEndpoint = `http://localhost:8888/${directory}`; // Replace with actual endpoint
+        const response = await fetch(apiEndpoint);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      }
+      
 
     // this isn't the best
     // as leafletDraw folder has LeafletDrawCSS.script.resource.js etc
-    function dependencyUrls(xmlName){
+    async function dependencyUrls(xmlName) {
         const baseName = xmlName.split('.')[0];
-        const urls = [];
-        urls[0] = "../stroom-content/Visualisations/Version3/" + baseName + ".Script.xml";
-        urls[1] = "../stroom-content/Visualisations/Version3/Dependencies/" + baseName + "/" + baseName + ".Script.xml";
-        urls[2] = "../stroom-content/Visualisations/Version3/Dependencies/Leaflet/" + baseName + ".Script.xml";
-        urls[3] = "../stroom-content/Visualisations/Version3/Dependencies/LeafletDraw/" + baseName + ".Script.xml";
+        const directory = "stroom-content/Visualisations/Version3";
+        const files = await fetchFileList(directory);
+        const pattern = new RegExp(`^${baseName}\\.Script\\.[a-fA-F0-9-]{36}\\.meta$`);
+        const metaFile = files.find(file => pattern.test(file));
+        if (!metaFile) {
+          throw new Error(`No .meta file found for ${baseName}`);
+        }
+        const urls = [
+          `${directory}/${metaFile}`,
+          `${directory}/Dependencies/${baseName}/${baseName}.Script.xml`,
+          `${directory}/Dependencies/Leaflet/${baseName}.Script.xml`,
+          `${directory}/Dependencies/LeafletDraw/${baseName}.Script.xml`
+        ];
         return urls;
-    }
+      }
+      
 
-    function fetchAndParseXML(xmlName) {
-        return new Promise((resolve, reject) => {
-            const urls = dependencyUrls(xmlName);
+    async function fetchAndParseXML(xmlName) {
+        try {
+            const urls = await dependencyUrls(xmlName);
             const fetchPromises = urls.map(async url => {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw console.log("Fetch failed for " + url + ". Status: " + response.status);
-                }
-                const xmlText = await response.text();
-                const { xmlText: xmlText_1, url: url_1 } = ({ xmlText, url });
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText_1, "application/xml");
-                return { xmlDoc, url };
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Fetch failed for ${url}. Status: ${response.status}`);
+            }
+            const xmlText = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+            return { xmlDoc, url };
             });
-    
-            Promise.any(fetchPromises)
-                .then(({ xmlDoc, url }) => {
-                    resolve({ xmlDoc, url });
-                })
-                .catch(error => {
-                    reject(console.log(error));
-                });
-        });
-    }
+        
+            const result = await Promise.any(fetchPromises);
+            return result;
+        } catch (error) {
+            console.error("Failed to fetch and parse XML:", error);
+            throw error;
+        }
+    }      
 
     function loadDependencies(dependenciesXML, baseUrl, xmlName) {
         return new Promise((resolve, reject) => {
