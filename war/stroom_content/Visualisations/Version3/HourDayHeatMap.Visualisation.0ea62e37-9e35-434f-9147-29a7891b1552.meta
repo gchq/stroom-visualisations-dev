@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "0ea62e37-9e35-434f-9147-29a7891b1552",
+  "name" : "HourDayHeatMap",
+  "version" : "d5c36b5c-eacc-4a62-bbcf-07e364145114",
+  "description" : "Version: SNAPSHOT\nGit commit: @@GIT_COMMIT@@\nGit commit time: @@GIT_COMMIT_TIME@@",
+  "functionName" : "visualisations.HourDayHeatMap",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "f6f6e556-2df2-4503-b745-3f3e23c47e05",
+    "name" : "HourDayHeatMap"
+  }
+}

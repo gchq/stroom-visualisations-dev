@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "1b9465a3-71e0-4aac-b66d-471b06943fe6",
+  "name" : "TreeMap",
+  "version" : "8b1d40ea-839e-45ea-9173-a25aa892c3ed",
+  "description" : "Version: SNAPSHOT\n    Git commit: @@GIT_COMMIT@@\n\tGit commit time: @@GIT_COMMIT_TIME@@",
+  "functionName" : "visualisations.TreeMap",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "fa5279fb-72b9-486c-870c-508e6e46973c",
+    "name" : "TreeMap"
+  }
+}

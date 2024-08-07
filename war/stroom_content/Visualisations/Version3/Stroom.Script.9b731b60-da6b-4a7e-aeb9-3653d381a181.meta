@@ -1,0 +1,15 @@
+{
+  "type" : "Script",
+  "uuid" : "9b731b60-da6b-4a7e-aeb9-3653d381a181",
+  "name" : "Stroom",
+  "version" : "50f662a8-706f-429f-9e21-d8ccaca4023b",
+  "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "5d4252d6-6f13-4f24-9481-9e98e038747c",
+    "name" : "GenericGrid"
+  } ]
+}
