@@ -623,9 +623,12 @@ function TestData() {
             else if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS) {
                 values = createSeriesForceData(pass);
             } 
-            else if (visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
+            else if (visType == VIS_TYPE_RADIAL_TREE) {
                 values = createSeriesTreeData();
-            } 
+            }
+            else if (visType == VIS_TYPE_TREE){
+                values = createPathTreeData();
+            }
 
             else {
                 //while loop to make sure we have at leat one data point
@@ -820,6 +823,18 @@ function TestData() {
             ];
 
             return data;
+        };
+
+        function createPathTreeData(){
+            data = [
+                  ["root/A/B"],
+                  ["root/A/C"],
+                  ["root/D"],
+                  ["root/D/E"],
+                  ["root/D/F"]
+            ];
+                
+                return data;
         };
 
         function createBucketisedTimeData(randomMaxVal, bucketSizeMs) {
