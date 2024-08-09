@@ -98,9 +98,6 @@ if (!visualisations) {
 
     function mergeTrees(existingTree, newPaths) {
       var newTree = buildHierarchy(newPaths);
-      // Merge logic here: add newTree nodes to existingTree
-      // This requires an algorithm to merge trees based on their paths
-      // For simplicity, assume the new tree is added to existing
       existingTree.children.push.apply(existingTree.children, newTree.children);
       return existingTree;
     }
@@ -199,7 +196,14 @@ if (!visualisations) {
     }      
 
     function nodeClick(d) {
-      // Node click handling here
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
+      } else {
+        d.children = d._children;
+        d._children = null;
+      }
+      update(100, d);
     }
 
     this.resize = function() {
