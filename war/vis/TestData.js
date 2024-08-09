@@ -879,12 +879,14 @@ function TestData() {
                 ["/mnt/external_drive/photos/vacation_2023/beach.jpg"]
             ];
 
-            for (let i = data.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [data[i], data[j]] = [data[j], data[i]];
-            }
+            // Below to only return random 5 paths
+            // for (let i = data.length - 1; i > 0; i--) {
+            //     const j = Math.floor(Math.random() * (i + 1));
+            //     [data[i], data[j]] = [data[j], data[i]];
+            // }
                 
-            return data.slice(0, 5);
+            // return data.slice(0, 5);
+            return data;
         };
 
         function createBucketisedTimeData(randomMaxVal, bucketSizeMs) {

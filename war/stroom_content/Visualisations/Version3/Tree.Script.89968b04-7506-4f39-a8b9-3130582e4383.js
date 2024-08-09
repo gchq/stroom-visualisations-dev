@@ -102,25 +102,47 @@ if (!visualisations) {
       return existingTree;
     }
 
+    function filterByDepth(root, maxDepth) {
+      const queue = [{ node: root, depth: 0 }];
+      while (queue.length > 0) {
+         const { node, depth } = queue.shift();
+         if (depth < maxDepth) {
+            if (node.children) {
+               node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
+            }
+         } else {
+            if (node.children) {
+               node._children = node.children;
+               node.children = null;
+            }
+         }
+      }
+    }
+    
+    var data;
     this.setData = function(context, settings, d) {
-      var data;
+      
       if (context) {
-        if (context.color) {
-          color = context.color;
-        } else {
-          context.color = color;
-        }
-        delimiter = settings.delimiter || this.delimiter; // Use provided delimiter or default
+         if (context.color) {
+            color = context.color;
+         } else {
+            context.color = color;
+         }
+         delimiter = settings.delimiter || this.delimiter; // Use provided delimiter or default
       }
-
+   
       if (data) {
-        data = mergeTrees(data, d.values);
+         data = mergeTrees(data, d.values);
       } else {
-        data = buildHierarchy(d.values);
+         data = buildHierarchy(d.values);
       }
-
+   
+      // Filter the data to only show up to 3 levels initially
+      filterByDepth(data, 2); // root + 2 more levels
+   
       update(100, data);
     };
+   
 
     function update(duration, data) {
       width = element.clientWidth - m[1] - m[3];
@@ -197,14 +219,19 @@ if (!visualisations) {
 
     function nodeClick(d) {
       if (d.children) {
-        d._children = d.children;
-        d.children = null;
+         d._children = d.children;
+         d.children = null;
       } else {
-        d.children = d._children;
-        d._children = null;
+         if (d._children) {
+            d.children = d._children;
+            d._children = null;
+            // Filter to ensure only next 3 levels are shown
+            filterByDepth(d, 2); // showing 2 more levels below current node
+         }
       }
-      update(100, d);
+      update(100, data); // use 'data' to refer to the overall tree structure
     }
+   
 
     this.resize = function() {
       var newWidth = element.clientWidth - m[1] - m[3];
