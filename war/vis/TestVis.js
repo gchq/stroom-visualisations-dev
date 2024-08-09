@@ -70,6 +70,14 @@
         return value;
     }
 
+    function getOrientation() {
+        var orientation = document.getElementById("orientation");
+        var index = orientation.selectedIndex;
+        var value = orientation.options[index].value; 
+        return value;
+    }
+
+
     function manageIframe() {
         var iframe = document.getElementById('myIframe');
     
@@ -380,7 +388,11 @@
 
         if (document.getElementById("bucketSize").value && getVisType() == "BarChart-bucket") {
             settings.bucketSize = getBucketSize();
-        } 
+        }
+
+        if (document.getElementById("orientation").value && getVisType() == "Tree") {
+            settings.orientation = getOrientation();
+        }
 
         settings.stateChange = null;
         const visType = getVisType();
