@@ -91,7 +91,8 @@ function TestData() {
         VIS_TYPE_TEXT_VALUE,
         VIS_TYPE_TIME_SERIES,
         VIS_TYPE_TRAFFIC_LIGHTS_GR,
-        VIS_TYPE_TRAFFIC_LIGHTS_RG
+        VIS_TYPE_TRAFFIC_LIGHTS_RG,
+        VIS_TYPE_TREE
     ];
 
     this.visTestDataSettingsMap = (function() {

@@ -303,6 +303,7 @@ function VisualisationManager() {
     currentSettings = settings;
     currentData = data;
 
+    console.log(data);
     update();
   };
 
