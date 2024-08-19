@@ -143,22 +143,22 @@ if (!visualisations) {
     //   return existingTree;
     // }
 
-    // function filterByDepth(root, maxDepth) {
-    //   const queue = [{ node: root, depth: 0 }];
-    //   while (queue.length > 0) {
-    //       const { node, depth } = queue.shift();
-    //       if (depth < maxDepth) {
-    //         if (node.children) {
-    //             node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
-    //         }
-    //       } else {
-    //         if (node.children) {
-    //             node._children = node.children;
-    //             node.children = null;
-    //         }
-    //       }
-    //   }
-    // }
+    function filterByDepth(root, maxDepth) {
+      const queue = [{ node: root, depth: 0 }];
+      while (queue.length > 0) {
+          const { node, depth } = queue.shift();
+          if (depth < maxDepth) {
+            if (node.children) {
+                node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
+            }
+          } else {
+            if (node.children) {
+                node._children = node.children;
+                node.children = null;
+            }
+          }
+      }
+    }
 
     var drawDepth;
     var orientation;
