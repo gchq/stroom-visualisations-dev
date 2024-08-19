@@ -23,6 +23,7 @@ if (!visualisations) {
   var d3 = window.d3;
   var commonFunctions = visualisations.commonFunctions;
   var commonConstants = visualisations.commonConstants;
+  var margins = commonConstants.margins();
 
   visualisations.Tree = function(containerNode) {
 
@@ -31,7 +32,7 @@ if (!visualisations) {
     if (containerNode){
       var element = containerNode;
     } else {
-        var element = window.document.createElement("div");
+      var element = window.document.createElement("div");
     }
     this.element = element;
 
@@ -39,13 +40,13 @@ if (!visualisations) {
 
     //Called by GenericGrid to create a new instance of the visualisation for each cell.
     this.getInstance = function(containerNode) {
-      return new visualisations.MyVisualisation.Visualisation(containerNode);
+      return new visualisations.Tree(containerNode);
     };
 
     // var d3 = window.d3;
     var m = [10, 15, 30, 15];
-    var width = element.clientWidth - m[1] - m[3];
-    var height = element.clientHeight - m[0] - m[2];
+    var width = element.clientWidth;
+    var height = element.clientHeight;
     this.delimiter = '/'; // default delimiter
     var color = d3.scale.category20b();
     var svg;
@@ -54,6 +55,7 @@ if (!visualisations) {
     var tip;
     var treeLayout;
     var dataArea;
+    var visData;
 
     var style = ".Tree-node {" +
                 "width: 100%;" +
@@ -134,28 +136,29 @@ if (!visualisations) {
       return root;
     }
 
-    function mergeTrees(existingTree, newPaths) {
-      var newTree = buildHierarchy(newPaths);
-      existingTree.children.push.apply(existingTree.children, newTree.children);
-      return existingTree;
-    }
+    // Don't think needed
+    // function mergeTrees(existingTree, newPaths) {
+    //   var newTree = buildHierarchy(newPaths);
+    //   existingTree.children.push.apply(existingTree.children, newTree.children);
+    //   return existingTree;
+    // }
 
-    function filterByDepth(root, maxDepth) {
-      const queue = [{ node: root, depth: 0 }];
-      while (queue.length > 0) {
-          const { node, depth } = queue.shift();
-          if (depth < maxDepth) {
-            if (node.children) {
-                node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
-            }
-          } else {
-            if (node.children) {
-                node._children = node.children;
-                node.children = null;
-            }
-          }
-      }
-    }
+    // function filterByDepth(root, maxDepth) {
+    //   const queue = [{ node: root, depth: 0 }];
+    //   while (queue.length > 0) {
+    //       const { node, depth } = queue.shift();
+    //       if (depth < maxDepth) {
+    //         if (node.children) {
+    //             node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
+    //         }
+    //       } else {
+    //         if (node.children) {
+    //             node._children = node.children;
+    //             node.children = null;
+    //         }
+    //       }
+    //   }
+    // }
 
     var drawDepth;
     var orientation;
@@ -215,9 +218,11 @@ if (!visualisations) {
       }
 
       if (data) {
-        data = mergeTrees(data, d.values);
-      } else {
-          data = buildHierarchy(data.values);
+
+      // Dont think needed
+      //   data = mergeTrees(data, d.values);
+      // } else {
+          data = buildHierarchy(data.values[0].values);
       }
     
       // Filter the data to only show up to 3 levels initially
@@ -226,55 +231,60 @@ if (!visualisations) {
       drawDepth = settings.drawDepth || 2;
       filterByDepth(data, drawDepth);
     
+      visData = data;
       update(100, data);
     };
     
 
     function update(duration, data) {
-      const width = element.clientWidth - m[1] - m[3];
-      const height = element.clientHeight - m[0] - m[2];
-
-      svg.attr("width", element.clientWidth).attr("height", element.clientHeight);
-
+      const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
+      const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
+  
+      svg.attr("width", width).attr("height", height);
+  
       const [xScale, yScale] = initializeScales(width, height);
       const nodes = treeLayout.nodes(data);
       const links = treeLayout.links(nodes);
-
+  
       updateScales(xScale, yScale, nodes);
       const { xOffset, yOffset } = calculateOffsets(xScale, yScale, width, height);
 
-      updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset);
       updateLinks(links, duration, xScale, yScale, xOffset, yOffset);
-  }
+      updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset);
+    }
+  
 
-  function initializeScales(width, height) {
-      const xScale = d3.scale.linear().range([0, width]);
-      const yScale = d3.scale.linear().range([0, height]);
-      return [xScale, yScale];
-  }
+    function initializeScales(width, height) {
+        const xScale = d3.scale.linear().range([0, width]);
+        const yScale = d3.scale.linear().range([0, height]);
+        return [xScale, yScale];
+    }
 
-  function updateScales(xScale, yScale, nodes) {
-      if (orientation === "north" || orientation === "south") {
-          xScale.domain([d3.min(nodes, d => d.x), d3.max(nodes, d => d.x)]);
-          yScale.domain([d3.min(nodes, d => d.y), d3.max(nodes, d => d.y)]);
-      } else if (orientation === "east" || orientation === "west") {
-          xScale.domain([d3.min(nodes, d => d.y), d3.max(nodes, d => d.y)]);
-          yScale.domain([d3.min(nodes, d => d.x), d3.max(nodes, d => d.x)]);
-      }
-  }
+    function updateScales(xScale, yScale, nodes) {
+        if (orientation === "north" || orientation === "south") {
+            xScale.domain([d3.min(nodes, d => d.x), d3.max(nodes, d => d.x)]);
+            yScale.domain([d3.min(nodes, d => d.y), d3.max(nodes, d => d.y)]);
+        } else if (orientation === "east" || orientation === "west") {
+            xScale.domain([d3.min(nodes, d => d.y), d3.max(nodes, d => d.y)]);
+            yScale.domain([d3.min(nodes, d => d.x), d3.max(nodes, d => d.x)]);
+        }
+    }
 
-  function calculateOffsets(xScale, yScale, width, height) {
-      const xOffset = (width - (xScale.domain()[1] - xScale.domain()[0])) / 2;
-      const yOffset = (height - (yScale.domain()[1] - yScale.domain()[0])) / 2;
-      return { xOffset, yOffset };
-  }
+    function calculateOffsets(xScale, yScale, width, height) {
+        const xOffset = (width - (xScale.domain()[1] - xScale.domain()[0])) / 2;
+        const yOffset = (height - (yScale.domain()[1] - yScale.domain()[0])) / 2;
+        return { xOffset, yOffset };
+    }
 
-  function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
+    function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
       const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id);
 
       node.enter().append("g")
           .attr("class", "Tree-node")
-          .attr("transform", d => calculateNodePosition(d, xScale, yScale, xOffset, yOffset))
+          .attr("transform", d => {
+              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+              return position;
+          })
           .on("click", nodeClick)
           .on("mousemove", function(d) {
               tip.style("left", (d3.event.pageX + 20) + "px")
@@ -287,86 +297,90 @@ if (!visualisations) {
           .attr("r", 5);
 
       node.transition().duration(duration)
-          .attr("transform", d => calculateNodePosition(d, xScale, yScale, xOffset, yOffset))
+          .attr("transform", d => {
+              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+              return position;
+          })
           .select(".Tree-circle")
           .style("fill", d => color(d.id));
 
       node.exit().transition().duration(duration).style("opacity", 0).remove();
-  }
+    }
 
-  function calculateNodePosition(d, xScale, yScale, xOffset, yOffset) {
-      let x, y;
-      switch (orientation) {
-          case "north":
-              x = xScale(d.x) + xOffset;
-              y = yScale(d.y) + yOffset;
-              break;
-          case "south":
-              x = xScale(d.x) + xOffset;
-              y = height - yScale(d.y) - yOffset;
-              break;
-          case "east":
-              x = yScale(d.y) + xOffset;
-              y = xScale(d.x) + yOffset;
-              break;
-          case "west":
-              x = height - yScale(d.y) - xOffset;
-              y = xScale(d.x) + yOffset;
-              break;
-      }
-      return `translate(${x},${y})`;
-  }
 
-  function updateLinks(links, duration, xScale, yScale, xOffset, yOffset) {
-      const link = dataArea.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
+    function calculateNodePosition(d, xScale, yScale, xOffset, yOffset) {
+        let x, y;
+        switch (orientation) {
+            case "north":
+                x = xScale(d.x) + xOffset;
+                y = yScale(d.y) + yOffset;
+                break;
+            case "south":
+                x = xScale(d.x) + xOffset;
+                y = height - yScale(d.y) - yOffset;
+                break;
+            case "east":
+                x = yScale(d.y) + xOffset;
+                y = xScale(d.x) + yOffset;
+                break;
+            case "west":
+                x = height - yScale(d.y) - xOffset;
+                y = xScale(d.x) + yOffset;
+                break;
+        }
+        return `translate(${x},${y})`;
+    }
 
-      link.enter().append("path")
-          .attr("class", "Tree-link")
-          .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
+    function updateLinks(links, duration, xScale, yScale, xOffset, yOffset) {
+        const link = dataArea.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
 
-      link.transition().duration(duration)
-          .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
+        link.enter().append("path")
+            .attr("class", "Tree-link")
+            .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
 
-      link.exit().transition().duration(duration).style("opacity", 0).remove();
-  }
+        link.transition().duration(duration)
+            .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
 
-  function calculateDiagonal(d, xScale, yScale, xOffset, yOffset) {
-      let sourceX, sourceY, targetX, targetY;
-      switch (orientation) {
-          case "north":
-              sourceX = xScale(d.source.x) + xOffset;
-              sourceY = yScale(d.source.y) + yOffset;
-              targetX = xScale(d.target.x) + xOffset;
-              targetY = yScale(d.target.y) + yOffset;
-              break;
-          case "south":
-              sourceX = xScale(d.source.x) + xOffset;
-              sourceY = height - yScale(d.source.y) - yOffset;
-              targetX = xScale(d.target.x) + xOffset;
-              targetY = height - yScale(d.target.y) - yOffset;
-              break;
-          case "east":
-              sourceX = yScale(d.source.y) + xOffset;
-              sourceY = xScale(d.source.x) + yOffset;
-              targetX = yScale(d.target.y) + xOffset;
-              targetY = xScale(d.target.x) + yOffset;
-              break;
-          case "west":
-              sourceX = height - yScale(d.source.y) - xOffset;
-              sourceY = xScale(d.source.x) + yOffset;
-              targetX = height - yScale(d.target.y) - xOffset;
-              targetY = xScale(d.target.x) + yOffset;
-              break;
-      }
+        link.exit().transition().duration(duration).style("opacity", 0).remove();
+    }
 
-      switch (orientation) {
-          case "north":
-          case "south":
-              return `M${sourceX},${sourceY}C${sourceX},${(sourceY + targetY) / 2} ${targetX},${(sourceY + targetY) / 2} ${targetX},${targetY}`;
-          case "east":
-          case "west":
-              return `M${sourceX},${sourceY}C${(sourceX + targetX) / 2},${sourceY} ${(sourceX + targetX) / 2},${targetY} ${targetX},${targetY}`;
-      }
+    function calculateDiagonal(d, xScale, yScale, xOffset, yOffset) {
+        let sourceX, sourceY, targetX, targetY;
+        switch (orientation) {
+            case "north":
+                sourceX = xScale(d.source.x) + xOffset;
+                sourceY = yScale(d.source.y) + yOffset;
+                targetX = xScale(d.target.x) + xOffset;
+                targetY = yScale(d.target.y) + yOffset;
+                break;
+            case "south":
+                sourceX = xScale(d.source.x) + xOffset;
+                sourceY = height - yScale(d.source.y) - yOffset;
+                targetX = xScale(d.target.x) + xOffset;
+                targetY = height - yScale(d.target.y) - yOffset;
+                break;
+            case "east":
+                sourceX = yScale(d.source.y) + xOffset;
+                sourceY = xScale(d.source.x) + yOffset;
+                targetX = yScale(d.target.y) + xOffset;
+                targetY = xScale(d.target.x) + yOffset;
+                break;
+            case "west":
+                sourceX = height - yScale(d.source.y) - xOffset;
+                sourceY = xScale(d.source.x) + yOffset;
+                targetX = height - yScale(d.target.y) - xOffset;
+                targetY = xScale(d.target.x) + yOffset;
+                break;
+        }
+
+        switch (orientation) {
+            case "north":
+            case "south":
+                return `M${sourceX},${sourceY}C${sourceX},${(sourceY + targetY) / 2} ${targetX},${(sourceY + targetY) / 2} ${targetX},${targetY}`;
+            case "east":
+            case "west":
+                return `M${sourceX},${sourceY}C${(sourceX + targetX) / 2},${sourceY} ${(sourceX + targetX) / 2},${targetY} ${targetX},${targetY}`;
+        }
     }
 
     function nodeClick(d) {
@@ -381,16 +395,15 @@ if (!visualisations) {
             filterByDepth(d, drawDepth);
           }
       }
-      update(100, data);
+      update(100, visData);
     }
 
     this.resize = function() {
-      var newWidth = element.clientWidth - m[1] - m[3];
-      var newHeight = element.clientHeight - m[0] - m[2];
-      if (newWidth != width || newHeight != height) {
-        update();
-      }
+      commonFunctions.resize(grid, update, element, margins, width, height);
+    };
 
+    this.getColourScale = function(){
+      return color;
     };
 
   };
