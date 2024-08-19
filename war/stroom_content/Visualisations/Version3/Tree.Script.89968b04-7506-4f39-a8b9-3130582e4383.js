@@ -109,7 +109,32 @@ if (!visualisations) {
       svg.call(zoom);
 
       treeLayout = d3.layout.tree().size([height, width]);
-      tip = d3.select(element).append("div").attr("class", "Tree-tip").style("opacity", 0);
+
+      if (typeof(tip) == "undefined") {
+        inverseHighlight = commonFunctions.inverseHighlight();
+
+        inverseHighlight.toSelectionItem = function(d) {
+          //console.log("selection");
+          //console.log(d);
+          var selection = {
+            key: d.name,
+            series: d.series,
+            value: d.value,
+          };
+          //console.log(selection);
+          return selection;
+        };
+
+        tip = inverseHighlight.tip()
+            .html(function(tipData) {
+                var html = inverseHighlight.htmlBuilder()
+                    .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
+                    .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
+                    .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
+                    .build();
+                return html;
+            });
+      }
     }
 
     function zoomed() {
@@ -194,6 +219,8 @@ if (!visualisations) {
       
     };
 
+    var visSettings;
+
     //Public entry point for the Grid to call back in to set the cell level data on the cell level
     //visualisation instance.
     //data will only contain the branch of the tree for this cell
@@ -220,16 +247,17 @@ if (!visualisations) {
       drawDepth = settings.drawDepth || 6;
       filterByDepth(data, drawDepth);
     
+      visSettings = settings;
       visData = data;
       update(100, data);
     };
-    
 
     function update(duration, data) {
       const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
       const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
   
       svg.attr("width", width).attr("height", height);
+      svg.call(tip);
   
       const [xScale, yScale] = initializeScales(width, height);
       const nodes = treeLayout.nodes(data);
@@ -240,6 +268,16 @@ if (!visualisations) {
   
       updateLinks(links, duration, xScale, yScale, xOffset, yOffset);
       updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset);
+
+      commonFunctions.addDelegateEvent(svg, "mouseover", "circle", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svg, "circle"));
+      commonFunctions.addDelegateEvent(svg, "mouseout", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
+      commonFunctions.addDelegateEvent(svg, "click","circle", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "circle"));
+
+      //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
+      //pans or zooms
+      commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
+      commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
+        
     }
     
     function initializeScales(width, height) {
@@ -259,8 +297,8 @@ if (!visualisations) {
     }
     
     function calculateOffsets(xScale, yScale, width, height) {
-        const xOffset = (width - (xScale.domain()[1] - xScale.domain()[0])) / 2;
-        const yOffset = (height - (yScale.domain()[1] - yScale.domain()[0])) / 2;
+        const xOffset = (width - (xScale.domain()[1] - xScale.domain()[0])) / 100;
+        const yOffset = (height - (yScale.domain()[1] - yScale.domain()[0])) / 100;
         return { xOffset, yOffset };
     }
     
@@ -275,10 +313,9 @@ if (!visualisations) {
             })
             .on("click", nodeClick)
             .on("mousemove", function(d) {
-                tip.style("left", (d3.event.pageX + 20) + "px")
-                    .style("top", (d3.event.pageY + 20) + "px")
+                tip.style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY) + "px")
                     .html(d.id);
-                tip.transition().duration(500).style("opacity", 1);
             })
             .append("circle")
             .attr("class", "Tree-circle")
