@@ -244,7 +244,7 @@ function TestData() {
         var nestValues = false;
         var fieldZeroType = commonConstants.dataTypeDateTime;
 
-        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS || visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
+        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS || visType == VIS_TYPE_RADIAL_TREE) {
             seriesCount = 1;
             fieldZeroType = commonConstants.dataTypeNumber;
         } else if (visType === VIS_TYPE_DOUGHNUT) {
@@ -282,7 +282,7 @@ function TestData() {
             fieldZeroType = commonConstants.dataTypeGeneral;
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateFloatValue;
-        } else if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
+        } else if (visType == VIS_TYPE_BAR_CHART_BUCKET || visType == VIS_TYPE_TREE) {
             seriesCount = 1;
             nestValues = true;
         } else if (visType == VIS_TYPE_FLOOR_MAP) {
