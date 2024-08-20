@@ -43,8 +43,6 @@ if (!visualisations) {
       return new visualisations.Tree(containerNode);
     };
 
-    // var d3 = window.d3;
-    var m = [10, 15, 30, 15];
     var width = element.clientWidth;
     var height = element.clientHeight;
     this.delimiter = '/'; // default delimiter

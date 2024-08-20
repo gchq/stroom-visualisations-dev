@@ -93,7 +93,8 @@ function TestData() {
         VIS_TYPE_TIME_SERIES,
         VIS_TYPE_TRAFFIC_LIGHTS_GR,
         VIS_TYPE_TRAFFIC_LIGHTS_RG,
-        VIS_TYPE_TREE
+        VIS_TYPE_TREE,
+        VIS_TYPE_SUNBURST
     ];
 
     this.visTestDataSettingsMap = (function() {
@@ -313,8 +314,8 @@ function TestData() {
             valueCountLimit = 6;
             fieldZeroType = commonConstants.dataTypeGeneral;
         } else if (visType == VIS_TYPE_SUNBURST) {
+            nestValues = true;
             seriesCount = 1;
-            fieldZeroType = commonConstants.dataTypeNumber;
         } else {
             // define a random number of series
             seriesCount = Math.max(1, Math.round(Math.random() * maxSeries));

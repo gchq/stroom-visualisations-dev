@@ -8,6 +8,7 @@ if (!visualisations) {
     var d3 = window.d3;
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
+    var margins = commonConstants.margins();
 
     //Instantiated by Stroom
     visualisations.Sunburst = function(containerNode) {
@@ -22,7 +23,7 @@ if (!visualisations) {
         }
         this.element = element;
 
-        // var grid = new visualisations.GenericGrid(this.element);
+        var grid = new visualisations.GenericGrid(this.element);
         var color, canvas, svg, width, height, radius, partition, arc;
 
         //Called by GenericGrid to create a new instance of the visualisation for each cell.
@@ -35,8 +36,8 @@ if (!visualisations) {
         var initialise = function() {
             initialised = true;
     
-            width = commonFunctions.gridAwareWidthFunc(true, containerNode, element);
-            height = commonFunctions.gridAwareHeightFunc(true, containerNode, element);
+            width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
+            height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
             radius = Math.min(width, height) / 2;
     
             canvas = d3.select(element).append("svg")
@@ -97,21 +98,20 @@ if (!visualisations) {
               //Get grid to construct the grid cells and for each one call back into a
               //new instance of this to build the visualisation in the cell
               //The last array arg allows you to synchronise the scales of fields
-            //   grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
-              this.setDataInsideGrid(context, settings, d)
+              grid.buildGrid(context, settings, d, this, commonConstants.transitionDuration, synchedFields);
+            //   this.setDataInsideGrid(context, settings, d)
             }
         }
 
         //called by Stroom to instruct the visualisation to redraw itself in a resized container
         this.resize = function() {
-            //get GenericGrid to reszie the whole and to resize each grid cell visualisation
-            grid.resize();
+            commonFunctions.resize(grid, update, element, margins, width, height);
         };
 
         //Called by GenericGrid to establish which position in the values array
         //(or null if it is the series key) is used for the legend.
         this.getLegendKeyField = function() {
-            
+            return null;
         };
     
 
@@ -141,10 +141,32 @@ if (!visualisations) {
             }
         };
 
-        var update = function(duration, data) {
-            svg.selectAll("*").remove();
+        var update = function(duration, d) {
 
-            var nodes = partition.nodes(data);
+            width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
+            height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
+            radius = Math.min(width, height) / 2;
+
+            svg.selectAll("*").remove();
+            var nodes = partition.nodes(d.values[0]);
+
+            canvas = d3.select(element).append("svg")
+                .attr("width", width)
+                .attr("height", height);
+    
+            svg = canvas.append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            
+            color = d3.scale.category20c();
+            partition = d3.layout.partition()
+                .size([2 * Math.PI, radius])
+                .value(function(d) { return d.value; });
+    
+            arc = d3.svg.arc()
+                .startAngle(function(d) { return d.x; })
+                .endAngle(function(d) { return d.x + d.dx; })
+                .innerRadius(function(d) { return d.y; })
+                .outerRadius(function(d) { return d.y + d.dy; });
 
             var path = svg.selectAll("path")
                 .data(nodes)
@@ -173,12 +195,12 @@ if (!visualisations) {
                     .attrTween("d", function(d) { return function() { return arc(d); }; });
             }
 
-            commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(null, nodes.types, svg, "path"));
-            commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
-            commonFunctions.addDelegateEvent(svg, "click", "path", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "path"));
+            // commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(null, nodes.types, svg, "path"));
+            // commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            // commonFunctions.addDelegateEvent(svg, "click", "path", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "path"));
 
-            commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
-            commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            // commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            // commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
         };
 
         // Used to provide the visualisation's D3 colour scale to the grid
