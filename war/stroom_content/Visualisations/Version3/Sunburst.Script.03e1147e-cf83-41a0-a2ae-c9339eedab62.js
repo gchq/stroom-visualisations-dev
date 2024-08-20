@@ -137,11 +137,11 @@ if (!visualisations) {
             }
     
             if (data) {
-                update(500, data.values[0]);
+                update(500, data.values[0], settings);
             }
         };
 
-        var update = function(duration, d) {
+        var update = function(duration, d, visSettings) {
 
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
@@ -178,6 +178,58 @@ if (!visualisations) {
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; }) // store the initial angles
                 .on("click", click);
+
+            // Append labels to each slice conditionally based on fit
+            path.each(function(d) {
+                var pathNode = d3.select(this);
+
+                if (commonFunctions.isTrue(visSettings.showLabels)) {
+                    // Calculate the centroid and available arc width
+                    var centroid = arc.centroid(d);
+                    var startAngle = d.x;
+                    var endAngle = d.x + d.dx;
+                    var innerRadius = d.y;
+                    var outerRadius = d.y + d.dy;
+                    var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
+
+                    // Create a temporary text element to measure the text width
+                    var tempText = svg.append("text")
+                        .attr("class", "temp-text")
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "20px")
+                        .style("visibility", "hidden")
+                        .text(function() {
+                            if (d.name != null) {
+                                return commonFunctions.autoFormat(d.name, visSettings.nameDateFormat);
+                            } else {
+                                return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
+                            }
+                        });
+
+                    var textWidth = tempText.node().getComputedTextLength();
+
+                    // Remove the temporary text element
+                    tempText.remove();
+
+                    // Render the label only if it fits within the arc
+                    if (textWidth < arcLength) {
+                        svg.append("text")
+                            .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ")")
+                            .attr("text-anchor", "middle")
+                            .attr("dy", ".35em")
+                            .style("pointer-events", "none")
+                            .style("font-size", "20px")
+                            .style("text-rendering", "geometricPrecision")
+                            .text(function() {
+                                if (d.name != null) {
+                                    return commonFunctions.autoFormat(d.name, visSettings.nameDateFormat);
+                                } else {
+                                    return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
+                                }
+                            });
+                    }
+                }
+            });
 
             path.append("title")
                 .text(function(d) { return d.name + "\n" + d.value; });
