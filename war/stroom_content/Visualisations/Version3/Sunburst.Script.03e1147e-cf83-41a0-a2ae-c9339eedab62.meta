@@ -1,7 +1,7 @@
 {
   "type" : "Script",
-  "uuid" : "89968b04-7506-4f39-a8b9-3130582e4383",
-  "name" : "Tree",
+  "uuid" : "03e1147e-cf83-41a0-a2ae-c9339eedab62",
+  "name" : "Sunburst",
   "version" : "8dd16e5e-d9e6-4e23-8409-311ba28cc315",
   "dependencies" : [ {
     "type" : "Script",

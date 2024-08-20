@@ -118,8 +118,7 @@ if (!visualisations) {
           //console.log(d);
           var selection = {
             key: d.name,
-            series: d.series,
-            value: d.value,
+            // series: d.series,
           };
           return selection;
         };
