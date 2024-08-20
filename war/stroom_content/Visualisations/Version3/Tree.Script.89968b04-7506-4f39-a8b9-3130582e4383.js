@@ -121,16 +121,14 @@ if (!visualisations) {
             series: d.series,
             value: d.value,
           };
-          //console.log(selection);
           return selection;
         };
 
         tip = inverseHighlight.tip()
             .html(function(tipData) {
                 var html = inverseHighlight.htmlBuilder()
-                    .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
-                    .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
-                    .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
+                    // .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
+                    .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.id, visSettings.nameDateFormat))
                     .build();
                 return html;
             });
@@ -312,15 +310,10 @@ if (!visualisations) {
                 return position;
             })
             .on("click", nodeClick)
-            .on("mousemove", function(d) {
-                tip.style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY) + "px")
-                    .html(d.id);
-            })
             .append("circle")
             .attr("class", "Tree-circle")
-            .attr("r", 10)  // Fixed radius for larger circles
-            .style("stroke-width", 2);  // Fixed stroke width for circles
+            .attr("r", 10)
+            .style("stroke-width", 2);
     
         node.transition().duration(duration)
             .attr("transform", d => {
