@@ -24,7 +24,7 @@ if (!visualisations) {
         this.element = element;
 
         var grid = new visualisations.GenericGrid(this.element);
-        var color, canvas, svg, width, height, radius, partition, arc, svgGroup, nodes, path, visSettings;
+        var color, svg, width, height, radius, partition, arc, svgGroup, nodes, path, visSettings;
 
         var zoom = d3.behavior.zoom()
             .scaleExtent([0.5, 10])  // Adjust the scale extent as needed
@@ -170,6 +170,7 @@ if (!visualisations) {
         function updateLabels() {
             // Remove old labels
             svgGroup.selectAll("text.label").remove();
+            svgGroup.selectAll("text.explode-button").remove();
         
             // Append labels to each slice conditionally based on fit
             path.each(function(d) {
@@ -220,6 +221,20 @@ if (!visualisations) {
                                     return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
                                 }
                             });
+                        // Append the "Explode" button under the label
+                        svgGroup.append("text")
+                        .attr("class", "explode-button")
+                        .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ")")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", ".35em")
+                        .style("cursor", "pointer")
+                        .style("font-size", fontSize + "px")
+                        .style("fill", "blue")
+                        .style("text-decoration", "underline")
+                        .text("Explode")
+                        .on("click", function() {
+                            explodeArc(d); // Call a function to handle the explode action
+                        });
                     }
                 }
             });
