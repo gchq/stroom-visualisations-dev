@@ -67,7 +67,7 @@ if (!visualisations) {
                 "} "+
                 ".Tree-link {" +
                 "fill: none;" +
-                "stroke: black;" +
+                "stroke: var(--text-color);" +
                 "} "+
                 ".Tree {" +
                 "pointer-events: all;" +
