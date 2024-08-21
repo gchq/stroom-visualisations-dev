@@ -99,7 +99,6 @@ if (!visualisations) {
               //new instance of this to build the visualisation in the cell
               //The last array arg allows you to synchronise the scales of fields
               grid.buildGrid(context, settings, d, this, commonConstants.transitionDuration, synchedFields);
-            //   this.setDataInsideGrid(context, settings, d)
             }
         }
 

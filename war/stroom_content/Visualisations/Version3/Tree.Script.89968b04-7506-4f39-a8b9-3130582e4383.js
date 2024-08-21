@@ -209,6 +209,7 @@ if (!visualisations) {
         //new instance of this to build the visualisation in the cell
         //The last array arg allows you to synchronise the scales of fields
         grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
+        this.resize();
         
       }
       
@@ -270,8 +271,8 @@ if (!visualisations) {
 
       //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
       //pans or zooms
-      commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
-      commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
+      // commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
+      // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
         
     }
     
