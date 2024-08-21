@@ -24,7 +24,7 @@ if (!visualisations) {
         this.element = element;
 
         var grid = new visualisations.GenericGrid(this.element);
-        var color, canvas, svg, width, height, radius, partition, arc;
+        var color, canvas, svg, width, height, radius, partition, arc, svgGroup;
 
         var zoom = d3.behavior.zoom()
             .scaleExtent([0.5, 10])  // Adjust the scale extent as needed
@@ -33,36 +33,6 @@ if (!visualisations) {
         //Called by GenericGrid to create a new instance of the visualisation for each cell.
         this.getInstance = function(containerNode) {
             return new visualisations.Sunburst(containerNode);
-        };
-
-        //one off initialisation of all the local variables, including
-        //appending various static dom elements
-        var initialise = function() {
-            initialised = true;
-    
-            width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
-            height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
-            radius = Math.min(width, height) / 2;
-    
-            canvas = d3.select(element).append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .call(zoom)  // Attach zoom behavior to the SVG
-                .append("g")
-                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-            svg = canvas;
-            
-            color = d3.scale.category20c();
-            partition = d3.layout.partition()
-                .size([2 * Math.PI, radius])
-                .value(function(d) { return d.value; });
-    
-            arc = d3.svg.arc()
-                .startAngle(function(d) { return d.x; })
-                .endAngle(function(d) { return d.x + d.dx; })
-                .innerRadius(function(d) { return d.y; })
-                .outerRadius(function(d) { return d.y + d.dy; });
         };
 
         //called by Stroom to pass snapshots of the data as it gathers the query results
@@ -129,9 +99,6 @@ if (!visualisations) {
         //data - the object tree containing all the data for that grid cell. Always contains all data 
         //       currently available for a query.
         this.setDataInsideGrid = function(context, settings, data) {
-            if (!initialised){
-                initialise();
-            }
         
             // If the context already has a colour set then use it
             if (context) {
@@ -147,15 +114,39 @@ if (!visualisations) {
         };
 
         var update = function(duration, d, visSettings) {
-
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
             radius = Math.min(width, height) / 2;
+        
+            // Remove old SVG if it exists
+            d3.select(element).select("svg").remove();
+        
+            // Append new SVG
+            svg = d3.select(element).append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-            svg.selectAll("path").remove();
+            // Append a g element to the SVG for zoom and pan
+            svgGroup = svg.append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            // Apply zoom behavior to the g element
+            svg.call(zoom);
+            
+            color = d3.scale.category20c();
+            partition = d3.layout.partition()
+                .size([2 * Math.PI, radius])
+                .value(function(d) { return d.value; });
+        
+            arc = d3.svg.arc()
+                .startAngle(function(d) { return d.x; })
+                .endAngle(function(d) { return d.x + d.dx; })
+                .innerRadius(function(d) { return d.y; })
+                .outerRadius(function(d) { return d.y + d.dy; });
+        
             var nodes = partition.nodes(d.values[0]);
-
-            var path = svg.selectAll("path")
+        
+            var path = svgGroup.selectAll("path")
                 .data(nodes)
                 .enter().append("path")
                 .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
@@ -163,8 +154,7 @@ if (!visualisations) {
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
                 .style("fill-rule", "evenodd")
-                .each(function(d) { d._current = d; }) // store the initial angles
-                // .on("click", click);
+                .each(function(d) { d._current = d; })
 
             // Append labels to each slice conditionally based on fit
             path.each(function(d) {
@@ -200,7 +190,7 @@ if (!visualisations) {
 
                     // Render the label only if it fits within the arc
                     if (textWidth < arcLength) {
-                        svg.append("text")
+                        svgGroup.append("text")
                             .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ")")
                             .attr("text-anchor", "middle")
                             .attr("dy", ".35em")
@@ -237,7 +227,7 @@ if (!visualisations) {
 
          // Define the zoomed function to handle scroll zooming
          function zoomed() {
-            svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
         }
 
         // Used to provide the visualisation's D3 colour scale to the grid
