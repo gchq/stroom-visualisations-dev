@@ -116,7 +116,7 @@ if (!visualisations) {
         var update = function(duration, d, settings) {
 
             visSettings = settings;
-
+        
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
             radius = Math.min(width, height) / 2;
@@ -126,16 +126,16 @@ if (!visualisations) {
         
             // Append new SVG
             svg = d3.select(element).append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
+                .attr("width", width)
+                .attr("height", height);
+        
             // Append a g element to the SVG for zoom and pan
             svgGroup = svg.append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
+        
             // Apply zoom behavior to the g element
             svg.call(zoom);
-            
+        
             color = d3.scale.category20c();
             partition = d3.layout.partition()
                 .size([2 * Math.PI, radius])
@@ -157,32 +157,22 @@ if (!visualisations) {
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
                 .style("fill-rule", "evenodd")
-                .each(function(d) { d._current = d; })
-
+                .each(function(d) { d._current = d; });
+        
             updateLabels();
             
             path.append("title")
                 .text(function(d) { return d.name + "\n" + d.value; });
-
-            // function click(d) {
-            //     svg.transition()
-            //         .duration(duration)
-            //         .tween("scale", function() {
-            //             var xd = d3.interpolate(svg.x.domain(), [d.x, d.x + d.dx]),
-            //                 yd = d3.interpolate(svg.y.domain(), [d.y, 1]),
-            //                 yr = d3.interpolate(svg.y.range(), [d.y ? 20 : 0, radius]);
-            //             return function(t) { svg.x.domain(xd(t)); svg.y.domain(yd(t)).range(yr(t)); };
-            //         })
-            //         .selectAll("path")
-            //         .attrTween("d", function(d) { return function() { return arc(d); }; });
-            // }
+        
         };
-
-        function updateLabels(){
+        
+        // Function to update labels
+        function updateLabels() {
+            // Remove old labels
+            svgGroup.selectAll("text.label").remove();
+        
             // Append labels to each slice conditionally based on fit
             path.each(function(d) {
-                var pathNode = d3.select(this);
-
                 if (commonFunctions.isTrue(visSettings.showLabels)) {
                     // Calculate the centroid and available arc width
                     var centroid = arc.centroid(d);
@@ -191,12 +181,14 @@ if (!visualisations) {
                     var innerRadius = d.y;
                     var outerRadius = d.y + d.dy;
                     var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
-
+                    var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
+                    var fontSize = 20 / scale;
+        
                     // Create a temporary text element to measure the text width
                     var tempText = svg.append("text")
                         .attr("class", "temp-text")
                         .attr("text-anchor", "middle")
-                        .style("font-size", "20px")
+                        .style("font-size", fontSize + "px")
                         .style("visibility", "hidden")
                         .text(function() {
                             if (d.name != null) {
@@ -205,20 +197,21 @@ if (!visualisations) {
                                 return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
                             }
                         });
-
+        
                     var textWidth = tempText.node().getComputedTextLength();
-
+        
                     // Remove the temporary text element
                     tempText.remove();
-
+        
                     // Render the label only if it fits within the arc
                     if (textWidth < arcLength) {
                         svgGroup.append("text")
+                            .attr("class", "label")
                             .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ")")
                             .attr("text-anchor", "middle")
                             .attr("dy", ".35em")
                             .style("pointer-events", "none")
-                            .style("font-size", "20px")
+                            .style("font-size", fontSize + "px")
                             .style("text-rendering", "geometricPrecision")
                             .text(function() {
                                 if (d.name != null) {
@@ -231,10 +224,13 @@ if (!visualisations) {
                 }
             });
         }
-
-         // Define the zoomed function to handle scroll zooming
-         function zoomed() {
+        
+        // Define the zoomed function to handle scroll zooming
+        function zoomed() {
+            // Apply translation and scaling to the arcs
             svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            
+            updateLabels();            
         }
 
         // Used to provide the visualisation's D3 colour scale to the grid
