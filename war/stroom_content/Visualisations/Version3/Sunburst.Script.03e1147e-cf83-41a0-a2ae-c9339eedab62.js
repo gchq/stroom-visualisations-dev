@@ -24,7 +24,7 @@ if (!visualisations) {
         this.element = element;
 
         var grid = new visualisations.GenericGrid(this.element);
-        var color, canvas, svg, width, height, radius, partition, arc, svgGroup;
+        var color, canvas, svg, width, height, radius, partition, arc, svgGroup, nodes, path, visSettings;
 
         var zoom = d3.behavior.zoom()
             .scaleExtent([0.5, 10])  // Adjust the scale extent as needed
@@ -113,7 +113,10 @@ if (!visualisations) {
             }
         };
 
-        var update = function(duration, d, visSettings) {
+        var update = function(duration, d, settings) {
+
+            visSettings = settings;
+
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
             radius = Math.min(width, height) / 2;
@@ -144,9 +147,9 @@ if (!visualisations) {
                 .innerRadius(function(d) { return d.y; })
                 .outerRadius(function(d) { return d.y + d.dy; });
         
-            var nodes = partition.nodes(d.values[0]);
+            nodes = partition.nodes(d.values[0]);
         
-            var path = svgGroup.selectAll("path")
+            path = svgGroup.selectAll("path")
                 .data(nodes)
                 .enter().append("path")
                 .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
@@ -156,6 +159,26 @@ if (!visualisations) {
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; })
 
+            updateLabels();
+            
+            path.append("title")
+                .text(function(d) { return d.name + "\n" + d.value; });
+
+            // function click(d) {
+            //     svg.transition()
+            //         .duration(duration)
+            //         .tween("scale", function() {
+            //             var xd = d3.interpolate(svg.x.domain(), [d.x, d.x + d.dx]),
+            //                 yd = d3.interpolate(svg.y.domain(), [d.y, 1]),
+            //                 yr = d3.interpolate(svg.y.range(), [d.y ? 20 : 0, radius]);
+            //             return function(t) { svg.x.domain(xd(t)); svg.y.domain(yd(t)).range(yr(t)); };
+            //         })
+            //         .selectAll("path")
+            //         .attrTween("d", function(d) { return function() { return arc(d); }; });
+            // }
+        };
+
+        function updateLabels(){
             // Append labels to each slice conditionally based on fit
             path.each(function(d) {
                 var pathNode = d3.select(this);
@@ -207,23 +230,7 @@ if (!visualisations) {
                     }
                 }
             });
-
-            path.append("title")
-                .text(function(d) { return d.name + "\n" + d.value; });
-
-            // function click(d) {
-            //     svg.transition()
-            //         .duration(duration)
-            //         .tween("scale", function() {
-            //             var xd = d3.interpolate(svg.x.domain(), [d.x, d.x + d.dx]),
-            //                 yd = d3.interpolate(svg.y.domain(), [d.y, 1]),
-            //                 yr = d3.interpolate(svg.y.range(), [d.y ? 20 : 0, radius]);
-            //             return function(t) { svg.x.domain(xd(t)); svg.y.domain(yd(t)).range(yr(t)); };
-            //         })
-            //         .selectAll("path")
-            //         .attrTween("d", function(d) { return function() { return arc(d); }; });
-            // }
-        };
+        }
 
          // Define the zoomed function to handle scroll zooming
          function zoomed() {
