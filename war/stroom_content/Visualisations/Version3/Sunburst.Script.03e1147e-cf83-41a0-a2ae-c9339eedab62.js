@@ -172,7 +172,7 @@ if (!visualisations) {
                 .enter().append("path")
                 .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
                 .attr("d", arc)
-                .style("stroke", "#fff")
+                .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; }) // store the initial angles
