@@ -168,7 +168,14 @@ if (!visualisations) {
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
                 .style("fill-rule", "evenodd")
-                .each(function(d) { d._current = d; });
+                .each(function(d) { d._current = d; })
+                .on("click", function(d) {
+                    // Only trigger expandArc if the arc has children
+                    if (d.children && d.children.length > 0) {
+                        expandArc(d);
+                        update(500, d, visSettings);
+                    }
+                });
 
             updateLabels();
 
@@ -211,9 +218,17 @@ if (!visualisations) {
                     tempText.remove();
 
                     if (textWidth < arcLength) {
+                        var angle = (startAngle + endAngle) / 2;
+                        angle = angle * (180 / Math.PI) + 90; // Convert to degrees
+
+                        // Adjust the angle to keep the text upright
+                        if (angle > 90 && angle < 270) {
+                            angle += 180;
+                        }
+
                         svgGroup.append("text")
                             .attr("class", "label")
-                            .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ")")
+                            .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ") rotate(" + angle + ")")
                             .attr("text-anchor", "middle")
                             .attr("dy", ".35em")
                             .style("pointer-events", "none")
@@ -227,26 +242,27 @@ if (!visualisations) {
                                 }
                             });
 
-                        if (d.children && d.children.length > 0 && d.depth) {
-                            svgGroup.append("text")
-                                .attr("class", "explode-button")
-                                .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ")")
-                                .attr("text-anchor", "middle")
-                                .attr("dy", ".35em")
-                                .style("cursor", "pointer")
-                                .style("font-size", fontSize + "px")
-                                .style("fill", "blue")
-                                .style("text-decoration", "underline")
-                                .text("Explode")
-                                .on("click", function() {
-                                    expandArc(d); // Explode action
-                                });
-                        }
+                        // Has explode text links instead of clicking on arc to explode
+                        // if (d.children && d.children.length > 0 && d.depth) {
+                        //     svgGroup.append("text")
+                        //         .attr("class", "explode-button")
+                        //         .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ") rotate(" + angle + ")")
+                        //         .attr("text-anchor", "middle")
+                        //         .attr("dy", ".35em")
+                        //         .style("cursor", "pointer")
+                        //         .style("font-size", fontSize + "px")
+                        //         .style("fill", "blue")
+                        //         .style("text-decoration", "underline")
+                        //         .text("Explode")
+                        //         .on("click", function() {
+                        //             expandArc(d); // Explode action
+                        //         });
+                        // }
 
                         if (d.depth === 0 && d.parent) {
                             svgGroup.append("text")
                                 .attr("class", "back-button")
-                                .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ")")
+                                .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ") rotate(" + angle + ")")
                                 .attr("text-anchor", "middle")
                                 .attr("dy", ".35em")
                                 .style("cursor", "pointer")
@@ -256,6 +272,7 @@ if (!visualisations) {
                                 .text("Back")
                                 .on("click", function() {
                                     expandArc(d.parent); // Collapse action
+                                    update(500, d, visSettings);
                                 });
                         }
                     }
