@@ -248,6 +248,10 @@ if (!visualisations) {
         }           
 
         function explodeArc(d) {
+            nodes.forEach(function(node) {
+                node.visible = false;
+            });
+
             // Mark the clicked arc and its children as visible
             d.visible = true;
             if (d.children) {
@@ -257,7 +261,7 @@ if (!visualisations) {
             }
         
             // Update the partition layout to center the clicked arc
-            var nodes = partition.nodes(d);
+            nodes = partition.nodes(d);
 
             // Remove old paths
             svgGroup.selectAll("path").remove();
