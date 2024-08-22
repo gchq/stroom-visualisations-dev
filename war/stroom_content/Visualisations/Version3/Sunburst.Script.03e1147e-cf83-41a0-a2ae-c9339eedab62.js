@@ -15,7 +15,6 @@ if (!visualisations) {
 
         //Stroom creates a new iFrame for each visualisation so
         //create a div for the gridded visualisation to be built in
-        var initialised = false;
         if (containerNode){
         var element = containerNode;
         } else {
@@ -113,46 +112,54 @@ if (!visualisations) {
             }
         };
 
-        var update = function(duration, d, settings) {
+        // Variable to store the expanded state
+        let expandedNode = null;
 
+        // Function to update the visualization
+        var update = function(duration, d, settings) {
             visSettings = settings;
-        
+
+            // Calculate dimensions and radius
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
             radius = Math.min(width, height) / 2;
-        
-            // Remove old SVG if it exists
+
             d3.select(element).select("svg").remove();
-        
             // Append new SVG
             svg = d3.select(element).append("svg")
                 .attr("width", width)
                 .attr("height", height);
-        
+
             // Append a g element to the SVG for zoom and pan
             svgGroup = svg.append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        
+
             // Apply zoom behavior to the g element
             svg.call(zoom);
-        
+
+            // Define color scale and partition layout
             color = d3.scale.category20c();
             partition = d3.layout.partition()
                 .size([2 * Math.PI, radius])
                 .value(function(d) { return d.value; });
-        
+
             arc = d3.svg.arc()
                 .startAngle(function(d) { return d.x; })
                 .endAngle(function(d) { return d.x + d.dx; })
                 .innerRadius(function(d) { return d.y; })
                 .outerRadius(function(d) { return d.y + d.dy; });
-        
-            nodes = partition.nodes(d.values[0]);
+
+            // Update nodes based on the expanded state
+            if (expandedNode) {
+                nodes = partition.nodes(expandedNode);
+            } else {
+                nodes = partition.nodes(d.values[0]);
+            }
 
             nodes.forEach(function(node) {
                 node.visible = true;
             });
-        
+
             path = svgGroup.selectAll("path")
                 .data(nodes)
                 .enter().append("path")
@@ -162,24 +169,19 @@ if (!visualisations) {
                 .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; });
-        
+
             updateLabels();
-            
+
             path.append("title")
                 .text(function(d) { return d.name + "\n" + d.value; });
-        
         };
-        
-        // Function to update labels
+
         function updateLabels() {
-            // Remove old labels
             svgGroup.selectAll("text.label").remove();
             svgGroup.selectAll("text.explode-button").remove();
             svgGroup.selectAll("text.back-button").remove();
-        
-            // Append labels to each slice conditionally based on fit and visibility
+
             path.each(function(d) {
-                // Only proceed if the arc is marked as visible
                 if (d.visible && commonFunctions.isTrue(visSettings.showLabels)) {
                     var centroid = arc.centroid(d);
                     var startAngle = d.x;
@@ -189,7 +191,7 @@ if (!visualisations) {
                     var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
                     var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
                     var fontSize = 20 / scale;
-        
+
                     // Create a temporary text element to measure the text width
                     var tempText = svg.append("text")
                         .attr("class", "temp-text")
@@ -203,13 +205,11 @@ if (!visualisations) {
                                 return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
                             }
                         });
-        
+
                     var textWidth = tempText.node().getComputedTextLength();
-        
-                    // Remove the temporary text element
+
                     tempText.remove();
-        
-                    // Render the label only if it fits within the arc
+
                     if (textWidth < arcLength) {
                         svgGroup.append("text")
                             .attr("class", "label")
@@ -226,8 +226,7 @@ if (!visualisations) {
                                     return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
                                 }
                             });
-        
-                        // Append the "Explode" button under the label only if the arc has children
+
                         if (d.children && d.children.length > 0 && d.depth) {
                             svgGroup.append("text")
                                 .attr("class", "explode-button")
@@ -262,28 +261,26 @@ if (!visualisations) {
                     }
                 }
             });
-        }           
+        }
 
         function expandArc(d) {
+            expandedNode = d;
+
             nodes.forEach(function(node) {
                 node.visible = false;
             });
 
-            // Mark the clicked arc and its children as visible
             d.visible = true;
             if (d.children) {
                 d.children.forEach(function(child) {
                     markVisible(child);
                 });
             }
-        
-            // Update the partition layout to center the clicked arc
+
             nodes = partition.nodes(d);
 
-            // Remove old paths
             svgGroup.selectAll("path").remove();
 
-            // Append new paths
             var newPath = svgGroup.selectAll("path")
                 .data(nodes)
                 .enter().append("path")
@@ -294,22 +291,19 @@ if (!visualisations) {
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; });
 
-            // Update labels for the exploded view
             updateLabels();
 
             newPath.append("title")
                 .text(function(d) { return d.name + "\n" + d.value; });
         }
-        
-        // Helper function to mark an arc and its children as visible
+
         function markVisible(d) {
             d.visible = true;
             if (d.children) {
                 d.children.forEach(markVisible);
             }
-        }     
-        
-        // Define the zoomed function to handle scroll zooming
+        }
+            
         function zoomed() {
             // Apply translation and scaling to the arcs
             svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
