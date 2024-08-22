@@ -175,6 +175,7 @@ if (!visualisations) {
             // Remove old labels
             svgGroup.selectAll("text.label").remove();
             svgGroup.selectAll("text.explode-button").remove();
+            svgGroup.selectAll("text.back-button").remove();
         
             // Append labels to each slice conditionally based on fit and visibility
             path.each(function(d) {
@@ -227,7 +228,7 @@ if (!visualisations) {
                             });
         
                         // Append the "Explode" button under the label only if the arc has children
-                        if (d.children && d.children.length > 0) {
+                        if (d.children && d.children.length > 0 && d.depth) {
                             svgGroup.append("text")
                                 .attr("class", "explode-button")
                                 .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ")")
@@ -239,7 +240,23 @@ if (!visualisations) {
                                 .style("text-decoration", "underline")
                                 .text("Explode")
                                 .on("click", function() {
-                                    explodeArc(d); // Call a function to handle the explode action
+                                    expandArc(d); // Explode action
+                                });
+                        }
+
+                        if (d.depth === 0 && d.parent) {
+                            svgGroup.append("text")
+                                .attr("class", "back-button")
+                                .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ")")
+                                .attr("text-anchor", "middle")
+                                .attr("dy", ".35em")
+                                .style("cursor", "pointer")
+                                .style("font-size", fontSize + "px")
+                                .style("fill", "red")
+                                .style("text-decoration", "underline")
+                                .text("Back")
+                                .on("click", function() {
+                                    expandArc(d.parent); // Collapse action
                                 });
                         }
                     }
@@ -247,7 +264,7 @@ if (!visualisations) {
             });
         }           
 
-        function explodeArc(d) {
+        function expandArc(d) {
             nodes.forEach(function(node) {
                 node.visible = false;
             });
@@ -290,8 +307,7 @@ if (!visualisations) {
             if (d.children) {
                 d.children.forEach(markVisible);
             }
-        }
-                
+        }     
         
         // Define the zoomed function to handle scroll zooming
         function zoomed() {
