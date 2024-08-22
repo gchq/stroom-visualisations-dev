@@ -148,6 +148,10 @@ if (!visualisations) {
                 .outerRadius(function(d) { return d.y + d.dy; });
         
             nodes = partition.nodes(d.values[0]);
+
+            nodes.forEach(function(node) {
+                node.visible = true;
+            });
         
             path = svgGroup.selectAll("path")
                 .data(nodes)
@@ -172,10 +176,10 @@ if (!visualisations) {
             svgGroup.selectAll("text.label").remove();
             svgGroup.selectAll("text.explode-button").remove();
         
-            // Append labels to each slice conditionally based on fit
+            // Append labels to each slice conditionally based on fit and visibility
             path.each(function(d) {
-                if (commonFunctions.isTrue(visSettings.showLabels)) {
-                    // Calculate the centroid and available arc width
+                // Only proceed if the arc is marked as visible
+                if (d.visible && commonFunctions.isTrue(visSettings.showLabels)) {
                     var centroid = arc.centroid(d);
                     var startAngle = d.x;
                     var endAngle = d.x + d.dx;
@@ -221,24 +225,69 @@ if (!visualisations) {
                                     return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
                                 }
                             });
-                        // Append the "Explode" button under the label
-                        svgGroup.append("text")
-                        .attr("class", "explode-button")
-                        .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ")")
-                        .attr("text-anchor", "middle")
-                        .attr("dy", ".35em")
-                        .style("cursor", "pointer")
-                        .style("font-size", fontSize + "px")
-                        .style("fill", "blue")
-                        .style("text-decoration", "underline")
-                        .text("Explode")
-                        .on("click", function() {
-                            explodeArc(d); // Call a function to handle the explode action
-                        });
+        
+                        // Append the "Explode" button under the label only if the arc has children
+                        if (d.children && d.children.length > 0) {
+                            svgGroup.append("text")
+                                .attr("class", "explode-button")
+                                .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ")")
+                                .attr("text-anchor", "middle")
+                                .attr("dy", ".35em")
+                                .style("cursor", "pointer")
+                                .style("font-size", fontSize + "px")
+                                .style("fill", "blue")
+                                .style("text-decoration", "underline")
+                                .text("Explode")
+                                .on("click", function() {
+                                    explodeArc(d); // Call a function to handle the explode action
+                                });
+                        }
                     }
                 }
             });
+        }           
+
+        function explodeArc(d) {
+            // Mark the clicked arc and its children as visible
+            d.visible = true;
+            if (d.children) {
+                d.children.forEach(function(child) {
+                    markVisible(child);
+                });
+            }
+        
+            // Update the partition layout to center the clicked arc
+            var nodes = partition.nodes(d);
+
+            // Remove old paths
+            svgGroup.selectAll("path").remove();
+
+            // Append new paths
+            var newPath = svgGroup.selectAll("path")
+                .data(nodes)
+                .enter().append("path")
+                .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
+                .attr("d", arc)
+                .style("stroke", "var(--vis__background-color)")
+                .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+                .style("fill-rule", "evenodd")
+                .each(function(d) { d._current = d; });
+
+            // Update labels for the exploded view
+            updateLabels();
+
+            newPath.append("title")
+                .text(function(d) { return d.name + "\n" + d.value; });
         }
+        
+        // Helper function to mark an arc and its children as visible
+        function markVisible(d) {
+            d.visible = true;
+            if (d.children) {
+                d.children.forEach(markVisible);
+            }
+        }
+                
         
         // Define the zoomed function to handle scroll zooming
         function zoomed() {
