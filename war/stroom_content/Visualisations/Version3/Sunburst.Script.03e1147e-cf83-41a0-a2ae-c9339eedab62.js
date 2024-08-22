@@ -24,6 +24,10 @@ if (!visualisations) {
 
         var grid = new visualisations.GenericGrid(this.element);
         var color, svg, width, height, radius, partition, arc, svgGroup, nodes, path, visSettings;
+        var tip;
+        var inverseHighlight;
+
+        color = d3.scale.category20c();
 
         var zoom = d3.behavior.zoom()
             .scaleExtent([0.5, 10])  // Adjust the scale extent as needed
@@ -108,7 +112,7 @@ if (!visualisations) {
             }
     
             if (data) {
-                update(500, data.values[0], settings);
+                update(500, data.values[0], settings, data);
             }
         };
 
@@ -116,7 +120,7 @@ if (!visualisations) {
         let expandedNode = null;
 
         // Function to update the visualization
-        var update = function(duration, d, settings) {
+        var update = function(duration, d, settings, stroomData) {
             visSettings = settings;
 
             // Calculate dimensions and radius
@@ -136,9 +140,7 @@ if (!visualisations) {
 
             // Apply zoom behavior to the g element
             svg.call(zoom);
-
-            // Define color scale and partition layout
-            color = d3.scale.category20c();
+            
             partition = d3.layout.partition()
                 .size([2 * Math.PI, radius])
                 .value(function(d) { return d.value; });
@@ -160,18 +162,50 @@ if (!visualisations) {
                 node.visible = true;
             });
 
+            if (typeof(tip) == "undefined") {
+                inverseHighlight = commonFunctions.inverseHighlight();
+    
+                inverseHighlight.toSelectionItem = function(d) {
+                  console.log("selection");
+                  console.log(d);
+                  var selection = {
+                    key: d.name,
+                    // series: d.series,
+                    value: d.value,
+                  };
+                  console.log(selection);
+                  return selection;
+                };
+    
+                tip = inverseHighlight.tip()
+                    .html(function(tipData) {
+                        var html = inverseHighlight.htmlBuilder()
+                            .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name))
+                            .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
+                            .build();
+                        return html;
+                    });
+            }
+
+            svg.call(tip);
+
             path = svgGroup.selectAll("path")
                 .data(nodes)
                 .enter().append("path")
-                .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
+                .attr("display", null)
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
-                .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+                .style("fill", function(d) { 
+                    return d.depth === 0 ? "var(--vis__background-color)" : color((d.children ? d : d.parent).name);
+                })
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; })
                 .on("click", function(d) {
-                    // Only trigger expandArc if the arc has children
-                    if (d.children && d.children.length > 0) {
+                    if (d.depth == 0 && d.parent){
+                        expandArc(d.parent);
+                        update(500, d, visSettings);
+                    }
+                    else if (d.children && d.children.length > 0) {
                         expandArc(d);
                         update(500, d, visSettings);
                     }
@@ -179,8 +213,15 @@ if (!visualisations) {
 
             updateLabels();
 
-            path.append("title")
-                .text(function(d) { return d.name + "\n" + d.value; });
+
+            commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
+            commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+
+
+            //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
+            //pans or zooms
+           commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+           commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
         };
 
         function updateLabels() {
@@ -197,7 +238,7 @@ if (!visualisations) {
                     var outerRadius = d.y + d.dy;
                     var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
                     var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
-                    var fontSize = 20 / scale;
+                    var fontSize = 13 / scale;
 
                     // Create a temporary text element to measure the text width
                     var tempText = svg.append("text")
@@ -225,6 +266,9 @@ if (!visualisations) {
                         if (angle > 90 && angle < 270) {
                             angle += 180;
                         }
+                        if (d.depth == 0){
+                            angle = 0;
+                        }
 
                         svgGroup.append("text")
                             .attr("class", "label")
@@ -242,7 +286,7 @@ if (!visualisations) {
                                 }
                             });
 
-                        // Has explode text links instead of clicking on arc to explode
+                        // Has explode and back text links instead of clicking on arc to explode
                         // if (d.children && d.children.length > 0 && d.depth) {
                         //     svgGroup.append("text")
                         //         .attr("class", "explode-button")
@@ -259,22 +303,22 @@ if (!visualisations) {
                         //         });
                         // }
 
-                        if (d.depth === 0 && d.parent) {
-                            svgGroup.append("text")
-                                .attr("class", "back-button")
-                                .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ") rotate(" + angle + ")")
-                                .attr("text-anchor", "middle")
-                                .attr("dy", ".35em")
-                                .style("cursor", "pointer")
-                                .style("font-size", fontSize + "px")
-                                .style("fill", "red")
-                                .style("text-decoration", "underline")
-                                .text("Back")
-                                .on("click", function() {
-                                    expandArc(d.parent); // Collapse action
-                                    update(500, d, visSettings);
-                                });
-                        }
+                        // if (d.depth === 0 && d.parent) {
+                        //     svgGroup.append("text")
+                        //         .attr("class", "back-button")
+                        //         .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ") rotate(" + angle + ")")
+                        //         .attr("text-anchor", "middle")
+                        //         .attr("dy", ".35em")
+                        //         .style("cursor", "pointer")
+                        //         .style("font-size", fontSize + "px")
+                        //         .style("fill", "red")
+                        //         .style("text-decoration", "underline")
+                        //         .text("Back")
+                        //         .on("click", function() {
+                        //             expandArc(d.parent); // Collapse action
+                        //             update(500, d, visSettings);
+                        //         });
+                        // }
                     }
                 }
             });
