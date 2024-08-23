@@ -23,11 +23,12 @@ if (!visualisations) {
         this.element = element;
 
         var grid = new visualisations.GenericGrid(this.element);
-        var color, svg, width, height, radius, partition, arc, svgGroup, nodes, path, visSettings;
+        var svg, width, height, radius, partition, arc, svgGroup, nodes, path, visSettings;
         var tip;
         var inverseHighlight;
+        var stroomData;
 
-        color = d3.scale.category20c();
+        var color = commonConstants.categoryGoogle();
 
         var zoom = d3.behavior.zoom()
             .scaleExtent([0.5, 10])  // Adjust the scale extent as needed
@@ -91,7 +92,6 @@ if (!visualisations) {
         this.getLegendKeyField = function() {
             return null;
         };
-    
 
         //called by GenercGrid to build/update a visualisation inside a grid cell
         //context - an object containing any shared context between Stroom and the visualisation,
@@ -112,7 +112,8 @@ if (!visualisations) {
             }
     
             if (data) {
-                update(500, data.values[0], settings, data);
+                stroomData = data;
+                update(500, data.values[0], settings);
             }
         };
 
@@ -120,7 +121,7 @@ if (!visualisations) {
         let expandedNode = null;
 
         // Function to update the visualization
-        var update = function(duration, d, settings, stroomData) {
+        var update = function(duration, d, settings) {
             visSettings = settings;
 
             // Calculate dimensions and radius
@@ -166,14 +167,14 @@ if (!visualisations) {
                 inverseHighlight = commonFunctions.inverseHighlight();
     
                 inverseHighlight.toSelectionItem = function(d) {
-                  console.log("selection");
-                  console.log(d);
+                //   console.log("selection");
+                //   console.log(d);
                   var selection = {
                     key: d.name,
                     // series: d.series,
                     value: d.value,
                   };
-                  console.log(selection);
+                //   console.log(selection);
                   return selection;
                 };
     
@@ -195,8 +196,9 @@ if (!visualisations) {
                 .attr("display", null)
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
-                .style("fill", function(d) { 
-                    return d.depth === 0 ? "var(--vis__background-color)" : color((d.children ? d : d.parent).name);
+                .style("fill", function(d) {
+                    // d.depth === 0 ? "var(--vis__background-color)" :
+                    return color((d.children ? d : d.parent).name);
                 })
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; })
