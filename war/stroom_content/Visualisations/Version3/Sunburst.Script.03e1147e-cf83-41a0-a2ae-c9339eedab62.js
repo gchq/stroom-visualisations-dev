@@ -23,16 +23,20 @@ if (!visualisations) {
         this.element = element;
 
         var grid = new visualisations.GenericGrid(this.element);
-        var svg, width, height, radius, partition, arc, svgGroup, nodes, path, visSettings;
+        var svg, radius, partition, arc, svgGroup, nodes, path, visSettings;
+        var width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
+        var height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
         var tip;
         var inverseHighlight;
         var stroomData;
+        var x,y;
 
         var color = commonConstants.categoryGoogle();
 
         var zoom = d3.behavior.zoom()
-            .scaleExtent([0.5, 10])  // Adjust the scale extent as needed
+            .scaleExtent([0.1, 10])  // Adjust the scale extent as needed
             .on("zoom", zoomed);
+        zoom.translate([width / 2, height / 2]);
 
         //Called by GenericGrid to create a new instance of the visualisation for each cell.
         this.getInstance = function(containerNode) {
@@ -141,6 +145,12 @@ if (!visualisations) {
 
             // Apply zoom behavior to the g element
             svg.call(zoom);
+
+            x = d3.scale.linear()
+                .range([0, 2 * Math.PI]);
+
+            y = d3.scale.sqrt()
+                .range([0, radius]);
             
             partition = d3.layout.partition()
                 .size([2 * Math.PI, radius])
@@ -205,10 +215,12 @@ if (!visualisations) {
                 .on("click", function(d) {
                     if (d.depth == 0 && d.parent){
                         expandArc(d.parent);
+                        animation(d, duration);
                         update(500, d, visSettings);
                     }
                     else if (d.children && d.children.length > 0) {
                         expandArc(d);
+                        animation(d, duration);
                         update(500, d, visSettings);
                     }
                 });
@@ -225,6 +237,19 @@ if (!visualisations) {
            commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
            commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
         };
+
+        function animation(d, duration) {
+            svgGroup.transition()
+                .duration(duration)
+                .tween("scale", function() {
+                  var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+                      yd = d3.interpolate(y.domain(), [d.y, 1]),
+                      yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+                  return function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); };
+                })
+              .selectAll("path")
+                .attrTween("d", function(d) { return function() { return arc(d); }; });
+        }
 
         function updateLabels() {
             svgGroup.selectAll("text.label").remove();
