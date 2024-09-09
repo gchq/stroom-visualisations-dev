@@ -1,17 +1,13 @@
-#!/bin/bash
-
-# Function to generate a UUID
 generate_uuid() {
   echo "$(uuidgen)"
 }
 
-# Ask the user for the name of the visualization
-read -p "Enter the name of your visualization: " vis_name
+read -p "Enter the name of your visualisation: " vis_name
 
 # Function to ask for valid "yes" or "no" input for grid support
 ask_for_grid_support() {
   while true; do
-    read -p "(Recommended) Do you want grid support for this visualization? (yes/no): " grid_support
+    read -p "(Recommended) Do you want grid support for this visualisation? (yes/no): " grid_support
     case $grid_support in
         yes|no) break ;;
         *) echo "Please enter 'yes' or 'no'." ;;
@@ -19,22 +15,17 @@ ask_for_grid_support() {
   done
 }
 
-# Ask the user if they want grid support and ensure valid input
 ask_for_grid_support
 
-# Generate a UUID
 uuid=$(generate_uuid)
 
-# Define directory where files will be generated
 VIS_DIR="../war/stroom_content/Visualisations/Version3"
 
-# Check if the directory exists
 if [ ! -d "$VIS_DIR" ]; then
   echo "Error: Directory $VIS_DIR does not exist."
   exit 1
 fi
 
-# Generate the Script file
 SCRIPT_FILE="$VIS_DIR/${vis_name}.Script.${uuid}.js"
 
 # Template for JavaScript file
@@ -161,19 +152,15 @@ EOL
 
 # If grid support is not included, remove the corresponding blocks
 if [ "$include_grid_support" = false ]; then
-    # Remove the grid support blocks (without leaving any trace of the comment or code)
     js_template=$(echo "$js_template" | sed -e '/Optional: Grid support block/,/}/d')
     js_template=$(echo "$js_template" | sed -e '/Optional: Grid support line/,/;/d')
 else
-    # If grid support is included, remove the comment but keep the code
     js_template=$(echo "$js_template" | sed '/Optional: Grid support block/d')
     js_template=$(echo "$js_template" | sed '/Optional: Grid support line/d')
 fi
 
-# Replace REPLACEWITHVISNAME with the actual visualization name in the template
 js_template=$(echo "$js_template" | sed "s/REPLACEWITHVISNAME/$vis_name/g")
 
-# Write the final script to the .js file
 echo "$js_template" > "$SCRIPT_FILE"
 
 # Generate the Meta file
