@@ -11,7 +11,7 @@ read -p "Enter the name of your visualization: " vis_name
 # Function to ask for valid "yes" or "no" input for grid support
 ask_for_grid_support() {
   while true; do
-    read -p "Do you want grid support for this visualization? (yes/no): " grid_support
+    read -p "(Recommended) Do you want grid support for this visualization? (yes/no): " grid_support
     case $grid_support in
         yes|no) break ;;
         *) echo "Please enter 'yes' or 'no'." ;;
@@ -26,15 +26,12 @@ ask_for_grid_support
 uuid=$(generate_uuid)
 
 # Define directory where files will be generated
-VIS_DIR="./visualizations/$vis_name"
+VIS_DIR="../war/stroom_content/Visualisations/Version3"
 
-# Create the directory if it doesn't exist
-mkdir -p "$VIS_DIR"
-
-# Determine if grid support should be included
-include_grid_support=true
-if [[ "$grid_support" = "no" ]]; then
-  include_grid_support=false
+# Check if the directory exists
+if [ ! -d "$VIS_DIR" ]; then
+  echo "Error: Directory $VIS_DIR does not exist."
+  exit 1
 fi
 
 # Generate the Script file
@@ -183,24 +180,29 @@ echo "$js_template" > "$SCRIPT_FILE"
 META_FILE="$VIS_DIR/${vis_name}.Script.${uuid}.meta"
 cat > "$META_FILE" <<EOL
 {
+    "type": "Script",
     "uuid": "$uuid",
     "name": "$vis_name",
-    "description": "Meta information for the $vis_name visualization",
-    "version": "1.0.0"
+    "version": "UUID Version",
+    "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "5d4252d6-6f13-4f24-9481-9e98e038747c",
+    "name" : "GenericGrid"
+  } ]
 }
 EOL
 
 # Generate the Node file
 NODE_FILE="$VIS_DIR/${vis_name}.Script.${uuid}.node"
 cat > "$NODE_FILE" <<EOL
-# ${vis_name}.Script.${uuid}.node
-# This file defines the nodes used in the $vis_name visualization.
-
-node_type {
-    name: "$vis_name Node"
-    uuid: "$uuid"
-    description: "This node is part of the $vis_name visualization logic."
-}
+name=$vis_name
+path=stroom-content/Visualisations/Version3
+type=Script
+uuid=$uuid
 EOL
 
 # Notify the user
