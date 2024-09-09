@@ -213,17 +213,15 @@ if (!visualisations) {
                 .style("fill-rule", "evenodd")
                 .each(function(d) { d._current = d; })
                 .on("click", function(d) {
-                    if (d.depth == 0 && d.parent){
+                    // If the node has children or is the root node, expand and animate
+                    if (d.depth == 0 && d.parent) {
                         expandArc(d.parent);
-                        animation(d, duration);
-                        update(500, d, visSettings);
-                    }
-                    else if (d.children && d.children.length > 0) {
+                       // animation(d, duration);
+                    } else if (d.children && d.children.length > 0) {
                         expandArc(d);
-                        animation(d, duration);
-                        update(500, d, visSettings);
+                       // animation(d, duration);
                     }
-                });
+                });                
 
             updateLabels();
 
@@ -239,18 +237,44 @@ if (!visualisations) {
         };
 
         function animation(d, duration) {
-            svgGroup.transition()
+            console.log("Starting animation for node:", d); // Print the node being clicked
+        
+            // Flag to ensure updateLabels is called only once
+            let labelsUpdated = false;
+        
+            svg.transition()
                 .duration(duration)
                 .tween("scale", function() {
-                  var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-                      yd = d3.interpolate(y.domain(), [d.y, 1]),
-                      yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-                  return function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); };
+                    // x domain should move from [0, 1] to the clicked arc's full range
+                    var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]);
+        
+                    // Adjust y domain based on node depth to create a zoom effect
+                    var yd = d3.interpolate(y.domain(), [d.y, d.y + d.dy]);  // d.dy gives better zoom depth
+        
+                    // Keep the range static if necessary
+                    var yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+        
+                    return function(t) {
+                        x.domain(xd(t));
+                        y.domain(yd(t)).range(yr(t));
+                        console.log("Interpolated t:", t, "Updated x domain:", x.domain(), "Updated y domain:", y.domain(), "Updated y range:", y.range());
+                    };
                 })
-              .selectAll("path")
-                .attrTween("d", function(d) { return function() { return arc(d); }; });
+                .selectAll("path")
+                .attrTween("d", function(d) {
+                    return function() {
+                        console.log("Updating arc for node:", d);
+                        return arc(d);  // Update the arc path during animation
+                    };
+                })
+                .each("end", function() {
+                    if (!labelsUpdated) {
+                        labelsUpdated = true;  // Set flag to true to avoid future calls
+                        updateLabels();  // Call updateLabels once when animation ends
+                    }
+                });
         }
-
+        
         function updateLabels() {
             svgGroup.selectAll("text.label").remove();
             svgGroup.selectAll("text.explode-button").remove();
@@ -312,78 +336,76 @@ if (!visualisations) {
                                     return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
                                 }
                             });
-
-                        // Has explode and back text links instead of clicking on arc to explode
-                        // if (d.children && d.children.length > 0 && d.depth) {
-                        //     svgGroup.append("text")
-                        //         .attr("class", "explode-button")
-                        //         .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ") rotate(" + angle + ")")
-                        //         .attr("text-anchor", "middle")
-                        //         .attr("dy", ".35em")
-                        //         .style("cursor", "pointer")
-                        //         .style("font-size", fontSize + "px")
-                        //         .style("fill", "blue")
-                        //         .style("text-decoration", "underline")
-                        //         .text("Explode")
-                        //         .on("click", function() {
-                        //             expandArc(d); // Explode action
-                        //         });
-                        // }
-
-                        // if (d.depth === 0 && d.parent) {
-                        //     svgGroup.append("text")
-                        //         .attr("class", "back-button")
-                        //         .attr("transform", "translate(" + centroid[0] + "," + (centroid[1] + fontSize) + ") rotate(" + angle + ")")
-                        //         .attr("text-anchor", "middle")
-                        //         .attr("dy", ".35em")
-                        //         .style("cursor", "pointer")
-                        //         .style("font-size", fontSize + "px")
-                        //         .style("fill", "red")
-                        //         .style("text-decoration", "underline")
-                        //         .text("Back")
-                        //         .on("click", function() {
-                        //             expandArc(d.parent); // Collapse action
-                        //             update(500, d, visSettings);
-                        //         });
-                        // }
                     }
                 }
             });
         }
 
         function expandArc(d) {
+            console.log("Expanding arc:", d);
             expandedNode = d;
-
+        
             nodes.forEach(function(node) {
                 node.visible = false;
+                // console.log("Hiding node:", node);
             });
-
+        
             d.visible = true;
             if (d.children) {
                 d.children.forEach(function(child) {
                     markVisible(child);
+                    // console.log("Marking child visible:", child);
                 });
             }
-
+        
             nodes = partition.nodes(d);
-
-            svgGroup.selectAll("path").remove();
-
-            var newPath = svgGroup.selectAll("path")
+            // console.log("Updated nodes:", nodes);
+        
+            let labelsUpdated = false;
+        
+            // svgGroup.selectAll("path").remove();
+        
+            // Apply transition to the arcs
+            svgGroup.selectAll("path")
                 .data(nodes)
-                .enter().append("path")
-                .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
-                .attr("d", arc)
-                .style("stroke", "var(--vis__background-color)")
-                .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
-                .style("fill-rule", "evenodd")
-                .each(function(d) { d._current = d; });
+                .transition()
+                .duration(750)
+                .tween("scale", function(d) {
+                    var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]);
+                    var yd = d3.interpolate(y.domain(), [d.y, 1]);
+                    var yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+        
+                    console.log("Interpolating scales:", xd, yd, yr);  // Log the interpolators
+        
+                    return function(t) {
+                        var xDomain = xd(t);
+                        var yDomain = yd(t);
+                        var yRange = yr(t);
 
-            updateLabels();
+                        console.log("Interpolated x.domain at t=" + t + ":", xDomain);
+                        console.log("Interpolated y.domain at t=" + t + ":", yDomain);
+                        console.log("Interpolated y.range at t=" + t + ":", yRange);
 
-            newPath.append("title")
-                .text(function(d) { return d.name + "\n" + d.value; });
-        }
+                        x.domain(xDomain);
+                        y.domain(yDomain).range(yRange);
+                    };
+                })
+                .attrTween("d", function(d) {
+                    return function() {
+                        var pathData = arc(d);
+                        console.log("Arc path data:", pathData);  // Log the path data
+                        return pathData;
+                    };
+                })
+                .each("end", function() {
+                    // Ensure updateLabels is called only once after the transition ends
+                    if (!labelsUpdated) {
+                        labelsUpdated = true;
+                        console.log("Transition ended. Calling updateLabels.");  // Log when transition ends
+                        updateLabels(); // Call once when all transitions end
+                    }
+                });
+        }   
 
         function markVisible(d) {
             d.visible = true;
