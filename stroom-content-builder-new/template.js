@@ -11,7 +11,7 @@ if (!visualisations) {
     var margins = commonConstants.margins();
 
     //Instantiated by Stroom
-    visualisations.REPLACEWITHVISNAME = function(containerNode) {
+    visualisations.$vis_name = function(containerNode) {
 
         //Stroom creates a new iFrame for each visualisation so
         //create a div for the gridded visualisation to be built in

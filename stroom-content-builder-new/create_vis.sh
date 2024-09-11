@@ -47,7 +47,7 @@ else
     js_template=$(echo "$js_template" | sed '/Optional: Grid support line/d')
 fi
 
-js_template=$(echo "$js_template" | sed "s/REPLACEWITHVISNAME/$vis_name/g")
+js_template="${js_template//\$vis_name/$vis_name}"
 
 echo "$js_template" > "$SCRIPT_FILE"
 
@@ -80,9 +80,6 @@ remove_grid_blocks() {
 }
 
 json_template=$(remove_grid_blocks)
-
-# Replace the placeholder in the JSON template
-json_template=$(echo "$json_template" | sed "s/\${vis_name}/$vis_name/g")
 
 # Write the final JSON output to the script file
 echo "$json_template" > "$JSON_FILE"
