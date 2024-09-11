@@ -2,7 +2,7 @@ if (!visualisations) {
     var visualisations = {};
 }
 
-//IIFE to prvide shared scope for sharing state and constants between the controller 
+//IIFE to provide shared scope for sharing state and constants between the controller 
 //object and each grid cell object instance
 (function(){
     var d3 = window.d3;
@@ -11,26 +11,28 @@ if (!visualisations) {
     var margins = commonConstants.margins();
 
     //Instantiated by Stroom
-    visualisations.Sunburst = function(containerNode) {
+    visualisations.REPLACEWITHVISNAME = function(containerNode) {
 
         //Stroom creates a new iFrame for each visualisation so
         //create a div for the gridded visualisation to be built in
-        if (containerNode){
-        var element = containerNode;
+        if (containerNode) {
+            var element = containerNode;
         } else {
-        var element = window.document.createElement("div");
+            var element = window.document.createElement("div");
         }
         this.element = element;
 
-        // T
+        // Optional: Grid support line
         var grid = new visualisations.GenericGrid(this.element);
 
+        // Optional: Grid support line
         var width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
+        // Optional: Grid support line
         var height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
 
         var color = commonConstants.categoryGoogle();
 
-        // T
+        // Optional: Grid support block
         // Called by GenericGrid to create a new instance of the visualisation for each cell.
         this.getInstance = function(containerNode) {
             return new visualisations.Sunburst(containerNode);
@@ -46,21 +48,19 @@ if (!visualisations) {
         this.setData = function(context, settings, d) {
             if (context) {
                 if (context.color) {
-                  color = context.color;
+                    color = context.color;
                 } else {
-                  context.color = color;
+                    context.color = color;
                 }
             }
 
             // Inspect settings here:
 
-
-            // T
+            // Optional: Grid support line
             //Get grid to construct the grid cells and for each one call back into a
             //new instance of this to build the visualisation in the cell
             //The last array arg allows you to synchronise the scales of fields
             grid.buildGrid(context, settings, d, this, commonConstants.transitionDuration, synchedFields);
-
         }
 
         //called by Stroom to instruct the visualisation to redraw itself in a resized container
@@ -68,35 +68,37 @@ if (!visualisations) {
             commonFunctions.resize(grid, update, element, margins, width, height);
         };
 
-        // T
-        //Called by GenericGrid to establish which position in the values array
-        //(or null if it is the series key) is used for the legend.
+        // Optional: Grid support block
+        // Called by GenericGrid to establish which position in the values array
+        // (or null if it is the series key) is used for the legend.
         this.getLegendKeyField = function() {
             return null;
         };
 
-        // T
-        //called by GenercGrid to build/update a visualisation inside a grid cell
-        //context - an object containing any shared context between Stroom and the visualisation,
+        // Optional: Grid support block
+        // called by GenericGrid to build/update a visualisation inside a grid cell
+        // context - an object containing any shared context between Stroom and the visualisation,
         //          e.g. a common colour scale could be used between multiple visualisations.
         //          Also can be used by the grid to pass state down to each cell
-        //settings - the object containing all the user configurable settings for the visualisation,
+        // settings - the object containing all the user configurable settings for the visualisation,
         //           e.g. showLabels, displayXAxis, etc.
-        //data - the object tree containing all the data for that grid cell. Always contains all data 
+        // data - the object tree containing all the data for that grid cell. Always contains all data 
         //       currently available for a query.
         this.setDataInsideGrid = function(context, settings, data) {
-        
+
             // If the context already has a colour set then use it
             if (context) {
-                visContext = context;
                 if (context.color) {
                     colour = context.color;
                 }
+        // Optional: Grid support block
             }
-    
+
+        // Optional: Grid support block
             if (data) {
                 // Use data here (typically call update)
             }
+        // Optional: Grid support block
         }
 
         // Function to update the visualization
@@ -112,5 +114,4 @@ if (!visualisations) {
             return color;
         };
     };
-
 }());

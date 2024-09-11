@@ -1,9 +1,9 @@
 {
-  "type" : "Script",
-  "uuid" : "REPLACEWITHTHENEWUUID",
-  "name" : "REPLACEWITHVISNAME",
-  "version" : "96cdf990-5d11-41a4-af36-c6f4ec8a65b0",
-  "dependencies" : [ {
+    "type": "Script",
+    "uuid": "$uuid_js",
+    "name": "$vis_name",
+    "version": "Template version",
+    "dependencies" : [ {
     "type" : "Script",
     "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
     "name" : "Common"
