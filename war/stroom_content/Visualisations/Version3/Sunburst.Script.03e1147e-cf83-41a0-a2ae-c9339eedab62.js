@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 if (!visualisations) {
     var visualisations = {};
 }
@@ -28,6 +44,7 @@ if (!visualisations) {
         var height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
         var tip;
         var inverseHighlight;
+        var delimiter = '/'; // default delimiter
         var stroomData;
         var x,y;
 
@@ -114,6 +131,10 @@ if (!visualisations) {
                     colour = context.color;
                 }
             }
+
+            if (settings.delimiter) {
+                delimiter = settings.delimiter;
+            }
     
             if (data) {
                 stroomData = data;
@@ -135,15 +156,13 @@ if (!visualisations) {
             }
           
             const rootName = arr[0][0].split('/')[0];
-
-            // Initialize the root object
             let root = { name: rootName, children: [] };
                     
             // Iterate through each path-value pair in the input array
             arr.forEach(([path, value]) => {
 
             // Default delimiter
-              const pathParts = path.split("/");
+              const pathParts = path.split(delimiter);
               let currentNode = root;
           
               // Traverse the path and build the hierarchy
@@ -285,65 +304,41 @@ if (!visualisations) {
            commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
         };
 
-        function expandArc(d, data) {
-            console.log("Expanding arc:", d);
-            // expandedNode = d;
-        
-            // nodes.forEach(function(node) {
-            //     node.visible = false;
-            //     // console.log("Hiding node:", node);
-            // });
-        
-            // d.visible = true;
-            // if (d.children) {
-            //     d.children.forEach(function(child) {
-            //         markVisible(child);
-            //         // console.log("Marking child visible:", child);
-            //     });
-            // }
-        
-            // nodes = partition.nodes(d);
-            // console.log("Updated nodes:", nodes);
-        
-            // Store the old arc values
-    svg.selectAll("path").each(function(d) {
-        d._oldArc = arc(d); // Save the old arc state
-    });
+        function expandArc(data) {
 
-    let labelsUpdated = false;
+        svg.transition()
+            .duration(750)
+            .tween("scale", function() {
+                var xd = d3.interpolate(x.domain(), [data.x, data.x + data.dx]),
+                    yd = d3.interpolate(y.domain(), [data.y, 1]),
+                    yr = d3.interpolate(y.range(), [data.y ? 20 : 0, radius]);
 
-    svg.transition()
-        .duration(750)
-        .tween("scale", function() {
-            var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-                yd = d3.interpolate(y.domain(), [d.y, 1]),
-                yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+                return function(t) {
+                    x.domain(xd(t));
+                    y.domain(yd(t)).range(yr(t));
 
-            return function(t) {
-                x.domain(xd(t));
-                y.domain(yd(t)).range(yr(t));
+                    data.x = xd(t)[0];    // Update `d.x` with interpolated value
+                    data.dx = xd(t)[1] - xd(t)[0]; // Calculate `dx` based on the domain
+                    data.y = yd(t)[0];
+                    data.yr = yr(t)[0];
+                };
+            })
+            .selectAll("path")
+            .attrTween("d", function(d) {
+                return function() { return arc(d); };
+            })
+            .each("end", function() {
+                // After transition ends, explicitly update `d` values for the current view
+                data.x = x.domain()[0];
+                data.dx = x.domain()[1] - x.domain()[0];
+                data.y = y.domain()[0];
+                data.dy = 1 - y.domain()[0];
 
-                d.x = xd(t)[0];    // Update `d.x` with interpolated value
-                d.dx = xd(t)[1] - xd(t)[0]; // Calculate `dx` based on the domain
-                d.y = yd(t)[0];  
-            };
-        })
-        .selectAll("path")
-        .attrTween("d", function(d) {
-            return function() { return arc(d); };
-        })
-        .each("end", function() {
-            // After transition ends, explicitly update `d` values for the current view
-            d.x = x.domain()[0];
-            d.dx = x.domain()[1] - x.domain()[0];
-            d.y = y.domain()[0];
-            d.dy = 1 - y.domain()[0];
-
-            // Now the data reflects the current state of the view
-            console.log("Data updated for accurate labeling:", d);
-            // updateLabels();  // Call a function to update labels with new data values
-        });
-    }
+                // Now the data reflects the current state of the view
+                console.log("Data updated for accurate labeling:", data);
+                // updateLabels();  // Call a function to update labels with new data values
+            });
+        }
 
 
         function markVisible(d) {
