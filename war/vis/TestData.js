@@ -900,387 +900,207 @@ function TestData() {
 
         function createSunburstData(){
             data = [
-                {
-                "name": "flare",
-                "children": [
-                 {
-                  "name": "analytics",
-                  "children": [
-                   {
-                    "name": "cluster",
-                    "children": [
-                     {"name": "AgglomerativeCluster", "value": 3938},
-                     {"name": "CommunityStructure", "value": 3812},
-                     {"name": "HierarchicalCluster", "value": 6714},
-                     {"name": "MergeEdge", "value": 743}
-                    ]
-                   },
-                   {
-                    "name": "graph",
-                    "children": [
-                     {"name": "BetweennessCentrality", "value": 3534},
-                     {"name": "LinkDistance", "value": 5731},
-                     {"name": "MaxFlowMinCut", "value": 7840},
-                     {"name": "ShortestPaths", "value": 5914},
-                     {"name": "SpanningTree", "value": 3416}
-                    ]
-                   },
-                   {
-                    "name": "optimization",
-                    "children": [
-                     {"name": "AspectRatioBanker", "value": 7074}
-                    ]
-                   }
-                  ]
-                 },
-                 {
-                  "name": "animate",
-                  "children": [
-                   {"name": "Easing", "value": 17010},
-                   {"name": "FunctionSequence", "value": 5842},
-                   {
-                    "name": "interpolate",
-                    "children": [
-                     {"name": "ArrayInterpolator", "value": 1983},
-                     {"name": "ColorInterpolator", "value": 2047},
-                     {"name": "DateInterpolator", "value": 1375},
-                     {"name": "Interpolator", "value": 8746},
-                     {"name": "MatrixInterpolator", "value": 2202},
-                     {"name": "NumberInterpolator", "value": 1382},
-                     {"name": "ObjectInterpolator", "value": 1629},
-                     {"name": "PointInterpolator", "value": 1675},
-                     {"name": "RectangleInterpolator", "value": 2042}
-                    ]
-                   },
-                   {"name": "ISchedulable", "value": 1041},
-                   {"name": "Parallel", "value": 5176},
-                   {"name": "Pause", "value": 449},
-                   {"name": "Scheduler", "value": 5593},
-                   {"name": "Sequence", "value": 5534},
-                   {"name": "Transition", "value": 9201},
-                   {"name": "Transitioner", "value": 19975},
-                   {"name": "TransitionEvent", "value": 1116},
-                   {"name": "Tween", "value": 6006}
-                  ]
-                 },
-                 {
-                  "name": "data",
-                  "children": [
-                   {
-                    "name": "converters",
-                    "children": [
-                     {"name": "Converters", "value": 721},
-                     {"name": "DelimitedTextConverter", "value": 4294},
-                     {"name": "GraphMLConverter", "value": 9800},
-                     {"name": "IDataConverter", "value": 1314},
-                     {"name": "JSONConverter", "value": 2220}
-                    ]
-                   },
-                   {"name": "DataField", "value": 1759},
-                   {"name": "DataSchema", "value": 2165},
-                   {"name": "DataSet", "value": 586},
-                   {"name": "DataSource", "value": 3331},
-                   {"name": "DataTable", "value": 772},
-                   {"name": "DataUtil", "value": 3322}
-                  ]
-                 },
-                 {
-                  "name": "display",
-                  "children": [
-                   {"name": "DirtySprite", "value": 8833},
-                   {"name": "LineSprite", "value": 1732},
-                   {"name": "RectSprite", "value": 3623},
-                   {"name": "TextSprite", "value": 10066}
-                  ]
-                 },
-                 {
-                  "name": "flex",
-                  "children": [
-                   {"name": "FlareVis", "value": 4116}
-                  ]
-                 },
-                 {
-                  "name": "physics",
-                  "children": [
-                   {"name": "DragForce", "value": 1082},
-                   {"name": "GravityForce", "value": 1336},
-                   {"name": "IForce", "value": 319},
-                   {"name": "NBodyForce", "value": 10498},
-                   {"name": "Particle", "value": 2822},
-                   {"name": "Simulation", "value": 9983},
-                   {"name": "Spring", "value": 2213},
-                   {"name": "SpringForce", "value": 1681}
-                  ]
-                 },
-                 {
-                  "name": "query",
-                  "children": [
-                   {"name": "AggregateExpression", "value": 1616},
-                   {"name": "And", "value": 1027},
-                   {"name": "Arithmetic", "value": 3891},
-                   {"name": "Average", "value": 891},
-                   {"name": "BinaryExpression", "value": 2893},
-                   {"name": "Comparison", "value": 5103},
-                   {"name": "CompositeExpression", "value": 3677},
-                   {"name": "Count", "value": 781},
-                   {"name": "DateUtil", "value": 4141},
-                   {"name": "Distinct", "value": 933},
-                   {"name": "Expression", "value": 5130},
-                   {"name": "ExpressionIterator", "value": 3617},
-                   {"name": "Fn", "value": 3240},
-                   {"name": "If", "value": 2732},
-                   {"name": "IsA", "value": 2039},
-                   {"name": "Literal", "value": 1214},
-                   {"name": "Match", "value": 3748},
-                   {"name": "Maximum", "value": 843},
-                   {
-                    "name": "methods",
-                    "children": [
-                     {"name": "add", "value": 593},
-                     {"name": "and", "value": 330},
-                     {"name": "average", "value": 287},
-                     {"name": "count", "value": 277},
-                     {"name": "distinct", "value": 292},
-                     {"name": "div", "value": 595},
-                     {"name": "eq", "value": 594},
-                     {"name": "fn", "value": 460},
-                     {"name": "gt", "value": 603},
-                     {"name": "gte", "value": 625},
-                     {"name": "iff", "value": 748},
-                     {"name": "isa", "value": 461},
-                     {"name": "lt", "value": 597},
-                     {"name": "lte", "value": 619},
-                     {"name": "max", "value": 283},
-                     {"name": "min", "value": 283},
-                     {"name": "mod", "value": 591},
-                     {"name": "mul", "value": 603},
-                     {"name": "neq", "value": 599},
-                     {"name": "not", "value": 386},
-                     {"name": "or", "value": 323},
-                     {"name": "orderby", "value": 307},
-                     {"name": "range", "value": 772},
-                     {"name": "select", "value": 296},
-                     {"name": "stddev", "value": 363},
-                     {"name": "sub", "value": 600},
-                     {"name": "sum", "value": 280},
-                     {"name": "update", "value": 307},
-                     {"name": "variance", "value": 335},
-                     {"name": "where", "value": 299},
-                     {"name": "xor", "value": 354},
-                     {"name": "_", "value": 264}
-                    ]
-                   },
-                   {"name": "Minimum", "value": 843},
-                   {"name": "Not", "value": 1554},
-                   {"name": "Or", "value": 970},
-                   {"name": "Query", "value": 13896},
-                   {"name": "Range", "value": 1594},
-                   {"name": "StringUtil", "value": 4130},
-                   {"name": "Sum", "value": 791},
-                   {"name": "Variable", "value": 1124},
-                   {"name": "Variance", "value": 1876},
-                   {"name": "Xor", "value": 1101}
-                  ]
-                 },
-                 {
-                  "name": "scale",
-                  "children": [
-                   {"name": "IScaleMap", "value": 2105},
-                   {"name": "LinearScale", "value": 1316},
-                   {"name": "LogScale", "value": 3151},
-                   {"name": "OrdinalScale", "value": 3770},
-                   {"name": "QuantileScale", "value": 2435},
-                   {"name": "QuantitativeScale", "value": 4839},
-                   {"name": "RootScale", "value": 1756},
-                   {"name": "Scale", "value": 4268},
-                   {"name": "ScaleType", "value": 1821},
-                   {"name": "TimeScale", "value": 5833}
-                  ]
-                 },
-                 {
-                  "name": "util",
-                  "children": [
-                   {"name": "Arrays", "value": 8258},
-                   {"name": "Colors", "value": 10001},
-                   {"name": "Dates", "value": 8217},
-                   {"name": "Displays", "value": 12555},
-                   {"name": "Filter", "value": 2324},
-                   {"name": "Geometry", "value": 10993},
-                   {
-                    "name": "heap",
-                    "children": [
-                     {"name": "FibonacciHeap", "value": 9354},
-                     {"name": "HeapNode", "value": 1233}
-                    ]
-                   },
-                   {"name": "IEvaluable", "value": 335},
-                   {"name": "IPredicate", "value": 383},
-                   {"name": "IValueProxy", "value": 874},
-                   {
-                    "name": "math",
-                    "children": [
-                     {"name": "DenseMatrix", "value": 3165},
-                     {"name": "IMatrix", "value": 2815},
-                     {"name": "SparseMatrix", "value": 3366}
-                    ]
-                   },
-                   {"name": "Maths", "value": 17705},
-                   {"name": "Orientation", "value": 1486},
-                   {
-                    "name": "palette",
-                    "children": [
-                     {"name": "ColorPalette", "value": 6367},
-                     {"name": "Palette", "value": 1229},
-                     {"name": "ShapePalette", "value": 2059},
-                     {"name": "SizePalette", "value": 2291}
-                    ]
-                   },
-                   {"name": "Property", "value": 5559},
-                   {"name": "Shapes", "value": 19118},
-                   {"name": "Sort", "value": 6887},
-                   {"name": "Stats", "value": 6557},
-                   {"name": "Strings", "value": 22026}
-                  ]
-                 },
-                 {
-                  "name": "vis",
-                  "children": [
-                   {
-                    "name": "axis",
-                    "children": [
-                     {"name": "Axes", "value": 1302},
-                     {"name": "Axis", "value": 24593},
-                     {"name": "AxisGridLine", "value": 652},
-                     {"name": "AxisLabel", "value": 636},
-                     {"name": "CartesianAxes", "value": 6703}
-                    ]
-                   },
-                   {
-                    "name": "controls",
-                    "children": [
-                     {"name": "AnchorControl", "value": 2138},
-                     {"name": "ClickControl", "value": 3824},
-                     {"name": "Control", "value": 1353},
-                     {"name": "ControlList", "value": 4665},
-                     {"name": "DragControl", "value": 2649},
-                     {"name": "ExpandControl", "value": 2832},
-                     {"name": "HoverControl", "value": 4896},
-                     {"name": "IControl", "value": 763},
-                     {"name": "PanZoomControl", "value": 5222},
-                     {"name": "SelectionControl", "value": 7862},
-                     {"name": "TooltipControl", "value": 8435}
-                    ]
-                   },
-                   {
-                    "name": "data",
-                    "children": [
-                     {"name": "Data", "value": 20544},
-                     {"name": "DataList", "value": 19788},
-                     {"name": "DataSprite", "value": 10349},
-                     {"name": "EdgeSprite", "value": 3301},
-                     {"name": "NodeSprite", "value": 19382},
-                     {
-                      "name": "render",
-                      "children": [
-                       {"name": "ArrowType", "value": 698},
-                       {"name": "EdgeRenderer", "value": 5569},
-                       {"name": "IRenderer", "value": 353},
-                       {"name": "ShapeRenderer", "value": 2247}
-                      ]
-                     },
-                     {"name": "ScaleBinding", "value": 11275},
-                     {"name": "Tree", "value": 7147},
-                     {"name": "TreeBuilder", "value": 9930}
-                    ]
-                   },
-                   {
-                    "name": "events",
-                    "children": [
-                     {"name": "DataEvent", "value": 2313},
-                     {"name": "SelectionEvent", "value": 1880},
-                     {"name": "TooltipEvent", "value": 1701},
-                     {"name": "VisualizationEvent", "value": 1117}
-                    ]
-                   },
-                   {
-                    "name": "legend",
-                    "children": [
-                     {"name": "Legend", "value": 20859},
-                     {"name": "LegendItem", "value": 4614},
-                     {"name": "LegendRange", "value": 10530}
-                    ]
-                   },
-                   {
-                    "name": "operator",
-                    "children": [
-                     {
-                      "name": "distortion",
-                      "children": [
-                       {"name": "BifocalDistortion", "value": 4461},
-                       {"name": "Distortion", "value": 6314},
-                       {"name": "FisheyeDistortion", "value": 3444}
-                      ]
-                     },
-                     {
-                      "name": "encoder",
-                      "children": [
-                       {"name": "ColorEncoder", "value": 3179},
-                       {"name": "Encoder", "value": 4060},
-                       {"name": "PropertyEncoder", "value": 4138},
-                       {"name": "ShapeEncoder", "value": 1690},
-                       {"name": "SizeEncoder", "value": 1830}
-                      ]
-                     },
-                     {
-                      "name": "filter",
-                      "children": [
-                       {"name": "FisheyeTreeFilter", "value": 5219},
-                       {"name": "GraphDistanceFilter", "value": 3165},
-                       {"name": "VisibilityFilter", "value": 3509}
-                      ]
-                     },
-                     {"name": "IOperator", "value": 1286},
-                     {
-                      "name": "label",
-                      "children": [
-                       {"name": "Labeler", "value": 9956},
-                       {"name": "RadialLabeler", "value": 3899},
-                       {"name": "StackedAreaLabeler", "value": 3202}
-                      ]
-                     },
-                     {
-                      "name": "layout",
-                      "children": [
-                       {"name": "AxisLayout", "value": 6725},
-                       {"name": "BundledEdgeRouter", "value": 3727},
-                       {"name": "CircleLayout", "value": 9317},
-                       {"name": "CirclePackingLayout", "value": 12003},
-                       {"name": "DendrogramLayout", "value": 4853},
-                       {"name": "ForceDirectedLayout", "value": 8411},
-                       {"name": "IcicleTreeLayout", "value": 4864},
-                       {"name": "IndentedTreeLayout", "value": 3174},
-                       {"name": "Layout", "value": 7881},
-                       {"name": "NodeLinkTreeLayout", "value": 12870},
-                       {"name": "PieLayout", "value": 2728},
-                       {"name": "RadialTreeLayout", "value": 12348},
-                       {"name": "RandomLayout", "value": 870},
-                       {"name": "StackedAreaLayout", "value": 9121},
-                       {"name": "TreeMapLayout", "value": 9191}
-                      ]
-                     },
-                     {"name": "Operator", "value": 2490},
-                     {"name": "OperatorList", "value": 5248},
-                     {"name": "OperatorSequence", "value": 4190},
-                     {"name": "OperatorSwitch", "value": 2581},
-                     {"name": "SortOperator", "value": 2023}
-                    ]
-                   },
-                   {"name": "Visualization", "value": 16540}
-                  ]
-                 }
-                ]
-                }
-            ]
+                ["flare/analytics/cluster/AgglomerativeCluster", 3938],
+                ["flare/analytics/cluster/CommunityStructure", 3812],
+                ["flare/analytics/cluster/HierarchicalCluster", 6714],
+                ["flare/analytics/cluster/MergeEdge", 743],
+                ["flare/analytics/graph/BetweennessCentrality", 3534],
+                ["flare/analytics/graph/LinkDistance", 5731],
+                ["flare/analytics/graph/MaxFlowMinCut", 7840],
+                ["flare/analytics/graph/ShortestPaths", 5914],
+                ["flare/analytics/graph/SpanningTree", 3416],
+                ["flare/analytics/optimization/AspectRatioBanker", 7074],
+                ["flare/animate/Easing", 17010],
+                ["flare/animate/FunctionSequence", 5842],
+                ["flare/animate/interpolate/ArrayInterpolator", 1983],
+                ["flare/animate/interpolate/ColorInterpolator", 2047],
+                ["flare/animate/interpolate/DateInterpolator", 1375],
+                ["flare/animate/interpolate/Interpolator", 8746],
+                ["flare/animate/interpolate/MatrixInterpolator", 2202],
+                ["flare/animate/interpolate/NumberInterpolator", 1382],
+                ["flare/animate/interpolate/ObjectInterpolator", 1629],
+                ["flare/animate/interpolate/PointInterpolator", 1675],
+                ["flare/animate/interpolate/RectangleInterpolator", 2042],
+                ["flare/animate/ISchedulable", 1041],
+                ["flare/animate/Parallel", 5176],
+                ["flare/animate/Pause", 449],
+                ["flare/animate/Scheduler", 5593],
+                ["flare/animate/Sequence", 5534],
+                ["flare/animate/Transition", 9201],
+                ["flare/animate/Transitioner", 19975],
+                ["flare/animate/TransitionEvent", 1116],
+                ["flare/animate/Tween", 6006],
+                ["flare/data/converters/Converters", 721],
+                ["flare/data/converters/DelimitedTextConverter", 4294],
+                ["flare/data/converters/GraphMLConverter", 9800],
+                ["flare/data/converters/IDataConverter", 1314],
+                ["flare/data/converters/JSONConverter", 2220],
+                ["flare/data/DataField", 1759],
+                ["flare/data/DataSchema", 2165],
+                ["flare/data/DataSet", 586],
+                ["flare/data/DataSource", 3331],
+                ["flare/data/DataTable", 772],
+                ["flare/data/DataUtil", 3322],
+                ["flare/display/DirtySprite", 8833],
+                ["flare/display/LineSprite", 1732],
+                ["flare/display/RectSprite", 3623],
+                ["flare/display/TextSprite", 10066],
+                ["flare/flex/FlareVis", 4116],
+                ["flare/physics/DragForce", 1082],
+                ["flare/physics/GravityForce", 1336],
+                ["flare/physics/IForce", 319],
+                ["flare/physics/NBodyForce", 10498],
+                ["flare/physics/Particle", 2822],
+                ["flare/physics/Simulation", 9983],
+                ["flare/physics/Spring", 2213],
+                ["flare/physics/SpringForce", 1681],
+                ["flare/query/AggregateExpression", 1616],
+                ["flare/query/And", 1027],
+                ["flare/query/Arithmetic", 3891],
+                ["flare/query/Average", 891],
+                ["flare/query/BinaryExpression", 2893],
+                ["flare/query/Comparison", 5103],
+                ["flare/query/CompositeExpression", 3677],
+                ["flare/query/Count", 781],
+                ["flare/query/DateUtil", 4141],
+                ["flare/query/Distinct", 933],
+                ["flare/query/Expression", 5130],
+                ["flare/query/ExpressionIterator", 3617],
+                ["flare/query/Fn", 3240],
+                ["flare/query/If", 2732],
+                ["flare/query/IsA", 2039],
+                ["flare/query/Literal", 1214],
+                ["flare/query/Match", 3748],
+                ["flare/query/Maximum", 843],
+                ["flare/query/methods/add", 593],
+                ["flare/query/methods/and", 330],
+                ["flare/query/methods/average", 287],
+                ["flare/query/methods/count", 277],
+                ["flare/query/methods/distinct", 292],
+                ["flare/query/methods/div", 595],
+                ["flare/query/methods/eq", 594],
+                ["flare/query/methods/fn", 460],
+                ["flare/query/methods/gt", 603],
+                ["flare/query/methods/gte", 625],
+                ["flare/query/methods/iff", 748],
+                ["flare/query/methods/isa", 461],
+                ["flare/query/methods/lt", 597],
+                ["flare/query/methods/lte", 619],
+                ["flare/query/methods/max", 283],
+                ["flare/query/methods/min", 283],
+                ["flare/query/methods/mod", 591],
+                ["flare/query/methods/mul", 603],
+                ["flare/query/methods/neq", 599],
+                ["flare/query/methods/not", 386],
+                ["flare/query/methods/or", 323],
+                ["flare/query/methods/orderby", 307],
+                ["flare/query/methods/range", 772],
+                ["flare/query/methods/select", 296],
+                ["flare/query/methods/stddev", 363],
+                ["flare/query/methods/sub", 600],
+                ["flare/query/methods/sum", 280],
+                ["flare/query/methods/update", 307],
+                ["flare/query/methods/variance", 335],
+                ["flare/query/methods/where", 299],
+                ["flare/query/methods/xor", 354],
+                ["flare/query/methods/_", 264],
+                ["flare/query/Minimum", 843],
+                ["flare/query/Not", 1554],
+                ["flare/query/Or", 970],
+                ["flare/query/Query", 13896],
+                ["flare/query/Range", 1594],
+                ["flare/query/StringUtil", 4130],
+                ["flare/query/Sum", 791],
+                ["flare/query/Variable", 1124],
+                ["flare/query/Variance", 1876],
+                ["flare/query/Xor", 1101],
+                ["flare/scale/IScaleMap", 2105],
+                ["flare/scale/LinearScale", 1316],
+                ["flare/scale/LogScale", 3151],
+                ["flare/scale/OrdinalScale", 3770],
+                ["flare/scale/QuantileScale", 2435],
+                ["flare/scale/QuantitativeScale", 4839],
+                ["flare/scale/RootScale", 1756],
+                ["flare/scale/Scale", 4268],
+                ["flare/scale/ScaleType", 1821],
+                ["flare/scale/TimeScale", 5833],
+                ["flare/util/Arrays", 8258],
+                ["flare/util/Colors", 10001],
+                ["flare/util/Dates", 8217],
+                ["flare/util/Displays", 12555],
+                ["flare/util/Filter", 2324],
+                ["flare/util/Geometry", 10993],
+                ["flare/util/heap/FibonacciHeap", 9354],
+                ["flare/util/heap/HeapNode", 1233],
+                ["flare/util/IEvaluable", 335],
+                ["flare/util/IPredicate", 383],
+                ["flare/util/IValueProxy", 874],
+                ["flare/util/math/DenseMatrix", 3165],
+                ["flare/util/math/IMatrix", 2815],
+                ["flare/util/math/SparseMatrix", 3366],
+                ["flare/util/Maths", 17705],
+                ["flare/util/Orientation", 1486],
+                ["flare/util/palette/ColorPalette", 6367],
+                ["flare/util/palette/Palette", 1229],
+                ["flare/util/palette/ShapePalette", 2059],
+                ["flare/util/palette/SizePalette", 2291],
+                ["flare/util/Property", 5559],
+                ["flare/util/Shapes", 19118],
+                ["flare/util/Sort", 6887],
+                ["flare/util/Stats", 6557],
+                ["flare/util/Strings", 22026],
+                ["flare/vis/axis/Axes", 1302],
+                ["flare/vis/axis/Axis", 24593],
+                ["flare/vis/axis/AxisGridLine", 652],
+                ["flare/vis/axis/AxisLabel", 636],
+                ["flare/vis/axis/CartesianAxes", 6703],
+                ["flare/vis/controls/AnchorControl", 2138],
+                ["flare/vis/controls/ClickControl", 3824],
+                ["flare/vis/controls/Control", 1353],
+                ["flare/vis/controls/ControlList", 4665],
+                ["flare/vis/controls/DragControl", 2649],
+                ["flare/vis/controls/ExpandControl", 2832],
+                ["flare/vis/controls/HoverControl", 4896],
+                ["flare/vis/controls/IControl", 763],
+                ["flare/vis/controls/PanZoomControl", 5222],
+                ["flare/vis/controls/SelectionControl", 7862],
+                ["flare/vis/controls/TooltipControl", 8435],
+                ["flare/vis/data/Data", 20544],
+                ["flare/vis/data/DataList", 19788],
+                ["flare/vis/data/DataSprite", 10349],
+                ["flare/vis/data/EdgeSprite", 3301],
+                ["flare/vis/data/NodeSprite", 19382],
+                ["flare/vis/data/render/ArrowType", 698],
+                ["flare/vis/data/render/EdgeRenderer", 5569],
+                ["flare/vis/data/render/IRenderer", 353],
+                ["flare/vis/data/render/ShapeRenderer", 2247],
+                ["flare/vis/events/DataEvent", 2313],
+                ["flare/vis/events/SelectionEvent", 1880],
+                ["flare/vis/events/TooltipEvent", 1701],
+                ["flare/vis/events/VisualizationEvent", 1117],
+                ["flare/vis/operator/IOperator", 1286],
+                ["flare/vis/operator/Operator", 2490],
+                ["flare/vis/operator/OperatorList", 5248],
+                ["flare/vis/operator/OperatorSequence", 4190],
+                ["flare/vis/operator/OperatorSwitch", 2581],
+                ["flare/vis/operator/filter/FisheyeTreeFilter", 5219],
+                ["flare/vis/operator/filter/GraphDistanceFilter", 3165],
+                ["flare/vis/operator/filter/VisibilityFilter", 3509],
+                ["flare/vis/operator/layout/BundledEdgeRouter", 3727],
+                ["flare/vis/operator/layout/CircleLayout", 9317],
+                ["flare/vis/operator/layout/CirclePackingLayout", 12003],
+                ["flare/vis/operator/layout/DendrogramLayout", 4853],
+                ["flare/vis/operator/layout/ForceDirectedLayout", 8411],
+                ["flare/vis/operator/layout/IndentedTreeLayout", 3174],
+                ["flare/vis/operator/layout/Layout", 7881],
+                ["flare/vis/operator/layout/NodeLinkTreeLayout", 12870],
+                ["flare/vis/operator/layout/PartitionLayout", 6108],
+                ["flare/vis/operator/layout/RadialTreeLayout", 12348],
+                ["flare/vis/operator/layout/RandomLayout", 870],
+                ["flare/vis/operator/layout/StackedAreaLayout", 9121],
+                ["flare/vis/operator/layout/TreeMapLayout", 9191],
+                ["flare/vis/Visualization", 16540]
+              ];              
             
             return data;
         }
