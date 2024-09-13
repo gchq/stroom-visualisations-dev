@@ -196,7 +196,7 @@ if (!visualisations) {
           }          
 
         // Variable to store the expanded state
-        let expandedNode = null;
+        // let expandedNode = null;
 
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
@@ -216,12 +216,8 @@ if (!visualisations) {
                 .append("g")
                     .attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
 
-            // Append a g element to the SVG for zoom and pan
-            // svgGroup = svg.append("g")
-            //     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-            // // Apply zoom behavior to the g element
-            // svg.call(zoom);
+            // Apply zoom behavior to the g element
+            svg.call(zoom);
 
             x = d3.scale.linear()
                 .range([0, 2 * Math.PI]);
@@ -230,25 +226,13 @@ if (!visualisations) {
                 .range([0, radius]);
             
             partition = d3.layout.partition()
-                .size([2 * Math.PI, radius])
                 .value(function(d) { return d.value; });
 
             arc = d3.svg.arc()
-                .startAngle(function(d) { return d.x; })
-                .endAngle(function(d) { return d.x + d.dx; })
-                .innerRadius(function(d) { return d.y; })
-                .outerRadius(function(d) { return d.y + d.dy; });
-
-            // Update nodes based on the expanded state
-            if (expandedNode) {
-                nodes = partition.nodes(expandedNode);
-            } else {
-                nodes = partition.nodes(formattedData);
-            }
-
-            nodes.forEach(function(node) {
-                node.visible = true;
-            });
+                .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+                .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+                .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+                .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
             if (typeof(tip) == "undefined") {
                 inverseHighlight = commonFunctions.inverseHighlight();
@@ -278,7 +262,7 @@ if (!visualisations) {
             svg.call(tip);
 
             svg.selectAll("path")
-                    .data(nodes)
+                    .data(partition.nodes(formattedData))
                 .enter().append("path")
                     .attr("d", arc)
                     .style("stroke", "var(--vis__background-color)")
@@ -286,12 +270,9 @@ if (!visualisations) {
                         return color((d.children ? d : d.parent).name);
                     })
                     .style("fill-rule", "evenodd")
-                    // .each(function(d) { d._current = d; })
-                    .on("click", function(d) {
-                        expandArc(d, formattedData);
-                });      
-
-            // updateLabels();
+                    .on("click", expandArc);
+                      
+            updateLabels();
 
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
@@ -306,6 +287,7 @@ if (!visualisations) {
 
         function expandArc(data) {
 
+        let labelsUpdated = false;
         svg.transition()
             .duration(750)
             .tween("scale", function() {
@@ -317,10 +299,10 @@ if (!visualisations) {
                     x.domain(xd(t));
                     y.domain(yd(t)).range(yr(t));
 
-                    data.x = xd(t)[0];    // Update `d.x` with interpolated value
-                    data.dx = xd(t)[1] - xd(t)[0]; // Calculate `dx` based on the domain
-                    data.y = yd(t)[0];
-                    data.yr = yr(t)[0];
+                    // data.x = xd(t)[0];    // Update `d.x` with interpolated value
+                    // data.dx = xd(t)[1] - xd(t)[0]; // Calculate `dx` based on the domain
+                    // data.y = yd(t)[0];
+                    // data.yr = yr(t)[0];
                 };
             })
             .selectAll("path")
@@ -329,71 +311,35 @@ if (!visualisations) {
             })
             .each("end", function() {
                 // After transition ends, explicitly update `d` values for the current view
-                data.x = x.domain()[0];
-                data.dx = x.domain()[1] - x.domain()[0];
-                data.y = y.domain()[0];
-                data.dy = 1 - y.domain()[0];
+                // data.x = x.domain()[0];
+                // data.dx = x.domain()[1] - x.domain()[0];
+                // data.y = y.domain()[0];
+                // data.dy = 1 - y.domain()[0];
 
                 // Now the data reflects the current state of the view
-                console.log("Data updated for accurate labeling:", data);
-                // updateLabels();  // Call a function to update labels with new data values
+                // console.log("Data updated for accurate labeling:", d);
+                if (!labelsUpdated) {
+                    labelsUpdated = true;  // Set flag to true to avoid future calls
+                    updateLabels();  // Call updateLabels once when animation ends
+                }
             });
         }
 
 
-        function markVisible(d) {
-            d.visible = true;
-            if (d.children) {
-                d.children.forEach(markVisible);
-            }
-        }
-
-        // function animation(d, duration) {
-        //     console.log("Starting animation for node:", d); // Print the node being clicked
-        
-        //     // Flag to ensure updateLabels is called only once
-        //     let labelsUpdated = false;
-        
-        //     svg.transition()
-        //         .duration(duration)
-        //         .tween("scale", function() {
-        //             // x domain should move from [0, 1] to the clicked arc's full range
-        //             var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]);
-        
-        //             // Adjust y domain based on node depth to create a zoom effect
-        //             var yd = d3.interpolate(y.domain(), [d.y, d.y + d.dy]);  // d.dy gives better zoom depth
-        
-        //             // Keep the range static if necessary
-        //             var yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-        
-        //             return function(t) {
-        //                 x.domain(xd(t));
-        //                 y.domain(yd(t)).range(yr(t));
-        //                 console.log("Interpolated t:", t, "Updated x domain:", x.domain(), "Updated y domain:", y.domain(), "Updated y range:", y.range());
-        //             };
-        //         })
-        //         .selectAll("path")
-        //         .attrTween("d", function(d) {
-        //             return function() {
-        //                 console.log("Updating arc for node:", d);
-        //                 return arc(d);  // Update the arc path during animation
-        //             };
-        //         })
-        //         .each("end", function() {
-        //             if (!labelsUpdated) {
-        //                 labelsUpdated = true;  // Set flag to true to avoid future calls
-        //                 updateLabels();  // Call updateLabels once when animation ends
-        //             }
-        //         });
+        // function markVisible(d) {
+        //     d.visible = true;
+        //     if (d.children) {
+        //         d.children.forEach(markVisible);
+        //     }
         // }
         
         function updateLabels() {
-            svgGroup.selectAll("text.label").remove();
-            svgGroup.selectAll("text.explode-button").remove();
-            svgGroup.selectAll("text.back-button").remove();
+            svg.selectAll("text.label").remove();
+            svg.selectAll("text.explode-button").remove();
+            svg.selectAll("text.back-button").remove();
 
-            path.each(function(d) {
-                if (d.visible && commonFunctions.isTrue(visSettings.showLabels)) {
+            svg.selectAll("path").each(function(d) {
+                if (commonFunctions.isTrue(visSettings.showLabels)) {
                     var centroid = arc.centroid(d);
                     var startAngle = d.x;
                     var endAngle = d.x + d.dx;
@@ -421,7 +367,7 @@ if (!visualisations) {
 
                     tempText.remove();
 
-                    if (textWidth < arcLength) {
+                    if (textWidth < arcLength * 1000) {
                         var angle = (startAngle + endAngle) / 2;
                         angle = angle * (180 / Math.PI) + 90; // Convert to degrees
 
@@ -433,7 +379,7 @@ if (!visualisations) {
                             angle = 0;
                         }
 
-                        svgGroup.append("text")
+                        svg.append("text")
                             .attr("class", "label")
                             .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ") rotate(" + angle + ")")
                             .attr("text-anchor", "middle")
@@ -455,7 +401,7 @@ if (!visualisations) {
             
         function zoomed() {
             // Apply translation and scaling to the arcs
-            svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             
             updateLabels();            
         }
