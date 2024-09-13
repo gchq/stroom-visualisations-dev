@@ -193,10 +193,7 @@ if (!visualisations) {
             calculateSums(root);
           
             return root;
-          }          
-
-        // Variable to store the expanded state
-        // let expandedNode = null;
+          }
 
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
@@ -277,8 +274,6 @@ if (!visualisations) {
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
-
-
             //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
             //pans or zooms
            commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
@@ -298,11 +293,6 @@ if (!visualisations) {
                 return function(t) {
                     x.domain(xd(t));
                     y.domain(yd(t)).range(yr(t));
-
-                    // data.x = xd(t)[0];    // Update `d.x` with interpolated value
-                    // data.dx = xd(t)[1] - xd(t)[0]; // Calculate `dx` based on the domain
-                    // data.y = yd(t)[0];
-                    // data.yr = yr(t)[0];
                 };
             })
             .selectAll("path")
@@ -310,28 +300,12 @@ if (!visualisations) {
                 return function() { return arc(d); };
             })
             .each("end", function() {
-                // After transition ends, explicitly update `d` values for the current view
-                // data.x = x.domain()[0];
-                // data.dx = x.domain()[1] - x.domain()[0];
-                // data.y = y.domain()[0];
-                // data.dy = 1 - y.domain()[0];
-
-                // Now the data reflects the current state of the view
-                // console.log("Data updated for accurate labeling:", d);
                 if (!labelsUpdated) {
-                    labelsUpdated = true;  // Set flag to true to avoid future calls
-                    updateLabels();  // Call updateLabels once when animation ends
+                    labelsUpdated = true;
+                    updateLabels();
                 }
             });
         }
-
-
-        // function markVisible(d) {
-        //     d.visible = true;
-        //     if (d.children) {
-        //         d.children.forEach(markVisible);
-        //     }
-        // }
         
         function updateLabels() {
             svg.selectAll("text.label").remove();
