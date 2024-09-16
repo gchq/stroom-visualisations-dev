@@ -90,7 +90,7 @@ if (!visualisations) {
                 tip = inverseHighlight.tip()
                     .html(function(tipData) {
                         var html = inverseHighlight.htmlBuilder()
-                            .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
+                            .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name))
                             .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
                             .build();
                         return html;
@@ -307,7 +307,7 @@ if (!visualisations) {
         };
 
         function expandArc(data) {
-
+            svg.selectAll("text.label").remove();
             let labelsUpdated = false;
             svg.transition()
                 .duration(750)
@@ -334,20 +334,36 @@ if (!visualisations) {
         }
         
         function updateLabels() {
-            svg.selectAll("text.label").remove();
-            svg.selectAll("text.explode-button").remove();
-            svg.selectAll("text.back-button").remove();
-
             svg.selectAll("path").each(function(d) {
+                // Apply scaling from the current x and y domains (after transition/zoom)
+                var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+                var innerRadius = Math.max(0, y(d.y));
+                var outerRadius = Math.max(0, y(d.y + d.dy));
+                var angleDifference = endAngle - startAngle;
+
+                if (angleDifference < 0.01 || endAngle < x.domain()[0] || startAngle > x.domain()[1]) {
+                    // If the arc is too small, remove event listeners
+                    d3.select(this).on("click", null).on("mouseover", null).on("mouseout", null);
+                    return;
+                } else {
+                    // If the arc has grown enough, add event listeners again
+                    d3.select(this)
+                        .on("click", expandArc)
+                        .on("mouseover", tip.show)
+                        .on("mouseout", tip.hide);
+                }
                 if (commonFunctions.isTrue(visSettings.showLabels)) {
+                    if (endAngle < x.domain()[0] || startAngle > x.domain()[1]) return;
                     var centroid = arc.centroid(d);
-                    var startAngle = d.x;
-                    var endAngle = d.x + d.dx;
                     var innerRadius = d.y;
                     var outerRadius = d.y + d.dy;
                     var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
                     var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
                     var fontSize = 13 / scale;
+
+                    var textContent = d.name != null ? commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
+                                          commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
 
                     // Create a temporary text element to measure the text width
                     var tempText = svg.append("text")
@@ -355,16 +371,9 @@ if (!visualisations) {
                         .attr("text-anchor", "middle")
                         .style("font-size", fontSize + "px")
                         .style("visibility", "hidden")
-                        .text(function() {
-                            if (d.name != null) {
-                                return commonFunctions.autoFormat(d.name, visSettings.nameDateFormat);
-                            } else {
-                                return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
-                            }
-                        });
+                        .text(textContent);
 
                     var textWidth = tempText.node().getComputedTextLength();
-
                     tempText.remove();
 
                     if (textWidth < arcLength * 1000) {
@@ -387,24 +396,11 @@ if (!visualisations) {
                             .style("pointer-events", "none")
                             .style("font-size", fontSize + "px")
                             .style("text-rendering", "geometricPrecision")
-                            .text(function() {
-                                if (d.name != null) {
-                                    return commonFunctions.autoFormat(d.name, visSettings.nameDateFormat);
-                                } else {
-                                    return commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
-                                }
-                            });
+                            .text(textContent);
                     }
                 }
             });
         }
-            
-        // function zoomed() {
-        //     // Apply translation and scaling to the arcs
-        //     svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            
-        //     updateLabels();            
-        // }
 
         // Used to provide the visualisation's D3 colour scale to the grid
         this.getColourScale = function() {
