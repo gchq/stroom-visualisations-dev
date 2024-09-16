@@ -308,29 +308,29 @@ if (!visualisations) {
 
         function expandArc(data) {
 
-        let labelsUpdated = false;
-        svg.transition()
-            .duration(750)
-            .tween("scale", function() {
-                var xd = d3.interpolate(x.domain(), [data.x, data.x + data.dx]),
-                    yd = d3.interpolate(y.domain(), [data.y, 1]),
-                    yr = d3.interpolate(y.range(), [data.y ? 20 : 0, radius]);
+            let labelsUpdated = false;
+            svg.transition()
+                .duration(750)
+                .tween("scale", function() {
+                    var xd = d3.interpolate(x.domain(), [data.x, data.x + data.dx]),
+                        yd = d3.interpolate(y.domain(), [data.y, 1]),
+                        yr = d3.interpolate(y.range(), [data.y ? 20 : 0, radius]);
 
-                return function(t) {
-                    x.domain(xd(t));
-                    y.domain(yd(t)).range(yr(t));
-                };
-            })
-            .selectAll("path")
-            .attrTween("d", function(d) {
-                return function() { return arc(d); };
-            })
-            .each("end", function() {
-                if (!labelsUpdated) {
-                    labelsUpdated = true;
-                    updateLabels();
-                }
-            });
+                    return function(t) {
+                        x.domain(xd(t));
+                        y.domain(yd(t)).range(yr(t));
+                    };
+                })
+                .selectAll("path")
+                .attrTween("d", function(d) {
+                    return function() { return arc(d); };
+                })
+                .each("end", function() {
+                    if (!labelsUpdated) {
+                        labelsUpdated = true;
+                        updateLabels();
+                    }
+                });
         }
         
         function updateLabels() {
