@@ -39,21 +39,65 @@ if (!visualisations) {
         this.element = element;
 
         var grid = new visualisations.GenericGrid(this.element);
-        var svg, radius, partition, arc, svgGroup, nodes, path, visSettings;
-        var width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
-        var height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
+        var svg, radius, partition, arc, svgGroup, nodes, path, visSettings, canvas;
+        var width;
+        var height;
         var tip;
         var inverseHighlight;
         var delimiter = '/'; // default delimiter
         var stroomData;
         var x,y;
+        var initialised = false;
+        var canvas;
 
         var color = commonConstants.categoryGoogle();
 
-        var zoom = d3.behavior.zoom()
-            .scaleExtent([0.1, 10])  // Adjust the scale extent as needed
-            .on("zoom", zoomed);
-        zoom.translate([width / 2, height / 2]);
+        //one off initialisation of all the local variables, including
+        //appending various static dom elements
+        var initialise = function() {
+            initialised = true;
+
+            width = commonFunctions.gridAwareWidthFunc(true, containerNode, element);
+            height = commonFunctions.gridAwareHeightFunc(true, containerNode, element);
+
+            canvas = d3.select(element).append("svg:svg");
+
+            svg = canvas.append("svg:g");
+
+            //Ideally it would be good to reset the mousewheel zoom when we zoom in/out of a grid cell
+            zoom = d3.behavior.zoom()
+                .scaleExtent([0.1,100])
+                .on("zoom", commonFunctions.zoomed(svg));
+            zoom.translate([width / 2, height / 2]);
+
+            canvas.call(zoom);
+            //Set up the bar highlighting and hover tip
+            if (typeof(tip) == "undefined") {
+                inverseHighlight = commonFunctions.inverseHighlight();
+
+                inverseHighlight.toSelectionItem = function(d) {
+                //console.log("selection");
+                //console.log(d);
+                var selection = {
+                    key: d.name,
+                    series: d.series,
+                    value: d.value,
+                };
+                //console.log(selection);
+                return selection;
+                };
+
+                tip = inverseHighlight.tip()
+                    .html(function(tipData) {
+                        var html = inverseHighlight.htmlBuilder()
+                            .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
+                            .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
+                            .build();
+                        return html;
+                    });
+            }
+        };
+
 
         //Called by GenericGrid to create a new instance of the visualisation for each cell.
         this.getInstance = function(containerNode) {
@@ -90,7 +134,7 @@ if (!visualisations) {
               if (commonFunctions.isTrue(settings.synchSeries)) {
                   //series are synched so setup the colour scale domain and add it to the context
                   //so it can be passed to each grid cell vis
-                  context.color = colour;
+                  context.color = color;
               } else {
                   //ensure there is no colour scale in the context so each grid cel vis can define its own
                   delete context.color;
@@ -123,12 +167,14 @@ if (!visualisations) {
         //data - the object tree containing all the data for that grid cell. Always contains all data 
         //       currently available for a query.
         this.setDataInsideGrid = function(context, settings, data) {
-        
+            if (!initialised){
+                initialise();
+            }
             // If the context already has a colour set then use it
             if (context) {
                 visContext = context;
                 if (context.color) {
-                    colour = context.color;
+                    color = context.color;
                 }
             }
 
@@ -202,19 +248,26 @@ if (!visualisations) {
             // Calculate dimensions and radius
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
+            fullWidth = commonFunctions.gridAwareWidthFunc(false, containerNode, element, margins);
+            fullHeight = commonFunctions.gridAwareHeightFunc(false, containerNode, element, margins);
+
+            if (width > 0 && height > 0) {
+                canvas
+                    .attr("width", fullWidth)
+                    .attr("height", fullHeight);
+            }
+
             radius = Math.min(width, height) / 2;
 
-            d3.select(element).select("svg").remove();
+            svg.call(tip);
+
+            // d3.select(element).select("svg").remove();
 
             // Append new SVG
-            svg = d3.select(element).append("svg")
-                    .attr("width", width)
-                    .attr("height", height)
-                .append("g")
-                    .attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
+            svg.attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
 
             // Apply zoom behavior to the g element
-            svg.call(zoom);
+            // svg.call(zoom);
 
             x = d3.scale.linear()
                 .range([0, 2 * Math.PI]);
@@ -230,33 +283,6 @@ if (!visualisations) {
                 .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
                 .innerRadius(function(d) { return Math.max(0, y(d.y)); })
                 .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
-
-            if (typeof(tip) == "undefined") {
-                inverseHighlight = commonFunctions.inverseHighlight();
-    
-                inverseHighlight.toSelectionItem = function(d) {
-                //   console.log("selection");
-                //   console.log(d);
-                  var selection = {
-                    key: d.name,
-                    // series: d.series,
-                    value: d.value,
-                  };
-                //   console.log(selection);
-                  return selection;
-                };
-    
-                tip = inverseHighlight.tip()
-                    .html(function(tipData) {
-                        var html = inverseHighlight.htmlBuilder()
-                            .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name))
-                            .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
-                            .build();
-                        return html;
-                    });
-            }
-
-            svg.call(tip);
 
             svg.selectAll("path")
                     .data(partition.nodes(formattedData))
@@ -373,12 +399,12 @@ if (!visualisations) {
             });
         }
             
-        function zoomed() {
-            // Apply translation and scaling to the arcs
-            svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        // function zoomed() {
+        //     // Apply translation and scaling to the arcs
+        //     svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             
-            updateLabels();            
-        }
+        //     updateLabels();            
+        // }
 
         // Used to provide the visualisation's D3 colour scale to the grid
         this.getColourScale = function() {
