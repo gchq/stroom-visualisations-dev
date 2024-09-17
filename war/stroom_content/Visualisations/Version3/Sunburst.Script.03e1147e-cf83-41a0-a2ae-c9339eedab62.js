@@ -39,7 +39,7 @@ if (!visualisations) {
         this.element = element;
 
         var grid = new visualisations.GenericGrid(this.element);
-        var svg, radius, partition, arc, svgGroup, nodes, path, visSettings, canvas;
+        var svg, radius, partition, arc, visSettings, canvas;
         var width;
         var height;
         var tip;
@@ -185,7 +185,7 @@ if (!visualisations) {
             if (data) {
                 stroomData = data;
                 let formattedData = arrayToHierarchy(data.values[0].values);
-                console.log(formattedData);
+                // console.log(formattedData);
                 update(500, formattedData, settings);
             }
         };
@@ -204,22 +204,18 @@ if (!visualisations) {
             const rootName = arr[0][0].split('/')[0];
             let root = { name: rootName, children: [] };
                     
-            // Iterate through each path-value pair in the input array
             arr.forEach(([path, value]) => {
-
+                
             // Default delimiter
               const pathParts = path.split(delimiter);
               let currentNode = root;
           
-              // Traverse the path and build the hierarchy
               for (let i = 1; i < pathParts.length; i++) {
                 const part = pathParts[i];
                 
-                // If it's the last part, it's a leaf node, so add the value
                 if (i === pathParts.length - 1) {
                   currentNode.children.push({ name: part, value: value });
                 } else {
-                  // Find or create the next node in the path
                   currentNode = findOrCreateNode(currentNode.children, part);
                 }
               }
@@ -261,13 +257,8 @@ if (!visualisations) {
 
             svg.call(tip);
 
-            // d3.select(element).select("svg").remove();
-
             // Append new SVG
             svg.attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
-
-            // Apply zoom behavior to the g element
-            // svg.call(zoom);
 
             x = d3.scale.linear()
                 .range([0, 2 * Math.PI]);
@@ -306,6 +297,8 @@ if (!visualisations) {
            commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
         };
 
+        var EPSILON = 1e-6;
+
         function expandArc(data) {
             svg.selectAll("text.label").remove();
             let labelsUpdated = false;
@@ -323,7 +316,16 @@ if (!visualisations) {
                 })
                 .selectAll("path")
                 .attrTween("d", function(d) {
-                    return function() { return arc(d); };
+                    return function() {
+                        var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                        var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+        
+                        if (Math.abs(endAngle - startAngle) < EPSILON) {
+                            return "";
+                        }
+
+                        return arc(d);
+                    };
                 })
                 .each("end", function() {
                     if (!labelsUpdated) {
@@ -340,19 +342,7 @@ if (!visualisations) {
                 var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
                 var innerRadius = Math.max(0, y(d.y));
                 var outerRadius = Math.max(0, y(d.y + d.dy));
-                var angleDifference = endAngle - startAngle;
 
-                if (angleDifference < 0.01 || endAngle < x.domain()[0] || startAngle > x.domain()[1]) {
-                    // If the arc is too small, remove event listeners
-                    d3.select(this).on("click", null).on("mouseover", null).on("mouseout", null);
-                    return;
-                } else {
-                    // If the arc has grown enough, add event listeners again
-                    d3.select(this)
-                        .on("click", expandArc)
-                        .on("mouseover", tip.show)
-                        .on("mouseout", tip.hide);
-                }
                 if (commonFunctions.isTrue(visSettings.showLabels)) {
                     if (endAngle < x.domain()[0] || startAngle > x.domain()[1]) return;
                     var centroid = arc.centroid(d);
