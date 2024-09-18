@@ -49,6 +49,7 @@ if (!visualisations) {
         var x,y;
         var initialised = false;
         var canvas;
+        var lastClickedNode = null;
 
         var color = commonConstants.categoryGoogle();
 
@@ -200,12 +201,14 @@ if (!visualisations) {
               }
               return node;
             }
+
+            // console.log(arr);
           
             const rootName = arr[0][0].split('/')[0];
             let root = { name: rootName, children: [] };
                     
             arr.forEach(([path, value]) => {
-                
+
             // Default delimiter
               const pathParts = path.split(delimiter);
               let currentNode = root;
@@ -241,6 +244,7 @@ if (!visualisations) {
         var update = function(duration, formattedData, settings) {
             visSettings = settings;
 
+            
             // Calculate dimensions and radius
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
@@ -284,21 +288,30 @@ if (!visualisations) {
                         return color((d.children ? d : d.parent).name);
                     })
                     .style("fill-rule", "evenodd")
-                    .on("click", expandArc);
-                      
-            updateLabels();
-
+                    .on("click", function(d) {
+                        lastClickedNode = d;
+                        console.log(lastClickedNode);
+                        expandArc(d);
+                    });
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
             //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
             //pans or zooms
-           commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
-           commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+
+            var nodeToExpand = lastClickedNode || formattedData;
+            // console.log(nodeToExpand);
+            expandArc(nodeToExpand);
+            // setTimeout(() => {
+            //     expandArc(nodeToExpand);
+            //     console.log(nodeToExpand);
+            // }, 1000);
+
         };
 
         var EPSILON = 1e-6;
-
         function expandArc(data) {
             svg.selectAll("text.label").remove();
             let labelsUpdated = false;
@@ -346,8 +359,6 @@ if (!visualisations) {
                 if (commonFunctions.isTrue(visSettings.showLabels)) {
                     if (endAngle < x.domain()[0] || startAngle > x.domain()[1]) return;
                     var centroid = arc.centroid(d);
-                    var innerRadius = d.y;
-                    var outerRadius = d.y + d.dy;
                     var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
                     var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
                     var fontSize = 13 / scale;
@@ -366,7 +377,7 @@ if (!visualisations) {
                     var textWidth = tempText.node().getComputedTextLength();
                     tempText.remove();
 
-                    if (textWidth < arcLength * 1000) {
+                    if (textWidth < arcLength) {
                         var angle = (startAngle + endAngle) / 2;
                         angle = angle * (180 / Math.PI) + 90; // Convert to degrees
 
@@ -376,7 +387,13 @@ if (!visualisations) {
                         }
                         if (d.depth == 0){
                             angle = 0;
+                            centroid = [0, 0];
                         }
+                        var horizontalText = false;
+                        if (Math.abs(angle - 90) < 1 || Math.abs(angle - 270) < 1) {
+                            angle = 0;
+                            horizontalText = true;
+                        }        
 
                         svg.append("text")
                             .attr("class", "label")
@@ -387,6 +404,12 @@ if (!visualisations) {
                             .style("font-size", fontSize + "px")
                             .style("text-rendering", "geometricPrecision")
                             .text(textContent);
+
+                        if (horizontalText) {
+                            svg.select("text.label")
+                                .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ")") // No rotation
+                                .attr("text-anchor", "middle");
+                        }
                     }
                 }
             });
