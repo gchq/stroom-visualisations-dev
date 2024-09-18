@@ -19,6 +19,8 @@ function TestData() {
     //as these define the data structures and defaul settings values.
     //Ideally the TestVis UI would also be driven from the same json data, meaning
     //only the controls appropiate to the vis would be show foe that vis
+
+    window.callNumber = window.callNumber || 0;
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
 
@@ -636,6 +638,9 @@ function TestData() {
                 values = createPathTreeData();
             }
             else if (visType == VIS_TYPE_SUNBURST){
+                // if (!callNumber){
+                //     callNumber = 0;
+                // }
                 values = createSunburstData();
             }
 
@@ -899,7 +904,7 @@ function TestData() {
         };
 
         function createSunburstData(){
-            data = [
+            const data = [
                 ["flare/analytics/cluster/AgglomerativeCluster", 3938],
                 ["flare/analytics/cluster/CommunityStructure", 3812],
                 ["flare/analytics/cluster/HierarchicalCluster", 6714],
@@ -1101,8 +1106,9 @@ function TestData() {
                 ["flare/vis/operator/layout/TreeMapLayout", 9191],
                 ["flare/vis/Visualization", 16540]
               ];              
-            
-            return data;
+            window.callNumber += 1;
+            const numItems = Math.min(window.callNumber * 10, data.length);
+            return data.slice(0, numItems);
         }
 
         function createBucketisedTimeData(randomMaxVal, bucketSizeMs) {
