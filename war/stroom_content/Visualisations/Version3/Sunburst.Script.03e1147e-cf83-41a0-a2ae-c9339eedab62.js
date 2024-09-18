@@ -68,7 +68,8 @@ if (!visualisations) {
             //Ideally it would be good to reset the mousewheel zoom when we zoom in/out of a grid cell
             zoom = d3.behavior.zoom()
                 .scaleExtent([0.1,100])
-                .on("zoom", commonFunctions.zoomed(svg));
+                .on("zoom", zoomed);
+                
             zoom.translate([width / 2, height / 2]);
 
             canvas.call(zoom);
@@ -290,7 +291,7 @@ if (!visualisations) {
                     .style("fill-rule", "evenodd")
                     .on("click", function(d) {
                         lastClickedNode = d;
-                        console.log(lastClickedNode);
+                        // console.log(lastClickedNode);
                         expandArc(d);
                     });
 
@@ -349,6 +350,7 @@ if (!visualisations) {
         }
         
         function updateLabels() {
+            svg.selectAll("text.label").remove();
             svg.selectAll("path").each(function(d) {
                 // Apply scaling from the current x and y domains (after transition/zoom)
                 var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
@@ -357,7 +359,6 @@ if (!visualisations) {
                 var outerRadius = Math.max(0, y(d.y + d.dy));
 
                 if (commonFunctions.isTrue(visSettings.showLabels)) {
-                    if (endAngle < x.domain()[0] || startAngle > x.domain()[1]) return;
                     var centroid = arc.centroid(d);
                     var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
                     var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
@@ -380,21 +381,15 @@ if (!visualisations) {
                     if (textWidth < arcLength) {
                         var angle = (startAngle + endAngle) / 2;
                         angle = angle * (180 / Math.PI) + 90; // Convert to degrees
-
-                        // Adjust the angle to keep the text upright
                         if (angle > 90 && angle < 270) {
                             angle += 180;
                         }
                         if (d.depth == 0){
-                            angle = 0;
                             centroid = [0, 0];
                         }
-                        var horizontalText = false;
-                        if (Math.abs(angle - 90) < 1 || Math.abs(angle - 270) < 1) {
+                        if (Math.abs(angle - 90) < 0.1 || Math.abs(angle - 270) < 0.1) {
                             angle = 0;
-                            horizontalText = true;
                         }        
-
                         svg.append("text")
                             .attr("class", "label")
                             .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ") rotate(" + angle + ")")
@@ -404,15 +399,16 @@ if (!visualisations) {
                             .style("font-size", fontSize + "px")
                             .style("text-rendering", "geometricPrecision")
                             .text(textContent);
-
-                        if (horizontalText) {
-                            svg.select("text.label")
-                                .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ")") // No rotation
-                                .attr("text-anchor", "middle");
-                        }
                     }
                 }
             });
+        }
+
+        function zoomed() {
+            // Apply translation and scaling to the arcs
+            svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            
+            updateLabels();            
         }
 
         // Used to provide the visualisation's D3 colour scale to the grid
