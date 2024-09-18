@@ -202,15 +202,12 @@ if (!visualisations) {
               }
               return node;
             }
-
             // console.log(arr);
-          
-            const rootName = arr[0][0].split('/')[0];
+            const rootName = arr[0][0].split(delimiter)[0];
             let root = { name: rootName, children: [] };
                     
             arr.forEach(([path, value]) => {
 
-            // Default delimiter
               const pathParts = path.split(delimiter);
               let currentNode = root;
           
@@ -422,7 +419,7 @@ if (!visualisations) {
         this.getColourScale = function() {
             return color;
         };
-
+        
     };
 
 }());
