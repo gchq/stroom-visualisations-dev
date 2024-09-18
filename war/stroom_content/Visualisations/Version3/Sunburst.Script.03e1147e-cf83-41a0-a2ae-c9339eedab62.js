@@ -361,24 +361,30 @@ if (!visualisations) {
                 if (commonFunctions.isTrue(visSettings.showLabels)) {
                     var centroid = arc.centroid(d);
                     var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
+                    var radDiff = outerRadius - innerRadius;
                     var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
                     var fontSize = 13 / scale;
 
                     var textContent = d.name != null ? commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
                                           commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
 
-                    // Create a temporary text element to measure the text width
+                    // Create a temporary text element to measure the text width and height
                     var tempText = svg.append("text")
-                        .attr("class", "temp-text")
-                        .attr("text-anchor", "middle")
-                        .style("font-size", fontSize + "px")
-                        .style("visibility", "hidden")
-                        .text(textContent);
+                    .attr("class", "temp-text")
+                    .attr("text-anchor", "middle")
+                    .style("font-size", fontSize + "px")
+                    .style("visibility", "hidden")
+                    .text(textContent);
 
-                    var textWidth = tempText.node().getComputedTextLength();
+                    // Measure the width and height using the bounding box
+                    var bbox = tempText.node().getBBox();
+                    var textWidth = bbox.width;
+                    var textHeight = bbox.height;
+
+                    // Remove the temporary text element
                     tempText.remove();
 
-                    if (textWidth < arcLength) {
+                    if (textWidth < radDiff && textHeight < arcLength) {
                         var angle = (startAngle + endAngle) / 2;
                         angle = angle * (180 / Math.PI) + 90; // Convert to degrees
                         if (angle > 90 && angle < 270) {
@@ -399,6 +405,7 @@ if (!visualisations) {
                             .style("font-size", fontSize + "px")
                             .style("text-rendering", "geometricPrecision")
                             .text(textContent);
+
                     }
                 }
             });
