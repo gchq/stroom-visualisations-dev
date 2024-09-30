@@ -299,8 +299,10 @@ if (!visualisations) {
                     return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
                 })
                 .on("click", function(d) {
-                    lastClickedNode = d;
-                    expandArc(d);  // Expand more layers on click
+                    if (d.children) {
+                        lastClickedNode = d;
+                        expandArc(d);  // Expand more layers on click#
+                    }
                 });
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
