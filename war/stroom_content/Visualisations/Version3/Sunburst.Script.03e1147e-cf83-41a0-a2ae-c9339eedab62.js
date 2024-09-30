@@ -292,7 +292,16 @@ if (!visualisations) {
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) {
-                    return color((d.children ? d : d.parent).name);
+                    if (d.depth > 1 && (d.children)) {
+                        var parentColor = color(d.parent.name);
+                        return d3.rgb(parentColor);
+                    }
+            
+                    // Get the base color for segments at depth 1 or less
+                    var baseColor = color((d.children ? d : d.parent).name);
+            
+                    // If it has no children, make it brighter
+                    return d.children ? d3.rgb(baseColor) : d3.rgb(baseColor).brighter(1);
                 })
                 .style("fill-rule", "evenodd")
                 .style("opacity", function(d) {
