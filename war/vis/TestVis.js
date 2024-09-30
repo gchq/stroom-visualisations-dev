@@ -123,7 +123,7 @@
       
 
     async function fetchFileList(directory) {
-        const apiEndpoint = `http://localhost:8888/${directory}`;
+        const apiEndpoint = `*/${directory}`;
         try {
             const response = await fetch(apiEndpoint);
             if (!response.ok) {
