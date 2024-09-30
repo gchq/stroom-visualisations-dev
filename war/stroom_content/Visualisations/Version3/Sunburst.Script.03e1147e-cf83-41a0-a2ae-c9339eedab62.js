@@ -50,7 +50,7 @@ if (!visualisations) {
         var initialised = false;
         var canvas;
         var lastClickedNode = null;
-        var initialDepth = 2
+        var initialDepth = 2; // default depth
         var color = commonConstants.categoryGoogle();
 
         //one off initialisation of all the local variables, including
@@ -287,8 +287,8 @@ if (!visualisations) {
                 .innerRadius(function(d) { return Math.max(0, y(d.y)); })
                 .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-            // Select only nodes up to the current maximum depth
-            var nodes = partition.nodes(formattedData).filter(filterByDepth);
+            // Get all nodes, but initially hide those deeper than initialDepth
+            var nodes = partition.nodes(formattedData);
 
             // Bind data to the paths, and append new paths
             var paths = svg.selectAll("path").data(nodes);
@@ -300,12 +300,13 @@ if (!visualisations) {
                     return color((d.children ? d : d.parent).name);
                 })
                 .style("fill-rule", "evenodd")
+                .style("opacity", function(d) {
+                    return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
+                })
                 .on("click", function(d) {
                     lastClickedNode = d;
                     expandArc(d);  // Expand more layers on click
                 });
-
-            paths.exit().remove()
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
@@ -320,7 +321,10 @@ if (!visualisations) {
         };
 
         var EPSILON = 1e-6;
+        var targetDepth;
         function expandArc(data) {
+            targetDepth = data.depth + initialDepth;
+
             svg.selectAll("text.label").remove();
             let labelsUpdated = false;
             svg.transition()
@@ -338,81 +342,87 @@ if (!visualisations) {
                 .selectAll("path")
                 .attrTween("d", function(d) {
                     return function() {
-                        var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
-                        var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
-        
-                        if (Math.abs(endAngle - startAngle) < EPSILON) {
+                        if (d.depth <= targetDepth) {
+                            var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                            var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+            
+                            if (Math.abs(endAngle - startAngle) < EPSILON) {
+                                return "";
+                            }
+
+                            return arc(d);
+                        } else {
                             return "";
                         }
-
-                        return arc(d);
                     };
                 })
                 .each("end", function() {
                     if (!labelsUpdated) {
                         labelsUpdated = true;
-                        updateLabels();
+                        updateLabels(targetDepth);
                     }
                 });
         }
         
-        function updateLabels() {
+        function updateLabels(targetDepth) {
             svg.selectAll("text.label").remove();
             svg.selectAll("path").each(function(d) {
-                // Apply scaling from the current x and y domains (after transition/zoom)
-                var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
-                var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
-                var innerRadius = Math.max(0, y(d.y));
-                var outerRadius = Math.max(0, y(d.y + d.dy));
+                if (d.depth <= targetDepth) {
+                    // Apply scaling from the current x and y domains (after transition/zoom)
+                    var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                    var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+                    var innerRadius = Math.max(0, y(d.y));
+                    var outerRadius = Math.max(0, y(d.y + d.dy));
 
-                if (commonFunctions.isTrue(visSettings.showLabels)) {
-                    var centroid = arc.centroid(d);
-                    var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
-                    var radDiff = outerRadius - innerRadius;
-                    var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
-                    var fontSize = 13 / scale;
+                    if (commonFunctions.isTrue(visSettings.showLabels)) {
+                        var centroid = arc.centroid(d);
+                        var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
+                        var radDiff = outerRadius - innerRadius;
+                        var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
+                        var fontSize = 13 / scale;
 
-                    var textContent = d.name != null ? commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
-                                          commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
+                        var textContent = d.name != null ? commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
+                                            commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
 
-                    // Create a temporary text element to measure the text width and height
-                    var tempText = svg.append("text")
-                    .attr("class", "temp-text")
-                    .attr("text-anchor", "middle")
-                    .style("font-size", fontSize + "px")
-                    .style("visibility", "hidden")
-                    .text(textContent);
+                        // Create a temporary text element to measure the text width and height
+                        var tempText = svg.append("text")
+                        .attr("class", "temp-text")
+                        .attr("text-anchor", "middle")
+                        .style("font-size", fontSize + "px")
+                        .style("visibility", "hidden")
+                        .text(textContent);
 
-                    // Measure the width and height using the bounding box
-                    var bbox = tempText.node().getBBox();
-                    var textWidth = bbox.width;
-                    var textHeight = bbox.height;
+                        // Measure the width and height using the bounding box
+                        var bbox = tempText.node().getBBox();
+                        var textWidth = bbox.width;
+                        var textHeight = bbox.height;
 
-                    // Remove the temporary text element
-                    tempText.remove();
+                        // Remove the temporary text element
+                        tempText.remove();
 
-                    if (textWidth < radDiff && textHeight < arcLength) {
-                        var angle = (startAngle + endAngle) / 2;
-                        angle = angle * (180 / Math.PI) + 90; // Convert to degrees
-                        if (angle > 90 && angle < 270) {
-                            angle += 180;
+                        if (textWidth < radDiff && textHeight < arcLength) {
+                            var angle = (startAngle + endAngle) / 2;
+                            angle = angle * (180 / Math.PI) + 90; // Convert to degrees
+                            if (angle > 90 && angle < 270) {
+                                angle += 180;
+                            }
+                            if (d.depth == 0){
+                                centroid = [0, 0];
+                            }
+                            if (Math.abs(angle - 90) < 0.1 || Math.abs(angle - 270) < 0.1) {
+                                angle = 0;
+                            }        
+                            svg.append("text")
+                                .attr("class", "label")
+                                .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ") rotate(" + angle + ")")
+                                .attr("text-anchor", "middle")
+                                .attr("dy", ".35em")
+                                .style("pointer-events", "none")
+                                .style("font-size", fontSize + "px")
+                                .style("text-rendering", "geometricPrecision")
+                                .text(textContent);
+
                         }
-                        if (d.depth == 0){
-                            centroid = [0, 0];
-                        }
-                        if (Math.abs(angle - 90) < 0.1 || Math.abs(angle - 270) < 0.1) {
-                            angle = 0;
-                        }        
-                        svg.append("text")
-                            .attr("class", "label")
-                            .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ") rotate(" + angle + ")")
-                            .attr("text-anchor", "middle")
-                            .attr("dy", ".35em")
-                            .style("pointer-events", "none")
-                            .style("font-size", fontSize + "px")
-                            .style("text-rendering", "geometricPrecision")
-                            .text(textContent);
-
                     }
                 }
             });
@@ -422,7 +432,7 @@ if (!visualisations) {
             // Apply translation and scaling to the arcs
             svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             
-            updateLabels();            
+            updateLabels(targetDepth);            
         }
 
         // Used to provide the visualisation's D3 colour scale to the grid
