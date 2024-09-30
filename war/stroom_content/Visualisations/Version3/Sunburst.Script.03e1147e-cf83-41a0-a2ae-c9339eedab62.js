@@ -50,7 +50,7 @@ if (!visualisations) {
         var initialised = false;
         var canvas;
         var lastClickedNode = null;
-
+        var initialDepth = 2
         var color = commonConstants.categoryGoogle();
 
         //one off initialisation of all the local variables, including
@@ -183,6 +183,10 @@ if (!visualisations) {
             if (settings.delimiter) {
                 delimiter = settings.delimiter;
             }
+
+            if (settings.initialDepth) {
+                initialDepth = settings.initialDepth;
+            }
     
             if (data) {
                 stroomData = data;
@@ -236,7 +240,13 @@ if (!visualisations) {
             calculateSums(root);
           
             return root;
-          }
+        }
+
+        var currentMaxDepth = initialDepth;
+
+        var filterByDepth = function(d) {
+            return d.depth <= currentMaxDepth;
+        };
 
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
@@ -277,20 +287,25 @@ if (!visualisations) {
                 .innerRadius(function(d) { return Math.max(0, y(d.y)); })
                 .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-            svg.selectAll("path")
-                    .data(partition.nodes(formattedData))
-                .enter().append("path")
-                    .attr("d", arc)
-                    .style("stroke", "var(--vis__background-color)")
-                    .style("fill", function(d) {
-                        return color((d.children ? d : d.parent).name);
-                    })
-                    .style("fill-rule", "evenodd")
-                    .on("click", function(d) {
-                        lastClickedNode = d;
-                        // console.log(lastClickedNode);
-                        expandArc(d);
-                    });
+            // Select only nodes up to the current maximum depth
+            var nodes = partition.nodes(formattedData).filter(filterByDepth);
+
+            // Bind data to the paths, and append new paths
+            var paths = svg.selectAll("path").data(nodes);
+            
+            paths.enter().append("path")
+                .attr("d", arc)
+                .style("stroke", "var(--vis__background-color)")
+                .style("fill", function(d) {
+                    return color((d.children ? d : d.parent).name);
+                })
+                .style("fill-rule", "evenodd")
+                .on("click", function(d) {
+                    lastClickedNode = d;
+                    expandArc(d);  // Expand more layers on click
+                });
+
+            paths.exit().remove()
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
@@ -300,12 +315,7 @@ if (!visualisations) {
             commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
 
             var nodeToExpand = lastClickedNode || formattedData;
-            // console.log(nodeToExpand);
             expandArc(nodeToExpand);
-            // setTimeout(() => {
-            //     expandArc(nodeToExpand);
-            //     console.log(nodeToExpand);
-            // }, 1000);
 
         };
 
