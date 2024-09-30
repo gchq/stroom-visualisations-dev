@@ -52,6 +52,7 @@ if (!visualisations) {
         var lastClickedNode = null;
         var initialDepth = 2; // default depth
         var color = commonConstants.categoryGoogle();
+        var prevScale = 1;
 
         //one off initialisation of all the local variables, including
         //appending various static dom elements
@@ -242,12 +243,6 @@ if (!visualisations) {
             return root;
         }
 
-        var currentMaxDepth = initialDepth;
-
-        var filterByDepth = function(d) {
-            return d.depth <= currentMaxDepth;
-        };
-
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
             visSettings = settings;
@@ -429,10 +424,16 @@ if (!visualisations) {
         }
 
         function zoomed() {
+            var currentScale = d3.event.scale;
+
             // Apply translation and scaling to the arcs
             svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             
-            updateLabels(targetDepth);            
+            if (currentScale !== prevScale) {
+                updateLabels(targetDepth);
+            }
+            
+            prevScale = currentScale;
         }
 
         // Used to provide the visualisation's D3 colour scale to the grid
