@@ -50,7 +50,7 @@ if (!visualisations) {
         var initialised = false;
         var canvas;
         var lastClickedNode = null;
-        var initialDepth = 2; // default depth
+        var initialDepth = 3; // default depth
         var color = commonConstants.categoryGoogle();
         var prevScale = 1;
 
@@ -292,17 +292,29 @@ if (!visualisations) {
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) {
-                    if (d.depth > 1 && (d.children)) {
-                        var parentColor = color(d.parent.name);
-                        return d3.rgb(parentColor);
+                    // For nodes at depth 1, assign a unique color
+                    if (d.depth === 1) {
+                        var baseColor = color(d.name);
+                        return d3.rgb(baseColor);
                     }
-            
-                    // Get the base color for segments at depth 1 or less
-                    var baseColor = color((d.children ? d : d.parent).name);
-            
-                    // If it has no children, make it brighter
-                    return d.children ? d3.rgb(baseColor) : d3.rgb(baseColor).brighter(1);
-                })
+                
+                    // For nodes deeper than depth 1, find the depth-1 ancestor and inherit its color
+                    if (d.depth > 1) {
+                        // Traverse up the hierarchy to find the depth-1 ancestor
+                        var ancestor = d;
+                        while (ancestor.depth > 1) {
+                            ancestor = ancestor.parent;
+                        }
+                        var ancestorColor = color(ancestor.name); // use depth-1 ancestor color
+                        
+                        // If the current node has children, keep the ancestor's color
+                        // If the current node has no children, make it brighter
+                        return d.children ? d3.rgb(ancestorColor) : d3.rgb(ancestorColor).brighter(1);
+                    }
+                
+                    // Default: root node or any unhandled cases
+                    return color(d.name);
+                })                              
                 .style("fill-rule", "evenodd")
                 .style("opacity", function(d) {
                     return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers

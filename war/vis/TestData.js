@@ -1106,11 +1106,11 @@ function TestData() {
                 ["flare/vis/operator/layout/TreeMapLayout", 9191],
                 ["flare/vis/Visualization", 16540]
               ];              
-            window.callNumber += 1;
-            const numItems = Math.min(window.callNumber * 10, data.length);
-            return data.slice(0, numItems);
+            // window.callNumber += 1;
+            // const numItems = Math.min(window.callNumber * 10, data.length);
+            // return data.slice(0, numItems);
 
-            // return data;
+            return data;
         }
 
         function createBucketisedTimeData(randomMaxVal, bucketSizeMs) {
