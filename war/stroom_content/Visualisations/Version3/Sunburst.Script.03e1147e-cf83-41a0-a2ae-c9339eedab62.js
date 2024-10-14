@@ -50,7 +50,7 @@ if (!visualisations) {
         var initialised = false;
         var canvas;
         var lastClickedNode = null;
-        var initialDepth = 3; // default depth
+        var initialDepth = 2; // default depth
         var color = commonConstants.categoryGoogle();
         var prevScale = 1;
 
@@ -292,27 +292,19 @@ if (!visualisations) {
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) {
-                    // For nodes at depth 1, assign a unique color
+                    // Depth 1, assign a unique color
                     if (d.depth === 1) {
                         var baseColor = color(d.name);
                         return d3.rgb(baseColor);
                     }
-                
-                    // For nodes deeper than depth 1, find the depth-1 ancestor and inherit its color
                     if (d.depth > 1) {
-                        // Traverse up the hierarchy to find the depth-1 ancestor
                         var ancestor = d;
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
                         var ancestorColor = color(ancestor.name); // use depth-1 ancestor color
-                        
-                        // If the current node has children, keep the ancestor's color
-                        // If the current node has no children, make it brighter
                         return d.children ? d3.rgb(ancestorColor) : d3.rgb(ancestorColor).brighter(1);
                     }
-                
-                    // Default: root node or any unhandled cases
                     return color(d.name);
                 })                              
                 .style("fill-rule", "evenodd")
@@ -322,7 +314,7 @@ if (!visualisations) {
                 .on("click", function(d) {
                     if (d.children) {
                         lastClickedNode = d;
-                        expandArc(d);  // Expand more layers on click#
+                        expandArc(d);  // Expand more layers on click
                     }
                 });
 
