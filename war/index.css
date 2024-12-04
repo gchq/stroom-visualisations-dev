@@ -4,3 +4,44 @@ body {
     background-color: var(--page__background-color);
     color: var(--text-color);
 }
+
+#controls {
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: var(--navigation__background-color);
+    padding: 10px;
+    font-family: var(--regular-font-family);
+    font-size: 0.95rem;
+    border-right: 1px solid var(--navigation__splitter__background-color);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.control-group {
+    margin-bottom: 5px;
+}
+
+#logo {
+    width: 146px;
+    height: 35px;
+    margin-bottom: 10px;
+}
+
+#container {
+    position: absolute;
+    top: 0px;
+    left: 250px;
+    bottom:0px;
+    right:0px
+/* The iframe will fill the container */
+#iframe iframe {
+    position: absolute;
+    top: 70px;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

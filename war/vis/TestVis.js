@@ -13,9 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// TODO understand the frame and callback IDs
 (function() {
+    var visName;
     this.changeVis = function() {
-        show(getVisType());
+        manageIframe();
+        // let visType = getVisType();
+        visName = getVisName();
+        // let rawType = getRawType(visType);
+        fetchAndInjectScripts(visName);
+    }
+    
+    function getVisName() {
+        if (visType.value.includes("-")) {
+            let index = visType.value.indexOf("-")
+            let visName = visType.value.substring(0, index);
+            return visName;
+        } else {
+            let visName = visType.value;
+            return visName;
+        }
+    }
+
+    this.changeTheme = function() {
+        const themeSelector = document.getElementById("themeSelector");
+        const selectedTheme = themeSelector.value;
+        const logo = document.getElementById("logo");
+
+        document.documentElement.classList.remove("stroom-theme-dark","stroom-theme-dark2","stroom-theme-light")
+        document.documentElement.classList.add(selectedTheme);
+
+        if (selectedTheme === "stroom-theme-light") {
+            logo.src = "images/logo_orange.svg";
+        } else {
+            logo.src = "images/logo.svg";
+        }
     }
 
     function getVisType() {
@@ -36,33 +68,217 @@
         return type.split("-")[0];
     }
 
-    function show(type) {
-        //var div = document.getElementById("visualisation");
-        //div.innerHTML = "";
+    function manageIframe() {
+        var iframe = document.getElementById('myIframe');
+    
+        if (iframe) {
+                iframe.parentNode.removeChild(iframe);
+        }
+    
+        var newIframe = document.createElement('iframe');
+        newIframe.id = 'myIframe';
+        // Append a random query string to force the browser to fetch a new document
+        newIframe.src = 'vis.html?' + new Date().getTime();
+        document.getElementById('iframe').appendChild(newIframe);
+        loadedScripts.clear();
+    }    
 
-        vis = eval("new visualisations." + getRawType(type) + "()");
+    // Set to store loaded script names
+    let loadedScripts = new Set();
+    let scriptQueue = [];
+    let pendingFetches = 0;
 
-        var container = document.getElementById("container");
+    function fetchAndInjectScripts(xmlName) {
+        // Check if script is already loaded
+        if (loadedScripts.has(xmlName)) {
+            checkAndAssembleScripts();
+            return;
+        }
+    
+        pendingFetches++;
+        fetchAndParseXML(xmlName)
+            .then(({ xmlDoc, url }) => {
+                loadDependencies(xmlDoc, url, xmlName)
+                    .then(scripts => {
+                        scriptQueue = scriptQueue.concat(scripts);
+                        // Mark the script as loaded after dependencies are processed
+                        loadedScripts.add(xmlName);
+                        pendingFetches--;
+                        checkAndAssembleScripts();
+                    })
+                    .catch(error => {
+                        console.error("Failed to load dependencies: ", error);
+                        pendingFetches--;
+                        checkAndAssembleScripts();
+                    });
+            })
+            .catch(error => {
+                console.error("Failed to fetch and parse XML: ", error);
+                pendingFetches--;
+                checkAndAssembleScripts();
+            });
+    }
 
-        var element = vis.element;
+    // this isn't the best
+    // as leafletDraw folder has LeafletDrawCSS.script.resource.js etc
+    function dependencyUrls(xmlName){
+        const baseName = xmlName.split('.')[0];
+        const urls = [];
+        urls[0] = "../stroom-content/Visualisations/Version3/" + baseName + ".Script.xml";
+        urls[1] = "../stroom-content/Visualisations/Version3/Dependencies/" + baseName + "/" + baseName + ".Script.xml";
+        urls[2] = "../stroom-content/Visualisations/Version3/Dependencies/Leaflet/" + baseName + ".Script.xml";
+        urls[3] = "../stroom-content/Visualisations/Version3/Dependencies/LeafletDraw/" + baseName + ".Script.xml";
+        return urls;
+    }
 
-        element.style.width = "100%";
-        element.style.height = "100%";
+    function fetchAndParseXML(xmlName) {
+        return new Promise((resolve, reject) => {
+            const urls = dependencyUrls(xmlName);
+            const fetchPromises = urls.map(url => {
+                return fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw console.error("Fetch failed for " + url + ". Status: " + response.status);
+                        }
+                        return response.text().then(xmlText => ({ xmlText, url }));
+                    })
+                    .then(({ xmlText, url }) => {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+                        return { xmlDoc, url };
+                    });
+            });
+    
+            Promise.any(fetchPromises)
+                .then(({ xmlDoc, url }) => {
+                    resolve({ xmlDoc, url });
+                })
+                .catch(error => {
+                    reject(console.error);
+                });
+        });
+    }
 
-        container.innerHTML = "";
-        container.appendChild(element);
+    function loadDependencies(dependenciesXML, baseUrl, xmlName) {
+        return new Promise((resolve, reject) => {
+            const scripts = [];
+            let scriptUrl = baseUrl.replace(/\.xml$/, ".resource.js");
+            scriptUrl = scriptUrl.replace(xmlName, xmlName);
+            scripts.push({ name: xmlName, url: scriptUrl });
 
-        if (vis != null) {
-            vis.resize();
-            // 				d3.json("data.json", function(root) {
-            // 					var dat = createData(0);
-            // 					vis.setData(dat);
-            // 				});
+            const scriptElement = dependenciesXML.querySelector('script');
+            if (!scriptElement) {
+                reject(console.error("No script element found"));
+                return;
+            }
+    
+            const dependenciesString = scriptElement.querySelector('dependenciesXML').textContent;
+            if (!dependenciesString) {
+                reject(console.error("No dependenciesXML element found"));
+                return;
+            }
+    
+            const dependenciesParser = new DOMParser();
+            const dependenciesDoc = dependenciesParser.parseFromString(dependenciesString, 'application/xml');
+            const docElements = dependenciesDoc.getElementsByTagName('doc');
+    
+            for (let i = 0; i < docElements.length; i++) {
+                let type = docElements[i].getElementsByTagName('type')[0].textContent;
+                let name = docElements[i].getElementsByTagName('name')[0].textContent;
+    
+                if (type === 'Script') {
+                    fetchAndInjectScripts(name); // Recursive call
+                }
+            }
+    
+            if (scripts.length > 0) {
+                resolve(scripts);
+            } else {
+                reject(console.error("No script dependencies found"));
+            }
+        });
+    }
+
+    function checkAndAssembleScripts() {
+        if (pendingFetches === 0) {
+            // Deduplicate scripts
+            const uniqueScripts = [];
+            const scriptNames = new Set();
+    
+            scriptQueue.forEach(script => {
+                if (!scriptNames.has(script.name)) {
+                    uniqueScripts.push(script);
+                    scriptNames.add(script.name);
+                }
+            });
+    
+            // Move D3 script to the front if it exists
+            const d3Index = uniqueScripts.findIndex(script => script.name === 'D3');
+            if (d3Index !== -1) {
+                const [d3Script] = uniqueScripts.splice(d3Index, 1);
+                uniqueScripts.unshift(d3Script);
+            }
+
+            // Move the vis script to the end if it exists
+            const visIndex = uniqueScripts.findIndex(script => script.name === visName);
+            if (visIndex !== -1) {
+                const [visScript] = uniqueScripts.splice(visIndex, 1);
+                uniqueScripts.push(visScript);
+            }
+
+            console.log(uniqueScripts);
+            assembleAndPostJSON(uniqueScripts);
+            loadedScripts = new Set();
+            scriptQueue = [];
+            pendingFetches = 0;
+        }
+    }
+
+    function assembleAndPostJSON(scripts) {
+        const iframe = document.getElementById('myIframe');
+        const iframeWindow = iframe.contentWindow;
+    
+        let params = scripts.map(script => ({
+            name: script.name,
+            url: script.url
+        }));
+    
+        let json = {
+            data: {
+                functionName: "visualisationManager.injectScripts",
+                params: [params]
+            }
+        };
+    
+        let jsonString = JSON.stringify(json);
+        if (iframeWindow) {
+            iframeWindow.postMessage(jsonString, '*');
+        }
+    }
+
+    // .setVisType instansiates the specific vis
+    // add selected theme
+    function setVisType(){
+        vis = visName;
+        const iframe = document.getElementById('myIframe');
+        const iframeWindow = iframe.contentWindow;
+        let json = {
+            data: {
+               functionName: "visualisationManager.setVisType",
+               params: [
+                "visualisations." + visName,
+                "vis stroom-theme-dark"
+               ]
+            }
+        };
+        let jsonString = JSON.stringify(json);
+        if (iframeWindow) {
+            iframeWindow.postMessage(jsonString, '*');
         }
     }
 
     var commonFunctions = visualisations.commonFunctions;
-    var testData = new TestData();
+    // var testData = new TestData();
     var vis = null;
     var pass = 0;
     var settings = {};
@@ -76,204 +292,203 @@
     }
 
     this.update = function() {
+        setVisType();
         //remove any d3-tip divs left in the dom otherwise they build up on on each
         //call, cluttering up the dom
-        d3.selectAll(".d3-tip")
-            .remove();
+        // d3.selectAll(".d3-tip")
+        //     .remove();
 
         settings.stateCounting = "False";
-        if (vis != null) {
-            if (document.getElementById("showLabels").checked) {
-                settings.showLabels = "true";
-            } else {
-                settings.showLabels = "false";
-            }
+        if (document.getElementById("showLabels").checked) {
+            settings.showLabels = "true";
+        } else {
+            settings.showLabels = "false";
+        }
 
-            if (document.getElementById("useGridSeries").checked) {
-                settings.gridSeries = "xxx";
-                useGridSeries = true;
-            } else {
-                settings.gridSeries = null;
-                useGridSeries = false;
-            }
+        if (document.getElementById("useGridSeries").checked) {
+            settings.gridSeries = "xxx";
+            useGridSeries = true;
+        } else {
+            settings.gridSeries = null;
+            useGridSeries = false;
+        }
 
-            if (document.getElementById("synchXAxis").checked) {
-                settings.synchXAxis = "true";
-            } else {
-                settings.synchXAxis = null;
-            }
+        if (document.getElementById("synchXAxis").checked) {
+            settings.synchXAxis = "true";
+        } else {
+            settings.synchXAxis = null;
+        }
 
-            if (document.getElementById("synchYAxis").checked) {
-                settings.synchYAxis = "true";
-            } else {
-                settings.synchYAxis = null;
-            }
+        if (document.getElementById("synchYAxis").checked) {
+            settings.synchYAxis = "true";
+        } else {
+            settings.synchYAxis = null;
+        }
 
-            if (document.getElementById("displayXAxis").checked) {
-                settings.displayXAxis = "true";
-            } else {
-                settings.displayXAxis = null;
-            }
+        if (document.getElementById("displayXAxis").checked) {
+            settings.displayXAxis = "true";
+        } else {
+            settings.displayXAxis = null;
+        }
 
-            if (document.getElementById("displayYAxis").checked) {
-                settings.displayYAxis = "true";
-            } else {
-                settings.displayYAxis = null;
-            }
-            if (document.getElementById("synchSeries").checked) {
-                settings.synchSeries = "true";
-            } else {
-                settings.synchSeries = null;
-            }
+        if (document.getElementById("displayYAxis").checked) {
+            settings.displayYAxis = "true";
+        } else {
+            settings.displayYAxis = null;
+        }
+        if (document.getElementById("synchSeries").checked) {
+            settings.synchSeries = "true";
+        } else {
+            settings.synchSeries = null;
+        }
 
-            if (document.getElementById("synchNames").checked) {
-                settings.synchNames = "true";
-            } else {
-                settings.synchNames = null;
-            }
+        if (document.getElementById("synchNames").checked) {
+            settings.synchNames = "true";
+        } else {
+            settings.synchNames = null;
+        }
 
-            if (document.getElementById("thresholdMs").value) {
-                settings.thresholdMs = document.getElementById("thresholdMs").value;
-            } 
+        if (document.getElementById("thresholdMs").value) {
+            settings.thresholdMs = document.getElementById("thresholdMs").value;
+        } 
 
-            if (document.getElementById("bucketSize").value && getVisType() == "BarChart-bucket") {
-                settings.bucketSize = getBucketSize();
-            } 
+        if (document.getElementById("bucketSize").value && getVisType() == "BarChart-bucket") {
+            settings.bucketSize = getBucketSize();
+        } 
 
-            settings.stateChange = null;
-            const visType = getVisType();
+        settings.stateChange = null;
+        const visType = getVisType();
 
-            if (visType == "SeriesSessionMap-Stateful")
-            {
-                settings.stateChange = "Not a real field";
-            }
+        if (visType == "SeriesSessionMap-Stateful")
+        {
+            settings.stateChange = "Not a real field";
+        }
 
-            if (visType == "LineChart-Stateful")
-            {
-                settings.stateCounting = "True";
-            }
+        if (visType == "LineChart-Stateful")
+        {
+            settings.stateCounting = "True";
+        }
 
-            if (visType == "Bubble-flat")
-            {
-                settings.flattenSeries = "True";
-            } else {
-                settings.flattenSeries = "False";
-            }
+        if (visType == "Bubble-flat")
+        {
+            settings.flattenSeries = "True";
+        } else {
+            settings.flattenSeries = "False";
+        }
 
-            if (visType == "GeoMap")
-            {
-                settings.initialLatitude = "51.5";
-                settings.initialLongitude = "0.0";
-                settings.initialZoomLevel = 13;
-                settings.tileServerUrl = "https://{s}.tile.osm.org/{z}/{x}/{y}.png";
-                settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors";
-
-                if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
-                    settings.isColourByEventTimeEnabled = "False";
-                } else {
-                    settings.isColourByEventTimeEnabled = "True";
-                }
-            }
-
-            if (visType == 'FloorMap')
-            {
-                settings.config = '';
-
-                settings.isEditZoneModeEnabled = 'True';
-
-                if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
-                    settings.originLocation = "Top Left";
-                } else {
-                    settings.originLocation = "Bottom Left";
-                }
-
-                localFloorMapConfig = {
-                    "The Campus": {
-                        "Headquarters": {
-                            "Ground Floor": {
-                                "image": "testfloorplans/building1-floor0.png",
-                                "width": 100,
-                                "height": 60
-                            },
-                            "First Floor": {
-                                "image": "testfloorplans/building1-floor1.png",
-                                "width": 100,
-                                "height": 60
-                            },
-                            "Second Floor": {
-                                "image": "testfloorplans/building1-floor2.png",
-                                "width": 100,
-                                "height": 60
-                            },
-                            "Third Floor": {
-                                "image": "testfloorplans/building1-floor3.png",
-                                "width": 100,
-                                "height": 60
-                            }
-                        },
-                        "Downtown": {
-                            "Basement": {
-                                "image": "testfloorplans/building2-floorb.png",
-                                "width": 40,
-                                "height": 60,
-                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json",
-                                "isOriginTopLeft": true
-                            },
-                            "North Tower": {
-                                "image": "testfloorplans/building2-floorn.png",
-                                "width": 40,
-                                "height": 60,
-                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
-                            },
-                            "South Tower": {
-                                "image": "testfloorplans/building2-floors.png",
-                                "width": 40,
-                                "height": 60,
-                                "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
-                            }
-                        }
-                    }
-                };
-
-            }
-
-
-            //For testing data where the grid series key is a dateTimeMs
-            //settings.gridSeriesDateFormat = "GridFmt %A %d/%m/%y %H:%M";
-            //settings.seriesDateFormat = "SeriesFmt %A %d/%m/%y %H:%M";
-            //settings.nameDateFormat = "NameFmt %A %d/%m/%y %H:%M";
-
-            // define the max value for the value dimension to give us different scales
-            // of data
-            randomMax = Math.pow(10, Math.floor(Math.random() * 8));
-
-            if ((Math.floor(Math.random()  * 1000) % 3) == 0) {
-                settings.isEditZoneModeEnabled = "False";
-                settings.dateFormat = "";
-            } else {
-                settings.dateFormat = "%H:%M:%S on %A";
-            }
+        if (visType == "GeoMap")
+        {
+            settings.initialLatitude = "51.5";
+            settings.initialLongitude = "0.0";
+            settings.initialZoomLevel = 13;
+            settings.tileServerUrl = "https://{s}.tile.osm.org/{z}/{x}/{y}.png";
+            settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors";
 
             if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
                 settings.isColourByEventTimeEnabled = "False";
             } else {
                 settings.isColourByEventTimeEnabled = "True";
             }
+        }
+
+        if (visType == 'FloorMap')
+        {
+            settings.config = '';
+
+            settings.isEditZoneModeEnabled = 'True';
 
             if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
-                settings.isShowTagsEnabled = "True";
+                settings.originLocation = "Top Left";
             } else {
-                settings.isShowTagsEnabled = "False";
+                settings.originLocation = "Bottom Left";
             }
 
-            testData = new TestData();
-
-            dat = testData.create(getVisType(), pass++, useGridSeries, settings, randomMax);
-
-            postProcessTestData(dat);
-
-            sendDataToVis(dat);
+            settings.config = {
+                "The Campus": {
+                    "Headquarters": {
+                        "Ground Floor": {
+                            "image": "testfloorplans/building1-floor0.png",
+                            "width": 100,
+                            "height": 60
+                        },
+                        "First Floor": {
+                            "image": "testfloorplans/building1-floor1.png",
+                            "width": 100,
+                            "height": 60
+                        },
+                        "Second Floor": {
+                            "image": "testfloorplans/building1-floor2.png",
+                            "width": 100,
+                            "height": 60
+                        },
+                        "Third Floor": {
+                            "image": "testfloorplans/building1-floor3.png",
+                            "width": 100,
+                            "height": 60
+                        }
+                    },
+                    "Downtown": {
+                        "Basement": {
+                            "image": "testfloorplans/building2-floorb.png",
+                            "width": 40,
+                            "height": 60,
+                            "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json",
+                            "isOriginTopLeft": true
+                        },
+                        "North Tower": {
+                            "image": "testfloorplans/building2-floorn.png",
+                            "width": 40,
+                            "height": 60,
+                            "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
+                        },
+                        "South Tower": {
+                            "image": "testfloorplans/building2-floors.png",
+                            "width": 40,
+                            "height": 60,
+                            "zoneDictionaryUuid": "staticUrl:testfloorplans/testzones.json"
+                        }
+                    }
+                }
+            };
+            settings.config = JSON.stringify(settings.config);
         }
+
+
+        //For testing data where the grid series key is a dateTimeMs
+        //settings.gridSeriesDateFormat = "GridFmt %A %d/%m/%y %H:%M";
+        //settings.seriesDateFormat = "SeriesFmt %A %d/%m/%y %H:%M";
+        //settings.nameDateFormat = "NameFmt %A %d/%m/%y %H:%M";
+
+        // define the max value for the value dimension to give us different scales
+        // of data
+        randomMax = Math.pow(10, Math.floor(Math.random() * 8));
+
+        if ((Math.floor(Math.random()  * 1000) % 3) == 0) {
+            settings.isEditZoneModeEnabled = "False";
+            settings.dateFormat = "";
+        } else {
+            settings.dateFormat = "%H:%M:%S on %A";
+        }
+
+        if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+            settings.isColourByEventTimeEnabled = "False";
+        } else {
+            settings.isColourByEventTimeEnabled = "True";
+        }
+
+        if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+            settings.isShowTagsEnabled = "True";
+        } else {
+            settings.isShowTagsEnabled = "False";
+        }
+
+        testData = new TestData();
+
+        dat = testData.create(getVisType(), pass++, useGridSeries, settings, randomMax);
+
+        postProcessTestData(dat);
+
+        sendDataToVis(dat);
     }
 
     var sendDataToVis = function(data) {
@@ -282,13 +497,37 @@
         var datCopy = clone(data);
 
         //send the new copy
-        vis.setData({}, settings, datCopy);
+        const iframe = document.getElementById('myIframe');
+        const iframeWindow = iframe.contentWindow;
+        let json = {
+            data: {
+               functionName: "visualisationManager.setData",
+               params: [
+                {},
+                settings,
+                datCopy
+               ]
+            }
+        };
+        let jsonString = JSON.stringify(json);
+        if (iframeWindow) {
+            iframeWindow.postMessage(jsonString, '*');
+        }
     };
-
 
     this.resize = function() {
         if (vis != null) {
-            vis.resize();
+            const iframe = document.getElementById('myIframe');
+            const iframeWindow = iframe.contentWindow;
+            let json = {
+                data: {
+                functionName: "visualisationManager.resize",
+                }
+            };
+            let jsonString = JSON.stringify(json);
+            if (iframeWindow) {
+                iframeWindow.postMessage(jsonString, '*');
+            }
         }
     };
 
