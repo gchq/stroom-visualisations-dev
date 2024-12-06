@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "e4c3baee-2a5c-4d6e-93af-aadfe374835c",
+  "name" : "StackedArea",
+  "version" : "329057b0-9360-4e39-a2e5-a085049b3925",
+  "description" : "Version: SNAPSHOT\nGit commit: c43b7d839a266f01b3aa78286e5f99d700979750\nGit commit time: 2019-02-20 11:53:51 +0000",
+  "functionName" : "visualisations.StackedArea",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "187f4abd-db8b-43d6-ade5-eea19c0b1bf4",
+    "name" : "StackedArea"
+  }
+}

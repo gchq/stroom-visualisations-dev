@@ -14,41 +14,21 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
 -->
-  <!-- TODO 
-    ~ merge with themeing
-	~ 1 large iframe on the right
-	~ all the messages from the parent panel
-	~ dependency management from the parent panel
-	~ revert back to TestVis instead of parent and iframe
-	~ use the stock vis.js from stroom instead of the edit here
-	~ use the VisFrame.java => create the methods in js to dress up the jsons being sent to vis.js
-	~ use testdata from parent which hopefully creates a data object which testvis will pass to vis.js
-	~ revert vis.html to identical to the stroom one
-	~ research serve lets
-	~ have a look at -> context {}? settings? within testdata
-  -->
 <html class="stroom stroom-theme-dark">
 <head>
 	<link rel="stylesheet" type="text/css" href="index.css"/>
 
 	<!--3rd party dependencies -->
-	<script src="stroom-content/Visualisations/Version3/Dependencies/D3/D3.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/Chroma/Chroma.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/D3-Grid/D3-Grid.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/D3-Tip/D3-Tip.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/JSHashes/JSHashes.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/Leaflet/Leaflet.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/Leaflet/LeafletCSS.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/Leaflet/LeafletFontAwesomeMarkersCSS.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/LeafletDraw/LeafletDraw.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/LeafletDraw/LeafletDrawCSS.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/Dependencies/Underscore/Underscore.Script.resource.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/Dependencies/D3/D3.Script.61cc6424-9899-4f38-ad77-f4204f9de166.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/Dependencies/D3_Grid/D3_Grid.Script.cac6a6cd-1874-4932-a51c-e16ef9303f0c.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/Dependencies/D3_Tip/D3_Tip.Script.4f336f7d-5357-4fb3-a42b-88c967588e0a.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/Dependencies/JSHashes/JSHashes.Script.72c19c4d-25d7-4bfd-bd1e-fb0ba6dc86bb.js" charset="utf-8"></script>
 
 	<!--Common code -->
-	<script src="stroom-content/Visualisations/Version3/Common.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/CSS.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/GenericGrid.Script.resource.js" charset="utf-8"></script>
-	<script src="stroom-content/Visualisations/Version3/ThemeCSS.Script.resource.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/Common.Script.49a5f46c-f627-49ed-afb9-0066b99e235a.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/CSS.Script.84c6fa29-3f4b-4ccc-971a-741259566d2b.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/GenericGrid.Script.5d4252d6-6f13-4f24-9481-9e98e038747c.js" charset="utf-8"></script>
+	<script src="./stroom_content/Visualisations/Version3/ThemeCSS.Script.2c17169f-704c-4e5a-99f3-8e100f4a4677.js" charset="utf-8"></script>
 	<script src="./vis/TestData.js" charset="utf-8"></script>
 	<script src="./vis/TestVis.js" charset="utf-8"></script>
 </head>
@@ -85,6 +65,8 @@
 					<option value="SeriesSessionMap-Stateful">Stateful Series Session Map</option>
 					<option value="StackedArea">Stacked Area</option>
 					<option value="Stroom">Stroom</option>
+					<option value="Sunburst" >Sunburst</option>
+
 					<option value="TextValue" >Text Value</option>
 					<option value="TrafficLights-GreenRed" >Traffic Lights (Green-Red)</option>
 					<option value="TrafficLights-RedGreen" >Traffic Lights (Red-Green)</option>
@@ -155,19 +137,19 @@
 				<button onclick="addSeries()">S+</button>
 				<button onclick="removeSeries()">S-</button>
 				<button onclick="alterValues()">V</button>
-				<button onclick="saveSvg()">SVG</button>
+				<button onclick="saveSvg()">Save [Broken]</button>
 			</div>
-		</div>
 
-		<div id="container" class="control-group">
+			<label for="orientation">Orientation:</label>
+			<select id="orientation" class="control-group">
+				<option value="north">North</option>
+				<option value="south">South</option>
+				<option value="east">East</option>
+				<option value="west">West</option>
+			</select>
 		</div>
-			<div id="svgdataurl"></div>
-			<canvas width="1000" height="1000" style="display:none"></canvas>
 	</body>
-    <div id="container" style="position:absolute;top:44px;left:0px;bottom:0px;right:0px">
 	</div>
-        <div id="svgdataurl"></div>
-        <canvas width="1000" height="1000" style="display:none"></canvas>
 
 	<div id="iframe">
 		

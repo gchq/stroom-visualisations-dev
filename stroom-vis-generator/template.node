@@ -1,0 +1,4 @@
+name=$vis_name
+path=stroom-content/Visualisations/Version3
+type=Script
+uuid=$uuid

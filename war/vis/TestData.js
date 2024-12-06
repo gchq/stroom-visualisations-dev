@@ -19,6 +19,8 @@ function TestData() {
     //as these define the data structures and defaul settings values.
     //Ideally the TestVis UI would also be driven from the same json data, meaning
     //only the controls appropiate to the vis would be show foe that vis
+
+    window.callNumber = window.callNumber || 0;
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
 
@@ -58,6 +60,7 @@ function TestData() {
     var VIS_TYPE_STATEFUL_LINE_CHART = "LineChart-Stateful";
     var VIS_TYPE_STATEFUL_SESSION_MAP = "SeriesSessionMap-Stateful";
     var VIS_TYPE_STROOM = "Stroom";
+    var VIS_TYPE_SUNBURST = "Sunburst";
     var VIS_TYPE_TEXT_VALUE = "TextValue";
     var VIS_TYPE_TIME_SERIES = "TimeSeries";
     var VIS_TYPE_TRAFFIC_LIGHTS_GR = "TrafficLights-GreenRed";
@@ -91,7 +94,9 @@ function TestData() {
         VIS_TYPE_TEXT_VALUE,
         VIS_TYPE_TIME_SERIES,
         VIS_TYPE_TRAFFIC_LIGHTS_GR,
-        VIS_TYPE_TRAFFIC_LIGHTS_RG
+        VIS_TYPE_TRAFFIC_LIGHTS_RG,
+        VIS_TYPE_TREE,
+        VIS_TYPE_SUNBURST
     ];
 
     this.visTestDataSettingsMap = (function() {
@@ -243,7 +248,8 @@ function TestData() {
         var nestValues = false;
         var fieldZeroType = commonConstants.dataTypeDateTime;
 
-        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS || visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
+
+        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS || visType == VIS_TYPE_RADIAL_TREE) {
             seriesCount = 1;
             fieldZeroType = commonConstants.dataTypeNumber;
         } else if (visType === VIS_TYPE_DOUGHNUT) {
@@ -281,7 +287,7 @@ function TestData() {
             fieldZeroType = commonConstants.dataTypeGeneral;
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateFloatValue;
-        } else if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
+        } else if (visType == VIS_TYPE_BAR_CHART_BUCKET || visType == VIS_TYPE_TREE) {
             seriesCount = 1;
             nestValues = true;
         } else if (visType == VIS_TYPE_FLOOR_MAP) {
@@ -310,6 +316,9 @@ function TestData() {
             valueFunctions[5] = generateSeriesValue;
             valueCountLimit = 6;
             fieldZeroType = commonConstants.dataTypeGeneral;
+        } else if (visType == VIS_TYPE_SUNBURST) {
+            nestValues = true;
+            seriesCount = 1;
         } else {
             // define a random number of series
             seriesCount = Math.max(1, Math.round(Math.random() * maxSeries));
@@ -623,9 +632,18 @@ function TestData() {
             else if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS) {
                 values = createSeriesForceData(pass);
             } 
-            else if (visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
+            else if (visType == VIS_TYPE_RADIAL_TREE) {
                 values = createSeriesTreeData();
-            } 
+            }
+            else if (visType == VIS_TYPE_TREE){
+                values = createPathTreeData();
+            }
+            else if (visType == VIS_TYPE_SUNBURST){
+                // if (!callNumber){
+                //     callNumber = 0;
+                // }
+                values = createSunburstData();
+            }
 
             else {
                 //while loop to make sure we have at leat one data point
@@ -821,6 +839,280 @@ function TestData() {
 
             return data;
         };
+
+        function createPathTreeData(){
+            data = [
+                ["/home/user/documents/reports/2024/summary.txt"],
+                ["/home/user/documents/reports/2024/financials.xlsx"],
+                ["/home/user/documents/reports/2023/summary.txt"],
+                ["/home/user/documents/reports/2023/financials.xlsx"],
+                ["/home/user/documents/reports/2023/notes.txt"],
+                ["/home/user/documents/presentations/2024/q1_review.pptx"],
+                ["/home/user/documents/presentations/2024/q2_review.pptx"],
+                ["/home/user/documents/presentations/2023/annual_review.pptx"],
+                ["/home/user/music/playlists/rock/summer2024.m3u"],
+                ["/home/user/music/playlists/pop/top_hits_2023.m3u"],
+                ["/home/user/music/playlists/rock/classics.m3u"],
+                ["/home/user/music/albums/rock/album1/song1.mp3"],
+                ["/home/user/music/albums/rock/album1/song2.mp3"],
+                ["/home/user/music/albums/pop/album2/song1.mp3"],
+                ["/home/user/music/albums/pop/album2/song2.mp3"],
+                ["/home/user/pictures/vacation_2023/beach.jpg"],
+                ["/home/user/pictures/vacation_2023/mountains.jpg"],
+                ["/home/user/pictures/vacation_2024/beach.jpg"],
+                ["/home/user/pictures/family/holidays/christmas_2023.jpg"],
+                ["/home/user/pictures/family/holidays/christmas_2024.jpg"],
+                ["/home/user/pictures/family/reunion_2023/group_photo.jpg"],
+                ["/var/log/apache2/access.log"],
+                ["/var/log/apache2/error.log"],
+                ["/var/log/nginx/access.log"],
+                ["/var/log/nginx/error.log"],
+                ["/etc/nginx/sites-available/default"],
+                ["/etc/nginx/sites-available/example.com"],
+                ["/etc/nginx/sites-enabled/default"],
+                ["/etc/nginx/sites-enabled/example.com"],
+                ["/etc/ssh/sshd_config"],
+                ["/etc/ssh/ssh_config"],
+                ["/home/user/projects/myapp/src/main.py"],
+                ["/home/user/projects/myapp/src/utils/helpers.py"],
+                ["/home/user/projects/myapp/tests/test_main.py"],
+                ["/home/user/projects/myapp/tests/test_helpers.py"],
+                ["/home/user/.config/code/settings.json"],
+                ["/home/user/.config/code/keybindings.json"],
+                ["/home/user/.config/terminal/config.json"],
+                ["/opt/software/config/settings.yaml"],
+                ["/opt/software/config/backup.yaml"],
+                ["/opt/software/logs/install.log"],
+                ["/opt/software/logs/update.log"],
+                ["/var/www/html/index.html"],
+                ["/var/www/html/about.html"],
+                ["/var/www/html/css/styles.css"],
+                ["/var/www/html/js/scripts.js"],
+                ["/mnt/external_drive/backups/2024/q1_backup.tar.gz"],
+                ["/mnt/external_drive/backups/2024/q2_backup.tar.gz"],
+                ["/mnt/external_drive/backups/2023/full_backup.tar.gz"],
+                ["/mnt/external_drive/photos/vacation_2023/beach.jpg"]
+            ];
+
+            // Below to only return random 5 paths
+            // for (let i = data.length - 1; i > 0; i--) {
+            //     const j = Math.floor(Math.random() * (i + 1));
+            //     [data[i], data[j]] = [data[j], data[i]];
+            // }
+                
+            // return data.slice(0, 5);
+            return data;
+        };
+
+        function createSunburstData(){
+            const data = [
+                ["flare/analytics/cluster/AgglomerativeCluster", 3938],
+                ["flare/analytics/cluster/CommunityStructure", 3812],
+                ["flare/analytics/cluster/HierarchicalCluster", 6714],
+                ["flare/analytics/cluster/MergeEdge", 743],
+                ["flare/analytics/graph/BetweennessCentrality", 3534],
+                ["flare/analytics/graph/LinkDistance", 5731],
+                ["flare/analytics/graph/MaxFlowMinCut", 7840],
+                ["flare/analytics/graph/ShortestPaths", 5914],
+                ["flare/analytics/graph/SpanningTree", 3416],
+                ["flare/analytics/optimization/AspectRatioBanker", 7074],
+                ["flare/animate/Easing", 17010],
+                ["flare/animate/FunctionSequence", 5842],
+                ["flare/animate/interpolate/ArrayInterpolator", 1983],
+                ["flare/animate/interpolate/ColorInterpolator", 2047],
+                ["flare/animate/interpolate/DateInterpolator", 1375],
+                ["flare/animate/interpolate/Interpolator", 8746],
+                ["flare/animate/interpolate/MatrixInterpolator", 2202],
+                ["flare/animate/interpolate/NumberInterpolator", 1382],
+                ["flare/animate/interpolate/ObjectInterpolator", 1629],
+                ["flare/animate/interpolate/PointInterpolator", 1675],
+                ["flare/animate/interpolate/RectangleInterpolator", 2042],
+                ["flare/animate/ISchedulable", 1041],
+                ["flare/animate/Parallel", 5176],
+                ["flare/animate/Pause", 449],
+                ["flare/animate/Scheduler", 5593],
+                ["flare/animate/Sequence", 5534],
+                ["flare/animate/Transition", 9201],
+                ["flare/animate/Transitioner", 19975],
+                ["flare/animate/TransitionEvent", 1116],
+                ["flare/animate/Tween", 6006],
+                ["flare/data/converters/Converters", 721],
+                ["flare/data/converters/DelimitedTextConverter", 4294],
+                ["flare/data/converters/GraphMLConverter", 9800],
+                ["flare/data/converters/IDataConverter", 1314],
+                ["flare/data/converters/JSONConverter", 2220],
+                ["flare/data/DataField", 1759],
+                ["flare/data/DataSchema", 2165],
+                ["flare/data/DataSet", 586],
+                ["flare/data/DataSource", 3331],
+                ["flare/data/DataTable", 772],
+                ["flare/data/DataUtil", 3322],
+                ["flare/display/DirtySprite", 8833],
+                ["flare/display/LineSprite", 1732],
+                ["flare/display/RectSprite", 3623],
+                ["flare/display/TextSprite", 10066],
+                ["flare/flex/FlareVis", 4116],
+                ["flare/physics/DragForce", 1082],
+                ["flare/physics/GravityForce", 1336],
+                ["flare/physics/IForce", 319],
+                ["flare/physics/NBodyForce", 10498],
+                ["flare/physics/Particle", 2822],
+                ["flare/physics/Simulation", 9983],
+                ["flare/physics/Spring", 2213],
+                ["flare/physics/SpringForce", 1681],
+                ["flare/query/AggregateExpression", 1616],
+                ["flare/query/And", 1027],
+                ["flare/query/Arithmetic", 3891],
+                ["flare/query/Average", 891],
+                ["flare/query/BinaryExpression", 2893],
+                ["flare/query/Comparison", 5103],
+                ["flare/query/CompositeExpression", 3677],
+                ["flare/query/Count", 781],
+                ["flare/query/DateUtil", 4141],
+                ["flare/query/Distinct", 933],
+                ["flare/query/Expression", 5130],
+                ["flare/query/ExpressionIterator", 3617],
+                ["flare/query/Fn", 3240],
+                ["flare/query/If", 2732],
+                ["flare/query/IsA", 2039],
+                ["flare/query/Literal", 1214],
+                ["flare/query/Match", 3748],
+                ["flare/query/Maximum", 843],
+                ["flare/query/methods/add", 593],
+                ["flare/query/methods/and", 330],
+                ["flare/query/methods/average", 287],
+                ["flare/query/methods/count", 277],
+                ["flare/query/methods/distinct", 292],
+                ["flare/query/methods/div", 595],
+                ["flare/query/methods/eq", 594],
+                ["flare/query/methods/fn", 460],
+                ["flare/query/methods/gt", 603],
+                ["flare/query/methods/gte", 625],
+                ["flare/query/methods/iff", 748],
+                ["flare/query/methods/isa", 461],
+                ["flare/query/methods/lt", 597],
+                ["flare/query/methods/lte", 619],
+                ["flare/query/methods/max", 283],
+                ["flare/query/methods/min", 283],
+                ["flare/query/methods/mod", 591],
+                ["flare/query/methods/mul", 603],
+                ["flare/query/methods/neq", 599],
+                ["flare/query/methods/not", 386],
+                ["flare/query/methods/or", 323],
+                ["flare/query/methods/orderby", 307],
+                ["flare/query/methods/range", 772],
+                ["flare/query/methods/select", 296],
+                ["flare/query/methods/stddev", 363],
+                ["flare/query/methods/sub", 600],
+                ["flare/query/methods/sum", 280],
+                ["flare/query/methods/update", 307],
+                ["flare/query/methods/variance", 335],
+                ["flare/query/methods/where", 299],
+                ["flare/query/methods/xor", 354],
+                ["flare/query/methods/_", 264],
+                ["flare/query/Minimum", 843],
+                ["flare/query/Not", 1554],
+                ["flare/query/Or", 970],
+                ["flare/query/Query", 13896],
+                ["flare/query/Range", 1594],
+                ["flare/query/StringUtil", 4130],
+                ["flare/query/Sum", 791],
+                ["flare/query/Variable", 1124],
+                ["flare/query/Variance", 1876],
+                ["flare/query/Xor", 1101],
+                ["flare/scale/IScaleMap", 2105],
+                ["flare/scale/LinearScale", 1316],
+                ["flare/scale/LogScale", 3151],
+                ["flare/scale/OrdinalScale", 3770],
+                ["flare/scale/QuantileScale", 2435],
+                ["flare/scale/QuantitativeScale", 4839],
+                ["flare/scale/RootScale", 1756],
+                ["flare/scale/Scale", 4268],
+                ["flare/scale/ScaleType", 1821],
+                ["flare/scale/TimeScale", 5833],
+                ["flare/util/Arrays", 8258],
+                ["flare/util/Colors", 10001],
+                ["flare/util/Dates", 8217],
+                ["flare/util/Displays", 12555],
+                ["flare/util/Filter", 2324],
+                ["flare/util/Geometry", 10993],
+                ["flare/util/heap/FibonacciHeap", 9354],
+                ["flare/util/heap/HeapNode", 1233],
+                ["flare/util/IEvaluable", 335],
+                ["flare/util/IPredicate", 383],
+                ["flare/util/IValueProxy", 874],
+                ["flare/util/math/DenseMatrix", 3165],
+                ["flare/util/math/IMatrix", 2815],
+                ["flare/util/math/SparseMatrix", 3366],
+                ["flare/util/Maths", 17705],
+                ["flare/util/Orientation", 1486],
+                ["flare/util/palette/ColorPalette", 6367],
+                ["flare/util/palette/Palette", 1229],
+                ["flare/util/palette/ShapePalette", 2059],
+                ["flare/util/palette/SizePalette", 2291],
+                ["flare/util/Property", 5559],
+                ["flare/util/Shapes", 19118],
+                ["flare/util/Sort", 6887],
+                ["flare/util/Stats", 6557],
+                ["flare/util/Strings", 22026],
+                ["flare/vis/axis/Axes", 1302],
+                ["flare/vis/axis/Axis", 24593],
+                ["flare/vis/axis/AxisGridLine", 652],
+                ["flare/vis/axis/AxisLabel", 636],
+                ["flare/vis/axis/CartesianAxes", 6703],
+                ["flare/vis/controls/AnchorControl", 2138],
+                ["flare/vis/controls/ClickControl", 3824],
+                ["flare/vis/controls/Control", 1353],
+                ["flare/vis/controls/ControlList", 4665],
+                ["flare/vis/controls/DragControl", 2649],
+                ["flare/vis/controls/ExpandControl", 2832],
+                ["flare/vis/controls/HoverControl", 4896],
+                ["flare/vis/controls/IControl", 763],
+                ["flare/vis/controls/PanZoomControl", 5222],
+                ["flare/vis/controls/SelectionControl", 7862],
+                ["flare/vis/controls/TooltipControl", 8435],
+                ["flare/vis/data/Data", 20544],
+                ["flare/vis/data/DataList", 19788],
+                ["flare/vis/data/DataSprite", 10349],
+                ["flare/vis/data/EdgeSprite", 3301],
+                ["flare/vis/data/NodeSprite", 19382],
+                ["flare/vis/data/render/ArrowType", 698],
+                ["flare/vis/data/render/EdgeRenderer", 5569],
+                ["flare/vis/data/render/IRenderer", 353],
+                ["flare/vis/data/render/ShapeRenderer", 2247],
+                ["flare/vis/events/DataEvent", 2313],
+                ["flare/vis/events/SelectionEvent", 1880],
+                ["flare/vis/events/TooltipEvent", 1701],
+                ["flare/vis/events/VisualizationEvent", 1117],
+                ["flare/vis/operator/IOperator", 1286],
+                ["flare/vis/operator/Operator", 2490],
+                ["flare/vis/operator/OperatorList", 5248],
+                ["flare/vis/operator/OperatorSequence", 4190],
+                ["flare/vis/operator/OperatorSwitch", 2581],
+                ["flare/vis/operator/filter/FisheyeTreeFilter", 5219],
+                ["flare/vis/operator/filter/GraphDistanceFilter", 3165],
+                ["flare/vis/operator/filter/VisibilityFilter", 3509],
+                ["flare/vis/operator/layout/BundledEdgeRouter", 3727],
+                ["flare/vis/operator/layout/CircleLayout", 9317],
+                ["flare/vis/operator/layout/CirclePackingLayout", 12003],
+                ["flare/vis/operator/layout/DendrogramLayout", 4853],
+                ["flare/vis/operator/layout/ForceDirectedLayout", 8411],
+                ["flare/vis/operator/layout/IndentedTreeLayout", 3174],
+                ["flare/vis/operator/layout/Layout", 7881],
+                ["flare/vis/operator/layout/NodeLinkTreeLayout", 12870],
+                ["flare/vis/operator/layout/PartitionLayout", 6108],
+                ["flare/vis/operator/layout/RadialTreeLayout", 12348],
+                ["flare/vis/operator/layout/RandomLayout", 870],
+                ["flare/vis/operator/layout/StackedAreaLayout", 9121],
+                ["flare/vis/operator/layout/TreeMapLayout", 9191],
+                ["flare/vis/Visualization", 16540]
+              ];              
+            window.callNumber += 1;
+            const numItems = Math.min(window.callNumber * 10, data.length);
+            return data.slice(0, numItems);
+
+            // return data;
+        }
 
         function createBucketisedTimeData(randomMaxVal, bucketSizeMs) {
 

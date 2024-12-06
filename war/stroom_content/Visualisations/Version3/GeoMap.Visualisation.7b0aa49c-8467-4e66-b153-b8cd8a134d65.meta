@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "7b0aa49c-8467-4e66-b153-b8cd8a134d65",
+  "name" : "GeoMap",
+  "version" : "c66ccad4-14ac-4a59-9723-4aa242551b47",
+  "description" : "Basic mapping visualisation.\n    \nThe geo tile server is configurable.\n\nIt is typical to have to change Stroom's content security policy to allow this visualisation to connect to the tile server.\n\nE.g. to use OpenSteetView maps, you can change the property security.webContent.contentSecurityPolicy to something that includes the tile server for image data to:\n\ndefault-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; img-src 'self' data: https://*.tile.osm.org; style-src 'self' 'unsafe-inline'; frame-ancestors 'self';\n\n\n        ",
+  "functionName" : "visualisations.GeoMap",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "7b0aa49c-8467-4e66-b152-b8cd8a134d65",
+    "name" : "GeoMap"
+  }
+}

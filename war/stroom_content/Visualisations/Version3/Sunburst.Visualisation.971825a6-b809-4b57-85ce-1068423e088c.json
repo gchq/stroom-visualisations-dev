@@ -1,0 +1,98 @@
+{
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "path",
+                    "type": "field",
+                    "label": "Path"
+                },
+                {
+                    "id": "value",
+                    "type": "field",
+                    "label": "Value"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series"
+                }
+            ]
+        },
+        {
+            "name": "Sunburst",
+            "controls": [
+                {
+                    "id": "delimiter",
+                    "type": "text",
+                    "label": "Path delimiter",
+                    "defaultValue": "/" 
+
+                },
+                {
+
+                    "id": "intialDepth",
+                    "type": "number",
+                    "label": "Intial layer depth",
+                    "defaultValue": "3",
+                    "max": "10",
+                    "min": "2"
+
+                },
+                {
+                    "id" : "showLabels",
+                    "type" : "selection",
+                    "label" : "Show Labels",
+                    "values" : [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue" : "False"
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "id": "${gridSeries}",
+                    "sort": {
+                        "enabled": "false"
+                    }
+                },
+                "nest": {
+                    "key": {
+                        "id": "${series}",
+                        "sort": {
+                            "enabled": "false"
+                        }
+                    },
+                    "values": {
+                        "fields": [
+                            {
+                                "id": "${path}"
+                            },
+                            {
+                                "id": "${value}"
+                            }
+                        ],
+                        "limit" : {
+                            "enabled" : "true",
+                            "size" : "${maxValues}"
+                        }
+                    },
+                    "limit": {
+                        "enabled": "true",
+                        "size": "1"
+                    }
+                },
+                "limit": {
+                    "enabled": "true",
+                    "size": "${maxGridSeries}"
+                }
+            }
+        }
+    }
+}

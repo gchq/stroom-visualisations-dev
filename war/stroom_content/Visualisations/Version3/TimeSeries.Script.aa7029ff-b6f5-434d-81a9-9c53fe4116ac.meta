@@ -1,0 +1,23 @@
+{
+  "type" : "Script",
+  "uuid" : "aa7029ff-b6f5-434d-81a9-9c53fe4116ac",
+  "name" : "TimeSeries",
+  "version" : "e8a22f5f-66e4-484b-85c4-90925056cd83",
+  "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "5d4252d6-6f13-4f24-9481-9e98e038747c",
+    "name" : "GenericGrid"
+  }, {
+    "type" : "Script",
+    "uuid" : "70a4d9ba-eb1f-4b02-9304-50d5d6efcc86",
+    "name" : "TimeSeriesCSS"
+  }, {
+    "type" : "Script",
+    "uuid" : "efc9a7f3-2aba-4eb0-a4fd-2130cbfe1a4d",
+    "name" : "Underscore"
+  } ]
+}
