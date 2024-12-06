@@ -75,6 +75,82 @@
 					<option value="ZoomableTreeMap" >Zoomable Tree Map [BROKEN]</option>
 				</select>
 			</div>
+<<<<<<< HEAD
+=======
+
+			<div id="themeControls" class="control-group">
+				<label for="themeSelector">Theme:</label>
+				<select id="themeSelector" onchange="changeTheme()">
+					<option value="stroom-theme-dark">Dark</option>
+					<option value="stroom-theme-dark2">Dark 2</option>
+					<option value="stroom-theme-light">Light</option>				
+				</select>
+			</div>
+
+			<div id="resizeControls" class="control-group">
+				<button onclick="resize()">Resize</button>
+				<input id="autoResize" type="checkbox" checked="checked">Auto resize</input>
+			</div>
+
+			<div id="updateControls" class="control-group">
+				<button onclick="update()">Update</button>
+				<input id="autoUpdate" type="checkbox">Auto update</input>
+			</div>
+
+			<div id="lGControls" class="control-group">
+				<input id="showLabels" type="checkbox" onChange="changeVis()">Labels</input>
+				<input id="useGridSeries" type="checkbox" checked="checked" onChange="changeVis()">Grid</input>
+			</div>
+
+			<div id="xControls" class="control-group">
+				<input id="synchXAxis" type="checkbox" >Synch X</input>
+				<input id="displayXAxis" type="checkbox" checked="checked">Disp. X</input>
+			</div>
+
+			<div id="yControls" class="control-group">
+				<input id="synchYAxis" type="checkbox" >Synch Y</input>
+				<input id="displayYAxis" type="checkbox" checked="checked">Disp. Y</input>
+			</div>
+
+			<div id="synchControls" class="control-group">
+				<input id="synchSeries" type="checkbox" >Synch Series</input>
+				<input id="synchNames" type="checkbox" >Synch Names</input>
+			</div>
+			
+			<div class="control-group">
+				<label for="thresholdMs">Threshold MS:</label>
+				<input id="thresholdMs" type="text" value="5400000">
+			</div>
+
+			<label for="bucketSize">Bucket Size:</label>
+			<select id="bucketSize" class="control-group">
+				<option value=""></option>
+				<option value="second">Second</option>
+				<option value="minute">Minute</option>
+				<option value="hour" selected="selected">Hour</option>
+				<option value="day">Day</option>
+				<option value="week">Week</option>
+			</select>
+
+			<div id="buttonControls" class="control-group">
+				<button onclick="addGridSeries()">G+</button>
+				<button onclick="removeGridSeries()">G-</button>
+				<button onclick="addSeries()">S+</button>
+				<button onclick="removeSeries()">S-</button>
+				<button onclick="alterValues()">V</button>
+				<button onclick="saveSvg()">Save [Broken]</button>
+			</div>
+
+			<label for="orientation">Orientation:</label>
+			<select id="orientation" class="control-group">
+				<option value="north">North</option>
+				<option value="south">South</option>
+				<option value="east">East</option>
+				<option value="west">West</option>
+			</select>
+		</div>
+
+>>>>>>> 7.2
 
 			<div id="themeControls" class="control-group">
 				<label for="themeSelector">Theme:</label>

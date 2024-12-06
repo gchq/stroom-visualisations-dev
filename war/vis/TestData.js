@@ -248,6 +248,7 @@ function TestData() {
         var nestValues = false;
         var fieldZeroType = commonConstants.dataTypeDateTime;
 
+
         if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS || visType == VIS_TYPE_RADIAL_TREE) {
             seriesCount = 1;
             fieldZeroType = commonConstants.dataTypeNumber;
