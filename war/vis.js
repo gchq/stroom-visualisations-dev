@@ -272,7 +272,7 @@ function VisualisationManager() {
     doEnd();
   };
 
-  this.setVisType = function(type, callback) {
+  this.setVisType = function(type, className, callback) {
     try {
       vis = eval("new " + type + "()");
       callback.onSuccess(null);
@@ -283,9 +283,7 @@ function VisualisationManager() {
     if (vis && vis.element) {
       document.body.innerHTML = "";
       document.body.appendChild(vis.element);
-      vis.element.style.width = "100%";
-      vis.element.style.height = "100%";
-      vis.element.className = "vis";
+      vis.element.className = className;
 
       if (running) {
         doStart();
@@ -294,11 +292,18 @@ function VisualisationManager() {
     }
   };
 
+  this.setClassName = function(className, callback) {
+    if (vis && vis.element) {
+      vis.element.className = className;
+    }
+  };
+
   this.setData = function(context, settings, data, callback) {
     currentContext = context;
     currentSettings = settings;
     currentData = data;
 
+    console.log(data);
     update();
   };
 

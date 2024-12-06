@@ -1,0 +1,23 @@
+{
+  "type" : "Script",
+  "uuid" : "f6f6e556-2df2-4503-b745-3f3e23c47e05",
+  "name" : "HourDayHeatMap",
+  "version" : "43bb2b46-f1b9-458b-9ead-95ec95c8c0e5",
+  "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "d3bd7a70-397e-4c85-bfca-c09cc1d3bca8",
+    "name" : "Chroma"
+  }, {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "61cc6424-9899-4f38-ad77-f4204f9de166",
+    "name" : "D3"
+  }, {
+    "type" : "Script",
+    "uuid" : "cac6a6cd-1874-4932-a51c-e16ef9303f0c",
+    "name" : "D3-Grid"
+  } ]
+}

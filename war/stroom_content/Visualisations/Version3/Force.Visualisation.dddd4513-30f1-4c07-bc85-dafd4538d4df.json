@@ -1,0 +1,86 @@
+{
+    "data" : {
+        "structure" : {
+            "values" : {
+                "fields" : [ 
+                    {
+                        "id" : "${source}"
+                    },
+                    {
+                        "id" : "${target}"
+                    },
+                    {
+                        "id" : "${sourceGroup}"
+                    },
+                    {
+                        "id" : "${targetGroup}"
+                    },
+                    {
+                        "id" : "${count}"
+                    } 
+                ],
+                "limit" : {
+                    "enabled" : "true",
+                    "size" : "${limit}"
+                }
+            }
+        }
+    },
+    "tabs" : [ 
+        {
+            "name" : "Data",
+            "controls" : [ 
+                {
+                    "id" : "source",
+                    "type" : "field",
+                    "label" : "Source"
+                },
+                {
+                    "id" : "target",
+                    "type" : "field",
+                    "label" : "Target"
+                },
+                {
+                    "id" : "sourceGroup",
+                    "type" : "field",
+                    "label" : "Source Group (Optional)"
+                },
+                {
+                    "id" : "targetGroup",
+                    "type" : "field",
+                    "label" : "Target Group (Optional)"
+                },
+                {
+                    "id" : "count",
+                    "type" : "field",
+                    "label" : "Count (Optional)"
+                } 
+            ]
+        },
+        {
+            "name" : "Force",
+            "controls" : [ 
+                {
+                    "id" : "maxNodes",
+                    "type" : "number",
+                    "label" : "Max Nodes",
+                    "defaultValue" : "10000",
+                    "min" : "1",
+                    "max" : "100000"
+                },
+                {
+                    "id" : "animate",
+                    "type" : "boolean",
+                    "label" : "Animate",
+                    "defaultValue" : "false"
+                },
+                {
+                    "id" : "expandGroups",
+                    "type" : "boolean",
+                    "label" : "Expand Groups",
+                    "defaultValue" : "false"
+                }   
+            ]
+        } 
+    ]
+}

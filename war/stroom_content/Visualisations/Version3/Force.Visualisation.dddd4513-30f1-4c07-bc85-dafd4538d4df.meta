@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "dddd4513-30f1-4c07-bc85-dafd4538d4df",
+  "name" : "Force",
+  "version" : "3c76f197-db99-4f34-9924-8f5b36305291",
+  "description" : "",
+  "functionName" : "visualisations.ForceCanvas",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "ccceb661-579e-4c08-b7a5-1355d7b782f8",
+    "name" : "ForceCanvas"
+  }
+}
