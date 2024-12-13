@@ -3,7 +3,6 @@
 body {
     background-color: var(--page__background-color);
     color: var(--text-color);
-<<<<<<< HEAD
 }
 
 #controls {
@@ -58,6 +57,8 @@ body {
     left: 250px;
     bottom:0px;
     right:0px
+}
+
 /* The iframe will fill the container */
 #iframe iframe {
     position: absolute;
@@ -65,7 +66,4 @@ body {
     width: calc(100% - 251px);
     height: 100%;
     border: none;
-=======
-
->>>>>>> 7.2
 }
