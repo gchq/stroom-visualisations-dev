@@ -27,7 +27,7 @@
                     "id": "delimiter",
                     "type": "text",
                     "label": "Path delimiter",
-                    "defaultValue": "/" 
+                    "defaultValue": "/"
 
                 },
                 {
@@ -49,7 +49,24 @@
                         "False"
                     ],
                     "defaultValue" : "False"
+                },
+                {
+                    "id": "maxValues",
+                    "type": "number",
+                    "label": "Max Values",
+                    "defaultValue": "500",
+                    "max": "10000",
+                    "min": "1"
+                },
+                {
+                    "id": "maxGridSeries",
+                    "type": "number",
+                    "label": "Max Grid Series",
+                    "defaultValue": "36",
+                    "min": "1",
+                    "max": "144"
                 }
+
             ]
         }
     ],
