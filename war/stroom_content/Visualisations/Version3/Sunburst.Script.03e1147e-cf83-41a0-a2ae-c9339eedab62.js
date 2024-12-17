@@ -50,9 +50,8 @@ if (!visualisations) {
         var initialised = false;
         var canvas;
         var lastClickedNode = null;
-        var initialDepth = 2; // default depth
+
         var color = commonConstants.categoryGoogle();
-        var prevScale = 1;
 
         //one off initialisation of all the local variables, including
         //appending various static dom elements
@@ -70,7 +69,7 @@ if (!visualisations) {
             zoom = d3.behavior.zoom()
                 .scaleExtent([0.1,100])
                 .on("zoom", zoomed);
-                
+
             zoom.translate([width / 2, height / 2]);
 
             canvas.call(zoom);
@@ -122,7 +121,7 @@ if (!visualisations) {
                   context.color = color;
                 }
             }
-      
+
             if (settings){
               //Inspect settings to determine which axes to synch, if any.
               //Change the settings property(s) used according to the vis
@@ -133,7 +132,7 @@ if (!visualisations) {
               if (commonFunctions.isTrue(settings.synchYAxis)){
                   synchedFields.push(1);
               }
-      
+
               if (commonFunctions.isTrue(settings.synchSeries)) {
                   //series are synched so setup the colour scale domain and add it to the context
                   //so it can be passed to each grid cell vis
@@ -142,7 +141,7 @@ if (!visualisations) {
                   //ensure there is no colour scale in the context so each grid cel vis can define its own
                   delete context.color;
               }
-            
+
               //Get grid to construct the grid cells and for each one call back into a
               //new instance of this to build the visualisation in the cell
               //The last array arg allows you to synchronise the scales of fields
@@ -167,7 +166,7 @@ if (!visualisations) {
         //          Also can be used by the grid to pass state down to each cell
         //settings - the object containing all the user configurable settings for the visualisation,
         //           e.g. showLabels, displayXAxis, etc.
-        //data - the object tree containing all the data for that grid cell. Always contains all data 
+        //data - the object tree containing all the data for that grid cell. Always contains all data
         //       currently available for a query.
         this.setDataInsideGrid = function(context, settings, data) {
             if (!initialised){
@@ -185,10 +184,6 @@ if (!visualisations) {
                 delimiter = settings.delimiter;
             }
 
-            if (settings.initialDepth) {
-                initialDepth = settings.initialDepth;
-            }
-    
             if (data) {
                 stroomData = data;
                 let formattedData = arrayToHierarchy(data.values[0].values);
@@ -210,15 +205,15 @@ if (!visualisations) {
             // console.log(arr);
             const rootName = arr[0][0].split(delimiter)[0];
             let root = { name: rootName, children: [] };
-                    
+
             arr.forEach(([path, value]) => {
 
               const pathParts = path.split(delimiter);
               let currentNode = root;
-          
+
               for (let i = 1; i < pathParts.length; i++) {
                 const part = pathParts[i];
-                
+
                 if (i === pathParts.length - 1) {
                   currentNode.children.push({ name: part, value: value });
                 } else {
@@ -226,7 +221,7 @@ if (!visualisations) {
                 }
               }
             });
-          
+
             // Helper function to recursively calculate sums for non-leaf nodes
             function calculateSums(node) {
               if (node.children && node.children.length > 0) {
@@ -236,18 +231,18 @@ if (!visualisations) {
               }
               return node.value || 0;
             }
-          
+
             // Calculate sums for non-leaf nodes
             calculateSums(root);
-          
+
             return root;
-        }
+          }
 
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
             visSettings = settings;
 
-            
+
             // Calculate dimensions and radius
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
@@ -272,7 +267,7 @@ if (!visualisations) {
 
             y = d3.scale.sqrt()
                 .range([0, radius]);
-            
+
             partition = d3.layout.partition()
                 .value(function(d) { return d.value; });
 
@@ -282,41 +277,20 @@ if (!visualisations) {
                 .innerRadius(function(d) { return Math.max(0, y(d.y)); })
                 .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-            // Get all nodes, but initially hide those deeper than initialDepth
-            var nodes = partition.nodes(formattedData);
-
-            // Bind data to the paths, and append new paths
-            var paths = svg.selectAll("path").data(nodes);
-            
-            paths.enter().append("path")
-                .attr("d", arc)
-                .style("stroke", "var(--vis__background-color)")
-                .style("fill", function(d) {
-                    // Depth 1, assign a unique color
-                    if (d.depth === 1) {
-                        var baseColor = color(d.name);
-                        return d3.rgb(baseColor);
-                    }
-                    if (d.depth > 1) {
-                        var ancestor = d;
-                        while (ancestor.depth > 1) {
-                            ancestor = ancestor.parent;
-                        }
-                        var ancestorColor = color(ancestor.name); // use depth-1 ancestor color
-                        return d.children ? d3.rgb(ancestorColor) : d3.rgb(ancestorColor).brighter(1);
-                    }
-                    return color(d.name);
-                })                              
-                .style("fill-rule", "evenodd")
-                .style("opacity", function(d) {
-                    return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
-                })
-                .on("click", function(d) {
-                    if (d.children) {
+            svg.selectAll("path")
+                    .data(partition.nodes(formattedData))
+                .enter().append("path")
+                    .attr("d", arc)
+                    .style("stroke", "var(--vis__background-color)")
+                    .style("fill", function(d) {
+                        return color((d.children ? d : d.parent).name);
+                    })
+                    .style("fill-rule", "evenodd")
+                    .on("click", function(d) {
                         lastClickedNode = d;
-                        expandArc(d);  // Expand more layers on click
-                    }
-                });
+                        // console.log(lastClickedNode);
+                        expandArc(d);
+                    });
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
@@ -326,15 +300,17 @@ if (!visualisations) {
             commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
 
             var nodeToExpand = lastClickedNode || formattedData;
+            // console.log(nodeToExpand);
             expandArc(nodeToExpand);
+            // setTimeout(() => {
+            //     expandArc(nodeToExpand);
+            //     console.log(nodeToExpand);
+            // }, 1000);
 
         };
 
         var EPSILON = 1e-6;
-        var targetDepth;
         function expandArc(data) {
-            targetDepth = data.depth + initialDepth;
-
             svg.selectAll("text.label").remove();
             let labelsUpdated = false;
             svg.transition()
@@ -352,103 +328,91 @@ if (!visualisations) {
                 .selectAll("path")
                 .attrTween("d", function(d) {
                     return function() {
-                        if (d.depth <= targetDepth) {
-                            var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
-                            var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
-            
-                            if (Math.abs(endAngle - startAngle) < EPSILON) {
-                                return "";
-                            }
+                        var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                        var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
 
-                            return arc(d);
-                        } else {
+                        if (Math.abs(endAngle - startAngle) < EPSILON) {
                             return "";
                         }
+
+                        return arc(d);
                     };
                 })
                 .each("end", function() {
                     if (!labelsUpdated) {
                         labelsUpdated = true;
-                        updateLabels(targetDepth);
+                        updateLabels();
                     }
                 });
         }
-        
-        function updateLabels(targetDepth) {
+
+        function updateLabels() {
             svg.selectAll("text.label").remove();
             svg.selectAll("path").each(function(d) {
-                if (d.depth <= targetDepth) {
-                    // Apply scaling from the current x and y domains (after transition/zoom)
-                    var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
-                    var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
-                    var innerRadius = Math.max(0, y(d.y));
-                    var outerRadius = Math.max(0, y(d.y + d.dy));
+                // Apply scaling from the current x and y domains (after transition/zoom)
+                var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+                var innerRadius = Math.max(0, y(d.y));
+                var outerRadius = Math.max(0, y(d.y + d.dy));
 
-                    if (commonFunctions.isTrue(visSettings.showLabels)) {
-                        var centroid = arc.centroid(d);
-                        var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
-                        var radDiff = outerRadius - innerRadius;
-                        var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
-                        var fontSize = 13 / scale;
+                if (commonFunctions.isTrue(visSettings.showLabels)) {
+                    var centroid = arc.centroid(d);
+                    var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
+                    var radDiff = outerRadius - innerRadius;
+                    var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
+                    var fontSize = 13 / scale;
 
-                        var textContent = d.name != null ? commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
-                                            commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
+                    var textContent = d.name != null ? commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
+                                          commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
 
-                        // Create a temporary text element to measure the text width and height
-                        var tempText = svg.append("text")
-                        .attr("class", "temp-text")
-                        .attr("text-anchor", "middle")
-                        .style("font-size", fontSize + "px")
-                        .style("visibility", "hidden")
-                        .text(textContent);
+                    // Create a temporary text element to measure the text width and height
+                    var tempText = svg.append("text")
+                    .attr("class", "temp-text")
+                    .attr("text-anchor", "middle")
+                    .style("font-size", fontSize + "px")
+                    .style("visibility", "hidden")
+                    .text(textContent);
 
-                        // Measure the width and height using the bounding box
-                        var bbox = tempText.node().getBBox();
-                        var textWidth = bbox.width;
-                        var textHeight = bbox.height;
+                    // Measure the width and height using the bounding box
+                    var bbox = tempText.node().getBBox();
+                    var textWidth = bbox.width;
+                    var textHeight = bbox.height;
 
-                        // Remove the temporary text element
-                        tempText.remove();
+                    // Remove the temporary text element
+                    tempText.remove();
 
-                        if (textWidth < radDiff && textHeight < arcLength) {
-                            var angle = (startAngle + endAngle) / 2;
-                            angle = angle * (180 / Math.PI) + 90; // Convert to degrees
-                            if (angle > 90 && angle < 270) {
-                                angle += 180;
-                            }
-                            if (d.depth == 0){
-                                centroid = [0, 0];
-                            }
-                            if (Math.abs(angle - 90) < 0.1 || Math.abs(angle - 270) < 0.1) {
-                                angle = 0;
-                            }        
-                            svg.append("text")
-                                .attr("class", "label")
-                                .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ") rotate(" + angle + ")")
-                                .attr("text-anchor", "middle")
-                                .attr("dy", ".35em")
-                                .style("pointer-events", "none")
-                                .style("font-size", fontSize + "px")
-                                .style("text-rendering", "geometricPrecision")
-                                .text(textContent);
-
+                    if (textWidth < radDiff && textHeight < arcLength) {
+                        var angle = (startAngle + endAngle) / 2;
+                        angle = angle * (180 / Math.PI) + 90; // Convert to degrees
+                        if (angle > 90 && angle < 270) {
+                            angle += 180;
                         }
+                        if (d.depth == 0){
+                            centroid = [0, 0];
+                        }
+                        if (Math.abs(angle - 90) < 0.1 || Math.abs(angle - 270) < 0.1) {
+                            angle = 0;
+                        }
+                        svg.append("text")
+                            .attr("class", "label")
+                            .attr("transform", "translate(" + centroid[0] + "," + centroid[1] + ") rotate(" + angle + ")")
+                            .attr("text-anchor", "middle")
+                            .attr("dy", ".35em")
+                            .style("pointer-events", "none")
+                            .style("font-size", fontSize + "px")
+                            .style("text-rendering", "geometricPrecision")
+                            .text(textContent);
+
                     }
                 }
             });
         }
 
         function zoomed() {
-            var currentScale = d3.event.scale;
-
             // Apply translation and scaling to the arcs
             svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            
-            if (currentScale !== prevScale) {
-                updateLabels(targetDepth);
-            }
-            
-            prevScale = currentScale;
+
+            updateLabels();
         }
 
         // Used to provide the visualisation's D3 colour scale to the grid
