@@ -86,7 +86,7 @@ main() {
   gh release create \
     --title "${BUILD_TAG}" \
     --notes "${message}" \
-    --verify-tag \
+    #--verify-tag \
     "${args[@]}" \
     "${BUILD_TAG}" \
     "${asset_files[@]}"
