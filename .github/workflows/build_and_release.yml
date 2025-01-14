@@ -11,7 +11,7 @@ jobs:
       MAX_WORKERS: 3
       BUILD_TAG: ${{ github.ref_name }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BUILD_DIR: ./build
+      BUILD_DIR: ./
 
     steps:
       - name: Checkout
@@ -75,9 +75,9 @@ jobs:
 
       - name: Zip
         run: |
-          mkdir -p "${BUILD_DIR}/release_artefacts/"
+          mkdir -p "${BUILD_DIR}/build/release_artefacts/"
           mkdir -p "test_dir"
-          zip -r "${BUILD_DIR}/release_artefacts/stroom-content.zip" "./war/stroom-content"
+          zip -r "${BUILD_DIR}/build/release_artefacts/stroom-content.zip" "./war/stroom-content"
           zip -r "test_dir/stroom-content.zip" "./war/stroom-content"
 
       - name: Release to Github
