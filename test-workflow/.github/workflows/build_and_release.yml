@@ -13,8 +13,7 @@ jobs:
   steps: 
     - name: Checkout
       uses: actions/checkout@v2
-      with: 
-         ref: ${{ github.ref }}
+      with: ref: ${{ github.ref }}
 
     - name: Set Environment
       id: set_environment
@@ -58,7 +57,6 @@ jobs:
     - name: Zip
       run: | 
         mkdir -p ../build
-        mkdir -p ../build/release_artefacts/
         zip -r ${BUILD_DIR}/release_artefacts/ ../stroom-content
 
     - name: Release to Github
