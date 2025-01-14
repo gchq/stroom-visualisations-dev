@@ -12,6 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
+        id: checkout_code
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
@@ -52,7 +53,7 @@ jobs:
       - name: Build Environment Info
         id: build_info
         run: |
-          "${ACTIONS_SCRIPTS_DIR}/echo_variables.sh" \
+          "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh" \
             "docker version" "$(docker --version)" \
             "docker compose version" "$(docker compose version)" \
             "git version" "$(git --version)" \
@@ -68,7 +69,7 @@ jobs:
             "ACTIONS_SCRIPTS_DIR" "$ACTIONS_SCRIPTS_DIR" \
             "PWD" "$PWD" \
             "HOME" "$HOME"
-            
+
       - name: Zip
         run: |
           mkdir -p "${BUILD_DIR}/release_artefacts/"
