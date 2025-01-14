@@ -28,8 +28,7 @@ setup_echo_colours() {
 }
 
 debug_value() {
-    touch /home/stroomworks4959/stroomworks4959/stroom-visualisations-dev/debug1.txt
-
+    
   local name="$1"; shift
   local value="$1"; shift
   
@@ -39,10 +38,6 @@ debug_value() {
 }
 
 debug() {
-
-    touch /home/stroomworks4959/stroomworks4959/stroom-visualisations-dev/debug2.txt
-
-
   local str="$1"; shift
   
   if [ "${IS_DEBUG}" = true ]; then
@@ -51,10 +46,6 @@ debug() {
 }
 
 main() {
-  
-  touch /home/stroomworks4959/stroomworks4959/stroom-visualisations-dev/debug3.txt
-
-
   IS_DEBUG=false
   #SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 

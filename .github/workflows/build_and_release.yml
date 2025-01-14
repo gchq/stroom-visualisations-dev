@@ -1,4 +1,4 @@
-name: zip files on push
+name: Zip files on push
 
 on:
   push:
@@ -6,65 +6,63 @@ on:
 
 jobs:
   build-project:
-    runs on: ubuntu-20.4
-    env: 
+    runs-on: ubuntu-20.04  
+    env:                   
       MAX_WORKERS: 3
 
-  steps: 
-    - name: Checkout
-      uses: actions/checkout@v2
-      with: 
-         ref: ${{ github.ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
 
-    - name: Set Environment
-      id: set_environment
-      run: |
-        {
-          # Map the GITHUB env vars to our own
-          echo "BUILD_DIR=${GITHUB_WORKSPACE}"
-          echo "BUILD_COMMIT=${GITHUB_SHA}"
-          echo "ACTIONS_SCRIPTS_DIR=${GITHUB_WORKSPACE}/.github/workflows/scripts"
+      - name: Set Environment
+        id: set_environment
+        run: |
+          {
+            echo "BUILD_DIR=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
+            echo "BUILD_COMMIT=${GITHUB_SHA}" >> $GITHUB_ENV
+            echo "ACTIONS_SCRIPTS_DIR=${GITHUB_WORKSPACE}/.github/workflows/scripts" >> $GITHUB_ENV
 
-          if [[ ${GITHUB_REF} =~ ^refs/tags/ ]]; then
-            # strip off the 'refs/tags/' bit
-            tag="${GITHUB_REF#refs/tags/}"
-            echo "BUILD_TAG=${tag}"
-          fi
+            if [[ ${GITHUB_REF} =~ ^refs/tags/ ]]; then
+              # Strip off the 'refs/tags/' part
+              tag="${GITHUB_REF#refs/tags/}"
+              echo "BUILD_TAG=${tag}" >> $GITHUB_ENV
+            fi
 
-          if [[ ${GITHUB_REF} =~ ^refs/heads/ ]]; then
-            # strip off the 'ref/heads/' bit
-            echo "BUILD_BRANCH=${GITHUB_REF#refs/heads/}"
-          fi
+            if [[ ${GITHUB_REF} =~ ^refs/heads/ ]]; then
+              # Strip off the 'refs/heads/' part
+              echo "BUILD_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+            fi
 
-          if [[ ${GITHUB_REF} =~ ^refs/pulls/ ]]; then
-            echo "BUILD_IS_PULL_REQUEST=true"
-          else
-            echo "BUILD_IS_PULL_REQUEST=false"
-          fi
+            if [[ ${GITHUB_REF} =~ ^refs/pulls/ ]]; then
+              echo "BUILD_IS_PULL_REQUEST=true" >> $GITHUB_ENV
+            else
+              echo "BUILD_IS_PULL_REQUEST=false" >> $GITHUB_ENV
+            fi
 
-          if [[ ${GITHUB_REF} =~ ^refs/tags/v ]]; then
-            echo "BUILD_IS_RELEASE=true"
-          else
-            echo "BUILD_IS_RELEASE=false"
-          fi
-        } >> $GITHUB_ENV
+            if [[ ${GITHUB_REF} =~ ^refs/tags/v ]]; then
+              echo "BUILD_IS_RELEASE=true" >> $GITHUB_ENV
+            else
+              echo "BUILD_IS_RELEASE=false" >> $GITHUB_ENV
+            fi
+          }
 
-    - name: Build Environment
-      id: build_environment
-      run: |
-          "GITHUB_WORKSPACE" "${GITHUB_WORKSPACE}" \
-          "BUILD_DIR" "$BUILD_DIR" \
+      - name: Build Environment
+        id: build_environment
+        run: |
+          echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+          echo "BUILD_DIR: ${BUILD_DIR}"
 
-    - name: Zip
-      run: | 
-        mkdir -p ../build
-        mkdir -p ../build/release_artefacts/
-        zip -r ${BUILD_DIR}/release_artefacts/ ../war/stroom-content
+      - name: Zip
+        run: |
+          mkdir -p "${BUILD_DIR}/release_artefacts/"
+          zip -r "${BUILD_DIR}/release_artefacts/stroom-content.zip" "./war/stroom-content"
 
-    - name: Release to Github
-      id: create_release
-      if: ${{ env.BUILD_IS_RELEASE == 'true' }}
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh"
-    
+      - name: Release to Github
+        id: create_release
+        if: ${{ env.BUILD_IS_RELEASE == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh"
