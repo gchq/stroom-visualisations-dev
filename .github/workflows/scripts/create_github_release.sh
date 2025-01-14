@@ -53,7 +53,7 @@ main() {
 
   echo -e "${GREEN}Finding asset files for release${NC}"
   local asset_files=()
-  for asset_file in "${BUILD_DIR}/release_artefacts/"*; do
+  for asset_file in "${BUILD_DIR}/build/release_artefacts/"*; do
     echo -e "${GREEN}Found asset file: ${BLUE}${asset_file}${NC}"
     asset_files+=("${asset_file}")
   done
