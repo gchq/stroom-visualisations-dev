@@ -59,7 +59,7 @@ jobs:
       run: | 
         mkdir -p ../build
         mkdir -p ../build/release_artefacts/
-        zip -r ${BUILD_DIR}/release_artefacts/ ../stroom-content
+        zip -r ${BUILD_DIR}/release_artefacts/ ../war/stroom-content
 
     - name: Release to Github
       id: create_release
