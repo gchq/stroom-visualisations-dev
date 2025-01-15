@@ -10,6 +10,7 @@ jobs:
     env:                   
       MAX_WORKERS: 3
       SSH_AUTH_SOCK: "/tmp/ssh-agent.sock"
+      BUILD_TAG: mytag
       
     steps:
       - name: Checkout
