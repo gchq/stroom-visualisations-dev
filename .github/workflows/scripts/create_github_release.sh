@@ -51,6 +51,13 @@ main() {
 
   setup_echo_colours
 
+  if [ -z "${BUILD_TAG}" ]; then
+    BUILD_TAG="pre-release"
+  fi
+
+  echo -e "${GREEN}Using tag: ${BLUE}${BUILD_TAG}${NC}"
+
+
   echo -e "${GREEN}Finding asset files for release${NC}"
   local asset_files=()
   for asset_file in "${BUILD_DIR}/build/release_artefacts/"*; do
@@ -91,7 +98,7 @@ main() {
     "${BUILD_TAG}" \
     "${asset_files[@]}"
 
-  echo "${GREEN}Release created for tag ${BLUE}${BUILD_TAG}${NC}"
+  #echo "${GREEN}Release created for tag ${BLUE}${BUILD_TAG}${NC}"
 }
 
 main "$@"
