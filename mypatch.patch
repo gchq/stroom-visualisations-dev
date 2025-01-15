@@ -1,0 +1,88 @@
+diff --git a/.github/workflows/build_and_release.yml b/.github/workflows/build_and_release.yml
+index a58a853..fdcbdc8 100644
+--- a/.github/workflows/build_and_release.yml
++++ b/.github/workflows/build_and_release.yml
+@@ -10,7 +10,7 @@ jobs:
+     env:                   
+       MAX_WORKERS: 3
+       SSH_AUTH_SOCK: "/tmp/ssh-agent.sock"
+-      
++
+     steps:
+       - name: Checkout
+         id: checkout_code
+@@ -51,39 +51,9 @@ jobs:
+             fi
+           } >> $GITHUB_ENV
+ 
+-      # - name: Build Environment Info
+-      #   id: build_info
+-      #   env:
+-      #     GH_TOKEN: ${{ github.token }}
+-      #   run: |
+-      #       "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh" \
+-      #       "docker version" "$(docker --version)" \
+-      #       "docker compose version" "$(docker compose version)" \
+-      #       "git version" "$(git --version)" \
+-      #       "GITHUB_WORKSPACE" "$GITHUB_WORKSPACE" \
+-      #       "GITHUB_REF" "$GITHUB_REF" \
+-      #       "GITHUB_SHA" "$GITHUB_SHA" \
+-      #       "BUILD_DIR" "$BUILD_DIR" \
+-      #       "BUILD_TAG" "$BUILD_TAG" \
+-      #       "BUILD_BRANCH" "$BUILD_BRANCH" \
+-      #       "BUILD_COMMIT" "$BUILD_COMMIT" \
+-      #       "BUILD_IS_PULL_REQUEST" "$BUILD_IS_PULL_REQUEST" \
+-      #       "BUILD_IS_RELEASE" "$BUILD_IS_RELEASE" \
+-      #       "ACTIONS_SCRIPTS_DIR" "$ACTIONS_SCRIPTS_DIR" \
+-      #       "PWD" "$PWD" \
+-      #       "HOME" "$HOME"
+-
+-      # - name: Create Tag if Not Exists
+-      #   if: env.tag_exists == 'false'
+-      #   run: |
+-      #     git config user.name "github-actions[bot]"
+-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+-      #     git tag -a "$tag_name" -m "Auto-created tag $tag_name"
+-      #     git push origin "$tag_name"
+-
+       - name: Zip
+         run: |
+-          mkdir -p "${BUILD_DIR}/build/release_artefacts/"
++          mkdir -p "${BUILD_DIR}/release_artefacts/"
+           mkdir -p "test_dir"
+           zip -r "${BUILD_DIR}/build/release_artefacts/stroom-content.zip" "./war/stroom-content"
+           zip -r "test_dir/stroom-content.zip" "./war/stroom-content"
+diff --git a/.github/workflows/scripts/create_github_release.sh b/.github/workflows/scripts/create_github_release.sh
+index 3f55399..4b1f07c 100755
+--- a/.github/workflows/scripts/create_github_release.sh
++++ b/.github/workflows/scripts/create_github_release.sh
+@@ -74,12 +74,16 @@ main() {
+       --list "${BUILD_TAG}" \
+       --format='%(subject)%0a%0a%(contents:body)')"
+ 
++  echo "Environment Variables:"
++  echo "BUILD_DIR: $BUILD_DIR"
++  echo "BUILD_TAG: $BUILD_TAG"
++  echo "ACTIONS_SCRIPTS_DIR: $ACTIONS_SCRIPTS_DIR"
++
+   echo -e "${GREEN}Creating release for tag ${BLUE}${BUILD_TAG}${GREEN} with message:${NC}"
+   echo -e "${DGREY}------------------------------------------------------------------------${NC}"
+   echo -e "${DGREY}${message}${NC}"
+   echo -e "${DGREY}------------------------------------------------------------------------${NC}"
+ 
+-
+   # Create the release on GitHub using the annotated tag that triggered
+   # this build
+   # See https://cli.github.com/manual/gh_release_create
+@@ -91,6 +95,11 @@ main() {
+     "${BUILD_TAG}" \
+     "${asset_files[@]}"
+ 
++  gh release upload "${BUILD_TAG}" \
++  "build/release_artefacts/*"
++
++  echo "${BUILD_TAG}"
++
+   echo "${GREEN}Release created for tag ${BLUE}${BUILD_TAG}${NC}"
+ }
+ 
