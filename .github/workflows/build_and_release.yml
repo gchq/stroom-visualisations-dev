@@ -51,27 +51,27 @@ jobs:
             fi
           } >> $GITHUB_ENV
 
-      - name: Build Environment Info
-        id: build_info
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-            "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh" \
-            "docker version" "$(docker --version)" \
-            "docker compose version" "$(docker compose version)" \
-            "git version" "$(git --version)" \
-            "GITHUB_WORKSPACE" "$GITHUB_WORKSPACE" \
-            "GITHUB_REF" "$GITHUB_REF" \
-            "GITHUB_SHA" "$GITHUB_SHA" \
-            "BUILD_DIR" "$BUILD_DIR" \
-            "BUILD_TAG" "$BUILD_TAG" \
-            "BUILD_BRANCH" "$BUILD_BRANCH" \
-            "BUILD_COMMIT" "$BUILD_COMMIT" \
-            "BUILD_IS_PULL_REQUEST" "$BUILD_IS_PULL_REQUEST" \
-            "BUILD_IS_RELEASE" "$BUILD_IS_RELEASE" \
-            "ACTIONS_SCRIPTS_DIR" "$ACTIONS_SCRIPTS_DIR" \
-            "PWD" "$PWD" \
-            "HOME" "$HOME"
+      # - name: Build Environment Info
+      #   id: build_info
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}
+      #   run: |
+      #       "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh" \
+      #       "docker version" "$(docker --version)" \
+      #       "docker compose version" "$(docker compose version)" \
+      #       "git version" "$(git --version)" \
+      #       "GITHUB_WORKSPACE" "$GITHUB_WORKSPACE" \
+      #       "GITHUB_REF" "$GITHUB_REF" \
+      #       "GITHUB_SHA" "$GITHUB_SHA" \
+      #       "BUILD_DIR" "$BUILD_DIR" \
+      #       "BUILD_TAG" "$BUILD_TAG" \
+      #       "BUILD_BRANCH" "$BUILD_BRANCH" \
+      #       "BUILD_COMMIT" "$BUILD_COMMIT" \
+      #       "BUILD_IS_PULL_REQUEST" "$BUILD_IS_PULL_REQUEST" \
+      #       "BUILD_IS_RELEASE" "$BUILD_IS_RELEASE" \
+      #       "ACTIONS_SCRIPTS_DIR" "$ACTIONS_SCRIPTS_DIR" \
+      #       "PWD" "$PWD" \
+      #       "HOME" "$HOME"
 
       # - name: Create Tag if Not Exists
       #   if: env.tag_exists == 'false'
