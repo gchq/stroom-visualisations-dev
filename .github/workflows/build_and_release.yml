@@ -53,8 +53,10 @@ jobs:
 
       - name: Build Environment Info
         id: build_info
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh" \
+            "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh" \
             "docker version" "$(docker --version)" \
             "docker compose version" "$(docker compose version)" \
             "git version" "$(git --version)" \
@@ -71,13 +73,13 @@ jobs:
             "PWD" "$PWD" \
             "HOME" "$HOME"
 
-      - name: Create Tag if Not Exists
-        if: env.tag_exists == 'false'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$tag_name" -m "Auto-created tag $tag_name"
-          git push origin "$tag_name"
+      # - name: Create Tag if Not Exists
+      #   if: env.tag_exists == 'false'
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git tag -a "$tag_name" -m "Auto-created tag $tag_name"
+      #     git push origin "$tag_name"
 
       - name: Zip
         run: |
