@@ -9,10 +9,8 @@ jobs:
     runs-on: ubuntu-20.04  
     env:                   
       MAX_WORKERS: 3
-      #BUILD_TAG: 
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BUILD_DIR: ./
-
+      SSH_AUTH_SOCK: "/tmp/ssh-agent.sock"
+      
     steps:
       - name: Checkout
         id: checkout_code
@@ -72,6 +70,14 @@ jobs:
             "ACTIONS_SCRIPTS_DIR" "$ACTIONS_SCRIPTS_DIR" \
             "PWD" "$PWD" \
             "HOME" "$HOME"
+
+      - name: Create Tag if Not Exists
+        if: env.tag_exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag_name" -m "Auto-created tag $tag_name"
+          git push origin "$tag_name"
 
       - name: Zip
         run: |
