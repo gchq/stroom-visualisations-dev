@@ -89,6 +89,7 @@ jobs:
       - name: Release to Github
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{github.token}}
+          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh"
