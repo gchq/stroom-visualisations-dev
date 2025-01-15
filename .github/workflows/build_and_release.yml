@@ -10,8 +10,7 @@ jobs:
     env:                   
       MAX_WORKERS: 3
       SSH_AUTH_SOCK: "/tmp/ssh-agent.sock"
-      GH_TOKEN: ${{ github.token }}
-
+      
     steps:
       - name: Checkout
         id: checkout_code
