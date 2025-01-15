@@ -91,6 +91,9 @@ main() {
     "${BUILD_TAG}" \
     "${asset_files[@]}"
 
+  gh release upload "${BUILD_TAG}" \
+  "build/release_artefacts/stroom-content.zip" --content-type application/zip 
+
   echo "${GREEN}Release created for tag ${BLUE}${BUILD_TAG}${NC}"
 }
 
