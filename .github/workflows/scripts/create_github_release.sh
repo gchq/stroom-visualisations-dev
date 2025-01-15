@@ -84,9 +84,6 @@ main() {
   echo -e "${DGREY}${message}${NC}"
   echo -e "${DGREY}------------------------------------------------------------------------${NC}"
 
-
-
-
   # Create the release on GitHub using the annotated tag that triggered
   # this build
   # See https://cli.github.com/manual/gh_release_create
