@@ -74,10 +74,17 @@ main() {
       --list "${BUILD_TAG}" \
       --format='%(subject)%0a%0a%(contents:body)')"
 
+  echo "Environment Variables:"
+  echo "BUILD_DIR: $BUILD_DIR"
+  echo "BUILD_TAG: $BUILD_TAG"
+  echo "ACTIONS_SCRIPTS_DIR: $ACTIONS_SCRIPTS_DIR"
+
   echo -e "${GREEN}Creating release for tag ${BLUE}${BUILD_TAG}${GREEN} with message:${NC}"
   echo -e "${DGREY}------------------------------------------------------------------------${NC}"
   echo -e "${DGREY}${message}${NC}"
   echo -e "${DGREY}------------------------------------------------------------------------${NC}"
+
+
 
 
   # Create the release on GitHub using the annotated tag that triggered
