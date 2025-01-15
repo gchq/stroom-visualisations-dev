@@ -99,7 +99,7 @@ main() {
     "${asset_files[@]}"
 
   gh release upload "${BUILD_TAG}" \
-  "build/release_artefacts/stroom-content.zip" --content-type application/zip 
+  "build/release_artefacts/stroom-content.zip"
 
   echo "${BUILD_TAG}"
 
