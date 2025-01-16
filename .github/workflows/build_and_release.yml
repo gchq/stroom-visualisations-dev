@@ -25,6 +25,7 @@ jobs:
             # Map the GITHUB env vars to our own
             echo "BUILD_DIR=${GITHUB_WORKSPACE}"
             echo "BUILD_COMMIT=${GITHUB_SHA}"
+            echo "PARENT_DIR=$(dirname "${BUILD_DIR}")"
             echo "ACTIONS_SCRIPTS_DIR=${GITHUB_WORKSPACE}/.github/workflows/scripts"
 
             if [[ ${GITHUB_REF} =~ ^refs/tags/ ]]; then
@@ -55,7 +56,7 @@ jobs:
         run: |
           mkdir -p "${BUILD_DIR}/release_artefacts/"
           mkdir -p "test_dir"
-          zip -r "${BUILD_DIR}/build/release_artefacts/stroom-content.zip" "${BUILD_DIR}/war/stroom-content"
+          zip -r "${PARENT_DIR}/build/release_artefacts/stroom-content.zip" "${PARENT_DIR}/war/stroom-content"
           zip -r "test_dir/stroom-content.zip" "${BUILD_DIR}/war/stroom-content"
 
       - name: Release to Github
