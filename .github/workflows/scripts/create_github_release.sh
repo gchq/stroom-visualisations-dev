@@ -97,7 +97,7 @@ main() {
       "${asset_files[@]}"
 
 
-    gh release upload "${BUILD_TAG}" "build/release_artefacts/*"
+    gh release upload "${BUILD_TAG}" "build/release_artefacts/"
   else
     echo "BUILD_TAG is not set or empty. Skipping release upload."
   fi
