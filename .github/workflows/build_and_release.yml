@@ -53,9 +53,9 @@ jobs:
 
       - name: Zip
         run: |
-          # mkdir -p "${BUILD_DIR}/build/release_artefacts/"
+          mkdir -p "${BUILD_DIR}/build/release_artefacts/"
           mkdir -p "test_dir"
-          # zip -r "${BUILD_DIR}/build/release_artefacts/" "${BUILD_DIR}/war/stroom-content"
+          zip -r "build/release_artefacts/" "./war/stroom-content"
           zip -r "test_dir/" "./war/stroom_content/"
 
       - name: Release to Github
