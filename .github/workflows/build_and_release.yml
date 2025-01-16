@@ -25,7 +25,7 @@ jobs:
             # Map the GITHUB env vars to our own
             echo "BUILD_DIR=/home/runner/work/stroom-visualisations-dev"
             echo "BUILD_COMMIT=${GITHUB_SHA}"
-            echo "ACTIONS_SCRIPTS_DIR=${GITHUB_WORKSPACE}/.github/workflows/scripts"
+            echo "/home/runner/work/stroom-visualisations-dev/.github/workflows/scripts"
 
             if [[ ${GITHUB_REF} =~ ^refs/tags/ ]]; then
               # strip off the 'refs/tags/' bit
