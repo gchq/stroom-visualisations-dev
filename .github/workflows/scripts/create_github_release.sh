@@ -87,20 +87,20 @@ main() {
   # Create the release on GitHub using the annotated tag that triggered
   # this build
   # See https://cli.github.com/manual/gh_release_create
-  if [ -n "${BUILD_TAG}" ]; then
-    gh release create \
-      --title "${BUILD_TAG}" \
-      --notes "${message}" \
-      --verify-tag \
-      "${args[@]}" \
-      "${BUILD_TAG}" \
-      "${asset_files[@]}"
+  # if [ -n "${BUILD_TAG}" ]; then
+  gh release create \
+    --title "${BUILD_TAG}" \
+    --notes "${message}" \
+    --verify-tag \
+    "${args[@]}" \
+    "${BUILD_TAG}" \
+    "${asset_files[@]}"
 
 
     gh release upload "${BUILD_TAG}" "build/release_artefacts/stroom-content"
-  else
-    echo "BUILD_TAG is not set or empty. Skipping release upload."
-  fi
+  # else
+  #   echo "BUILD_TAG is not set or empty. Skipping release upload."
+  # fi
 
   echo "${BUILD_TAG}"
 
