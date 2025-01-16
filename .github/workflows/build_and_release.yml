@@ -7,17 +7,24 @@ on:
 jobs:
   build-project:
     runs-on: ubuntu-20.04  
-    env:                   
+    env:                 
+      # Github runners limited to 2 cores, 7Gb RAM
+      # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources  
       MAX_WORKERS: 3
+      # path of the unix file socket that the agent uses
       SSH_AUTH_SOCK: "/tmp/ssh-agent.sock"
 
     steps:
       - name: Checkout
         id: checkout_code
         uses: actions/checkout@v2
+        # See https://github.com/actions/runner/issues/712
         with:
           ref: ${{ github.ref }}
 
+
+        # Set variables in github's special env file which are then automatically 
+        # read into env vars in each subsequent step
       - name: Set Environment Variables
         id: set_env_var
         run: |
@@ -51,6 +58,7 @@ jobs:
             fi
           } >> $GITHUB_ENV
 
+      # Zipping, test_dir not packaged in with release
       - name: Zip
         run: |
           mkdir -p "${BUILD_DIR}/build/release_artefacts/"
@@ -58,6 +66,7 @@ jobs:
           zip -r "build/release_artefacts/stroom_content.zip" "./war/stroom_content/"
           zip -r "test_dir/" "./war/stroom_content/"
 
+      # Running release script
       - name: Release to Github
         id: create_release
         env:
