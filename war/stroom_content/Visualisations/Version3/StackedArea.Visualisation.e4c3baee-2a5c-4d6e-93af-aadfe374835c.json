@@ -48,7 +48,7 @@
                         "cardinal-closed",
                         "monotone"
                     ],
-                    "defaultValue": "basis-open"
+                    "defaultValue": "monotone"
                 },
                 {
                     "id": "maxValues",
