@@ -87,12 +87,12 @@ main() {
   echo "DEBUG: Contents of ${BUILD_DIR}/build/release_artefacts/"
   ls -l "${BUILD_DIR}/build/release_artefacts/"
 
-  if [ -f "${BUILD_DIR}/build/release_artefacts/test-archive.zip" ]; then
-    echo "Deleting test-archive.zip..."
-    rm -f "${BUILD_DIR}/build/release_artefacts/test-archive.zip"
-  else
-    echo "test-archive.zip does not exist, skipping."
-  fi
+  # if [ -f "${BUILD_DIR}/build/release_artefacts/test-archive.zip" ]; then
+  #   echo "Deleting test-archive.zip..."
+  #   rm -f "${BUILD_DIR}/build/release_artefacts/test-archive.zip"
+  # else
+  #   echo "test-archive.zip does not exist, skipping."
+  # fi
 
   # Create the release on GitHub using the annotated tag that triggered
   # this build
