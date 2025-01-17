@@ -64,15 +64,6 @@ jobs:
           mkdir -p "${BUILD_DIR}/build/release_artefacts/"
           zip -r "build/release_artefacts/stroom_content.zip" "./war/stroom_content/"
 
-      # - name: Remove Test Archive
-      # run: |
-      #   if [ -f "${BUILD_DIR}/build/release_artefacts/test-archive.zip" ]; then
-      #     echo "Deleting test-archive.zip..."
-      #     rm -f "${BUILD_DIR}/build/release_artefacts/test-archive.zip"
-      #   else
-      #     echo "test-archive.zip does not exist, skipping."
-      #   fi
-
       # Running release script
       - name: Release to Github
         id: create_release
