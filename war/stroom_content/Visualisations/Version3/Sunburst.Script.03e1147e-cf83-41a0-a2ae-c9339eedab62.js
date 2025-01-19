@@ -208,7 +208,10 @@ if (!visualisations) {
               return node;
             }
             // console.log(arr);
-            const rootName = arr[0][0].split(delimiter)[0];
+            let rootName = arr[0][0].split(delimiter)[0];
+            if (!rootName) {
+                rootName = "Root";
+            }
             let root = { name: rootName, children: [] };
 
             arr.forEach(([path, value]) => {
