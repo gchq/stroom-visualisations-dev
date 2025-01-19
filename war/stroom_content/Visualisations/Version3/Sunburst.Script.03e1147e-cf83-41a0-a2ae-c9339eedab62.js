@@ -92,10 +92,15 @@ if (!visualisations) {
 
                 tip = inverseHighlight.tip()
                     .html(function(tipData) {
-                        var html = inverseHighlight.htmlBuilder()
-                            .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name))
-                            .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
+                        var htmlBuilder = inverseHighlight.htmlBuilder();
+                        if (tipData.values.name && tipData.values.name !== " ") {
+                            htmlBuilder.addTipEntry("Name", commonFunctions.autoFormat(tipData.values.name));
+                        }
+
+                        var html = htmlBuilder
+                            .addTipEntry("Value", commonFunctions.autoFormat(tipData.values.value))
                             .build();
+                        
                         return html;
                     });
             }
@@ -207,28 +212,50 @@ if (!visualisations) {
               }
               return node;
             }
-            // console.log(arr);
-            let rootName = arr[0][0].split(delimiter)[0];
-            if (!rootName) {
-                rootName = "Root";
-            }
-            let root = { name: rootName, children: [] };
 
-            arr.forEach(([path, value]) => {
-
-              const pathParts = path.split(delimiter);
-              let currentNode = root;
-
-              for (let i = 1; i < pathParts.length; i++) {
-                const part = pathParts[i];
-
-                if (i === pathParts.length - 1) {
-                  currentNode.children.push({ name: part, value: value });
-                } else {
-                  currentNode = findOrCreateNode(currentNode.children, part);
+            // Extract all root names (first parts of paths)
+            const rootNames = arr.map(([path]) => path.split(delimiter)[0]);
+            const uniqueRoots = [...new Set(rootNames)];
+          
+            let root;
+            if (uniqueRoots.length === 1) {
+                root = { name: uniqueRoots[0], children: [] };
+                arr.forEach(([path, value]) => {
+                    const pathParts = path.split(delimiter);
+                
+                    let currentNode = root;
+                
+                    // Traverse the path and build the hierarchy
+                    for (let i = 1; i < pathParts.length; i++) {
+                        const part = pathParts[i];
+                
+                        if (i === pathParts.length - 1) {
+                            currentNode.children.push({ name: part, value: value });
+                        } else {
+                            currentNode = findOrCreateNode(currentNode.children, part);
+                        }
+                    }
+                    });
+            } else {
+                root = { name: " ", children: [] };
+                arr.forEach(([path, value]) => {
+                const pathParts = path.split(delimiter);
+            
+                let currentNode = root;
+            
+                // Traverse the path and build the hierarchy
+                for (let i = 0; i < pathParts.length; i++) {
+                    const part = pathParts[i];
+            
+                    if (i === pathParts.length - 1) {
+                        currentNode.children.push({ name: part, value: value });
+                    } else {
+                        currentNode = findOrCreateNode(currentNode.children, part);
+                    }
                 }
-              }
-            });
+                });
+
+            }
 
             // Helper function to recursively calculate sums for non-leaf nodes
             function calculateSums(node) {
