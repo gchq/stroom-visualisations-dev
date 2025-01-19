@@ -60,11 +60,9 @@ jobs:
 
       # Zipping, test_dir not packaged in with release
       - name: Zip
-        env:
-          VERSION_ID: ${{ env.GITHUB_REF#refs/tags/ }}
         run: |
           mkdir -p "${BUILD_DIR}/build/release_artefacts/"
-          pushd ./war/stroom_content && zip -r "${BUILD_DIR}/build/release_artefacts/stroom-visualisations-${VERSION_ID}.zip" . && popd
+          pushd ./war/stroom_content && zip -r "${BUILD_DIR}/build/release_artefacts/stroom-visualisations-${BUILD_TAG}.zip" . && popd
 
       # Running release script
       - name: Release to Github
