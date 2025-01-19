@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
-## [v3.13] - 2024-03-22
+## [v4.0.2] - 2025-01-19
 
-* Changes to fix issues with empty data.
+* Test release of new process
 
 
 ## [v3.12-alpha.2] - 2023-05-18
