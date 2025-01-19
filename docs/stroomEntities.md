@@ -66,7 +66,7 @@ Node documents create a file system heirarchy in Stroom. They are used with Stro
 
 ``` meta
 name=BarChart
-path=stroom-content/Visualisations/Version3
+path=Visualisations/Version3
 type=Script
 uuid=dac25a4c-7a4e-4e7e-b861-74e16edd1b60
 ``` 
