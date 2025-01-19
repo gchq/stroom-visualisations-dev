@@ -4,14 +4,9 @@
             "name" : "Data",
             "controls" : [
                 {
-                    "id" : "startTime",
+                    "id" : "eventTime",
                     "type" : "field",
-                    "label" : "Start Time"
-                },
-                {
-                    "id" : "endTime",
-                    "type" : "field",
-                    "label" : "End Time"
+                    "label" : "Event Time"
                 },
                 {
                     "id" : "series",
@@ -22,6 +17,11 @@
                     "id" : "gridSeries",
                     "type" : "field",
                     "label" : "Grid Series"
+                },
+                {
+                    "id" : "stateChange",
+                    "type" : "field",
+                    "label" : "Session State"
                 }
             ]
         },
@@ -143,6 +143,12 @@
             "name" : "Configuration",
             "controls" : [
                 {
+                    "id" : "thresholdMs",
+                    "type" : "text",
+                    "label" : "Autoclose Session Threshold MS",
+                    "defaultValue" : "600000"
+                },
+                {
                     "id" : "seriesFilter",
                     "type" : "selection",
                     "label" : "Series Filter",
@@ -152,6 +158,18 @@
                         "Contiguous Only"
                     ],
                     "defaultValue" : "Unfiltered"
+                },
+                {
+                    "id" : "openSessionText",
+                    "type" : "text",
+                    "label" : "Session Start Text",
+                    "defaultValue" : "Start"
+                },
+                {
+                    "id" : "closeSessionText",
+                    "type" : "text",
+                    "label" : "Session Stop Text",
+                    "defaultValue" : "Stop"
                 }
 
             ]
@@ -180,7 +198,7 @@
                     "values" : {
                         "fields" : [
                             {
-                                "id" : "${startTime}",
+                                "id" : "${eventTime}",
                                 "sort" : {
                                     "direction": "${sortXAxis}",
                                     "enabled": "true",
@@ -188,7 +206,7 @@
                                 }
                             },
                             {
-                                "id" : "${endTime}"
+                                "id" : "${stateChange}"
                             }
                         ],
                         "limit": {
