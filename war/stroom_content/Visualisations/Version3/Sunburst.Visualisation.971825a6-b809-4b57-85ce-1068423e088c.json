@@ -32,9 +32,9 @@
                 },
                 {
 
-                    "id": "intialDepth",
+                    "id": "initialDepth",
                     "type": "number",
-                    "label": "Intial layer depth",
+                    "label": "Initial layer depth",
                     "defaultValue": "3",
                     "max": "10",
                     "min": "2"
