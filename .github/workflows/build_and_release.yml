@@ -62,7 +62,7 @@ jobs:
       - name: Zip
         run: |
           mkdir -p "${BUILD_DIR}/build/release_artefacts/"
-          pushd war/stroom_content && zip -r "build/release_artefacts/stroom-visualisations-{{ github.ref_name }}.zip" && popd
+          pushd war/stroom_content && zip -r . "build/release_artefacts/stroom-visualisations-{{ github.ref_name }}.zip" && popd
 
       # Running release script
       - name: Release to Github
