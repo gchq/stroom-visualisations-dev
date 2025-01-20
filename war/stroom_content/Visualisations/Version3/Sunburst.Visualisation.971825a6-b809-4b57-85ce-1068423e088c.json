@@ -14,6 +14,11 @@
                     "label": "Value"
                 },
                 {
+                    "id": "colour",
+                    "type": "field",
+                    "label": "Colour"
+                },
+                {
                     "id": "gridSeries",
                     "type": "field",
                     "label": "Grid Series"
@@ -35,8 +40,8 @@
                     "id": "initialDepth",
                     "type": "number",
                     "label": "Initial layer depth",
-                    "defaultValue": "3",
-                    "max": "10",
+                    "defaultValue": "10",
+                    "max": "50",
                     "min": "2"
 
                 },
@@ -44,6 +49,16 @@
                     "id" : "showLabels",
                     "type" : "selection",
                     "label" : "Show Labels",
+                    "values" : [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue" : "True"
+                },
+                {
+                    "id" : "expand",
+                    "type" : "selection",
+                    "label" : "Click to expand (for static data)",
                     "values" : [
                         "True",
                         "False"
@@ -93,6 +108,9 @@
                             },
                             {
                                 "id": "${value}"
+                            },
+                            {
+                                "id": "${colour}"
                             }
                         ],
                         "limit" : {

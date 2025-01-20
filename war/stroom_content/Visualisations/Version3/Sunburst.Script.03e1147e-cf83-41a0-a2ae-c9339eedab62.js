@@ -193,6 +193,10 @@ if (!visualisations) {
             if (settings.initialDepth) {
                 initialDepth = settings.initialDepth;
             }
+            
+            if (settings.expand) {
+              expand = settings.expand;
+            }
 
             if (data) {
                 stroomData = data;
@@ -331,7 +335,7 @@ if (!visualisations) {
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        var ancestorColor = color(ancestor.name); // use depth-1 ancestor color
+                        var ancestorColor = '#665544'; //color(ancestor.name); // use depth-1 ancestor color
                         return d.children ? d3.rgb(ancestorColor) : d3.rgb(ancestorColor).brighter(1);
                     }
                     return color(d.name);
@@ -341,7 +345,7 @@ if (!visualisations) {
                     return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
                 })
                 .on("click", function(d) {
-                    if (d.children) {
+                    if (commonFunctions.isTrue(visSettings.expand) && d.children) {
                         lastClickedNode = d;
                         expandArc(d);  // Expand more layers on click
                     }
