@@ -58,7 +58,7 @@
                 {
                     "id" : "expand",
                     "type" : "selection",
-                    "label" : "Click to expand (for static data)",
+                    "label" : "Click to expand",
                     "values" : [
                         "True",
                         "False"
