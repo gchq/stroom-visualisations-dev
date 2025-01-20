@@ -203,75 +203,74 @@ if (!visualisations) {
         };
 
         function arrayToHierarchy(arr) {
-            // Helper function to recursively create or find a node
-            function findOrCreateNode(children, name) {
+          // Helper function to recursively create or find a node
+          function findOrCreateNode(children, name, fullPath) {
               let node = children.find(child => child.name === name);
               if (!node) {
-                node = { name: name, children: [] };
-                children.push(node);
+                  node = { name: name, children: [], path: fullPath };
+                  children.push(node);
               }
               return node;
-            }
-
-            // Extract all root names (first parts of paths)
-            const rootNames = arr.map(([path]) => path.split(delimiter)[0]);
-            const uniqueRoots = [...new Set(rootNames)];
-          
-            let root;
-            if (uniqueRoots.length === 1) {
-                root = { name: uniqueRoots[0], children: [] };
-                arr.forEach(([path, value]) => {
-                    const pathParts = path.split(delimiter);
-                
-                    let currentNode = root;
-                
-                    // Traverse the path and build the hierarchy
-                    for (let i = 1; i < pathParts.length; i++) {
-                        const part = pathParts[i];
-                
-                        if (i === pathParts.length - 1) {
-                            currentNode.children.push({ name: part, value: value });
-                        } else {
-                            currentNode = findOrCreateNode(currentNode.children, part);
-                        }
-                    }
-                    });
-            } else {
-                root = { name: " ", children: [] };
-                arr.forEach(([path, value]) => {
-                const pathParts = path.split(delimiter);
-            
-                let currentNode = root;
-            
-                // Traverse the path and build the hierarchy
-                for (let i = 0; i < pathParts.length; i++) {
-                    const part = pathParts[i];
-            
-                    if (i === pathParts.length - 1) {
-                        currentNode.children.push({ name: part, value: value });
-                    } else {
-                        currentNode = findOrCreateNode(currentNode.children, part);
-                    }
-                }
-                });
-
-            }
-
-            // Helper function to recursively calculate sums for non-leaf nodes
-            function calculateSums(node) {
-              if (node.children && node.children.length > 0) {
-                node.value = node.children.reduce((sum, child) => {
-                  return sum + calculateSums(child);
-                }, 0);
-              }
-              return node.value || 0;
-            }
-
-            // Calculate sums for non-leaf nodes
-            calculateSums(root);
-
-            return root;
+          }
+        
+          // Extract all root names (first parts of paths)
+          const rootNames = arr.map(([path]) => path.split(delimiter)[0]);
+          const uniqueRoots = [...new Set(rootNames)];
+        
+          let root;
+          if (uniqueRoots.length === 1) {
+              root = { name: uniqueRoots[0], children: [], path: uniqueRoots[0] };
+              arr.forEach(([path, value]) => {
+                  const pathParts = path.split(delimiter);
+                  let currentNode = root;
+        
+                  // Traverse the path and build the hierarchy
+                  for (let i = 1; i < pathParts.length; i++) {
+                      const part = pathParts[i];
+                      const fullPath = pathParts.slice(0, i + 1).join(delimiter);
+        
+                      if (i === pathParts.length - 1) {
+                          currentNode.children.push({ name: part, value: value, path: fullPath });
+                      } else {
+                          currentNode = findOrCreateNode(currentNode.children, part, fullPath);
+                      }
+                  }
+              });
+          } else {
+              root = { name: " ", children: [], path: "" };
+              arr.forEach(([path, value]) => {
+                  const pathParts = path.split(delimiter);
+                  let currentNode = root;
+        
+                  // Traverse the path and build the hierarchy
+                  for (let i = 0; i < pathParts.length; i++) {
+                      const part = pathParts[i];
+                      const fullPath = " " + delimiter + pathParts.slice(0, i + 1).join(delimiter);
+        
+                      if (i === pathParts.length - 1) {
+                          currentNode.children.push({ name: part, value: value, path: fullPath });
+                      } else {
+                          currentNode = findOrCreateNode(currentNode.children, part, fullPath);
+                      }
+                  }
+            });
         }
+      
+        // Helper function to recursively calculate sums for non-leaf nodes
+        function calculateSums(node) {
+            if (node.children && node.children.length > 0) {
+                node.value = node.children.reduce((sum, child) => {
+                    return sum + calculateSums(child);
+                }, 0);
+            }
+            return node.value || 0;
+        }
+      
+        // Calculate sums for non-leaf nodes
+        calculateSums(root);
+      
+        return root;
+      }
 
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
