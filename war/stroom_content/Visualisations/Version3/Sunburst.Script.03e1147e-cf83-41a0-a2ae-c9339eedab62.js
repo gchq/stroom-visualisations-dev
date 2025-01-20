@@ -280,7 +280,6 @@ if (!visualisations) {
         var update = function(duration, formattedData, settings) {
             visSettings = settings;
 
-
             // Calculate dimensions and radius
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
             height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
@@ -350,6 +349,10 @@ if (!visualisations) {
                         expandArc(d);  // Expand more layers on click
                     }
                 });
+
+            //removed paths
+            paths.exit()
+                .remove();    
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
