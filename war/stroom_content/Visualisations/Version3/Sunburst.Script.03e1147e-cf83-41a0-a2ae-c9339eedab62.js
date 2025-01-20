@@ -326,16 +326,16 @@ if (!visualisations) {
                 .style("fill", function(d) {
                     // Depth 1, assign a unique color
                     if (d.depth === 1) {
-                        var baseColor = color(d.name);
-                        return d3.rgb(baseColor);
+                        var baseColor = d3.rgb(33, 150, 243);
+                        return baseColor;
                     }
                     if (d.depth > 1) {
                         var ancestor = d;
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        var ancestorColor = '#665544'; //color(ancestor.name); // use depth-1 ancestor color
-                        return d.children ? d3.rgb(ancestorColor) : d3.rgb(ancestorColor).brighter(1);
+                        var ancestorColor = d3.rgb(33, 150, 243); //color(ancestor.name); // use depth-1 ancestor color
+                        return d.children ? ancestorColor : ancestorColor.brighter(1);
                     }
                     return color(d.name);
                 })
@@ -352,7 +352,7 @@ if (!visualisations) {
 
             //removed paths
             paths.exit()
-                .remove();
+                .remove();    
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
