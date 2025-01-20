@@ -14,7 +14,7 @@
                     "label": "Value"
                 },
                 {
-                    "id": "colour",
+                    "id": "color",
                     "type": "field",
                     "label": "Colour"
                 },
@@ -58,7 +58,7 @@
                 {
                     "id" : "expand",
                     "type" : "selection",
-                    "label" : "Click to expand",
+                    "label" : "Click to expand (for static data)",
                     "values" : [
                         "True",
                         "False"
@@ -110,7 +110,7 @@
                                 "id": "${value}"
                             },
                             {
-                                "id": "${colour}"
+                                "id": "${color}"
                             }
                         ],
                         "limit" : {
