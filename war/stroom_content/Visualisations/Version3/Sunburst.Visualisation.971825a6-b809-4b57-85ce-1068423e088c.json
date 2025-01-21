@@ -16,12 +16,12 @@
                 {
                     "id": "color",
                     "type": "field",
-                    "label": "Colour"
+                    "label": "Colour (Optional)"
                 },
                 {
                     "id": "gridSeries",
                     "type": "field",
-                    "label": "Grid Series"
+                    "label": "Grid Series (Optional)"
                 }
             ]
         },
@@ -56,9 +56,14 @@
                     "defaultValue" : "True"
                 },
                 {
+                    "id" : "baseColor",
+                    "type" : "text",
+                    "label" : "Base colour"
+                },
+                {
                     "id" : "expand",
                     "type" : "selection",
-                    "label" : "Click to expand (for static data)",
+                    "label" : "Click to expand",
                     "values" : [
                         "True",
                         "False"

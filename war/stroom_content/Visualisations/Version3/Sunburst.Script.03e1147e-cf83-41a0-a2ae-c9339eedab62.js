@@ -45,6 +45,7 @@ if (!visualisations) {
         var tip;
         var inverseHighlight;
         var delimiter = '/'; // default delimiter
+        var baseColor = d3.rgb(33, 150, 243);
         var stroomData;
         var x,y;
         var initialised = false;
@@ -166,7 +167,7 @@ if (!visualisations) {
             return null;
         };
 
-        //called by GenercGrid to build/update a visualisation inside a grid cell
+        //called by GenericGrid to build/update a visualisation inside a grid cell
         //context - an object containing any shared context between Stroom and the visualisation,
         //          e.g. a common colour scale could be used between multiple visualisations.
         //          Also can be used by the grid to pass state down to each cell
@@ -194,8 +195,8 @@ if (!visualisations) {
                 initialDepth = settings.initialDepth;
             }
             
-            if (settings.expand) {
-              expand = settings.expand;
+            if (settings.baseColor) {
+              baseColor = d3.rgb(settings.baseColor);
             }
 
             if (data) {
@@ -337,7 +338,6 @@ if (!visualisations) {
                       return d3.rgb(d.color);
                     }
                     if (d.depth === 1) {
-                        var baseColor = d3.rgb(33, 150, 243);
                         return baseColor;
                     }
                     if (d.depth > 1) {
@@ -345,10 +345,10 @@ if (!visualisations) {
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        var ancestorColor = d3.rgb(33, 150, 243);
+                        var ancestorColor = baseColor;
                         return d.children ? ancestorColor : ancestorColor.brighter(1);
                     }
-                    return d3.rgb(33, 150, 243);
+                    return baseColor;
                 })
                 .style("opacity", function(d) {
                     return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
@@ -365,7 +365,6 @@ if (!visualisations) {
                       return d3.rgb(d.color);
                     }
                     if (d.depth === 1) {
-                        var baseColor = d3.rgb(33, 150, 243);
                         return baseColor;
                     }
                     if (d.depth > 1) {
@@ -373,10 +372,10 @@ if (!visualisations) {
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        var ancestorColor = d3.rgb(33, 150, 243);
+                        var ancestorColor = baseColor;
                         return d.children ? ancestorColor : ancestorColor.brighter(1);
                     }
-                    return d3.rgb(33, 150, 243);
+                    return baseColor;
              });
 
             //removed paths
