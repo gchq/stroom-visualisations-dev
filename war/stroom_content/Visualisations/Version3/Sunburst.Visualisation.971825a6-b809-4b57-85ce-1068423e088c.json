@@ -14,9 +14,14 @@
                     "label": "Value"
                 },
                 {
+                    "id": "color",
+                    "type": "field",
+                    "label": "Colour (Optional)"
+                },
+                {
                     "id": "gridSeries",
                     "type": "field",
-                    "label": "Grid Series"
+                    "label": "Grid Series (Optional)"
                 }
             ]
         },
@@ -35,8 +40,8 @@
                     "id": "initialDepth",
                     "type": "number",
                     "label": "Initial layer depth",
-                    "defaultValue": "3",
-                    "max": "10",
+                    "defaultValue": "10",
+                    "max": "50",
                     "min": "2"
 
                 },
@@ -44,6 +49,21 @@
                     "id" : "showLabels",
                     "type" : "selection",
                     "label" : "Show Labels",
+                    "values" : [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue" : "True"
+                },
+                {
+                    "id" : "baseColor",
+                    "type" : "text",
+                    "label" : "Base colour"
+                },
+                {
+                    "id" : "expand",
+                    "type" : "selection",
+                    "label" : "Click to expand",
                     "values" : [
                         "True",
                         "False"
@@ -93,6 +113,9 @@
                             },
                             {
                                 "id": "${value}"
+                            },
+                            {
+                                "id": "${color}"
                             }
                         ],
                         "limit" : {

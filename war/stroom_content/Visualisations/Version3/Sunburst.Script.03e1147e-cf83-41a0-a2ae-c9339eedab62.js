@@ -45,6 +45,7 @@ if (!visualisations) {
         var tip;
         var inverseHighlight;
         var delimiter = '/'; // default delimiter
+        var baseColor = d3.rgb(33, 150, 243);
         var stroomData;
         var x,y;
         var initialised = false;
@@ -166,7 +167,7 @@ if (!visualisations) {
             return null;
         };
 
-        //called by GenercGrid to build/update a visualisation inside a grid cell
+        //called by GenericGrid to build/update a visualisation inside a grid cell
         //context - an object containing any shared context between Stroom and the visualisation,
         //          e.g. a common colour scale could be used between multiple visualisations.
         //          Also can be used by the grid to pass state down to each cell
@@ -193,6 +194,10 @@ if (!visualisations) {
             if (settings.initialDepth) {
                 initialDepth = settings.initialDepth;
             }
+            
+            if (settings.baseColor) {
+              baseColor = d3.rgb(settings.baseColor);
+            }
 
             if (data) {
                 stroomData = data;
@@ -203,80 +208,88 @@ if (!visualisations) {
         };
 
         function arrayToHierarchy(arr) {
-            // Helper function to recursively create or find a node
-            function findOrCreateNode(children, name) {
+          // Helper function to recursively create or find a node
+          function findOrCreateNode(children, name, fullPath) {
               let node = children.find(child => child.name === name);
               if (!node) {
-                node = { name: name, children: [] };
-                children.push(node);
+                  node = { name: name, children: [], path: fullPath };
+                  children.push(node);
               }
               return node;
-            }
-
-            // Extract all root names (first parts of paths)
-            const rootNames = arr.map(([path]) => path.split(delimiter)[0]);
-            const uniqueRoots = [...new Set(rootNames)];
-          
-            let root;
-            if (uniqueRoots.length === 1) {
-                root = { name: uniqueRoots[0], children: [] };
-                arr.forEach(([path, value]) => {
-                    const pathParts = path.split(delimiter);
-                
-                    let currentNode = root;
-                
-                    // Traverse the path and build the hierarchy
-                    for (let i = 1; i < pathParts.length; i++) {
-                        const part = pathParts[i];
-                
-                        if (i === pathParts.length - 1) {
-                            currentNode.children.push({ name: part, value: value });
-                        } else {
-                            currentNode = findOrCreateNode(currentNode.children, part);
-                        }
-                    }
-                    });
-            } else {
-                root = { name: " ", children: [] };
-                arr.forEach(([path, value]) => {
-                const pathParts = path.split(delimiter);
-            
-                let currentNode = root;
-            
-                // Traverse the path and build the hierarchy
-                for (let i = 0; i < pathParts.length; i++) {
-                    const part = pathParts[i];
-            
-                    if (i === pathParts.length - 1) {
-                        currentNode.children.push({ name: part, value: value });
-                    } else {
-                        currentNode = findOrCreateNode(currentNode.children, part);
-                    }
-                }
-                });
-
-            }
-
-            // Helper function to recursively calculate sums for non-leaf nodes
-            function calculateSums(node) {
+          }
+      
+          // Extract all root names (first parts of paths)
+          const rootNames = arr.map(([path]) => path.split(delimiter)[0]);
+          const uniqueRoots = [...new Set(rootNames)];
+      
+          let root;
+          if (uniqueRoots.length === 1) {
+              root = { name: uniqueRoots[0], children: [], path: uniqueRoots[0] };
+              arr.forEach(([path, value, color]) => {
+                  const pathParts = path.split(delimiter);
+                  let currentNode = root;
+      
+                  // Traverse the path and build the hierarchy
+                  for (let i = 1; i < pathParts.length; i++) {
+                      const part = pathParts[i];
+                      const fullPath = pathParts.slice(0, i + 1).join(delimiter);
+      
+                      if (i === pathParts.length - 1) {
+                          currentNode.children.push({
+                              name: part,
+                              value: value,
+                              path: fullPath,
+                              color: color
+                          });
+                      } else {
+                          currentNode = findOrCreateNode(currentNode.children, part, fullPath);
+                      }
+                  }
+              });
+          } else {
+              root = { name: " ", children: [], path: "" };
+              arr.forEach(([path, value, color]) => {
+                  const pathParts = path.split(delimiter);
+                  let currentNode = root;
+      
+                  // Traverse the path and build the hierarchy
+                  for (let i = 0; i < pathParts.length; i++) {
+                      const part = pathParts[i];
+                      const fullPath = " " + delimiter + pathParts.slice(0, i + 1).join(delimiter);
+      
+                      if (i === pathParts.length - 1) {
+                          currentNode.children.push({
+                              name: part,
+                              value: value,
+                              path: fullPath,
+                              color: color
+                          });
+                      } else {
+                          currentNode = findOrCreateNode(currentNode.children, part, fullPath);
+                      }
+                  }
+              });
+          }
+      
+          // Helper function to recursively calculate sums for non-leaf nodes
+          function calculateSums(node) {
               if (node.children && node.children.length > 0) {
-                node.value = node.children.reduce((sum, child) => {
-                  return sum + calculateSums(child);
-                }, 0);
+                  node.value = node.children.reduce((sum, child) => {
+                      return sum + calculateSums(child);
+                  }, 0);
               }
               return node.value || 0;
-            }
-
-            // Calculate sums for non-leaf nodes
-            calculateSums(root);
-
-            return root;
+          }
+      
+          // Calculate sums for non-leaf nodes
+          calculateSums(root);
+      
+          return root;
         }
 
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
             visSettings = settings;
-
 
             // Calculate dimensions and radius
             width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
@@ -312,7 +325,6 @@ if (!visualisations) {
                 .innerRadius(function(d) { return Math.max(0, y(d.y)); })
                 .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-            // Get all nodes, but initially hide those deeper than initialDepth
             var nodes = partition.nodes(formattedData);
 
             // Bind data to the paths, and append new paths
@@ -322,31 +334,53 @@ if (!visualisations) {
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) {
-                    // Depth 1, assign a unique color
+                    if (d.color) {
+                      return d3.rgb(d.color);
+                    }
                     if (d.depth === 1) {
-                        var baseColor = color(d.name);
-                        return d3.rgb(baseColor);
+                        return baseColor;
                     }
                     if (d.depth > 1) {
                         var ancestor = d;
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        var ancestorColor = color(ancestor.name); // use depth-1 ancestor color
-                        return d.children ? d3.rgb(ancestorColor) : d3.rgb(ancestorColor).brighter(1);
+                        var ancestorColor = baseColor;
+                        return d.children ? ancestorColor : ancestorColor.brighter(1);
                     }
-                    return color(d.name);
+                    return baseColor;
                 })
-                .style("fill-rule", "evenodd")
                 .style("opacity", function(d) {
                     return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
                 })
                 .on("click", function(d) {
-                    if (d.children) {
+                    if (commonFunctions.isTrue(visSettings.expand) && d.children) {
                         lastClickedNode = d;
                         expandArc(d);  // Expand more layers on click
                     }
                 });
+            
+             paths.style("fill", function(d) {
+                    if (d.color) {
+                      return d3.rgb(d.color);
+                    }
+                    if (d.depth === 1) {
+                        return baseColor;
+                    }
+                    if (d.depth > 1) {
+                        var ancestor = d;
+                        while (ancestor.depth > 1) {
+                            ancestor = ancestor.parent;
+                        }
+                        var ancestorColor = baseColor;
+                        return d.children ? ancestorColor : ancestorColor.brighter(1);
+                    }
+                    return baseColor;
+             });
+
+            //removed paths
+            paths.exit()
+                .remove();    
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
