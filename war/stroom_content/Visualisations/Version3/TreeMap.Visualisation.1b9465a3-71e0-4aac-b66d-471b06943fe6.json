@@ -1,0 +1,66 @@
+{
+  "data" : {
+      "structure" : {
+          "values" : {
+              "fields" : [ 
+                  {
+                      "id" : "${source}"
+                  },
+                  {
+                      "id" : "${target}"
+                  },
+                  {
+                      "id" : "${sourceGroup}"
+                  },
+                  {
+                      "id" : "${targetGroup}"
+                  } 
+              ],
+              "limit" : {
+                  "enabled" : "true",
+                  "size" : "${limit}"
+              }
+          }
+      }
+  },
+  "tabs" : [ 
+      {
+          "name" : "Data",
+          "controls" : [ 
+              {
+                  "id" : "source",
+                  "type" : "field",
+                  "label" : "Child"
+              },
+              {
+                  "id" : "target",
+                  "type" : "field",
+                  "label" : "Parent"
+              },
+              {
+                  "id" : "sourceGroup",
+                  "type" : "field",
+                  "label" : "Child Group (Optional)"
+              },
+              {
+                  "id" : "targetGroup",
+                  "type" : "field",
+                  "label" : "Parent Group (Optional)"
+              } 
+          ]
+      },
+      {
+          "name" : "TreeMap",
+          "controls" : [ 
+              {
+                  "id" : "mode",
+                  "type" : "selection",
+                  "label" : "Mode",
+                  "values" : [ "squarify", "slice", "dice", "slice-dice" ],
+                  "defaultValue" : "squarify"
+
+              }   
+          ]
+      } 
+  ]
+}
