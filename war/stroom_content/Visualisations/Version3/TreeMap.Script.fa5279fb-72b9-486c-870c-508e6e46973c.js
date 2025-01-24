@@ -24,7 +24,7 @@ visualisations.TreeMap = function() {
   var element = window.document.createElement("div");
   this.element = element;
   
-  var m = [20, 20, 20, 20];
+  var m = [30, 20, 20, 20];
 
   var d3 = window.d3;
   var width = element.clientWidth - m[1] - m[3];
