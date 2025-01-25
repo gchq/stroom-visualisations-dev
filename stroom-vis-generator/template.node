@@ -1,4 +1,4 @@
 name=$vis_name
 path=Visualisations/Version3
 type=Script
-uuid=$uuid
+uuid=$uuid_js
