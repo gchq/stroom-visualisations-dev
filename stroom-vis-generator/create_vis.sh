@@ -104,8 +104,8 @@ sed -e "s/\$uuid_js/$uuid_js/g" \
 
 # Generate the JSON Meta file
 JSON_META_FILE="$VIS_DIR/${vis_name}.Visualisation.${uuid_json}.meta"
-sed -e "s/\$uuid_js/$uuid_js/g" \
-    -e "s/\$uuid_json/$uuid_json/g" \
+sed -e "s/\$uuid_json/$uuid_json/g" \
+    -e "s/\$uuid_js/$uuid_js/g" \
     -e "s/\$vis_name/$vis_name/g" \
     "$JSON_META_TEMPLATE_FILE" > "$JSON_META_FILE"
 
