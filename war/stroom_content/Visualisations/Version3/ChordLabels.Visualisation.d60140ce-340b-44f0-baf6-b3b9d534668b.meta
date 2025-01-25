@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "6b9b152d-a7c7-4860-9531-a998d10e45d8on",
+  "name" : "ChordLabels",
+  "version" : "Template version",
+  "description" : "Template Visualisation.meta",
+  "functionName" : "visualisations.ChordLabels",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "6b9b152d-a7c7-4860-9531-a998d10e45d8",
+    "name" : "ChordLabels"
+  }
+}
