@@ -103,8 +103,17 @@ if (!visualisations) {
       svg = canvas.append("svg:g");
 
       dataArea = svg.append("svg:g").attr("transform", "translate(0,0)");
+
+     
       zoom = d3.behavior.zoom().scaleExtent([0.1, 10]).on("zoom", zoomed);
+   
       svg.call(zoom);
+
+      //This (invisible) rect ensures there's always a target for the zoom action
+      dataArea.append("svg:rect").attr("width", width*2)
+        .attr("height", height*2).attr('fill', 'white')
+        .attr("transform", "translate(-" + width/2 + " -" + height/2 + ")")
+        .attr("opacity", "0.0");
 
       treeLayout = d3.layout.tree().size([height, width]);
 
@@ -132,7 +141,7 @@ if (!visualisations) {
       }
     }
 
-    function zoomed() {
+    function zoomed(e) {
       dataArea.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
 
@@ -310,8 +319,8 @@ if (!visualisations) {
             .on("click", nodeClick)
             .append("circle")
             .attr("class", "Tree-circle")
-            .attr("r", 10)
-            .style("stroke-width", 2);
+            .attr("r", 3)
+            .style("stroke-width", 1);
     
         node.transition().duration(duration)
             .attr("transform", d => {
@@ -352,7 +361,7 @@ if (!visualisations) {
     
         link.enter().append("path")
             .attr("class", "Tree-link")
-            .style("stroke-width", 2)  // Fixed stroke width for lines
+            .style("stroke-width", 1)  // Fixed stroke width for lines
             .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
     
         link.transition().duration(duration)
