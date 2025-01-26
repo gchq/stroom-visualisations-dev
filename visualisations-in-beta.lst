@@ -1,0 +1,8 @@
+# This file determines which visualisations are put into the release zip and which into the beta zip associated with a particular tag
+# Specify each beta visualisation on its own line using the form "/VisualisationName\." (without the quotes).
+## Do not leave any blank lines!
+/ChordLabels\.
+/WordCloud\.
+/Tree\.
+/ZoomableTreeMap\.
+/TreeMap\.

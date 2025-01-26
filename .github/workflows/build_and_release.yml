@@ -62,7 +62,15 @@ jobs:
       - name: Zip
         run: |
           mkdir -p "${BUILD_DIR}/build/release_artefacts/"
-          pushd ./war/stroom_content && zip -r "${BUILD_DIR}/build/release_artefacts/stroom-visualisations-${BUILD_TAG}.zip" . && popd
+
+          pushd ./war/stroom_content 
+          echo "Building release content pack (ignoring visualisations-in-beta)"
+          find war/stroom_content -type f | grep -vf ./visualisations-in-beta.lst | grep -v /Dependencies/ | xargs  zip -r "${BUILD_DIR}/build/release_artefacts/stroom-visualisations-${BUILD_TAG}.zip"
+
+          echo "Building beta visualistions content pack (visualisations-in-beta only)"
+          find war/stroom_content -type f | grep -f ./visualisations-in-beta.lst | grep -v /Dependencies/ | xargs  zip -r "${BUILD_DIR}/build/release_artefacts/stroom-beta-visualisations-${BUILD_TAG}.zip"
+          
+          popd
 
       # Running release script
       - name: Release to Github
