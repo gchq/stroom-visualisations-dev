@@ -24,7 +24,7 @@
         // Timeout to wait for script loading
         setTimeout(function() {
             setVisType();
-        }, 2000);
+        }, 4000);
     }
     
     function getVisName() {
@@ -579,7 +579,7 @@
         if (document.getElementById("autoUpdate").checked) {
             update();
         }
-        setTimeout(autoUpdate, 3000);
+        setTimeout(autoUpdate, 4000);
     };
 
     function addGenericSeries(originalDataObj, dataGenFunc, seriesName) {
@@ -892,6 +892,6 @@
         throw new Error("Unable to copy obj! Its type isn't supported.");
     };
 
-    setTimeout(autoUpdate, 3000);
+    setTimeout(autoUpdate, 4000);
 
 })();
