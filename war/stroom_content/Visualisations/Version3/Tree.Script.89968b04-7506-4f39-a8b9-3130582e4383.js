@@ -54,6 +54,7 @@ if (!visualisations) {
     var treeLayout;
     var dataArea;
     var visData;
+    var invisibleBackgroundRect;
 
     var style = ".Tree-node {" +
                 "width: 100%;" +
@@ -110,10 +111,11 @@ if (!visualisations) {
       svg.call(zoom);
 
       //This (invisible) rect ensures there's always a target for the zoom action
-      dataArea.append("svg:rect").attr("width", width*2)
+      invisibleBackgroundRect = dataArea.append("svg:rect").attr("width", width*2)
         .attr("height", height*2).attr('fill', 'white')
         .attr("transform", "translate(-" + width/2 + " -" + height/2 + ")")
         .attr("opacity", "0.0");
+
 
       treeLayout = d3.layout.tree().size([height, width]);
 
@@ -263,6 +265,9 @@ if (!visualisations) {
   
       svg.attr("width", width).attr("height", height);
       svg.call(tip);
+
+      invisibleBackgroundRect.attr("width", width*2).attr("height", height*2)
+        .attr("transform", "translate(-" + width/2 + " -" + height/2 + ")");
   
       const [xScale, yScale] = initializeScales(width, height);
       const nodes = treeLayout.nodes(data);
