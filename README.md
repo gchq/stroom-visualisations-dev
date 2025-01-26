@@ -88,7 +88,15 @@ Alternatively if you use Tmuxinator/Tmux/Vim/Chrome then a Tmuxinator config fil
 
 For more details on what visualisations are available and how to develop them see the [Documentation](./docs/SUMMARY.md).
 
+## Building a release
 
+Once you have committed and pushed all changes, you can apply a git tag of the form vX.Y.Z
+
+When this new tag is pushed to GitHub, a release containing two zip files are created automatically:
+* `stroom-visualisations-vX.Y.Z.zip` - this is the actual release of the stroom content
+* `stroom-beta-visualisations-vX.Y.Z.zip` - this contains additional visualisations that have been marked as "beta" in the file `visualisations-in-beta.lst`.
+
+N.B. The script `tag-release.sh` is not suitable for use with this process and its use is not currently recommended.
 
 
 
