@@ -12,6 +12,10 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.14.0] - 2025-01-27
+
+* Put beta visualisations into the same zip archive as fully released visualisations, but in separate folder.
+
 
 ## [v3.12-alpha.2] - 2023-05-18
 
@@ -252,7 +256,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.14.0...HEAD
+[v3.14.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...v3.14.0
 [v3.13]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...v3.13
 [v3.12-alpha.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.11.0...v3.12-alpha.2
 [v3.11.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.10.0...v3.11.0
