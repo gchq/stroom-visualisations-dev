@@ -90,14 +90,11 @@ For more details on what visualisations are available and how to develop them se
 
 ## Building a release
 
-Once you have committed and pushed all changes, you can apply a git tag of the form vX.Y.Z
+Once you have committed and pushed all changes:
+1. Run `log_change.sh` specifing the GH issue id (or 0 if there isn't one) and your update comment.
+1. Run `tag_release.sh` specifying a new release number of the form `vX.Y.Z`.
 
-When this new tag is pushed to GitHub, a release containing two zip files are created automatically:
-* `stroom-visualisations-vX.Y.Z.zip` - this is the actual release of the stroom content
-* `stroom-beta-visualisations-vX.Y.Z.zip` - this contains additional visualisations that have been marked as "beta" in the file `visualisations-in-beta.lst`.
-
-N.B. The script `tag-release.sh` is not suitable for use with this process and its use is not currently recommended.
-
+When this new tag is pushed to GitHub, a release will be created automatically.
 
 
 
