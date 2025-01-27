@@ -334,9 +334,9 @@ if (!visualisations) {
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
                 .style("fill", function(d) {
-//                    if (d.color) {
-//                      return d3.rgb(d.color);
-//                    }
+                    if (d.color) {
+                      return d3.rgb(d.color);
+                    }
                     if (d.depth === 1) {
                         return baseColor;
                     }
@@ -361,9 +361,9 @@ if (!visualisations) {
                 });
             
              paths.style("fill", function(d) {
-//                    if (d.color) {
-//                      return d3.rgb(d.color);
-//                    }
+                    if (d.color) {
+                      return d3.rgb(d.color);
+                    }
                     if (d.depth === 1) {
                         return baseColor;
                     }
