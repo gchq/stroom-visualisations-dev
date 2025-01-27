@@ -7,11 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
-## [v4.0.2] - 2025-01-19
-
-* Test release of new process
-
-
 ## [v3.12-alpha.2] - 2023-05-18
 
 * Changes for refreshed UI.
