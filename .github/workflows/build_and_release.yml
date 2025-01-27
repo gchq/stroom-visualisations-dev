@@ -65,7 +65,7 @@ jobs:
 
           pushd ./war/stroom_content 
           echo "Building release content pack (ignoring visualisations-in-beta)"
-          find . -type f | grep -vf ../../visualisations-in-beta.lst | grep -v /Dependencies/ | xargs  zip -r "${BUILD_DIR}/build/release_artefacts/stroom-visualisations-${BUILD_TAG}.zip"
+          find . -type f | grep -vf ../../visualisations-in-beta.lst | xargs  zip -r "${BUILD_DIR}/build/release_artefacts/stroom-visualisations-${BUILD_TAG}.zip"
 
           echo "Building beta visualistions content pack (visualisations-in-beta only)"
           find . -type f | grep -f ../../visualisations-in-beta.lst | grep -v /Dependencies/ | xargs  zip -r "${BUILD_DIR}/build/release_artefacts/stroom-beta-visualisations-${BUILD_TAG}.zip"
