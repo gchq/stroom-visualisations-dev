@@ -45,7 +45,7 @@ if (!visualisations) {
         var tip;
         var inverseHighlight;
         var delimiter = '/'; // default delimiter
-        var baseColor = d3.rgb(33, 150, 243);
+        var baseColor = d3.rgb(0, 139, 139);
         var stroomData;
         var x,y;
         var initialised = false;
@@ -338,7 +338,7 @@ if (!visualisations) {
                       return d3.rgb(d.color);
                     }
                     if (d.depth === 1) {
-                        return baseColor;
+                        return baseColor.darker(1);
                     }
                     if (d.depth > 1) {
                         var ancestor = d;
@@ -346,7 +346,7 @@ if (!visualisations) {
                             ancestor = ancestor.parent;
                         }
                         var ancestorColor = baseColor;
-                        return d.children ? ancestorColor : ancestorColor.brighter(1);
+                        return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
                     }
                     return baseColor;
                 })
@@ -365,15 +365,14 @@ if (!visualisations) {
                       return d3.rgb(d.color);
                     }
                     if (d.depth === 1) {
-                        return baseColor;
+                        return baseColor.darker(1);
                     }
                     if (d.depth > 1) {
                         var ancestor = d;
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        var ancestorColor = baseColor;
-                        return d.children ? ancestorColor : ancestorColor.brighter(1);
+                        return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
                     }
                     return baseColor;
              });
@@ -494,6 +493,7 @@ if (!visualisations) {
                                 .style("pointer-events", "none")
                                 .style("font-size", fontSize + "px")
                                 .style("text-rendering", "geometricPrecision")
+                                // .style("fill", d3.rgb(0, 0, 0))
                                 .text(textContent);
 
                         }
@@ -523,3 +523,4 @@ if (!visualisations) {
     };
 
 }());
+
