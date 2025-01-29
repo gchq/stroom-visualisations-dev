@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.15.1] - 2025-01-29
+
+* Add gradient to SunBurst.
+
+
 ## [v3.15.0] - 2025-01-28
 
 * Sunburst now displays a gradient.
@@ -266,7 +271,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.1...HEAD
+[v3.15.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.0...v3.15.1
 [v3.15.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.14.0-1...v3.15.0
 [v3.14.0-1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.14.0...v3.14.0-1
 [v3.14.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...v3.14.0
