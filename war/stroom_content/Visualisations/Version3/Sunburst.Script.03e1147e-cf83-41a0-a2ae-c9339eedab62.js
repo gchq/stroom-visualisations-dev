@@ -46,6 +46,9 @@ if (!visualisations) {
         var inverseHighlight;
         var delimiter = '/'; // default delimiter
         var baseColor = d3.rgb(0, 139, 139);
+        // var baseColorDomain = d3.interpolateRgb("darkcyan","black").domain([0,20]);
+        var baseColorDomain = d3.scale.linear().range(["darkcyan", "black"]).domain([1,15]);
+
         var stroomData;
         var x,y;
         var initialised = false;
@@ -197,6 +200,17 @@ if (!visualisations) {
             
             if (settings.baseColor) {
               baseColor = d3.rgb(settings.baseColor);
+              if (settings.gradient == "False"){
+                baseColorDomain = d3.scale.linear().range([settings.baseColor, settings.baseColor]).domain([1,initialDepth]);
+              }
+              else{
+                baseColorDomain = d3.scale.linear().range([settings.baseColor, "black"]).domain([1,initialDepth]);
+              }
+            }
+            else{
+              if (settings.gradient == "True"){
+                baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([1,initialDepth]);
+              }
             }
 
             if (data) {
@@ -338,15 +352,17 @@ if (!visualisations) {
                       return d3.rgb(d.color);
                     }
                     if (d.depth === 1) {
-                        return baseColor.darker(1);
+                        // return baseColor.darker(1);
+                        return baseColorDomain(1);
+
                     }
                     if (d.depth > 1) {
                         var ancestor = d;
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        var ancestorColor = baseColor;
-                        return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
+                        // return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
+                        return d.children ? baseColorDomain(d.depth) : baseColor.brighter(1);
                     }
                     return baseColor;
                 })
@@ -365,14 +381,17 @@ if (!visualisations) {
                       return d3.rgb(d.color);
                     }
                     if (d.depth === 1) {
-                        return baseColor.darker(1);
+                        // return baseColor.darker(1);
+                        return baseColorDomain(1);
                     }
                     if (d.depth > 1) {
                         var ancestor = d;
                         while (ancestor.depth > 1) {
                             ancestor = ancestor.parent;
                         }
-                        return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
+                        // return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
+                        return d.children ? baseColorDomain(d.depth) : baseColor.brighter(1);
+
                     }
                     return baseColor;
              });
@@ -523,4 +542,5 @@ if (!visualisations) {
     };
 
 }());
+
 
