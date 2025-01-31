@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "3c96900b-ca86-43af-a6de-df6478023612",
+  "name" : "Tree",
+  "version" : "Tree",
+  "description" : "Tree Visualisation.meta",
+  "functionName" : "visualisations.Tree",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "07954888-f9ce-4d88-9aad-722da56b4f21",
+    "name" : "Tree"
+  }
+}
