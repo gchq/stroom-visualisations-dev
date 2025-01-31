@@ -323,7 +323,7 @@ if (!visualisations) {
     }
     
     function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
-      const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id);
+      const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
   
       const radius = 25;
       const fontSize = 12;
