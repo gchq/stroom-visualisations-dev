@@ -28,6 +28,18 @@
   
           },
           {
+            "id": "orientation",
+            "type": "selection",
+            "label": "Orientation",
+            "values": [
+              "north",
+              "south",
+              "east",
+              "west"
+            ],
+            "defaultValue": "north"
+          },
+          {
             "id": "showLabels",
             "type": "selection",
             "label": "Show Labels",

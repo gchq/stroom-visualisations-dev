@@ -56,11 +56,9 @@ if (!visualisations) {
     var treeLayout;
     var dataArea;
     var visData;
+    var drawDepth = 2; // default drawDepth
     var invisibleBackgroundRect;
-    
-    // Could be nice to have drawdepth
-    // var drawDepth;
-    var orientation;
+    var orientation = "north"; // default Orientation
 
     var style = ".Tree-node {" +
                 "width: 100%;" +
@@ -186,6 +184,7 @@ if (!visualisations) {
         //new instance of this to build the visualisation in the cell
         //The last array arg allows you to synchronise the scales of fields
         grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);        
+        this.resize;
       }
     }
 
@@ -203,7 +202,6 @@ if (!visualisations) {
       }
 
       visSettings = settings;
-      visData = data;
 
       if (settings.delimiter) {
         delimiter = settings.delimiter;
@@ -217,14 +215,19 @@ if (!visualisations) {
         orientation = settings.orientation;
       }
 
-      update(100, data);
-    };
-
-    function update(duration, data) {
+      if (settings.drawDepth) {
+        drawDepth = settings.drawDepth;
+      }
 
       if (data) {
         data = buildHierarchy(data.values[0].values);
+        visData = data;
+        filterByDepth(data, drawDepth);
+        update(100, data);
       }
+    };
+
+    function update(duration, data) {      
 
       const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
       const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
@@ -278,25 +281,24 @@ if (!visualisations) {
       });
   
       return root;
-  }
-  
+    }
 
-    // function filterByDepth(root, maxDepth) {
-    //   const queue = [{ node: root, depth: 0 }];
-    //   while (queue.length > 0) {
-    //       const { node, depth } = queue.shift();
-    //       if (depth < maxDepth) {
-    //         if (node.children) {
-    //             node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
-    //         }
-    //       } else {
-    //         if (node.children) {
-    //             node._children = node.children;
-    //             node.children = null;
-    //         }
-    //       }
-    //   }
-    // }
+    function filterByDepth(root, maxDepth) {
+      const queue = [{ node: root, depth: 0 }];
+      while (queue.length > 0) {
+          const { node, depth } = queue.shift();
+          if (depth < maxDepth) {
+            if (node.children) {
+                node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
+            }
+          } else {
+            if (node.children) {
+                node._children = node.children;
+                node.children = null;
+            }
+          }
+      }
+    }
     
     function initializeScales(width, height) {
         const xScale = d3.scale.linear().range([0, width]);
@@ -425,7 +427,6 @@ if (!visualisations) {
               return `M${sourceX},${sourceY}L${midX},${sourceY}L${midX},${targetY}L${targetX},${targetY}`;
       }
     }
-
 
     function nodeClick(d) {
       if (d.children) {
