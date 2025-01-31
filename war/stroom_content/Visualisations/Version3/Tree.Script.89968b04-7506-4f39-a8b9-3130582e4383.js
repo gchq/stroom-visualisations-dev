@@ -323,30 +323,43 @@ if (!visualisations) {
     }
     
     function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
-        const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id);
-    
-        node.enter().append("g")
-            .attr("class", "Tree-node")
-            .attr("transform", d => {
-                const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
-                return position;
-            })
-            .on("click", nodeClick)
-            .append("circle")
-            .attr("class", "Tree-circle")
-            .attr("r", 3)
-            .style("stroke-width", 1);
-    
-        node.transition().duration(duration)
-            .attr("transform", d => {
-                const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
-                return position;
-            })
-            .select(".Tree-circle")
-            .style("fill", d => color(d.id));
-    
-        node.exit().transition().duration(duration).style("opacity", 0).remove();
-    }
+      const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id);
+  
+      const radius = 25;
+      const fontSize = 12;
+  
+      const nodeEnter = node.enter().append("g")
+          .attr("class", "Tree-node")
+          .attr("transform", d => {
+              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+              return position;
+          })
+          .on("click", nodeClick);
+  
+      nodeEnter.append("circle")
+          .attr("class", "Tree-circle")
+          .attr("r", radius) // Fixed size
+          .style("stroke-width", 2)
+          .style("fill", baseColor);
+  
+      nodeEnter.append("text")
+          .attr("class", "Tree-label")
+          .attr("dy", 4) // Vertically center text
+          .attr("text-anchor", "middle")
+          .style("pointer-events", "none")
+          .style("font-size", fontSize + "px")
+          // .style("fill", "#fff")
+          .text(d => d.id.substring(0, 6)); // Display first 6 characters
+  
+      node.transition().duration(duration)
+          .attr("transform", d => {
+              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+              return position;
+          });
+
+      node.exit().transition().duration(duration).style("opacity", 0).remove();
+    }  
+  
     
     function calculateNodePosition(d, xScale, yScale, xOffset, yOffset) {
         let x, y;

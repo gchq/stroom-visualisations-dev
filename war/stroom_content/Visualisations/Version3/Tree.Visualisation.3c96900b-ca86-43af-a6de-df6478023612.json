@@ -55,6 +55,14 @@
             "label": "Base colour"
           },
           {
+            "id": "drawDepth",
+            "type": "number",
+            "label": "Initial Draw Depth",
+            "defaultValue": "3",
+            "max": "50",
+            "min": "1"
+          },
+          {
             "id": "maxValues",
             "type": "number",
             "label": "Max Values",
