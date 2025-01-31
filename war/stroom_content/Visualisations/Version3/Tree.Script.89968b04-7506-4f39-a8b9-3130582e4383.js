@@ -45,7 +45,7 @@ if (!visualisations) {
 
     var width;
     var height;
-    this.delimiter = '/'; // default delimiter
+    var delimiter = '/'; // default delimiter
     var baseColor = d3.rgb(0, 139, 139);
     var color = commonConstants.categoryGoogle();
     var visSettings;
@@ -57,6 +57,10 @@ if (!visualisations) {
     var dataArea;
     var visData;
     var invisibleBackgroundRect;
+    
+    // Could be nice to have drawdepth
+    // var drawDepth;
+    var orientation;
 
     var style = ".Tree-node {" +
                 "width: 100%;" +
@@ -149,46 +153,6 @@ if (!visualisations) {
       dataArea.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
 
-    function buildHierarchy(paths) {
-      var root = { id: "root", children: [] };
-      var all = {};
-
-      paths.forEach(function(path) {
-        var parts = path[0].split(this.delimiter);
-        var current = root;
-
-        parts.forEach(function(part, index) {
-          if (!all[part]) {
-            all[part] = { id: part, children: [] };
-            current.children.push(all[part]);
-          }
-          current = all[part];
-        });
-      });
-
-      return root;
-    }
-
-    function filterByDepth(root, maxDepth) {
-      const queue = [{ node: root, depth: 0 }];
-      while (queue.length > 0) {
-          const { node, depth } = queue.shift();
-          if (depth < maxDepth) {
-            if (node.children) {
-                node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
-            }
-          } else {
-            if (node.children) {
-                node._children = node.children;
-                node.children = null;
-            }
-          }
-      }
-    }
-
-    var drawDepth;
-    var orientation;
-
     this.setData = function(context, settings, data) {
       if (context) {
           if (context.color) {
@@ -221,11 +185,13 @@ if (!visualisations) {
         //Get grid to construct the grid cells and for each one call back into a
         //new instance of this to build the visualisation in the cell
         //The last array arg allows you to synchronise the scales of fields
-        grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
-        this.resize();
-        
+        grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);        
       }
-      
+    }
+
+    //called by Stroom to instruct the visualisation to redraw itself in a resized container
+    this.resize = function() {
+      commonFunctions.resize(grid, update, element, margins, width, height);
     };
 
     //Public entry point for the Grid to call back in to set the cell level data on the cell level
@@ -236,30 +202,30 @@ if (!visualisations) {
         initialise();
       }
 
-      // If the context already has a colour set then use it
-      if (context) {
-          visContext = context;
-          if (context.color) {
-              colour = context.color;
-          }
-      }
-
-      if (data) {
-          data = buildHierarchy(data.values[0].values);
-      }
-    
-      // Filter the data to only show up to 3 levels initially
-      orientation = settings.orientation;
-      delimiter = settings.delimiter || this.delimiter;
-      drawDepth = settings.drawDepth || 6;
-      filterByDepth(data, drawDepth);
-    
       visSettings = settings;
       visData = data;
+
+      if (settings.delimiter) {
+        delimiter = settings.delimiter;
+      }
+
+      if (settings.baseColor) {
+        baseColor = d3.rgb(settings.baseColor);
+      }
+
+      if (settings.orientation) {
+        orientation = settings.orientation;
+      }
+
       update(100, data);
     };
 
     function update(duration, data) {
+
+      if (data) {
+        data = buildHierarchy(data.values[0].values);
+      }
+
       const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
       const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
   
@@ -289,6 +255,48 @@ if (!visualisations) {
       // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
         
     }
+
+    function buildHierarchy(paths) {
+      var root = { id: "root", children: [] };
+      var all = { "root": root };
+  
+      paths.forEach(function(path) {
+          var parts = path[0].split(delimiter);
+          var current = root;
+          var fullPath = "";
+  
+          parts.forEach(function(part, index) {
+              fullPath = fullPath ? fullPath + delimiter + part : part;
+  
+              if (!all[fullPath]) {
+                  all[fullPath] = { id: part, children: [] };
+                  current.children.push(all[fullPath]);
+              }
+  
+              current = all[fullPath];
+          });
+      });
+  
+      return root;
+  }
+  
+
+    // function filterByDepth(root, maxDepth) {
+    //   const queue = [{ node: root, depth: 0 }];
+    //   while (queue.length > 0) {
+    //       const { node, depth } = queue.shift();
+    //       if (depth < maxDepth) {
+    //         if (node.children) {
+    //             node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
+    //         }
+    //       } else {
+    //         if (node.children) {
+    //             node._children = node.children;
+    //             node.children = null;
+    //         }
+    //       }
+    //   }
+    // }
     
     function initializeScales(width, height) {
         const xScale = d3.scale.linear().range([0, width]);
@@ -433,10 +441,6 @@ if (!visualisations) {
       }
       update(100, visData);
     }
-
-    this.resize = function() {
-      commonFunctions.resize(grid, update, element, margins, width, height);
-    };
 
     this.getColourScale = function(){
       return color;
