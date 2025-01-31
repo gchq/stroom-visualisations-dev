@@ -43,10 +43,12 @@ if (!visualisations) {
       return new visualisations.Tree(containerNode);
     };
 
-    var width = element.clientWidth;
-    var height = element.clientHeight;
+    var width;
+    var height;
     this.delimiter = '/'; // default delimiter
-    var color = d3.scale.category20b();
+    var baseColor = d3.rgb(0, 139, 139);
+    var color = commonConstants.categoryGoogle();
+    var visSettings;
     var svg;
     var canvas;
     var zoom;
@@ -225,8 +227,6 @@ if (!visualisations) {
       }
       
     };
-
-    var visSettings;
 
     //Public entry point for the Grid to call back in to set the cell level data on the cell level
     //visualisation instance.

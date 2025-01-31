@@ -7,11 +7,6 @@
             "label": "Path"
           },
           {
-            "id": "value",
-            "type": "field",
-            "label": "Value"
-          },
-          {
             "id": "color",
             "type": "field",
             "label": "Leaf Colour Field (Optional)"
