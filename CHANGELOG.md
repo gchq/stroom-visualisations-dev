@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.15.4] - 2025-02-02
+
+* Fix Scatter header.
+
+
 ## [v3.15.3] - 2025-02-02
 
 * Allow User to specify colour of segment in Doughnut.
@@ -281,7 +286,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.3...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.4...HEAD
+[v3.15.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.3...v3.15.4
 [v3.15.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.2...v3.15.3
 [v3.15.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.1...v3.15.2
 [v3.15.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.0...v3.15.1
