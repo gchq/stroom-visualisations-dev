@@ -1,5 +1,4 @@
-/*
- * Copyright 2016 Crown Copyright
+opyright 2016 Crown Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -241,9 +240,9 @@ visualisations.Scatter = function(containerNode) {
                     //Add new points
                     seriesPoints.enter()
                         .append("svg:circle")
-                        .attr("stroke-width", "1.5px")
+                        .attr("stroke-width", "1px")
                         .style( "fill-opacity", 0.6)
-                        .attr("r", "4px")
+                        .attr("r", visSettings.pointSize+"px")
                         .attr("opacity", "0");
 
                     //Update new and existing points
@@ -251,6 +250,7 @@ visualisations.Scatter = function(containerNode) {
                         .attr("class", commonFunctions.makeColouredElementClassStringFunc(legendKeyFunc))
                         .attr("stroke", fillFunc(seriesData))
                         .attr("fill", fillFunc(seriesData))
+                        .attr("r", visSettings.pointSize+"px")
                         .attr("cx", function(dataPoint) {
                             var xVal = xScale(dataPoint[0]);
                             //console.log("dataPoint[0]: " + dataPoint[0] + " xVal: " + xVal);
@@ -306,3 +306,4 @@ visualisations.Scatter = function(containerNode) {
         return null;
     };
 };
+
