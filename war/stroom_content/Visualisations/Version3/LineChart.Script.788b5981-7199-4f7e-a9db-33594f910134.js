@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-if (!visualisations) {
+if(!visualisations) {
   var visualisations = {};
 }
 visualisations.LineChart = function(containerNode) {
@@ -28,7 +28,7 @@ visualisations.LineChart = function(containerNode) {
 
   var d3 = window.d3;
 
-  if (containerNode){
+  if(containerNode) {
     var element = containerNode;
   } else {
     var element = window.document.createElement("div");
@@ -90,14 +90,14 @@ visualisations.LineChart = function(containerNode) {
 
     svg = canvas.append("svg:g");
 
-    if (typeof(tip) == "undefined") {
+    if(typeof(tip) == "undefined") {
       inverseHighlight = commonFunctions.inverseHighlight();
       tip = inverseHighlight.tip()
-        .html(function(tipData) { 
+        .html(function(tipData) {
           var html = inverseHighlight.htmlBuilder()
-            .addTipEntry("Name",commonFunctions.autoFormat(tipData.closestKey, visSettings.seriesDateFormat))
-            .addTipEntry("X",commonFunctions.autoFormat(xScale.invert(tipData.closestPos.x)))
-            .addTipEntry("Y",commonFunctions.autoFormat(yScale.invert(tipData.closestPos.y)))
+            .addTipEntry("Name", commonFunctions.autoFormat(tipData.closestKey, visSettings.seriesDateFormat))
+            .addTipEntry("X", commonFunctions.autoFormat(xScale.invert(tipData.closestPos.x)))
+            .addTipEntry("Y", commonFunctions.autoFormat(yScale.invert(tipData.closestPos.y)))
             .build();
           return html;
         });
@@ -106,8 +106,8 @@ visualisations.LineChart = function(containerNode) {
     //We have to use this approach so that we can have the tip scan accross
     //each path
     mouseEventRect = svg.append("svg:rect")
-      .attr("x",0)
-      .attr("y",0)
+      .attr("x", 0)
+      .attr("y", 0)
       .attr("opacity", "0")
       .style("pointer-events", "all")
       .style("cursor", "crosshair");
@@ -138,7 +138,6 @@ visualisations.LineChart = function(containerNode) {
     mouseEventRect.on("mousedown", onMouseDown);
   };
 
-
   var updateHighlight = function(parentNode) {
 
     var allElements = d3.select(parentNode.node())
@@ -146,11 +145,11 @@ visualisations.LineChart = function(containerNode) {
 
     allElements
       .style("transition", "opacity 0.15s ease")
-      .each(function(d,i) {
+      .each(function(d, i) {
         var thisPath = d3.select(this);
 
-        if (highlightedPath == null || thisPath.node() == highlightedPath.node()) {
-          thisPath	
+        if(highlightedPath == null || thisPath.node() == highlightedPath.node()) {
+          thisPath
             .style("opacity", 1)
             .style("transition", "opacity 0.15s ease");
         } else {
@@ -161,14 +160,14 @@ visualisations.LineChart = function(containerNode) {
   };
 
   var toggleMarkerVisibility = function(closest) {
-    if (highlightedPath) {
+    if(highlightedPath) {
       //make marker visible and move it to the closest point on the path
       marker
         .attr("opacity", "1")
         .style("fill", highlightedPath.style("stroke"));
 
       tip.show(closest, marker.node());
-      tip.style("pointer-events","none");
+      tip.style("pointer-events", "none");
     } else {
       marker
         .attr("opacity", "0");
@@ -177,18 +176,18 @@ visualisations.LineChart = function(containerNode) {
   };
 
   var setMarkerPosition = function(closest) {
-    if (closest && closest.closestPos){
+    if(closest && closest.closestPos) {
       marker
         .attr("transform", "translate(" + closest.closestPos.x + "," + closest.closestPos.y + ")");
       tip.show(closest, marker.node());
-      tip.style("pointer-events","none");
+      tip.style("pointer-events", "none");
     } else {
       tip.hide();
     }
   };
 
   var onMouseDown = function() {
-    if (!highlightedPath) {
+    if(!highlightedPath) {
       //don't have a highlightpath so make one
       var e = d3.select(this);
       var elem = e.node();
@@ -203,7 +202,7 @@ visualisations.LineChart = function(containerNode) {
       var closestPos = closest.closestPos;
       var closestKey = closest.closestKey;
 
-      if (closest && closest.closestPath){
+      if(closest && closest.closestPath) {
         highlightedPath = closestPath;
         setMarkerPosition(closest);
       }
@@ -222,7 +221,7 @@ visualisations.LineChart = function(containerNode) {
     var x = mousePos[0];
     var y = mousePos[1];
 
-    if (highlightedPath ) {
+    if(highlightedPath) {
       var closest = commonFunctions.closestPath(x, y, highlightedPath);
 
       var closestPath = closest.closestPath;
@@ -231,7 +230,7 @@ visualisations.LineChart = function(containerNode) {
 
       //console.log(closestPos.x + "," + closestPos.y);
 
-      if (closestPos) {
+      if(closestPos) {
         setMarkerPosition(closest);
       }
     }
@@ -253,7 +252,7 @@ visualisations.LineChart = function(containerNode) {
   var sessioniseData = function(data, settings) {
 
     var sessionThresholdMillis;
-    if (settings && settings.thresholdMs && typeof(parseInt(settings.thresholdMs, 10) == "number")) {
+    if(settings && settings.thresholdMs && typeof(parseInt(settings.thresholdMs, 10) == "number")) {
       sessionThresholdMillis = parseInt(settings.thresholdMs);
     } else {
       sessionThresholdMillis = 0;
@@ -277,9 +276,9 @@ visualisations.LineChart = function(containerNode) {
       singleSeriesData.values.forEach(function(pointData) {
         var stateChange = pointData[1];
 
-        if (stateChange == openSessionText) {
+        if(stateChange == openSessionText) {
           count++;
-        } else if (stateChange == closeSessionText) {
+        } else if(stateChange == closeSessionText) {
           count--;
         }
         pointData[1] = count;
@@ -287,29 +286,27 @@ visualisations.LineChart = function(containerNode) {
     });
   };
 
-
-
   this.setData = function(context, settings, data) {
 
-    if (data && data != null) {
+    if(data && data != null) {
       // If the context already has a colour set then use it, otherwise set it
       // to use this one.  
-      if (context) {
-        if (context.color) {
+      if(context) {
+        if(context.color) {
           colour = context.color;
-        } 
+        }
       }
 
-      if (settings) {
+      if(settings) {
         stateCounting = false;
-        if (settings.stateCounting && settings.stateCounting.toLowerCase() == "true"){
+        if(settings.stateCounting && settings.stateCounting.toLowerCase() == "true") {
           stateCounting = true;
         }
 
-        if (stateCounting) {
+        if(stateCounting) {
           data.types[1] = commonConstants.dataTypeNumber;
           data.values.forEach(function(cellData) {
-            sessioniseData (cellData, settings);
+            sessioniseData(cellData, settings);
           });
 
           commonFunctions.dataAggregator()
@@ -318,20 +315,20 @@ visualisations.LineChart = function(containerNode) {
             .aggregate(data);
         }
 
-        if (grid == undefined){
+        if(grid == undefined) {
           //initialise the grid
           grid = new visualisations.GenericGrid(element);
         }
 
         var synchedFields = [];
-        if (commonFunctions.isTrue(settings.synchXAxis)){
+        if(commonFunctions.isTrue(settings.synchXAxis)) {
           synchedFields.push(0);
         }
-        if (commonFunctions.isTrue(settings.synchYAxis)){
+        if(commonFunctions.isTrue(settings.synchYAxis)) {
           synchedFields.push(1);
         }
 
-        if (commonFunctions.isTrue(settings.synchSeries)) {
+        if(commonFunctions.isTrue(settings.synchSeries)) {
           //series are synched so setup the colour scale domain and add it to the context
           //so it can be passed to each grid cell vis
           //commonFunctions.setColourDomain(colour, data, 0, "SYNCHED_SERIES");
@@ -346,33 +343,31 @@ visualisations.LineChart = function(containerNode) {
   };
 
   this.setDataInsideGrid = function(context, settings, data) {
-    if (!initialised){
+    if(!initialised) {
       initialise();
     }
 
     // If the context already has a colour set then use it
-    if (context) {
+    if(context) {
       visContext = context;
-      if (context.color) {
+      if(context.color) {
         colour = context.color;
       }
     }
-    if (settings){
+    if(settings) {
       visSettings = settings;
     }
 
-
     var mode = (settings.synchSeries && settings.synchSeries.toLowerCase() == "true") ? "SYNCHED_SERIES" : "SERIES";
-    if (typeof(context) === "undefined" || typeof(context.color) === "undefined") {
+    if(typeof(context) === "undefined" || typeof(context.color) === "undefined") {
       commonFunctions.setColourDomain(colour, data, 0, mode);
     }
 
     visData = data;
     update();
   };
-
   var update = function(duration) {
-    if (visData) {
+    if(visData) {
       var visibleValues = visData.visibleValues();
       //console.log('update called series: ' + visData.key + ' valueCount:' + visData.values.length);
 
@@ -391,8 +386,8 @@ visualisations.LineChart = function(containerNode) {
         .attr("height", fullHeight);
 
       mouseEventRect
-        .attr("width",width + "px")
-        .attr("height",height + "px");
+        .attr("width", width + "px")
+        .attr("height", height + "px");
 
       svg.attr("transform", "translate(" + margins.left + "," + margins.top + ")");
       xAxisContainer.attr("transform", "translate(0," + height + ")");
@@ -403,12 +398,12 @@ visualisations.LineChart = function(containerNode) {
       xSettings.setRangeDomain(visData.types[0], visData, 0);
       commonFunctions.buildAxis(xAxisContainer, xSettings, "bottom", null, 70, visSettings.displayXAxis);
 
-      ySettings = commonFunctions.createAxis(visData.types[1], height, 0);
+      ySettings = commonFunctions.createScaledAxis(visSettings.scaleYAxis, visData.types[1], height, 0);
       yScale = ySettings.scale;
       ySettings.setRangeDomain(visData.types[1], visData, 1);
       commonFunctions.buildAxis(yAxisContainer, ySettings, "left", null, 70, visSettings.displayYAxis);
 
-      if (commonFunctions.resizeMargins(margins, xAxisContainer, yAxisContainer) == true) {
+      if(commonFunctions.resizeMargins(margins, xAxisContainer, yAxisContainer) == true) {
         update();
       } else {
         seriesContainer.call(tip);
@@ -444,7 +439,7 @@ visualisations.LineChart = function(containerNode) {
           });
 
         // Interpolate the line using the desired mode, if set
-        if (visSettings.interpolationMode) {
+        if(visSettings.interpolationMode) {
           line.interpolate(visSettings.interpolationMode);
         }
 
@@ -472,15 +467,15 @@ visualisations.LineChart = function(containerNode) {
 
   this.resize = function() {
     commonFunctions.resize(grid, update, element, margins, width, height);
-  }; 
+  };
 
   this.teardown = function() {
-    if (typeof(tip) != "undefined"){
+    if(typeof(tip) != "undefined") {
       tip.destroy();
     }
   };
 
-  this.getColourScale = function(){
+  this.getColourScale = function() {
     return colour;
   };
 
