@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.15.5] - 2025-02-05
+
+* Add scaling to Linechart Y axis.
+
+
 ## [v3.15.4] - 2025-02-02
 
 * Fix Scatter header.
@@ -286,7 +291,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.4...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.5...HEAD
+[v3.15.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.4...v3.15.5
 [v3.15.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.3...v3.15.4
 [v3.15.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.2...v3.15.3
 [v3.15.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.1...v3.15.2
