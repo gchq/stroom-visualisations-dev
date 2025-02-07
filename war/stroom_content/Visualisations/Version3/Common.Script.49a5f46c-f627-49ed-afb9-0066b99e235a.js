@@ -1946,16 +1946,18 @@ if(!visualisations) {
       axis.ticks(ticks);
     } else {
       // work out how many ticks to have based on axis pixel length
-      var pixelsPerTick = (orientation == "bottom" ? 45 : 20);
-      var minimumPixelsPerTick = (orientation == "bottom" ? 20 : 10);
+      var pixelsPerTick = (orientation == "bottom" ? 45 : (axisSettings != "Linear" ? 50 : 20));
+      var minimumPixelsPerTick = (orientation == "bottom" ? 20 : (axisSettings != "Linear" ? 50 : 20));
       var optimumTicks = Math.floor(axisSettings.getLengthPx() / pixelsPerTick);
       if(optimumTicks <= 1) {
         var minTicks = Math.floor(axisSettings.getLengthPx() / minimumPixelsPerTick);
         axis.ticks(minTicks);
+        // console.log('lengthPx: ' + axisSettings.getLengthPx() + ' optimumTicks: ' + optimumTicks + ' minTicks: ' + minTicks);
+
       } else {
         axis.ticks(optimumTicks);
       }
-      // console.log('lengthPx: ' + axisSettings.getLengthPx() + ' optimumTicks: ' + optimumTicks);
+      // console.log('lengthPx: ' + axisSettings.getLengthPx() + ' optimumTicks: ' + optimumTicks + ' minTicks: ' + minTicks);
     }
 
     if(!isTextDisplayed) {
@@ -2083,3 +2085,4 @@ if(!visualisations) {
   visualisations.commonFunctions = commonFunctions;
   visualisations.commonConstants = commonConstants;
 }();
+

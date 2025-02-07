@@ -193,7 +193,7 @@ visualisations.Scatter = function(containerNode) {
             xSettings.setRangeDomain(visData.types[0], visData, 0);
             commonFunctions.buildAxis(xAxisContainer, xSettings, "bottom", null, null, visSettings.displayXAxis);
 
-            ySettings = commonFunctions.createAxis(visData.types[1], height, 0);
+            ySettings = commonFunctions.createScaledAxis(visSettings.scaleYAxis, visData.types[1], height, 0);
             yScale = ySettings.scale;
             ySettings.setRangeDomain(visData.types[1], visData, 1);
             commonFunctions.buildAxis(yAxisContainer, ySettings, "left", null, null, visSettings.displayYAxis);
@@ -264,7 +264,7 @@ visualisations.Scatter = function(containerNode) {
                         })
                         .transition() //TODO having transition before cx and cy seems to break it in grid mode, not sure why
                         .duration(duration)
-                        .attr("opacity", "1");
+                        .attr("opacity", ".8");
 
                     //remove redundant points
                     seriesPoints.exit()
@@ -307,4 +307,5 @@ visualisations.Scatter = function(containerNode) {
         return null;
     };
 };
+
 

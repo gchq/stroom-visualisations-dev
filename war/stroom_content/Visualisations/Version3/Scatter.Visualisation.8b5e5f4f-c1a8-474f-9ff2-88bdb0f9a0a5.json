@@ -45,6 +45,18 @@
                     "min": "1"
                 },
                 {
+                    "id": "scaleYAxis",
+                    "type": "selection",
+                    "label": "Scale Y Axis",
+                    "values": [
+                        "Linear",
+                        "Square",
+                        "Cube",
+                        "Log"
+                    ],
+                    "defaultValue": "Linear"
+                },
+                {
                     "id": "sortXAxis",
                     "type": "selection",
                     "label": "Sort X Axis",
