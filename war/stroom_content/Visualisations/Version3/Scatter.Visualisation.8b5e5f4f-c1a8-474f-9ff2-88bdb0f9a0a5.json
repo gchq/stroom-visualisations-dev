@@ -37,6 +37,26 @@
                     "min": "1"
                 },
                 {
+                    "id": "pointSize",
+                    "type": "number",
+                    "label": "Point Size (px)",
+                    "defaultValue": "4",
+                    "max": "10",
+                    "min": "1"
+                },
+                {
+                    "id": "scaleYAxis",
+                    "type": "selection",
+                    "label": "Scale Y Axis",
+                    "values": [
+                        "Linear",
+                        "Square",
+                        "Cube",
+                        "Log"
+                    ],
+                    "defaultValue": "Linear"
+                },
+                {
                     "id": "sortXAxis",
                     "type": "selection",
                     "label": "Sort X Axis",

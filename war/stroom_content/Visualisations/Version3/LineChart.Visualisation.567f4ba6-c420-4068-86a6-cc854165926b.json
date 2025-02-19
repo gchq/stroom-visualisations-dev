@@ -70,6 +70,18 @@
                     "defaultValue": "Ascending"
                 },
                 {
+                    "id": "scaleYAxis",
+                    "type": "selection",
+                    "label": "Scale Y Axis",
+                    "values": [
+                        "Linear",
+                        "Square",
+                        "Cube",
+                        "Log"
+                    ],
+                    "defaultValue": "Linear"
+                },
+                {
                     "id": "sortLineSeries",
                     "type": "selection",
                     "label": "Sort Line Series",

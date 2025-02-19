@@ -250,7 +250,6 @@ if(!visualisations) {
   commonConstants.heatMapColours = commonConstants.heatMapColourRanges.greenyBlues;
   commonConstants.classVisColouredElement = "vis-coloured-element";
 
-
   // Common Functions
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -305,7 +304,7 @@ if(!visualisations) {
     // the cursor is in to avoid edge clashes
     var pageY = d3.event.pageY;
     var pageHeight = window.innerHeight;
-    return(pageY > (pageHeight / 2)) ? 'n' : 's';
+    return (pageY > (pageHeight / 2)) ? 'n' : 's';
   };
 
   commonFunctions.d3TipEastWestDirectionFunc = function(tipData) {
@@ -313,7 +312,7 @@ if(!visualisations) {
     // the cursor is in to avoid edge clashes
     var pageX = d3.event.pageX;
     var pageWidth = window.innerWidth;
-    return(pageX > (pageWidth / 2)) ? 'w' : 'e';
+    return (pageX > (pageWidth / 2)) ? 'w' : 'e';
   };
 
   /*
@@ -431,16 +430,18 @@ if(!visualisations) {
     }
 
     const highlightItem = function(d) {
-        const selectionItem = inverseHighlight.toSelectionItem(d);
-        const selected = selection.find(({key}) => key === selectionItem.key);
-        const e = d3.select(this).node();
+      const selectionItem = inverseHighlight.toSelectionItem(d);
+      const selected = selection.find(({
+        key
+      }) => key === selectionItem.key);
+      const e = d3.select(this).node();
 
-        e.style.transition = "opacity 0.15s ease";
-        if(typeof(highlight) == "undefined" || highlight === null || highlight === e) {
-          e.style.opacity = selection.length == 0 || selected ? 1 : 0.1;
-        } else {
-          e.style.opacity = selected ? 0.6 : 0.1;
-        }
+      e.style.transition = "opacity 0.15s ease";
+      if(typeof(highlight) == "undefined" || highlight === null || highlight === e) {
+        e.style.opacity = selection.length == 0 || selected ? 1 : 0.1;
+      } else {
+        e.style.opacity = selected ? 0.6 : 0.1;
+      }
     }
 
     /*
@@ -453,15 +454,17 @@ if(!visualisations) {
     };
 
     const select = function(d) {
-        const selectionItem = inverseHighlight.toSelectionItem(d);
-        const index = selection.findIndex(({key}) => key === selectionItem.key);
-        if (index > -1) {
-            selection.splice(index, 1);
-        } else {
-            selection.push(selectionItem);
-        }
+      const selectionItem = inverseHighlight.toSelectionItem(d);
+      const index = selection.findIndex(({
+        key
+      }) => key === selectionItem.key);
+      if(index > -1) {
+        selection.splice(index, 1);
+      } else {
+        selection.push(selectionItem);
+      }
 
-        stroom.select(selection);
+      stroom.select(selection);
     };
 
     /*
@@ -539,7 +542,7 @@ if(!visualisations) {
     if(type == commonConstants.dataTypeDateTime) {
       scale.scale = d3.time.scale.utc().range([min, max]);
       scale.type = commonConstants.d3ScaleUtc;
-    } else if(type ==commonConstants.dataTypeNumber) {
+    } else if(type == commonConstants.dataTypeNumber) {
       scale.scale = d3.scale.linear().range([min, max]);
       scale.type = commonConstants.d3ScaleLinear;
     } else {
@@ -550,7 +553,7 @@ if(!visualisations) {
   };
 
   commonFunctions.createAxis = function(type, minPx, maxPx, d3TickFormat) {
-    //console.log('createAxis called for type: ' + type + ' minPx: ' + minPx + ' maxPx: ' + maxPx);
+    // console.log('createAxis called for type: ' + type + ' minPx: ' + minPx + ' maxPx: ' + maxPx);
     var result = {};
     var scaleObj = commonFunctions.getScale(type, minPx, maxPx);
     result.type = type;
@@ -604,7 +607,146 @@ if(!visualisations) {
     }
 
     result.setDomain = function(data, valuesArr, i) {
-      if(data.types[i] ==  commonConstants.dataTypeGeneral || data.types[i] == commonConstants.dataTypeText) {
+      if(data.types[i] == commonConstants.dataTypeGeneral || data.types[i] == commonConstants.dataTypeText) {
+        // some vis' may have computed unique values of ordinal data so try that first
+        // otherwise fall back on the passed valuesArr
+        if(data.visibleUnique && data.visibleUnique[i] && data.visibleUnique[i].length > 0) {
+          var domain = data.visibleUnique[i];
+        } else {
+          var domain = valuesArr.map(function(d) {
+            return d[i];
+          });
+        }
+        //var domain = valuesArr.map(function(d) {
+        //return d[i];
+        //});
+        result.scale.domain(domain);
+      } else if(data.types[i] == commonConstants.dataTypeDateTime) {
+        //console.log([ data.min[i], data.max[i] ]);
+        result.scale.domain([data.min[i], data.max[i]]);
+      } else {
+        result.scale.domain([Math.min(0, data.min[i]), Math.max(0, data.max[i])]);
+      }
+    };
+
+    if(d3TickFormat) {
+      result.tickFormat = d3TickFormat;
+      result.axis.tickFormat(d3TickFormat);
+    } else if(type == commonConstants.dataTypeDateTime) {
+      var format = d3.time.format.multi([
+        [".%L", function(d) {
+          return d.getUTCMilliseconds();
+        }],
+        [":%S", function(d) {
+          return d.getUTCSeconds();
+        }],
+        ["%H:%M", function(d) {
+          return d.getUTCMinutes();
+        }],
+        ["%H:%M", function(d) {
+          return d.getUTCHours();
+        }],
+        ["%b %d", function(d) {
+          return d.getUTCDate();
+        }],
+        ["%b %Y", function(d) {
+          return d.getUTCMonth();
+        }],
+        ["%Y", function() {
+          return true;
+        }]
+      ]);
+
+      result.format = format;
+      result.axis.tickFormat(format);
+    } else if(!isNaN(result.getMaxValue()) && result.getMaxValue() > 100000) {
+      result.format = d3.format("s");
+      result.axis.tickFormat(result.format);
+    }
+
+    return result;
+  };
+
+  commonFunctions.getScaledScale = function(scaleType, type, min, max) {
+    var scale = {};
+    if(type == commonConstants.dataTypeDateTime) {
+      scale.scale = d3.time.scale.utc().range([min, max]);
+      scale.type = commonConstants.d3ScaleUtc;
+    } else if(type == commonConstants.dataTypeNumber && scaleType == "Linear") {
+      scale.scale = d3.scale.linear().range([min, max]);
+      scale.type = commonConstants.d3ScaleLinear;
+    } else if(type == commonConstants.dataTypeNumber && scaleType == "Square") {
+      scale.scale = d3.scale.sqrt().range([min, max]);
+      scale.type = commonConstants.d3ScaleLinear;
+    } else if(type == commonConstants.dataTypeNumber && scaleType == "Cube") {
+      scale.scale = d3.scale.pow().exponent(.3).range([min, max]);
+      scale.type = commonConstants.d3ScaleLinear;
+    } else if(type == commonConstants.dataTypeNumber && scaleType == "Log") {
+      scale.scale = d3.scale.pow().exponent(.1).range([min, max]);
+      scale.type = commonConstants.d3ScaleLinear;
+    } else {
+      scale.scale = d3.scale.ordinal().rangeRoundBands([min, max], 0);
+      scale.type = commonConstants.d3ScaleOrdinal;
+    }
+    return scale;
+  };
+
+  commonFunctions.createScaledAxis = function(scaleType, type, minPx, maxPx, d3TickFormat) {
+    // console.log('createScaledAxis called for type: ' + type + ' minPx: ' + minPx + ' maxPx: ' + maxPx);
+    var result = {};
+    var scaleObj = commonFunctions.getScaledScale(scaleType, type, minPx, maxPx);
+    result.type = type;
+    result.minPx = minPx;
+    result.maxPx = maxPx;
+    result.scale = scaleObj.scale;
+    result.scaleType = scaleObj.type;
+    result.axis = d3.svg.axis()
+      .scale(result.scale)
+      .tickSize(3);
+
+    result.getValue = function(value) {
+      if(value && !isNaN(value) && type == commonConstants.dataTypeDateTime) {
+        // value is a date time so return a date object for others to format as they wish
+        var dateObj = new Date(value);
+        return dateObj;
+      }
+      return value;
+    };
+
+    result.getMinValue = function() {
+      return result.scale.domain()[0];
+    }
+
+    result.getMaxValue = function() {
+      return result.scale.domain()[1];
+    }
+
+    result.getLengthPx = function() {
+      return Math.max(result.minPx, result.maxPx) - Math.min(result.minPx, result.maxPx);
+    }
+
+    result.setExplicitDomain = function(valuesArr) {
+      result.scale.domain(valuesArr);
+    }
+
+    result.setExplicitRangeDomain = function(min, max) {
+      result.scale.domain([min, max]);
+    }
+
+    result.setRangeDomain = function(dataType, data, i) {
+      if(dataType == commonConstants.dataTypeDateTime) {
+        result.scale.domain([data.min[i], data.max[i]]);
+      } else {
+        //console.log([data.min[i], data.max[i]]);
+        result.scale.domain([
+          Math.min(0, data.min[i]),
+          Math.max(0, data.max[i])
+        ]);
+      }
+    }
+
+    result.setDomain = function(data, valuesArr, i) {
+      if(data.types[i] == commonConstants.dataTypeGeneral || data.types[i] == commonConstants.dataTypeText) {
         // some vis' may have computed unique values of ordinal data so try that first
         // otherwise fall back on the passed valuesArr
         if(data.visibleUnique && data.visibleUnique[i] && data.visibleUnique[i].length > 0) {
@@ -670,14 +812,14 @@ if(!visualisations) {
 
     if(mode == "VALUE" && data.unique) {
       domain = data.unique[i];
-    } else if (mode == "SYNCHED_SERIES" && data.uniqueKeys) {
+    } else if(mode == "SYNCHED_SERIES" && data.uniqueKeys) {
       domain = data.uniqueKeys;
-    } else if (data.originalValues) {
+    } else if(data.originalValues) {
       // attempt to use all the series for the colour scale, not just the visible ones
       domain = data.originalValues.map(function(d) {
         return d.key;
       });
-    } else if (data.values && data.values.length > 0 && data.values[0].hasOwnProperty("key")) {
+    } else if(data.values && data.values.length > 0 && data.values[0].hasOwnProperty("key")) {
       domain = data.values.map(function(d) {
         return d.key;
       });
@@ -936,7 +1078,7 @@ if(!visualisations) {
     return new Date(
       Math
       .floor((dateObj.getTime() - (commonConstants.millisInDay * commonFunctions
-        .getDayNoOfWeek(dateObj))) /
+          .getDayNoOfWeek(dateObj))) /
         commonConstants.millisInDay) *
       commonConstants.millisInDay);
   };
@@ -1003,7 +1145,7 @@ if(!visualisations) {
       if(seriesName !== null && seriesName !== "") {
         var labelName = label.append("div").attr("class",
           "vis-seriesLabel name").style("top", topVal + "px").style(
-            "background-color", "inherit");
+          "background-color", "inherit");
         topVal += topDelta;
       }
 
@@ -1153,9 +1295,9 @@ if(!visualisations) {
     if(element.localName == "svg") {
       var body = d3.select(element)
         .append("svg:foreignObject")
-      //.attr("width","100%")
-      //.attr("height","100%")
-      //.attr("requiredExtensions","http://www.w3.org/1999/xhtml")
+        //.attr("width","100%")
+        //.attr("height","100%")
+        //.attr("requiredExtensions","http://www.w3.org/1999/xhtml")
         .append("xhtml:body")
       //.attr("class", classValue);
       //.attr("xmlns","http://www.w3.org/1999/xhtml")
@@ -1246,12 +1388,12 @@ if(!visualisations) {
         // Respect the sort order from the viz settings if there is one
         // If there isn't then the order will be insertion order into the
         // sets.
-        if (obj.hasOwnProperty('sortDirections')) {
+        if(obj.hasOwnProperty('sortDirections')) {
           var sortDirection = obj.sortDirections[fieldIndex];
-          if (sortDirection === commonConstants.sortDescending) {
+          if(sortDirection === commonConstants.sortDescending) {
             obj.unique[fieldIndex].reverse();
             obj.visibleUnique[fieldIndex].reverse();
-          } else if (sortDirection === commonConstants.sortAscending){
+          } else if(sortDirection === commonConstants.sortAscending) {
             obj.unique[fieldIndex].sort();
             obj.visibleUnique[fieldIndex].sort();
           }
@@ -1262,10 +1404,10 @@ if(!visualisations) {
 
     // use the types array to loop round so we process each field,
     // optionally filtering whether we process the field or not
-    if (data && data.types) {
+    if(data && data.types) {
       data.types.forEach(function(type, fieldIndex) {
-        if(typeof(typeAndFieldIndexFilterFunc) === "undefined"
-          || typeAndFieldIndexFilterFunc(type, fieldIndex)) {
+        if(typeof(typeAndFieldIndexFilterFunc) === "undefined" ||
+          typeAndFieldIndexFilterFunc(type, fieldIndex)) {
 
           makeAddUniqueValueFunc(fieldIndex)(data);
         }
@@ -1277,7 +1419,7 @@ if(!visualisations) {
   // passed data tree.
   commonFunctions.computeUniqueKeys = function(data) {
     // make sure we have a key attribute for the first grand child
-    if (data && data.values && data.values.length > 0 && data.values[0] &&
+    if(data && data.values && data.values.length > 0 && data.values[0] &&
       data.values[0].values && data.values[0].values.length > 0 &&
       data.values[0].values[0] && data.values[0].values[0].key) {
 
@@ -1311,12 +1453,12 @@ if(!visualisations) {
       // Respect the sort order from the viz settings if there is one
       // If there isn't then the order will be insertion order into the
       // sets.
-      if (data.hasOwnProperty('keySortDirection')) {
+      if(data.hasOwnProperty('keySortDirection')) {
         var sortDirection = data.keySortDirection;
-        if (sortDirection === commonConstants.sortDescending) {
+        if(sortDirection === commonConstants.sortDescending) {
           data.uniqueKeys.reverse();
           data.visibleUniqueKeys.reverse();
-        } else if (sortDirection === commonConstants.sortDescending) {
+        } else if(sortDirection === commonConstants.sortDescending) {
           data.uniqueKeys.sort();
           data.visibleUniqueKeys.sort();
         }
@@ -1777,11 +1919,11 @@ if(!visualisations) {
   };
 
   commonFunctions.buildAxis = function(
-    axisContainer, 
-    axisSettings, 
-    orientation, 
-    ticks, 
-    maxAxisLabelLengthPx, 
+    axisContainer,
+    axisSettings,
+    orientation,
+    ticks,
+    maxAxisLabelLengthPx,
     displayText) {
 
     var axisLabelTip = d3.tip()
@@ -1804,16 +1946,18 @@ if(!visualisations) {
       axis.ticks(ticks);
     } else {
       // work out how many ticks to have based on axis pixel length
-      var pixelsPerTick = (orientation == "bottom" ? 45 : 20);
-      var minimumPixelsPerTick = (orientation == "bottom" ? 20 : 10);
+      var pixelsPerTick = (orientation == "bottom" ? 45 : (axisSettings != "Linear" ? 50 : 20));
+      var minimumPixelsPerTick = (orientation == "bottom" ? 20 : (axisSettings != "Linear" ? 50 : 20));
       var optimumTicks = Math.floor(axisSettings.getLengthPx() / pixelsPerTick);
       if(optimumTicks <= 1) {
         var minTicks = Math.floor(axisSettings.getLengthPx() / minimumPixelsPerTick);
         axis.ticks(minTicks);
+        // console.log('lengthPx: ' + axisSettings.getLengthPx() + ' optimumTicks: ' + optimumTicks + ' minTicks: ' + minTicks);
+
       } else {
         axis.ticks(optimumTicks);
       }
-      //console.log('lengthPx: ' + axisSettings.getLengthPx() + ' optimumTicks: ' + optimumTicks);
+      // console.log('lengthPx: ' + axisSettings.getLengthPx() + ' optimumTicks: ' + optimumTicks + ' minTicks: ' + minTicks);
     }
 
     if(!isTextDisplayed) {
@@ -1828,7 +1972,7 @@ if(!visualisations) {
 
       axisContainer
         .call(axis)
-      //.call(axisSettings.axis.orient(orientation))
+        //.call(axisSettings.axis.orient(orientation))
         .call(axisLabelTip);
 
       if(isTextDisplayed) {
@@ -1941,3 +2085,4 @@ if(!visualisations) {
   visualisations.commonFunctions = commonFunctions;
   visualisations.commonConstants = commonConstants;
 }();
+

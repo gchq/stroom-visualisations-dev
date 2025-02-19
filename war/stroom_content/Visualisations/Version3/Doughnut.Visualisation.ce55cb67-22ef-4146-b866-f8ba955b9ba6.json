@@ -14,6 +14,11 @@
                     "label" : "Values"
                 },
                 {
+                    "id" : "colour",
+                    "type" : "field",
+                    "label" : "Colour Field (Optional)"
+                },
+                {
                     "id" : "gridSeries",
                     "type" : "field",
                     "label" : "Grid Series"
@@ -108,6 +113,9 @@
                         },
                         {
                             "id" : "${values}"
+                       },
+                        {
+                            "id" : "${colour}"
                         }
                     ],
                     "limit" : {

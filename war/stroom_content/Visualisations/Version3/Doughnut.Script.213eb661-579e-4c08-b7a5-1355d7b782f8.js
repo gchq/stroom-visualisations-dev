@@ -303,7 +303,12 @@ visualisations.Doughnut= function(containerNode) {
         filteredPieData = pieData.filter(filterData);
 
         var fillFunc = function(d, i) {
+          if(d.data[2] != null){
+            return d3.rgb(d.data[2]);
+          }
+          else{
             return colour(d.name);
+          }
         };
         //var colourValFunc = function(d, i) {
         //return commonFunctions.removeColourHash(colour(d.name));
@@ -328,6 +333,7 @@ visualisations.Doughnut= function(containerNode) {
                 .append("svg:path")
                 .attr("stroke", "var(--vis__background-color)")
                 .attr( "stroke-width", 1)
+                .attr("fill", fillFunc)
                 .transition()
                 .duration(tweenDuration)
                 .attrTween("d", pieTween);
@@ -687,3 +693,4 @@ visualisations.Doughnut= function(containerNode) {
     };
 
 };
+

@@ -193,7 +193,7 @@ visualisations.Scatter = function(containerNode) {
             xSettings.setRangeDomain(visData.types[0], visData, 0);
             commonFunctions.buildAxis(xAxisContainer, xSettings, "bottom", null, null, visSettings.displayXAxis);
 
-            ySettings = commonFunctions.createAxis(visData.types[1], height, 0);
+            ySettings = commonFunctions.createScaledAxis(visSettings.scaleYAxis, visData.types[1], height, 0);
             yScale = ySettings.scale;
             ySettings.setRangeDomain(visData.types[1], visData, 1);
             commonFunctions.buildAxis(yAxisContainer, ySettings, "left", null, null, visSettings.displayYAxis);
@@ -241,9 +241,9 @@ visualisations.Scatter = function(containerNode) {
                     //Add new points
                     seriesPoints.enter()
                         .append("svg:circle")
-                        .attr("stroke-width", "1.5px")
+                        .attr("stroke-width", "1px")
                         .style( "fill-opacity", 0.6)
-                        .attr("r", "4px")
+                        .attr("r", visSettings.pointSize+"px")
                         .attr("opacity", "0");
 
                     //Update new and existing points
@@ -251,6 +251,7 @@ visualisations.Scatter = function(containerNode) {
                         .attr("class", commonFunctions.makeColouredElementClassStringFunc(legendKeyFunc))
                         .attr("stroke", fillFunc(seriesData))
                         .attr("fill", fillFunc(seriesData))
+                        .attr("r", visSettings.pointSize+"px")
                         .attr("cx", function(dataPoint) {
                             var xVal = xScale(dataPoint[0]);
                             //console.log("dataPoint[0]: " + dataPoint[0] + " xVal: " + xVal);
@@ -263,7 +264,7 @@ visualisations.Scatter = function(containerNode) {
                         })
                         .transition() //TODO having transition before cx and cy seems to break it in grid mode, not sure why
                         .duration(duration)
-                        .attr("opacity", "1");
+                        .attr("opacity", ".8");
 
                     //remove redundant points
                     seriesPoints.exit()
@@ -306,3 +307,5 @@ visualisations.Scatter = function(containerNode) {
         return null;
     };
 };
+
+
