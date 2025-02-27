@@ -43,10 +43,12 @@ if (!visualisations) {
       return new visualisations.Tree(containerNode);
     };
 
-    var width = element.clientWidth;
-    var height = element.clientHeight;
-    this.delimiter = '/'; // default delimiter
-    var color = d3.scale.category20b();
+    var width;
+    var height;
+    var delimiter = '/'; // default delimiter
+    var baseColor = d3.rgb(0, 139, 139);
+    var color = commonConstants.categoryGoogle();
+    var visSettings;
     var svg;
     var canvas;
     var zoom;
@@ -54,7 +56,9 @@ if (!visualisations) {
     var treeLayout;
     var dataArea;
     var visData;
+    var drawDepth = 2; // default drawDepth
     var invisibleBackgroundRect;
+    var orientation = "north"; // default Orientation
 
     var style = ".Tree-node {" +
                 "width: 100%;" +
@@ -147,46 +151,6 @@ if (!visualisations) {
       dataArea.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
 
-    function buildHierarchy(paths) {
-      var root = { id: "root", children: [] };
-      var all = {};
-
-      paths.forEach(function(path) {
-        var parts = path[0].split(this.delimiter);
-        var current = root;
-
-        parts.forEach(function(part, index) {
-          if (!all[part]) {
-            all[part] = { id: part, children: [] };
-            current.children.push(all[part]);
-          }
-          current = all[part];
-        });
-      });
-
-      return root;
-    }
-
-    function filterByDepth(root, maxDepth) {
-      const queue = [{ node: root, depth: 0 }];
-      while (queue.length > 0) {
-          const { node, depth } = queue.shift();
-          if (depth < maxDepth) {
-            if (node.children) {
-                node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
-            }
-          } else {
-            if (node.children) {
-                node._children = node.children;
-                node.children = null;
-            }
-          }
-      }
-    }
-
-    var drawDepth;
-    var orientation;
-
     this.setData = function(context, settings, data) {
       if (context) {
           if (context.color) {
@@ -219,14 +183,15 @@ if (!visualisations) {
         //Get grid to construct the grid cells and for each one call back into a
         //new instance of this to build the visualisation in the cell
         //The last array arg allows you to synchronise the scales of fields
-        grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);
-        this.resize();
-        
+        grid.buildGrid(context, settings, data, this, commonConstants.transitionDuration, synchedFields);        
+        this.resize;
       }
-      
-    };
+    }
 
-    var visSettings;
+    //called by Stroom to instruct the visualisation to redraw itself in a resized container
+    this.resize = function() {
+      commonFunctions.resize(grid, update, element, margins, width, height);
+    };
 
     //Public entry point for the Grid to call back in to set the cell level data on the cell level
     //visualisation instance.
@@ -236,30 +201,34 @@ if (!visualisations) {
         initialise();
       }
 
-      // If the context already has a colour set then use it
-      if (context) {
-          visContext = context;
-          if (context.color) {
-              colour = context.color;
-          }
+      visSettings = settings;
+
+      if (settings.delimiter) {
+        delimiter = settings.delimiter;
+      }
+
+      if (settings.baseColor) {
+        baseColor = d3.rgb(settings.baseColor);
+      }
+
+      if (settings.orientation) {
+        orientation = settings.orientation;
+      }
+
+      if (settings.drawDepth) {
+        drawDepth = settings.drawDepth;
       }
 
       if (data) {
-          data = buildHierarchy(data.values[0].values);
+        data = buildHierarchy(data.values[0].values);
+        visData = data;
+        filterByDepth(data, drawDepth);
+        update(100, data);
       }
-    
-      // Filter the data to only show up to 3 levels initially
-      orientation = settings.orientation;
-      delimiter = settings.delimiter || this.delimiter;
-      drawDepth = settings.drawDepth || 6;
-      filterByDepth(data, drawDepth);
-    
-      visSettings = settings;
-      visData = data;
-      update(100, data);
     };
 
-    function update(duration, data) {
+    function update(duration, data) {      
+
       const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
       const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
   
@@ -289,6 +258,47 @@ if (!visualisations) {
       // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
         
     }
+
+    function buildHierarchy(paths) {
+      var root = { id: "root", children: [] };
+      var all = { "root": root };
+  
+      paths.forEach(function(path) {
+          var parts = path[0].split(delimiter);
+          var current = root;
+          var fullPath = "";
+  
+          parts.forEach(function(part, index) {
+              fullPath = fullPath ? fullPath + delimiter + part : part;
+  
+              if (!all[fullPath]) {
+                  all[fullPath] = { id: part, children: [] };
+                  current.children.push(all[fullPath]);
+              }
+  
+              current = all[fullPath];
+          });
+      });
+  
+      return root;
+    }
+
+    function filterByDepth(root, maxDepth) {
+      const queue = [{ node: root, depth: 0 }];
+      while (queue.length > 0) {
+          const { node, depth } = queue.shift();
+          if (depth < maxDepth) {
+            if (node.children) {
+                node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
+            }
+          } else {
+            if (node.children) {
+                node._children = node.children;
+                node.children = null;
+            }
+          }
+      }
+    }
     
     function initializeScales(width, height) {
         const xScale = d3.scale.linear().range([0, width]);
@@ -313,30 +323,43 @@ if (!visualisations) {
     }
     
     function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
-        const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id);
-    
-        node.enter().append("g")
-            .attr("class", "Tree-node")
-            .attr("transform", d => {
-                const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
-                return position;
-            })
-            .on("click", nodeClick)
-            .append("circle")
-            .attr("class", "Tree-circle")
-            .attr("r", 3)
-            .style("stroke-width", 1);
-    
-        node.transition().duration(duration)
-            .attr("transform", d => {
-                const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
-                return position;
-            })
-            .select(".Tree-circle")
-            .style("fill", d => color(d.id));
-    
-        node.exit().transition().duration(duration).style("opacity", 0).remove();
-    }
+      const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
+  
+      const radius = 25;
+      const fontSize = 12;
+  
+      const nodeEnter = node.enter().append("g")
+          .attr("class", "Tree-node")
+          .attr("transform", d => {
+              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+              return position;
+          })
+          .on("click", nodeClick);
+  
+      nodeEnter.append("circle")
+          .attr("class", "Tree-circle")
+          .attr("r", radius) // Fixed size
+          .style("stroke-width", 2)
+          .style("fill", baseColor);
+  
+      nodeEnter.append("text")
+          .attr("class", "Tree-label")
+          .attr("dy", 4) // Vertically center text
+          .attr("text-anchor", "middle")
+          .style("pointer-events", "none")
+          .style("font-size", fontSize + "px")
+          // .style("fill", "#fff")
+          .text(d => d.id.substring(0, 6)); // Display first 6 characters
+  
+      node.transition().duration(duration)
+          .attr("transform", d => {
+              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+              return position;
+          });
+
+      node.exit().transition().duration(duration).style("opacity", 0).remove();
+    }  
+  
     
     function calculateNodePosition(d, xScale, yScale, xOffset, yOffset) {
         let x, y;
@@ -418,7 +441,6 @@ if (!visualisations) {
       }
     }
 
-
     function nodeClick(d) {
       if (d.children) {
           d._children = d.children;
@@ -433,10 +455,6 @@ if (!visualisations) {
       }
       update(100, visData);
     }
-
-    this.resize = function() {
-      commonFunctions.resize(grid, update, element, margins, width, height);
-    };
 
     this.getColourScale = function(){
       return color;

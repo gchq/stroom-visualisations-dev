@@ -35,7 +35,7 @@ if (!visualisations) {
         // Optional: Grid support block
         // Called by GenericGrid to create a new instance of the visualisation for each cell.
         this.getInstance = function(containerNode) {
-            return new visualisations.Sunburst(containerNode);
+            return new visualisations.$vis_name(containerNode);
         };
 
         //called by Stroom to pass snapshots of the data as it gathers the query results
