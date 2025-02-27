@@ -60,35 +60,46 @@ if (!visualisations) {
     var invisibleBackgroundRect;
     var orientation = "north"; // default Orientation
 
-    var style = ".Tree-node {" +
-                "width: 100%;" +
-                "height: 15px;" +
-                // "background-color: #555555;" +
-                "color: white;" +
-                "overflow: hidden;" +
-                "text-rendering: geometricPrecision;" +
-                "text-overflow: ellipsis;" +
-                "word-wrap: break-word;" +
-                "} "+
-                ".Tree-link {" +
-                "fill: none;" +
-                "stroke: var(--text-color);" +
-                "} "+
-                ".Tree {" +
-                "pointer-events: all;" +
-                "} "+
-                ".Tree-circle {" +
-                "fill: white;" +
-                "stroke-width: 3;" +
-                "} "+
-                ".Tree-tip {" +
-                "position: absolute;" +
-                "font-size: 15px;" +
-                "fill: red;" +
-                "text-rendering: geometricPrecision;" +
-                "background-color: rgba(255,255,255,0.6);" +
-                "z-index:300;" +
-                "} ";
+    var rectWidth = 200;
+    var rectHeight = 30;
+
+    var style = `
+                .Tree-node {
+                  width: 100px;
+                  height: 15px;
+                  color: white;
+                  overflow: hidden;
+                  text-rendering: geometricPrecision;
+                  text-overflow: ellipsis;
+                  word-wrap: break-word;
+                }
+                .Tree-link {
+                  fill: none;
+                  stroke: var(--text-color);
+                } 
+                .Tree {
+                  pointer-events: all;
+                }
+                .Tree-circle {
+                  fill: white;
+                  stroke-width: 3;
+                }
+                .Tree-rect {
+                  fill: white;
+                  stroke-width: 3;
+                  width: ${rectWidth}px;
+                  height: ${rectHeight}px;
+                  rx: 5px;
+                  ry: 5px;
+                } 
+                .Tree-tip {
+                  position: absolute;
+                  font-size: 15px;
+                  fill: red;
+                  text-rendering: geometricPrecision;
+                  background-color: rgba(255,255,255,0.6);
+                  z-index:300;
+                }`;
 
     // var svg = d3.select(element).append("svg:svg")
     //               .attr("class", "Tree");
@@ -121,7 +132,12 @@ if (!visualisations) {
         .attr("opacity", "0.0");
 
 
-      treeLayout = d3.layout.tree().size([height, width]);
+      treeLayout = d3.layout.tree()
+              .size([width, height])
+              .nodeSize([rectWidth, rectHeight]);
+              // .separation((a, b) => {
+              //   return (a.parent == b.parent ? 1 : 2) * a.depth;
+              // })
 
       if (typeof(tip) == "undefined") {
         inverseHighlight = commonFunctions.inverseHighlight();
@@ -248,9 +264,9 @@ if (!visualisations) {
       updateLinks(links, duration, xScale, yScale, xOffset, yOffset);
       updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset);
 
-      commonFunctions.addDelegateEvent(svg, "mouseover", "circle", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svg, "circle"));
-      commonFunctions.addDelegateEvent(svg, "mouseout", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
-      commonFunctions.addDelegateEvent(svg, "click","circle", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "circle"));
+      commonFunctions.addDelegateEvent(svg, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svg, "circle"));
+      commonFunctions.addDelegateEvent(svg, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
+      commonFunctions.addDelegateEvent(svg, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "circle"));
 
       //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
       //pans or zooms
@@ -336,9 +352,9 @@ if (!visualisations) {
           })
           .on("click", nodeClick);
   
-      nodeEnter.append("circle")
-          .attr("class", "Tree-circle")
-          .attr("r", radius) // Fixed size
+      nodeEnter.append("rect")
+          .attr("class", "Tree-rect")
+          .attr("transform", `translate(-${rectWidth / 2}, -15)`)
           .style("stroke-width", 2)
           .style("fill", baseColor);
   
@@ -349,7 +365,7 @@ if (!visualisations) {
           .style("pointer-events", "none")
           .style("font-size", fontSize + "px")
           // .style("fill", "#fff")
-          .text(d => d.id.substring(0, 6)); // Display first 6 characters
+          .text(d => d.id);  //.substring(0, 6)); // Display first 6 characters
   
       node.transition().duration(duration)
           .attr("transform", d => {
