@@ -116,14 +116,14 @@ if (!visualisations) {
 
       canvas = d3.select(element).append("svg:svg");
 
-      svg = canvas.append("svg:g");
+      var basesvg = canvas.append("svg:g");
 
-      dataArea = svg.append("svg:g").attr("transform", "translate(0,0)");
+      dataArea = basesvg.append("svg:g").attr("transform", "translate(0,0)");
 
      
       zoom = d3.behavior.zoom().scaleExtent([0.1, 10]).on("zoom", zoomed);
    
-      svg.call(zoom);
+      basesvg.call(zoom);
 
       //This (invisible) rect ensures there's always a target for the zoom action
       invisibleBackgroundRect = dataArea.append("svg:rect").attr("width", width*2)
@@ -131,13 +131,19 @@ if (!visualisations) {
         .attr("transform", "translate(-" + width/2 + " -" + height/2 + ")")
         .attr("opacity", "0.0");
 
+      svg = dataArea.append("svg:g");
+      
+
+      svg.selectAll('g.Tree-node').remove();
+
 
       treeLayout = d3.layout.tree()
-              .size([width, height])
-              .nodeSize([rectWidth, rectHeight]);
-              // .separation((a, b) => {
-              //   return (a.parent == b.parent ? 1 : 2) * a.depth;
-              // })
+              .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
+          //     .nodeSize((orientation === "north" || orientation === "south")?[rectWidth * 2, rectHeight]: [rectHeight, rectWidth])
+         //     .separation((a, b) => {
+                //return a.parent === b.parent ? rectWidth + 20 : 2* (rectWidth + 20);
+           //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
+          //    })
 
       if (typeof(tip) == "undefined") {
         inverseHighlight = commonFunctions.inverseHighlight();
@@ -264,9 +270,9 @@ if (!visualisations) {
       updateLinks(links, duration, xScale, yScale, xOffset, yOffset);
       updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset);
 
-      commonFunctions.addDelegateEvent(svg, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svg, "circle"));
-      commonFunctions.addDelegateEvent(svg, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
-      commonFunctions.addDelegateEvent(svg, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "circle"));
+      commonFunctions.addDelegateEvent(svg, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svg, "rect"));
+      commonFunctions.addDelegateEvent(svg, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "rect"));
+      commonFunctions.addDelegateEvent(svg, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "rect"));
 
       //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
       //pans or zooms
@@ -339,8 +345,12 @@ if (!visualisations) {
     }
     
     function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
-      const node = dataArea.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
-  
+      
+      svg.selectAll('.Tree-node').remove();
+
+      const node = svg.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
+
+      
       const radius = 25;
       const fontSize = 12;
   
@@ -401,7 +411,7 @@ if (!visualisations) {
     }
     
     function updateLinks(links, duration, xScale, yScale, xOffset, yOffset) {
-        const link = dataArea.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
+        const link = svg.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
     
         link.enter().append("path")
             .attr("class", "Tree-link")
