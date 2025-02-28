@@ -136,10 +136,14 @@ if (!visualisations) {
 
       svg.selectAll('g.Tree-node').remove();
 
+      var nodeSize = [rectWidth + 50, rectHeight + 50];
 
+      // if ((orientation === "east" || orientation === "west")){
+      //   nodeSize = [rectHeight + 50, rectWidth + 50];
+      // }
       treeLayout = d3.layout.tree()
-              .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
-          //     .nodeSize((orientation === "north" || orientation === "south")?[rectWidth * 2, rectHeight]: [rectHeight, rectWidth])
+              // .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
+              .nodeSize(nodeSize)
          //     .separation((a, b) => {
                 //return a.parent === b.parent ? rectWidth + 20 : 2* (rectWidth + 20);
            //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
@@ -330,8 +334,8 @@ if (!visualisations) {
     
     function updateScales(xScale, yScale, nodes) {
         if (orientation === "north" || orientation === "south") {
-            xScale.domain([d3.min(nodes, d => d.x), d3.max(nodes, d => d.x)]);
-            yScale.domain([d3.min(nodes, d => d.y), d3.max(nodes, d => d.y)]);
+            xScale.domain([d3.min(nodes, d => d.x) - rectWidth, d3.max(nodes, d => d.x) + rectWidth]);
+            yScale.domain([d3.min(nodes, d => d.y) - rectHeight, d3.max(nodes, d => d.y) + rectHeight]);
         } else if (orientation === "east" || orientation === "west") {
             xScale.domain([d3.min(nodes, d => d.y), d3.max(nodes, d => d.y)]);
             yScale.domain([d3.min(nodes, d => d.x), d3.max(nodes, d => d.x)]);
@@ -356,15 +360,16 @@ if (!visualisations) {
   
       const nodeEnter = node.enter().append("g")
           .attr("class", "Tree-node")
-          .attr("transform", d => {
-              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
-              return position;
-          })
+          // .attr("transform", d => {
+          //     const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+          //     return position;
+          // })
           .on("click", nodeClick);
   
       nodeEnter.append("rect")
           .attr("class", "Tree-rect")
           .attr("transform", `translate(-${rectWidth / 2}, -15)`)
+
           .style("stroke-width", 2)
           .style("fill", baseColor);
   
@@ -391,26 +396,27 @@ if (!visualisations) {
         let x, y;
         switch (orientation) {
             case "north":
-                x = xScale(d.x) + xOffset;
-                y = yScale(d.y) + yOffset;
-                break;
+              x = d.x;
+              y = d.y;
+              break;
             case "south":
-                x = xScale(d.x) + xOffset;
-                y = height - yScale(d.y) - yOffset;
-                break;
+              x = d.x;
+              y = -d.y;
+              break;
             case "east":
-                x = yScale(d.y) + xOffset;
-                y = xScale(d.x) + yOffset;
+              x = d.y;
+              y = d.x;
                 break;
             case "west":
-                x = height - yScale(d.y) - xOffset;
-                y = xScale(d.x) + yOffset;
-                break;
+              x = -d.y;
+              y = d.x;
+              break;
         }
         return `translate(${x},${y})`;
     }
     
     function updateLinks(links, duration, xScale, yScale, xOffset, yOffset) {
+
         const link = svg.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
     
         link.enter().append("path")
@@ -423,33 +429,35 @@ if (!visualisations) {
     
         link.exit().transition().duration(duration).style("opacity", 0).remove();
     }
+
+
     
     function calculateDiagonal(d, xScale, yScale, xOffset, yOffset) {
       let sourceX, sourceY, targetX, targetY, midX, midY;
       switch (orientation) {
           case "north":
-              sourceX = xScale(d.source.x) + xOffset;
-              sourceY = yScale(d.source.y) + yOffset;
-              targetX = xScale(d.target.x) + xOffset;
-              targetY = yScale(d.target.y) + yOffset;
+              sourceX = d.source.x; //  xScale(d.source.x) + xOffset;
+              sourceY = d.source.y; // yScale(d.source.y) + yOffset;
+              targetX = d.target.x; // xScale(d.target.x) + xOffset;
+              targetY = d.target.y; // yScale(d.target.y) + yOffset;
               break;
           case "south":
-              sourceX = xScale(d.source.x) + xOffset;
-              sourceY = height - yScale(d.source.y) - yOffset;
-              targetX = xScale(d.target.x) + xOffset;
-              targetY = height - yScale(d.target.y) - yOffset;
+              sourceX = d.source.x; //xScale(d.source.x) + xOffset;
+              sourceY = -d.source.y; //height - yScale(d.source.y) - yOffset;
+              targetX = d.target.x; //xScale(d.target.x) + xOffset;
+              targetY = -d.target.y; //height - yScale(d.target.y) - yOffset;
               break;
           case "east":
-              sourceX = yScale(d.source.y) + xOffset;
-              sourceY = xScale(d.source.x) + yOffset;
-              targetX = yScale(d.target.y) + xOffset;
-              targetY = xScale(d.target.x) + yOffset;
+              sourceX = d.source.y; //yScale(d.source.y) + xOffset;
+              sourceY = d.source.x; //xScale(d.source.x) + yOffset;
+              targetX = d.source.y; //Scale(d.target.y) + xOffset;
+              targetY = d.source.x; //xScale(d.target.x) + yOffset;
               break;
           case "west":
-              sourceX = height - yScale(d.source.y) - xOffset;
-              sourceY = xScale(d.source.x) + yOffset;
-              targetX = height - yScale(d.target.y) - xOffset;
-              targetY = xScale(d.target.x) + yOffset;
+              sourceX = d.source.y; //height - yScale(d.source.y) - xOffset;
+              sourceY = d.source.x; //xScale(d.source.x) + yOffset;
+              targetX = d.target.y; //height - yScale(d.target.y) - xOffset;
+              targetY = d.target.x; //xScale(d.target.x) + yOffset;
               break;
       }
 
