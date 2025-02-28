@@ -296,12 +296,16 @@ if (!visualisations) {
       }
     }
 
-    function buildHierarchy(paths) {
+    function buildHierarchy(values) {
       var root = { id: "root", children: [] };
       var all = { "root": root };
   
-      paths.forEach(function(path) {
-          var parts = path[0].split(delimiter);
+      values.forEach(function(value) {
+          var path = value[0];
+          if (path.startsWith(delimiter)) {
+            path = path.substring(1);
+          }
+          var parts = path.split(delimiter);
           var current = root;
           var fullPath = "";
   
@@ -447,28 +451,28 @@ if (!visualisations) {
       let sourceX, sourceY, targetX, targetY, midX, midY;
       switch (orientation) {
           case "north":
-              sourceX = d.source.x; //  xScale(d.source.x) + xOffset;
-              sourceY = d.source.y; // yScale(d.source.y) + yOffset;
-              targetX = d.target.x; // xScale(d.target.x) + xOffset;
-              targetY = d.target.y; // yScale(d.target.y) + yOffset;
+              sourceX = d.source.x; 
+              sourceY = d.source.y; 
+              targetX = d.target.x; 
+              targetY = d.target.y; 
               break;
           case "south":
-              sourceX = d.source.x; //xScale(d.source.x) + xOffset;
-              sourceY = -d.source.y; //height - yScale(d.source.y) - yOffset;
-              targetX = d.target.x; //xScale(d.target.x) + xOffset;
-              targetY = -d.target.y; //height - yScale(d.target.y) - yOffset;
+              sourceX = d.source.x; 
+              sourceY = -d.source.y;
+              targetX = d.target.x; 
+              targetY = -d.target.y;
               break;
           case "east":
-              sourceX = d.source.y; //yScale(d.source.y) + xOffset;
-              sourceY = d.source.x; //xScale(d.source.x) + yOffset;
-              targetX = d.target.y; //Scale(d.target.y) + xOffset;
-              targetY = d.target.x; //xScale(d.target.x) + yOffset;
+              sourceX = d.source.y;
+              sourceY = d.source.x; 
+              targetX = d.target.y; 
+              targetY = d.target.x;
               break;
           case "west":
-              sourceX = -d.source.y; //height - yScale(d.source.y) - xOffset;
-              sourceY = d.source.x; //xScale(d.source.x) + yOffset;
-              targetX = -d.target.y; //height - yScale(d.target.y) - xOffset;
-              targetY = d.target.x; //xScale(d.target.x) + yOffset;
+              sourceX = -d.source.y; 
+              sourceY = d.source.x;
+              targetX = -d.target.y; 
+              targetY = d.target.x; 
               break;
       }
 
