@@ -49,7 +49,7 @@ if (!visualisations) {
     var baseColor = d3.rgb(0, 139, 139);
     var color = commonConstants.categoryGoogle();
     var visSettings;
-    var svg;
+    var svgGroup;
     var canvas;
     var zoom;
     var tip;
@@ -59,7 +59,7 @@ if (!visualisations) {
     var drawDepth = 2; // default drawDepth
     var invisibleBackgroundRect;
     var orientation = "north"; // default Orientation
-
+    var firstTime = true;
     var rectWidth = 200;
     var rectHeight = 30;
 
@@ -116,7 +116,7 @@ if (!visualisations) {
 
       canvas = d3.select(element).append("svg:svg");
 
-      var basesvg = canvas.append("svg:g");
+      const basesvg = canvas.append("svg:g");
 
       dataArea = basesvg.append("svg:g").attr("transform", "translate(0,0)");
 
@@ -131,10 +131,10 @@ if (!visualisations) {
         .attr("transform", "translate(-" + width/2 + " -" + height/2 + ")")
         .attr("opacity", "0.0");
 
-      svg = dataArea.append("svg:g");
+      svgGroup = dataArea.append("svg:g");
       
 
-      svg.selectAll('g.Tree-node').remove();
+      svgGroup.selectAll('g.Tree-node').remove();
 
 
 
@@ -247,8 +247,8 @@ if (!visualisations) {
       const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
       const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
   
-      svg.attr("width", width).attr("height", height);
-      svg.call(tip);
+      svgGroup.attr("width", width).attr("height", height);
+      svgGroup.call(tip);
 
       invisibleBackgroundRect.attr("width", width*2).attr("height", height*2)
         .attr("transform", "translate(-" + width/2 + " -" + height/2 + ")");
@@ -277,15 +277,23 @@ if (!visualisations) {
       updateLinks(links, duration, xScale, yScale, xOffset, yOffset);
       updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset);
 
-      commonFunctions.addDelegateEvent(svg, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svg, "rect"));
-      commonFunctions.addDelegateEvent(svg, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "rect"));
-      commonFunctions.addDelegateEvent(svg, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "rect"));
+      commonFunctions.addDelegateEvent(svgGroup, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svgGroup, "rect"));
+      commonFunctions.addDelegateEvent(svgGroup, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svgGroup, "rect"));
+      commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
 
       //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
       //pans or zooms
       // commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
       // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
-        
+
+      if (firstTime) {
+        firstTime = false;
+        const xMin = d3.min(nodes, d => d.x) - rectWidth;
+        const xMax = d3.max(nodes, d => d.x) + rectWidth;
+        const yMin = d3.min(nodes, d => d.y) - rectHeight;
+        const yMax = d3.max(nodes, d => d.y) + rectHeight;
+        canvas.attr("viewBox", `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`);
+      }
     }
 
     function buildHierarchy(paths) {
@@ -353,9 +361,9 @@ if (!visualisations) {
     
     function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
       
-      svg.selectAll('.Tree-node').remove();
+      svgGroup.selectAll('.Tree-node').remove();
 
-      const node = svg.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
+      const node = svgGroup.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
 
       
       const radius = 25;
@@ -420,7 +428,7 @@ if (!visualisations) {
     
     function updateLinks(links, duration, xScale, yScale, xOffset, yOffset) {
 
-        const link = svg.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
+        const link = svgGroup.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
     
         link.enter().append("path")
             .attr("class", "Tree-link")
@@ -457,9 +465,9 @@ if (!visualisations) {
               targetY = d.target.x; //xScale(d.target.x) + yOffset;
               break;
           case "west":
-              sourceX = d.source.y; //height - yScale(d.source.y) - xOffset;
+              sourceX = -d.source.y; //height - yScale(d.source.y) - xOffset;
               sourceY = d.source.x; //xScale(d.source.x) + yOffset;
-              targetX = d.target.y; //height - yScale(d.target.y) - xOffset;
+              targetX = -d.target.y; //height - yScale(d.target.y) - xOffset;
               targetY = d.target.x; //xScale(d.target.x) + yOffset;
               break;
       }
