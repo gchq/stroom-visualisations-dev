@@ -136,18 +136,7 @@ if (!visualisations) {
 
       svg.selectAll('g.Tree-node').remove();
 
-      var nodeSize = [rectWidth + 50, rectHeight + 50];
 
-      // if ((orientation === "east" || orientation === "west")){
-      //   nodeSize = [rectHeight + 50, rectWidth + 50];
-      // }
-      treeLayout = d3.layout.tree()
-              // .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
-              .nodeSize(nodeSize)
-         //     .separation((a, b) => {
-                //return a.parent === b.parent ? rectWidth + 20 : 2* (rectWidth + 20);
-           //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
-          //    })
 
       if (typeof(tip) == "undefined") {
         inverseHighlight = commonFunctions.inverseHighlight();
@@ -264,6 +253,20 @@ if (!visualisations) {
       invisibleBackgroundRect.attr("width", width*2).attr("height", height*2)
         .attr("transform", "translate(-" + width/2 + " -" + height/2 + ")");
   
+      var nodeSize = [rectWidth + 50, rectHeight + 50];
+
+        if ((orientation === "east" || orientation === "west")){
+          nodeSize = [rectHeight + 50, rectWidth + 50];
+        }
+        treeLayout = d3.layout.tree()
+                // .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
+                .nodeSize(nodeSize)
+           //     .separation((a, b) => {
+                  //return a.parent === b.parent ? rectWidth + 20 : 2* (rectWidth + 20);
+             //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
+            //    })
+
+
       const [xScale, yScale] = initializeScales(width, height);
       const nodes = treeLayout.nodes(data);
       const links = treeLayout.links(nodes);
@@ -450,8 +453,8 @@ if (!visualisations) {
           case "east":
               sourceX = d.source.y; //yScale(d.source.y) + xOffset;
               sourceY = d.source.x; //xScale(d.source.x) + yOffset;
-              targetX = d.source.y; //Scale(d.target.y) + xOffset;
-              targetY = d.source.x; //xScale(d.target.x) + yOffset;
+              targetX = d.target.y; //Scale(d.target.y) + xOffset;
+              targetY = d.target.x; //xScale(d.target.x) + yOffset;
               break;
           case "west":
               sourceX = d.source.y; //height - yScale(d.source.y) - xOffset;
