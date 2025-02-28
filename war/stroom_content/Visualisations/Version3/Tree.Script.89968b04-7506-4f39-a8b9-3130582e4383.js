@@ -297,8 +297,8 @@ if (!visualisations) {
     }
 
     function buildHierarchy(values) {
-      var root = { id: "root", children: [] };
-      var all = { "root": root };
+      var root = { id: "__root", children: [] };
+      var all = { "__root": root };
   
       values.forEach(function(value) {
           var path = value[0];
@@ -381,14 +381,21 @@ if (!visualisations) {
           // })
           .on("click", nodeClick);
   
-      nodeEnter.append("rect")
+      nodeEnter.filter(d => { return (d.id === "__root")})
+          .append("circle")
+          .attr("r", "5")
+          .style("stroke-width", 3)
+          .style("fill", "darkgray");
+
+      nodeEnter.filter(d => { return (d.id != "__root")})
+          .append("rect")
           .attr("class", "Tree-rect")
           .attr("transform", `translate(-${rectWidth / 2}, -15)`)
-
           .style("stroke-width", 2)
           .style("fill", baseColor);
   
-      nodeEnter.append("text")
+      nodeEnter.filter(d => { return (d.id != "__root")})
+          .append("text")
           .attr("class", "Tree-label")
           .attr("dy", 4) // Vertically center text
           .attr("text-anchor", "middle")
