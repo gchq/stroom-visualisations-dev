@@ -260,7 +260,7 @@ if (!visualisations) {
           nodeSize = [rectHeight + 50, rectWidth + 50];
         }
 
-        if (orientation != lastorientation) {
+        // if (orientation != lastorientation) {
           treeLayout = d3.layout.tree()
           // .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
           .nodeSize(nodeSize)
@@ -269,7 +269,7 @@ if (!visualisations) {
        //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
       //    })
 
-        }
+        // }
         
 
       const [xScale, yScale] = initializeScales(width, height);
@@ -302,7 +302,7 @@ if (!visualisations) {
     }
 
     function buildHierarchy(values) {
-      var root = { id: "__root", children: [] };
+      var root = { id: "__root", children: [], _children: [] };
       var all = { "__root": root };
   
       values.forEach(function(value) {
@@ -318,7 +318,8 @@ if (!visualisations) {
               fullPath = fullPath ? fullPath + delimiter + part : part;
   
               if (!all[fullPath]) {
-                  all[fullPath] = { id: part, children: [] };
+                  all[fullPath] = { id: part, children: [], _children: [] };
+                  current._children.push(all[fullPath]);
                   current.children.push(all[fullPath]);
               }
   
@@ -412,13 +413,23 @@ if (!visualisations) {
           // .style("fill", "#fff")
           .text(d => d.id);  //.substring(0, 6)); // Display first 6 characters
   
-      nodeEnter.transition().duration(750)
+      node.transition().duration(750)
           .attr("transform", d => {
+            console.log(`Moving ${d.id} from ${d.x},${d.y}`)
               const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
               return position;
           });
 
       node.exit().transition().duration(750).style("opacity", 0).remove();
+
+       // Transition exiting nodes to the parent's new position.
+        // var nodeExit = node.exit().transition()
+        //   .duration(duration).attr("transform", function (d) {
+        //     if (d.parent) {
+        //       return "translate(" + parent.x + "," + parent.y + ")";
+        //     }
+        //   }).remove();
+
     }  
   
     
@@ -449,28 +460,28 @@ if (!visualisations) {
 
         const link = svgGroup.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
     
-        link.enter().append("path")
-        .attr("class", "Tree-link")
-        .style("stroke-width", 1)  // Fixed stroke width for lines
-        .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
-
         // link.enter().append("path")
-        //     .attr("class", "Tree-link")
-        //     .style("stroke-width", 1)  // Fixed stroke width for lines
-        //     .attr("d", (d) => { 
-        //       if (d.source.parent) {
-        //         return calculateDiagonal({source: parent, target: parent}, xScale, yScale, xOffset, yOffset);
-        //       } else {
-        //         return calculateDiagonal(d, xScale, yScale, xOffset, yOffset);
-        //       }
+        // .attr("class", "Tree-link")
+        // .style("stroke-width", 1)  // Fixed stroke width for lines
+        // .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
+
+        link.enter().append("path")
+            .attr("class", "Tree-link")
+            .style("stroke-width", 1)  // Fixed stroke width for lines
+            .attr("d", (d) => { 
+              // if (d.source.parent) {
+              //   return calculateDiagonal({source: d.source.parent, target: d.source.parent}, xScale, yScale, xOffset, yOffset);
+              // } else {
+                return calculateDiagonal(d, xScale, yScale, xOffset, yOffset);
+              // }
                 
 
-        //     });
+            });
     
-        link.transition().duration(duration)
+        link.transition().duration(750)
             .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
     
-        link.exit().transition().duration(750).style("opacity", 0).remove();
+        link.exit().transition().duration(500).style("opacity", 0).remove();
     }
 
 
@@ -520,15 +531,12 @@ if (!visualisations) {
 
     function nodeClick(d) {
       if (d.children) {
-          d._children = d.children;
           d.children = null;
       } else {
-          if (d._children) {
-            d.children = d._children;
-            d._children = null;
-            // Filter to ensure only next levels are shown
-            filterByDepth(d, drawDepth);
-          }
+          d.children = d._children;
+          // Filter to ensure only next levels are shown
+          filterByDepth(d, drawDepth);
+        
       }
       update(100, visData);
     }
