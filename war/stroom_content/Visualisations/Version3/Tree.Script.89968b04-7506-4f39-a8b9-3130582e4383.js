@@ -299,6 +299,13 @@ if (!visualisations) {
         const yMax = d3.max(nodes, d => d.y) + rectHeight;
         canvas.attr("viewBox", `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`);
       }
+      
+      
+      // Stash the old positions for transition.
+      nodes.forEach(function (d) {
+          d.x0 = d.x;
+          d.y0 = d.y;
+      });
     }
 
     function buildHierarchy(values) {
@@ -469,11 +476,13 @@ if (!visualisations) {
             .attr("class", "Tree-link")
             .style("stroke-width", 1)  // Fixed stroke width for lines
             .attr("d", (d) => { 
-              // if (d.source.parent) {
-              //   return calculateDiagonal({source: d.source.parent, target: d.source.parent}, xScale, yScale, xOffset, yOffset);
-              // } else {
-                return calculateDiagonal(d, xScale, yScale, xOffset, yOffset);
-              // }
+              const o = {
+                x: d.source.x0,
+                y: d.source.y0
+              };
+              
+
+                return calculateDiagonal({source: o, target: o}, xScale, yScale, xOffset, yOffset);
                 
 
             });
