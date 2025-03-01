@@ -351,8 +351,10 @@ if (!visualisations) {
             if (!d.parent) {
               return;
             }
-            
-            return "translate(" + d.parent.x + "," + d.parent.y + ")";
+            if (orientation === "north" || orientation === "south") {
+              return "translate(" + d.parent.x0 + "," + d.parent.y0 + ")";  
+            }
+            return "translate(" + d.parent.y0 + "," + d.parent.x0 + ")";
           })
           .on("click", nodeClick);
   
