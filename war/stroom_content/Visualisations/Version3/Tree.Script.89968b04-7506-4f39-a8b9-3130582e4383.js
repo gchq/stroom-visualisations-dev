@@ -59,6 +59,7 @@ if (!visualisations) {
     var drawDepth = 2; // default drawDepth
     var invisibleBackgroundRect;
     var orientation = "north"; // default Orientation
+    var lastorientation = "none";
     var firstTime = true;
     var rectWidth = 200;
     var rectHeight = 30;
@@ -134,7 +135,7 @@ if (!visualisations) {
       svgGroup = dataArea.append("svg:g");
       
 
-      svgGroup.selectAll('g.Tree-node').remove();
+      // svgGroup.selectAll('g.Tree-node').remove();
 
 
 
@@ -258,14 +259,18 @@ if (!visualisations) {
         if ((orientation === "east" || orientation === "west")){
           nodeSize = [rectHeight + 50, rectWidth + 50];
         }
-        treeLayout = d3.layout.tree()
-                // .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
-                .nodeSize(nodeSize)
-           //     .separation((a, b) => {
-                  //return a.parent === b.parent ? rectWidth + 20 : 2* (rectWidth + 20);
-             //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
-            //    })
 
+        if (orientation != lastorientation) {
+          treeLayout = d3.layout.tree()
+          // .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
+          .nodeSize(nodeSize)
+     //     .separation((a, b) => {
+            //return a.parent === b.parent ? rectWidth + 20 : 2* (rectWidth + 20);
+       //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
+      //    })
+
+        }
+        
 
       const [xScale, yScale] = initializeScales(width, height);
       const nodes = treeLayout.nodes(data);
@@ -365,7 +370,7 @@ if (!visualisations) {
     
     function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
       
-      svgGroup.selectAll('.Tree-node').remove();
+      // svgGroup.selectAll('.Tree-node').remove();
 
       const node = svgGroup.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
 
@@ -375,10 +380,13 @@ if (!visualisations) {
   
       const nodeEnter = node.enter().append("g")
           .attr("class", "Tree-node")
-          // .attr("transform", d => {
-          //     const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
-          //     return position;
-          // })
+          .attr("transform",  (d) => {
+            if (!d.parent) {
+              return;
+            }
+            console.log(`${d.id} (parent is ${d.parent.id} Entering at ${d.parent.x}, ${d.parent.y}`);
+            return "translate(" + d.parent.x + "," + d.parent.y + ")";
+          })
           .on("click", nodeClick);
   
       nodeEnter.filter(d => { return (d.id === "__root")})
@@ -404,13 +412,13 @@ if (!visualisations) {
           // .style("fill", "#fff")
           .text(d => d.id);  //.substring(0, 6)); // Display first 6 characters
   
-      node.transition().duration(duration)
+      nodeEnter.transition().duration(750)
           .attr("transform", d => {
               const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
               return position;
           });
 
-      node.exit().transition().duration(duration).style("opacity", 0).remove();
+      node.exit().transition().duration(750).style("opacity", 0).remove();
     }  
   
     
@@ -442,14 +450,27 @@ if (!visualisations) {
         const link = svgGroup.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
     
         link.enter().append("path")
-            .attr("class", "Tree-link")
-            .style("stroke-width", 1)  // Fixed stroke width for lines
-            .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
+        .attr("class", "Tree-link")
+        .style("stroke-width", 1)  // Fixed stroke width for lines
+        .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
+
+        // link.enter().append("path")
+        //     .attr("class", "Tree-link")
+        //     .style("stroke-width", 1)  // Fixed stroke width for lines
+        //     .attr("d", (d) => { 
+        //       if (d.source.parent) {
+        //         return calculateDiagonal({source: parent, target: parent}, xScale, yScale, xOffset, yOffset);
+        //       } else {
+        //         return calculateDiagonal(d, xScale, yScale, xOffset, yOffset);
+        //       }
+                
+
+        //     });
     
         link.transition().duration(duration)
             .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
     
-        link.exit().transition().duration(duration).style("opacity", 0).remove();
+        link.exit().transition().duration(750).style("opacity", 0).remove();
     }
 
 
