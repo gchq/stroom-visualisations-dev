@@ -59,7 +59,6 @@ if (!visualisations) {
     var drawDepth = 2; // default drawDepth
     var invisibleBackgroundRect;
     var orientation = "north"; // default Orientation
-    var lastorientation = "none";
     var firstTime = true;
     var rectWidth = 200;
     var rectHeight = 30;
@@ -134,17 +133,11 @@ if (!visualisations) {
 
       svgGroup = dataArea.append("svg:g");
       
-
-      // svgGroup.selectAll('g.Tree-node').remove();
-
-
-
       if (typeof(tip) == "undefined") {
         inverseHighlight = commonFunctions.inverseHighlight();
 
         inverseHighlight.toSelectionItem = function(d) {
-          //console.log("selection");
-          //console.log(d);
+
           var selection = {
             key: d.name,
             // series: d.series,
@@ -260,27 +253,15 @@ if (!visualisations) {
           nodeSize = [rectHeight + 50, rectWidth + 50];
         }
 
-        // if (orientation != lastorientation) {
-          treeLayout = d3.layout.tree()
-          // .size((orientation === "north" || orientation === "south")?[width, height]:[height, width])
-          .nodeSize(nodeSize)
-     //     .separation((a, b) => {
-            //return a.parent === b.parent ? rectWidth + 20 : 2* (rectWidth + 20);
-       //     return (a.parent == b.parent ? 1 : 5) * rectWidth;
-      //    })
-
-        // }
+      treeLayout = d3.layout.tree().nodeSize(nodeSize)
         
-
-      const [xScale, yScale] = initializeScales(width, height);
       const nodes = treeLayout.nodes(data);
       const links = treeLayout.links(nodes);
   
-      updateScales(xScale, yScale, nodes);
-      const { xOffset, yOffset } = calculateOffsets(xScale, yScale, width, height);
   
-      updateLinks(links, duration, xScale, yScale, xOffset, yOffset);
-      updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset);
+
+      updateLinks(links);
+      updateNodes(nodes);
 
       commonFunctions.addDelegateEvent(svgGroup, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svgGroup, "rect"));
       commonFunctions.addDelegateEvent(svgGroup, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svgGroup, "rect"));
@@ -354,29 +335,7 @@ if (!visualisations) {
       }
     }
     
-    function initializeScales(width, height) {
-        const xScale = d3.scale.linear().range([0, width]);
-        const yScale = d3.scale.linear().range([0, height]);
-        return [xScale, yScale];
-    }
-    
-    function updateScales(xScale, yScale, nodes) {
-        if (orientation === "north" || orientation === "south") {
-            xScale.domain([d3.min(nodes, d => d.x) - rectWidth, d3.max(nodes, d => d.x) + rectWidth]);
-            yScale.domain([d3.min(nodes, d => d.y) - rectHeight, d3.max(nodes, d => d.y) + rectHeight]);
-        } else if (orientation === "east" || orientation === "west") {
-            xScale.domain([d3.min(nodes, d => d.y), d3.max(nodes, d => d.y)]);
-            yScale.domain([d3.min(nodes, d => d.x), d3.max(nodes, d => d.x)]);
-        }
-    }
-    
-    function calculateOffsets(xScale, yScale, width, height) {
-        const xOffset = (width - (xScale.domain()[1] - xScale.domain()[0])) / 100;
-        const yOffset = (height - (yScale.domain()[1] - yScale.domain()[0])) / 100;
-        return { xOffset, yOffset };
-    }
-    
-    function updateNodes(nodes, duration, xScale, yScale, xOffset, yOffset) {
+    function updateNodes(nodes) {
       
       // svgGroup.selectAll('.Tree-node').remove();
 
@@ -392,7 +351,7 @@ if (!visualisations) {
             if (!d.parent) {
               return;
             }
-            console.log(`${d.id} (parent is ${d.parent.id} Entering at ${d.parent.x}, ${d.parent.y}`);
+            
             return "translate(" + d.parent.x + "," + d.parent.y + ")";
           })
           .on("click", nodeClick);
@@ -422,8 +381,7 @@ if (!visualisations) {
   
       node.transition().duration(750)
           .attr("transform", d => {
-            console.log(`Moving ${d.id} from ${d.x},${d.y}`)
-              const position = calculateNodePosition(d, xScale, yScale, xOffset, yOffset);
+              const position = calculateNodePosition(d);
               return position;
           });
 
@@ -440,7 +398,7 @@ if (!visualisations) {
     }  
   
     
-    function calculateNodePosition(d, xScale, yScale, xOffset, yOffset) {
+    function calculateNodePosition(d) {
         let x, y;
         switch (orientation) {
             case "north":
@@ -463,7 +421,7 @@ if (!visualisations) {
         return `translate(${x},${y})`;
     }
     
-    function updateLinks(links, duration, xScale, yScale, xOffset, yOffset) {
+    function updateLinks(links) {
 
         const link = svgGroup.selectAll(".Tree-link").data(links, d => d.source.id + d.target.id);
     
@@ -482,20 +440,20 @@ if (!visualisations) {
               };
               
 
-                return calculateDiagonal({source: o, target: o}, xScale, yScale, xOffset, yOffset);
+                return calculateDiagonal({source: o, target: o});
                 
 
             });
     
         link.transition().duration(750)
-            .attr("d", d => calculateDiagonal(d, xScale, yScale, xOffset, yOffset));
+            .attr("d", d => calculateDiagonal(d));
     
         link.exit().transition().duration(500).style("opacity", 0).remove();
     }
 
 
     
-    function calculateDiagonal(d, xScale, yScale, xOffset, yOffset) {
+    function calculateDiagonal(d) {
       let sourceX, sourceY, targetX, targetY, midX, midY;
       switch (orientation) {
           case "north":
