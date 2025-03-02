@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.15.7] - 2025-03-02
+
+* Add tree hierarchy visualisation.
+
+
 ## [v3.15.6] - 2025-02-07
 
 * Scatter now has scaled Y axis.
@@ -296,7 +301,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.6...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.7...HEAD
+[v3.15.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.6...v3.15.7
 [v3.15.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.5...v3.15.6
 [v3.15.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.4...v3.15.5
 [v3.15.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.3...v3.15.4
