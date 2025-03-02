@@ -627,8 +627,10 @@ if (!visualisations) {
 
       if (currentNode.children) {
         currentNode.children = null;
+        d.children = null;
     } else {
         currentNode.children = currentNode._children;
+        d.children = currentNode._children;
     }
 
       update(visData);
