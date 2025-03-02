@@ -135,27 +135,7 @@ if (!visualisations) {
 
       svgGroup = dataArea.append("svg:g");
       
-      if (typeof(tip) == "undefined") {
-        inverseHighlight = commonFunctions.inverseHighlight();
-
-        inverseHighlight.toSelectionItem = function(d) {
-
-          var selection = {
-            key: d.name,
-            // series: d.series,
-          };
-          return selection;
-        };
-
-        tip = inverseHighlight.tip()
-            .html(function(tipData) {
-                var html = inverseHighlight.htmlBuilder()
-                    // .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
-                    .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.id, visSettings.nameDateFormat))
-                    .build();
-                return html;
-            });
-      }
+      initialiseTip();
     }
 
     function zoomed(e) {
@@ -238,12 +218,38 @@ if (!visualisations) {
       }
     };
 
+    function initialiseTip(){
+      // if (typeof(tip) == "undefined") {
+        inverseHighlight = commonFunctions.inverseHighlight();
+
+        inverseHighlight.toSelectionItem = function(d) {
+
+          var selection = {
+            key: d.id,
+            // series: d.series,
+          };
+          return selection;
+        };
+
+        tip = inverseHighlight.tip()
+            .html(function(tipData) {
+                var html = inverseHighlight.htmlBuilder()
+                    // .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
+                    .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
+                    .build();
+                return html;
+            });
+      // }
+
+    }
+
     function update(data) {      
 
       const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
       const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
   
       svgGroup.attr("width", width).attr("height", height);
+      
       svgGroup.call(tip);
 
       invisibleBackgroundRect.attr("width", width*2).attr("height", height*2)
@@ -267,7 +273,7 @@ if (!visualisations) {
 
       commonFunctions.addDelegateEvent(svgGroup, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svgGroup, "rect"));
       commonFunctions.addDelegateEvent(svgGroup, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svgGroup, "rect"));
-      commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
+      // commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
 
       //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
       //pans or zooms
@@ -289,6 +295,9 @@ if (!visualisations) {
           d.x0 = d.x;
           d.y0 = d.y;
       });
+
+
+
     }
 
     function buildHierarchy(values) {
@@ -359,6 +368,7 @@ if (!visualisations) {
             }
             return "translate(" + d.parent.y0 + "," + d.parent.x0 + ")";
           })
+          .style("opacity", 1.0)
           .on("click", nodeClick);
   
       nodeEnter.filter(d => { return (d.id === "__root")})
