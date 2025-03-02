@@ -375,6 +375,21 @@ if (!visualisations) {
 
       return root;
     }
+
+    function isLightColor(color) {
+
+        if (!color) {
+          return false;
+        }
+        const rgb = d3.rgb(color);
+        
+        const luminance =
+            (0.2126 * rgb.r) / 255 +
+            (0.7152 * rgb.g) / 255 +
+            (0.0722 * rgb.b) / 255;
+        return luminance > 0.5;
+        
+    }
     
     function updateNodes(nodes) {
       
@@ -415,8 +430,8 @@ if (!visualisations) {
             if (d.colour) {
               return d3.rgb(d.colour);
             }
-            console.log(`${d.id} is at depth ${d.depth}`);
-            return baseColorDomain(d.depth);})
+            return baseColorDomain(d.depth);
+          })
           .style("stroke", function(d) {
               if (!d._children || d._children.length == 0) {
                 return baseColor.brighter();
@@ -445,7 +460,9 @@ if (!visualisations) {
               return rectWidth - 30;
             }
             })
-          // .style("fill", "#fff")
+          .style("fill", (d) => {
+            return isLightColor(d.colour) ? "black" : "white";
+          })
           .text((d) => {
             return (d.value ? `${d.name}: ${d.value}` : d.name);
           });
