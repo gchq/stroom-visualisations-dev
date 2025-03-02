@@ -219,7 +219,9 @@ if (!visualisations) {
       if (data) {
         maxDepth = 1;
         const hierarchy = buildHierarchy(data.values[0].values); //Only one series is supported
-        visData = data;  if (settings.gradient == "False"){
+        visData = hierarchy;  
+        
+        if (settings.gradient == "False"){
           baseColorDomain = d3.scale.linear().range([baseColor, baseColor]).domain([1,maxDepth+3]);
         }
         else{
@@ -412,8 +414,7 @@ if (!visualisations) {
             }
             return "translate(" + d.parent.y0 + "," + d.parent.x0 + ")";
           })
-          .style("opacity", 1.0)
-          .on("click", nodeClick);
+          .style("opacity", 1.0);
   
       nodeEnter.filter(d => { return (d.id === "__root")})
           .append("circle")
@@ -442,6 +443,7 @@ if (!visualisations) {
                   return 2;
                 }    
                 return 1;})
+          .on("click", nodeClick);
           
   
       nodeEnter.filter(d => { return (d.id != "__root")})
@@ -453,6 +455,9 @@ if (!visualisations) {
           .style("font-size", fontSize + "px")
           .attr("lengthAdjust", "spacingAndGlyphs")
           .attr("textLength", (d) => {
+            if (!d.name){
+              return undefined;
+            }
             const text = d.value ? `${d.name}: ${d.value}` : d.name;
             if (text.length < 20) {
               return undefined;
@@ -464,6 +469,9 @@ if (!visualisations) {
             return isLightColor(d.colour) ? "black" : "white";
           })
           .text((d) => {
+            if (!d.name) {
+              return "Unknown";
+            }
             return (d.value ? `${d.name}: ${d.value}` : d.name);
           });
   
