@@ -247,7 +247,7 @@ if (!visualisations) {
                 var html = inverseHighlight.htmlBuilder()
                     // .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
                     .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
-                    // .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
+                    .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value, visSettings.nameDateFormat))
                     .build();
                 return html;
             });
