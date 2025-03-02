@@ -43,6 +43,9 @@ if (!visualisations) {
       return new visualisations.Tree(containerNode);
     };
 
+    const treePathIndex = 0;
+    const treeValueIndex = 1;
+    const treeColourIndex = 2;
     var width;
     var height;
     var delimiter = '/'; // default delimiter
@@ -215,14 +218,14 @@ if (!visualisations) {
 
       if (data) {
         maxDepth = 1;
-        data = buildHierarchy(data.values[0].values);
+        const hierarchy = buildHierarchy(data.values[0].values); //Only one series is supported
         visData = data;  if (settings.gradient == "False"){
           baseColorDomain = d3.scale.linear().range([baseColor, baseColor]).domain([1,maxDepth+3]);
         }
         else{
           baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([1,maxDepth+3]);
         }
-        update(data);
+        update(hierarchy);
       }
     };
 
@@ -244,6 +247,7 @@ if (!visualisations) {
                 var html = inverseHighlight.htmlBuilder()
                     // .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
                     .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
+                    // .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
                     .build();
                 return html;
             });
@@ -313,7 +317,10 @@ if (!visualisations) {
       var all = { "__root": root };
   
       values.forEach(function(value) {
-          var path = value[0];
+          var path = value[treePathIndex];
+          var userVal = value[treeValueIndex];
+          var colour = value[treeColourIndex];
+
           if (path.startsWith(delimiter)) {
             path = path.substring(1);
           }
@@ -327,11 +334,17 @@ if (!visualisations) {
               if (depth > maxDepth){
                 maxDepth = depth;
               }
+              var isLeaf = false;
+              if (depth == parts.length - 1){
+                isLeaf = true;
+              }
               if (!all[fullPath]) {
                   all[fullPath] = {
                     depth: depth,
                     id: fullPath, 
                     name: part, 
+                    value: isLeaf ? userVal : undefined,
+                    colour: isLeaf ? colour : undefined,
                     children: [], 
                     _children: [] 
                   };
@@ -399,8 +412,8 @@ if (!visualisations) {
           .attr("transform", `translate(-${rectWidth / 2}, -15)`)
           .style("stroke-width", 2)
           .style("fill", function(d) {
-            if (d.color) {
-              return d3.rgb(d.color);
+            if (d.colour) {
+              return d3.rgb(d.colour);
             }
             console.log(`${d.id} is at depth ${d.depth}`);
             return baseColorDomain(d.depth);})
@@ -424,7 +437,9 @@ if (!visualisations) {
           .style("pointer-events", "none")
           .style("font-size", fontSize + "px")
           // .style("fill", "#fff")
-          .text(d => d.name);  //.substring(0, 6)); // Display first 6 characters
+          .text((d) => {
+            return (d.value ? `${d.name}: ${d.value}` : d.name);
+          });
   
       node.transition().duration(transitionDuration)
           .attr("transform", d => {
