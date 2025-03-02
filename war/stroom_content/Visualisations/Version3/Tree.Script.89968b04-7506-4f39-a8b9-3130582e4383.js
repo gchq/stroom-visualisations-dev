@@ -436,6 +436,15 @@ if (!visualisations) {
           .attr("text-anchor", "middle")
           .style("pointer-events", "none")
           .style("font-size", fontSize + "px")
+          .attr("lengthAdjust", "spacingAndGlyphs")
+          .attr("textLength", (d) => {
+            const text = d.value ? `${d.name}: ${d.value}` : d.name;
+            if (text.length < 20) {
+              return undefined;
+            } else {
+              return rectWidth - 30;
+            }
+            })
           // .style("fill", "#fff")
           .text((d) => {
             return (d.value ? `${d.name}: ${d.value}` : d.name);
