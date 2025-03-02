@@ -60,8 +60,9 @@ if (!visualisations) {
     var invisibleBackgroundRect;
     var orientation = "north"; // default Orientation
     var firstTime = true;
-    var rectWidth = 200;
-    var rectHeight = 30;
+    const rectWidth = 200;
+    const rectHeight = 30;
+    const transitionDuration = 750; 
     var currentNodes = {};
 
     var style = `
@@ -229,17 +230,15 @@ if (!visualisations) {
         drawDepth = settings.drawDepth;
       }
 
-      if (data) {
-        console.log(`Visdata ${visData}`);
-        
+      if (data) {         
         data = buildHierarchy(data.values[0].values);
         visData = data;
-      //  filterByDepth(data, drawDepth);
-        update(100, data);
+
+        update(data);
       }
     };
 
-    function update(duration, data) {      
+    function update(data) {      
 
       const width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
       const height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
@@ -338,23 +337,6 @@ if (!visualisations) {
 
       return root;
     }
-
-    function filterByDepth(root, maxDepth) {
-      const queue = [{ node: root, depth: 0 }];
-      while (queue.length > 0) {
-          const { node, depth } = queue.shift();
-          if (depth < maxDepth) {
-            if (node.children) {
-                node.children.forEach(child => queue.push({ node: child, depth: depth + 1 }));
-            }
-          } else {
-            if (node.children) {
-                //node._children = node.children;
-                node.children = null;
-            }
-          }
-      }
-    }
     
     function updateNodes(nodes) {
       
@@ -402,13 +384,13 @@ if (!visualisations) {
           // .style("fill", "#fff")
           .text(d => d.name);  //.substring(0, 6)); // Display first 6 characters
   
-      node.transition().duration(750)
+      node.transition().duration(transitionDuration)
           .attr("transform", d => {
               const position = calculateNodePosition(d);
               return position;
           });
 
-      node.exit().transition().duration(750).style("opacity", 0).remove();
+      node.exit().transition().duration(transitionDuration).style("opacity", 0).remove();
 
        // Transition exiting nodes to the parent's new position.
         // var nodeExit = node.exit().transition()
@@ -468,7 +450,7 @@ if (!visualisations) {
 
             });
     
-        link.transition().duration(750)
+        link.transition().duration(transitionDuration)
             .attr("d", d => calculateDiagonal(d));
     
         link.exit().transition().duration(500).style("opacity", 0).remove();
@@ -530,7 +512,7 @@ if (!visualisations) {
     }
 
       
-      update(750, visData);
+      update(visData);
     }
 
     this.getColourScale = function(){
