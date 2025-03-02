@@ -410,13 +410,27 @@ if (!visualisations) {
       const nodeEnter = node.enter().append("g")
           .attr("class", "Tree-node")
           .attr("transform",  (d) => {
-            if (!d.parent || !d.parent.x0) {
+            var currentNode = findCurrentNode(d);
+            if (!currentNode.parent) {
               return;
             }
             if (orientation === "north" || orientation === "south") {
-              return "translate(" + d.parent.x0 + "," + d.parent.y0 + ")";  
+              if (currentNode.parent.x0) {
+                return "translate(" + currentNode.parent.x0 + "," + currentNode.parent.y0 + ")";
+              } else if (currentNode.parent.x) {
+                return "translate(" + currentNode.parent.x + "," + currentNode.parent.y + ")";
+              } else {
+                return;
+              }
+              
+            } else if (currentNode.parent.x0) {
+              return "translate(" + currentNode.parent.y0 + "," + currentNode.parent.x0 + ")";
+            } else if (currentNode.parent.x) {
+              return "translate(" + currentNode.parent.y + "," + currentNode.parent.x + ")";
+            } else {
+              return;
             }
-            return "translate(" + d.parent.y0 + "," + d.parent.x0 + ")";
+            
           })
           .style("opacity", 1.0);
   
@@ -596,17 +610,27 @@ if (!visualisations) {
       }
     }
 
-    function nodeClick(d) {
-      if (d.children) {
-        d.children = null;
-    } else {
-        d.children = d._children;
-        // Filter to ensure only next levels are shown
-    //    filterByDepth(d, drawDepth);
-     
+    function findCurrentNode(d){
+      const currentNode = currentNodes[d.id];
+
+      if (!currentNode) {
+        console.log(`WARN: Node ${d.id} is no longer available`);
+        return d;
+      }
+
+      return currentNode;
     }
 
-      
+    function nodeClick(d) {
+
+      const currentNode = findCurrentNode(d);
+
+      if (currentNode.children) {
+        currentNode.children = null;
+    } else {
+        currentNode.children = currentNode._children;
+    }
+
       update(visData);
     }
 
