@@ -62,6 +62,7 @@ if (!visualisations) {
     var firstTime = true;
     var rectWidth = 200;
     var rectHeight = 30;
+    var currentNodes = {};
 
     var style = `
                 .Tree-node {
@@ -229,9 +230,11 @@ if (!visualisations) {
       }
 
       if (data) {
+        console.log(`Visdata ${visData}`);
+        
         data = buildHierarchy(data.values[0].values);
         visData = data;
-        filterByDepth(data, drawDepth);
+      //  filterByDepth(data, drawDepth);
         update(100, data);
       }
     };
@@ -290,6 +293,7 @@ if (!visualisations) {
     }
 
     function buildHierarchy(values) {
+
       var root = { id: "__root", children: [], _children: [] };
       var all = { "__root": root };
   
@@ -300,21 +304,38 @@ if (!visualisations) {
           }
           var parts = path.split(delimiter);
           var current = root;
-          var fullPath = "";
+          var fullPath = "__root";
   
           parts.forEach(function(part, index) {
               fullPath = fullPath ? fullPath + delimiter + part : part;
   
               if (!all[fullPath]) {
-                  all[fullPath] = { id: part, children: [], _children: [] };
+                  all[fullPath] = { id: fullPath, name: part, children: [], _children: [] };
                   current._children.push(all[fullPath]);
-                  current.children.push(all[fullPath]);
+                  
+                  if (currentNodes[current.id] && currentNodes[fullPath]){
+                    //Both the node and the child currently exist
+                    const existingParent = currentNodes[current.id];
+                    const existingChild = currentNodes[fullPath];
+
+                    if (existingParent.children && existingParent.children.includes(existingChild)){ 
+                      //Ensure the child stays visible (expanded) if it has been expanded
+                      //Make any children visible that have been expanded
+                      current.children.push(all[fullPath]); 
+                    }
+                  } else if (index < drawDepth) {
+                    //A new node, should be visible by default if inside the draw depth
+                    current.children.push(all[fullPath]);
+                  }
+                  
               }
   
               current = all[fullPath];
           });
       });
   
+      currentNodes = all;
+
       return root;
     }
 
@@ -328,7 +349,7 @@ if (!visualisations) {
             }
           } else {
             if (node.children) {
-                node._children = node.children;
+                //node._children = node.children;
                 node.children = null;
             }
           }
@@ -339,7 +360,7 @@ if (!visualisations) {
       
       // svgGroup.selectAll('.Tree-node').remove();
 
-      const node = svgGroup.selectAll(".Tree-node").data(nodes, d => d.id + (d.parent ? d.parent.id : ""));
+      const node = svgGroup.selectAll(".Tree-node").data(nodes, d => d.id);
 
       
       const radius = 25;
@@ -348,7 +369,7 @@ if (!visualisations) {
       const nodeEnter = node.enter().append("g")
           .attr("class", "Tree-node")
           .attr("transform",  (d) => {
-            if (!d.parent) {
+            if (!d.parent || !parent.x0) {
               return;
             }
             if (orientation === "north" || orientation === "south") {
@@ -379,7 +400,7 @@ if (!visualisations) {
           .style("pointer-events", "none")
           .style("font-size", fontSize + "px")
           // .style("fill", "#fff")
-          .text(d => d.id);  //.substring(0, 6)); // Display first 6 characters
+          .text(d => d.name);  //.substring(0, 6)); // Display first 6 characters
   
       node.transition().duration(750)
           .attr("transform", d => {
@@ -437,8 +458,8 @@ if (!visualisations) {
             .style("stroke-width", 1)  // Fixed stroke width for lines
             .attr("d", (d) => { 
               const o = {
-                x: d.source.x0,
-                y: d.source.y0
+                x: d.source.x0 ? d.source.x0 : d.source.x,
+                y: d.source.y0 ? d.source.y0 : d.source.y
               };
               
 
@@ -500,14 +521,16 @@ if (!visualisations) {
 
     function nodeClick(d) {
       if (d.children) {
-          d.children = null;
-      } else {
-          d.children = d._children;
-          // Filter to ensure only next levels are shown
-          filterByDepth(d, drawDepth);
-        
-      }
-      update(100, visData);
+        d.children = null;
+    } else {
+        d.children = d._children;
+        // Filter to ensure only next levels are shown
+    //    filterByDepth(d, drawDepth);
+     
+    }
+
+      
+      update(750, visData);
     }
 
     this.getColourScale = function(){
