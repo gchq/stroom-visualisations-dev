@@ -55,6 +55,16 @@
             "label": "Base colour"
           },
           {
+            "id": "gradient",
+            "type": "selection",
+            "label": "Color Gradient",
+            "values": [
+              "True",
+              "False"
+            ],
+            "defaultValue": "True"
+          },
+          {
             "id": "drawDepth",
             "type": "number",
             "label": "Initial Draw Depth",

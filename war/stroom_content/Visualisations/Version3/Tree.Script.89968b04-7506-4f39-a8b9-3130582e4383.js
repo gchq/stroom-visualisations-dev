@@ -64,6 +64,9 @@ if (!visualisations) {
     const rectHeight = 30;
     const transitionDuration = 750; 
     var currentNodes = {};
+    var baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([1,15]);
+
+    var maxDepth = 0;
 
     var style = `
                 .Tree-node {
@@ -200,8 +203,8 @@ if (!visualisations) {
 
       if (settings.baseColor) {
         baseColor = d3.rgb(settings.baseColor);
-      }
-
+      }   
+      
       if (settings.orientation) {
         orientation = settings.orientation;
       }
@@ -210,10 +213,15 @@ if (!visualisations) {
         drawDepth = settings.drawDepth;
       }
 
-      if (data) {         
+      if (data) {
+        maxDepth = 1;
         data = buildHierarchy(data.values[0].values);
-        visData = data;
-
+        visData = data;  if (settings.gradient == "False"){
+          baseColorDomain = d3.scale.linear().range([baseColor, baseColor]).domain([1,maxDepth+3]);
+        }
+        else{
+          baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([1,maxDepth+3]);
+        }
         update(data);
       }
     };
@@ -273,10 +281,9 @@ if (!visualisations) {
 
       commonFunctions.addDelegateEvent(svgGroup, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svgGroup, "rect"));
       commonFunctions.addDelegateEvent(svgGroup, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svgGroup, "rect"));
-      // commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
 
-      //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
-      //pans or zooms
+      //as this vis has click and scroll functionality, don't add these tip click handlers
+      // commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
       // commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
       // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
 
@@ -316,9 +323,18 @@ if (!visualisations) {
   
           parts.forEach(function(part, index) {
               fullPath = fullPath ? fullPath + delimiter + part : part;
-  
+              const depth = index;
+              if (depth > maxDepth){
+                maxDepth = depth;
+              }
               if (!all[fullPath]) {
-                  all[fullPath] = { id: fullPath, name: part, children: [], _children: [] };
+                  all[fullPath] = {
+                    depth: depth,
+                    id: fullPath, 
+                    name: part, 
+                    children: [], 
+                    _children: [] 
+                  };
                   current._children.push(all[fullPath]);
                   
                   if (currentNodes[current.id] && currentNodes[fullPath]){
@@ -382,7 +398,23 @@ if (!visualisations) {
           .attr("class", "Tree-rect")
           .attr("transform", `translate(-${rectWidth / 2}, -15)`)
           .style("stroke-width", 2)
-          .style("fill", baseColor);
+          .style("fill", function(d) {
+            if (d.color) {
+              return d3.rgb(d.color);
+            }
+            console.log(`${d.id} is at depth ${d.depth}`);
+            return baseColorDomain(d.depth);})
+          .style("stroke", function(d) {
+              if (!d._children || d._children.length == 0) {
+                return baseColor.brighter();
+              }    
+              return baseColorDomain(d.depth);})
+          .style("stroke-width", function(d) {
+                if (!d._children || d._children.length == 0) {
+                  return 2;
+                }    
+                return 1;})
+          
   
       nodeEnter.filter(d => { return (d.id != "__root")})
           .append("text")
