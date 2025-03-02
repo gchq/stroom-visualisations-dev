@@ -45,14 +45,10 @@
             "defaultValue": "north"
           },
           {
-            "id": "showLabels",
-            "type": "selection",
-            "label": "Show Labels",
-            "values": [
-              "True",
-              "False"
-            ],
-            "defaultValue": "True"
+            "id": "valueName",
+            "type": "text",
+            "label": "Name of additional value",
+            "defaultValue": "Value"
           },
           {
             "id": "baseColor",

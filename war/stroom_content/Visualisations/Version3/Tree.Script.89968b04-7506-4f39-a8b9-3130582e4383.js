@@ -114,7 +114,7 @@ if (!visualisations) {
 
     //one off initialisation of all the local variables, including
     //appending various static dom elements
-    var initialise = function() {
+    var initialise = function(settings) {
       initialised = true;
 
       d3.select(element).append("style").text(style);
@@ -141,7 +141,7 @@ if (!visualisations) {
 
       svgGroup = dataArea.append("svg:g");
       
-      initialiseTip();
+      initialiseTip(settings);
     }
 
     function zoomed(e) {
@@ -195,7 +195,7 @@ if (!visualisations) {
     //data will only contain the branch of the tree for this cell
     this.setDataInsideGrid = function(context, settings, data) {
       if (!initialised){
-        initialise();
+        initialise(settings);
       }
 
       visSettings = settings;
@@ -229,7 +229,7 @@ if (!visualisations) {
       }
     };
 
-    function initialiseTip(){
+    function initialiseTip(settings){
       // if (typeof(tip) == "undefined") {
         inverseHighlight = commonFunctions.inverseHighlight();
 
@@ -247,7 +247,7 @@ if (!visualisations) {
                 var html = inverseHighlight.htmlBuilder()
                     // .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
                     .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
-                    .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value, visSettings.nameDateFormat))
+                    .addTipEntry(settings.valueName ? settings.valueName : "Value",commonFunctions.autoFormat(tipData.values.value, visSettings.nameDateFormat))
                     .build();
                 return html;
             });
