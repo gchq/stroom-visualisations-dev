@@ -329,7 +329,8 @@ if (!visualisations) {
           var parts = path.split(delimiter);
           var current = root;
           var fullPath = "__root";
-  
+          var parent = null;
+
           parts.forEach(function(part, index) {
               fullPath = fullPath ? fullPath + delimiter + part : part;
               const depth = index;
@@ -344,7 +345,8 @@ if (!visualisations) {
                   all[fullPath] = {
                     depth: depth,
                     id: fullPath, 
-                    name: part, 
+                    name: part,
+                    parent: parent? all[parent] : undefined,
                     value: isLeaf ? userVal : undefined,
                     colour: isLeaf ? colour : undefined,
                     children: [], 
@@ -366,6 +368,8 @@ if (!visualisations) {
                     //A new node, should be visible by default if inside the draw depth
                     current.children.push(all[fullPath]);
                   }
+
+                  parent = fullPath;
                   
               }
   
@@ -406,7 +410,7 @@ if (!visualisations) {
       const nodeEnter = node.enter().append("g")
           .attr("class", "Tree-node")
           .attr("transform",  (d) => {
-            if (!d.parent || !parent.x0) {
+            if (!d.parent || !d.parent.x0) {
               return;
             }
             if (orientation === "north" || orientation === "south") {
