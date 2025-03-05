@@ -137,7 +137,7 @@
 				<button onclick="addSeries()">S+</button>
 				<button onclick="removeSeries()">S-</button>
 				<button onclick="alterValues()">V</button>
-				<button onclick="saveSvg()">Save [Broken]</button>
+				<!-- <button onclick="saveSvg()">Save [Broken]</button> -->
 			</div>
 
 			<label for="orientation">Orientation:</label>
@@ -147,6 +147,19 @@
 				<option value="east">East</option>
 				<option value="west">West</option>
 			</select>
+
+			<p>
+				<div>
+					<label for="settings">Settings JSON</label>
+					<textarea id="settings" class="settings"
+					overflow-x="scroll"
+					overflow-y="scroll"
+					wrap="off"
+					rows="20">
+					</textarea>
+				</div>
+			</p>
+			
 		</div>
 	</body>
 	</div>

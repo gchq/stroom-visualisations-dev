@@ -332,6 +332,12 @@
         // d3.selectAll(".d3-tip")
         //     .remove();
 
+        const settingsJson = document.getElementById("settings").value;
+
+        if (settingsJson && settingsJson.length > 10){
+            settings = JSON.parse(settingsJson);
+        }
+
         settings.stateCounting = "False";
         if (document.getElementById("showLabels").checked) {
             settings.showLabels = "true";
@@ -519,6 +525,9 @@
         } else {
             settings.isShowTagsEnabled = "False";
         }
+
+        
+        document.getElementById("settings").innerHTML = JSON.stringify(settings, undefined, 4);
 
         testData = new TestData();
 
