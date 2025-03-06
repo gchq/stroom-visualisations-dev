@@ -238,12 +238,13 @@ visualisations.Scatter = function(containerNode) {
                         return seriesData.key;
                     };
 
+                    const pointSize = visSettings && visSettings.pointSize?visSettings.pointSize:"4" +"px";
                     //Add new points
                     seriesPoints.enter()
                         .append("svg:circle")
                         .attr("stroke-width", "1px")
                         .style( "fill-opacity", 0.6)
-                        .attr("r", visSettings.pointSize+"px")
+                        .attr("r", pointSize)
                         .attr("opacity", "0");
 
                     //Update new and existing points
@@ -251,15 +252,18 @@ visualisations.Scatter = function(containerNode) {
                         .attr("class", commonFunctions.makeColouredElementClassStringFunc(legendKeyFunc))
                         .attr("stroke", fillFunc(seriesData))
                         .attr("fill", fillFunc(seriesData))
-                        .attr("r", visSettings.pointSize+"px")
+                        .attr("r", pointSize)
                         .attr("cx", function(dataPoint) {
                             var xVal = xScale(dataPoint[0]);
-                            //console.log("dataPoint[0]: " + dataPoint[0] + " xVal: " + xVal);
+                            console.log("dataPoint[0]: " + dataPoint[0] + " xVal: " + xVal);
                             return xVal + "px";
                         })
                         .attr("cy", function(dataPoint) {
                             var yVal = yScale(dataPoint[1]);
-                            //console.log("dataPoint[1]: " + dataPoint[1] + "yVal: " + yVal);
+                            if (!yVal){
+                                yVal = dataPoint[1];
+                            }
+                            console.log("dataPoint[1]: " + dataPoint[1] + "yVal: " + yVal);
                             return yVal + "px";
                         })
                         .transition() //TODO having transition before cx and cy seems to break it in grid mode, not sure why

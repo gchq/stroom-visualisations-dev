@@ -436,6 +436,8 @@ if(!visualisations) {
       }) => key === selectionItem.key);
       const e = d3.select(this).node();
 
+      //console.log(`Highlight item ${key}`);
+
       e.style.transition = "opacity 0.15s ease";
       if(typeof(highlight) == "undefined" || highlight === null || highlight === e) {
         e.style.opacity = selection.length == 0 || selected ? 1 : 0.1;
@@ -679,7 +681,7 @@ if(!visualisations) {
       scale.scale = d3.scale.sqrt().range([min, max]);
       scale.type = commonConstants.d3ScaleLinear;
     } else if(type == commonConstants.dataTypeNumber && scaleType == "Cube") {
-      scale.scale = d3.scale.pow().exponent(.3).range([min, max]);
+      scale.scale = d3.scale.pow().exponent(1/3).range([min, max]);
       scale.type = commonConstants.d3ScaleLinear;
     } else if(type == commonConstants.dataTypeNumber && scaleType == "Log") {
       scale.scale = d3.scale.pow().exponent(.1).range([min, max]);

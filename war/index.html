@@ -176,9 +176,17 @@
 		</textarea>
 		</div>
 
+		<div id="scaleControls" style="padding-top: 12px;">
+			<label for="yScale">Y Scale:</label>
+			<select id="yScale" class="control-group">
+				<option value="Linear">Linear</option>
+				<option value="Square">Square</option>
+				<option value="Cube">Cube</option>
+				<option value="Log">Log</option>
+			</select>
+		</div>
 
-
-		<div id="buttonControls" class="control-group" style="padding-top: 12px;" >
+		<div id="buttonControls" class="control-group" >
 			<button onclick="addGridSeries()">G+</button>
 			<button onclick="removeGridSeries()">G-</button>
 			<button onclick="addSeries()">S+</button>

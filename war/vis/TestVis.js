@@ -431,6 +431,10 @@
             settings.orientation = getOrientation();
         }
 
+        if (document.getElementById("yScale").value){
+            settings.scaleYAxis = document.getElementById("yScale").value;
+        }
+
         settings.stateChange = null;
         const visType = getVisType();
 
