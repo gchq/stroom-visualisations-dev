@@ -92,12 +92,12 @@
         document.getElementById('iframe').appendChild(newIframe);
 
         const iframeWindow = newIframe.contentWindow;
-        iframeWindow.addEventListener("message", (message)=> { console.log(`iFrameWindow Message: ${message.data}`); });
+        // iframeWindow.addEventListener("message", (message)=> { console.log(`iFrameWindow Message: ${message.data}`); });
         this.addEventListener("message", (message)=> { 
         
             document.getElementById("events").innerHTML = JSON.stringify(JSON.parse(message.data), undefined, 4);
             document.getElementById("eventsLabel").innerText = `At ${new Date().toLocaleTimeString()}:`;
-            console.log(`content window Message: ${message.data}`); 
+            // console.log(`content window Message: ${message.data}`); 
         });
 
         loadedScripts.clear();

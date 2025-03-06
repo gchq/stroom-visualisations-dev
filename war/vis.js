@@ -309,7 +309,7 @@ function VisualisationManager() {
     currentSettings = settings;
     currentData = data;
 
-    console.log(data);
+    console.log("setData invoked", data);
     update();
   };
 
