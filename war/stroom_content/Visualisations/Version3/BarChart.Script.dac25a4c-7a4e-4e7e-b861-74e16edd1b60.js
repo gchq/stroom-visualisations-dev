@@ -96,14 +96,6 @@ if (!visualisations) {
             if (typeof(tip) == "undefined") {
                 inverseHighlight = commonFunctions.inverseHighlight();
 
-                inverseHighlight.toSelectionItem = function(d) {
-                  const iso = new Date(d[0]).toISOString();
-                  return {
-                    key: iso,
-                    x: iso,
-                  };
-                }
-
                 tip = inverseHighlight.tip()
                     .html(function(tipData) {
                         var html = inverseHighlight.htmlBuilder()
@@ -177,7 +169,7 @@ if (!visualisations) {
                         colour = context.color;
                     }
                 }
-
+                
                 //#########################################################
                 //Perform any visualisation specific data manipulation here
                 //#########################################################
@@ -236,6 +228,8 @@ if (!visualisations) {
                 initialise();
             }
 
+  
+
             // If the context already has a colour set then use it
             if (context) {
                 visContext = context;
@@ -279,6 +273,29 @@ if (!visualisations) {
 
         var update = function(duration) {
             if (visData) {
+
+                if (inverseHighlight) {
+                    inverseHighlight.toSelectionItem = function(d) {
+                        if (visData.types[0] == commonConstants.dataTypeDateTime) {
+                            const iso = new Date(d[0]).toISOString();
+                            return {
+                                key: iso,
+                                x: iso,
+                                value: d[1],
+                                y: d[1],
+                            };
+                        } else {
+                            return {
+                                key: d[0],
+                                x: d[0],
+                                value: d[1],
+                                y: d[1],
+                            };
+                        }
+                      }
+        
+                }
+
                 var visibleValues = visData.visibleValues();
 
                 width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
