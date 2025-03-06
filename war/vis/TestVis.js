@@ -90,6 +90,16 @@
         // Append a random query string to force the browser to fetch a new document
         newIframe.src = 'vis.html?' + new Date().getTime();
         document.getElementById('iframe').appendChild(newIframe);
+
+        const iframeWindow = newIframe.contentWindow;
+        iframeWindow.addEventListener("message", (message)=> { console.log(`iFrameWindow Message: ${message.data}`); });
+        this.addEventListener("message", (message)=> { 
+        
+            document.getElementById("events").innerHTML = JSON.stringify(JSON.parse(message.data), undefined, 4);
+            document.getElementById("eventsLabel").innerText = `At ${new Date().toLocaleTimeString()}:`;
+            console.log(`content window Message: ${message.data}`); 
+        });
+
         loadedScripts.clear();
     }    
 
@@ -326,6 +336,27 @@
         return dataChangeCounter++;
     }
 
+    this.openTab = function(evt, cityName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+      
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+      
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+      
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+      }
+
     this.update = function() {
         //remove any d3-tip divs left in the dom otherwise they build up on on each
         //call, cluttering up the dom
@@ -554,7 +585,8 @@
                 settings,
                 datCopy
                ]
-            }
+            },
+            frameId: 1,
         };
         let jsonString = JSON.stringify(json);
         if (iframeWindow) {

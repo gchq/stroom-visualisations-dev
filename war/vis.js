@@ -223,6 +223,8 @@ function VisualisationManager() {
   var update = function(callback) {
     if (vis && currentData) {
       vis.setData(currentContext, currentSettings, currentData);
+    } else {
+      console.log(`Not giving vis=${vis} data= ${currentData}`);
     }
   };
 
@@ -234,6 +236,8 @@ function VisualisationManager() {
           injectNextScript(scripts, callback);
         },
         onFailure : function(ex) {
+          console.log("Failed to inject script '" + script.name + "' - "
+              + ex.message);
           callback.onFailure("Failed to inject script '" + script.name + "' - "
               + ex.message);
         }
@@ -276,7 +280,9 @@ function VisualisationManager() {
     try {
       vis = eval("new " + type + "()");
       callback.onSuccess(null);
+      console.log(`Set Vis Type Succeeded for ${type}`);
     } catch (ex) {
+      console.log(`Set Vis Type Fails: ${ex.message}`);
       callback.onFailure(ex.message);
     }
 
@@ -366,6 +372,7 @@ var messageListener = function(event) {
     }
     params.push(callback);
 
+    console.log(`Calling ${json.data.functionName} frameId is ${frameId}`);
     eval(json.data.functionName + ".apply(this, params);");
   }
 }
