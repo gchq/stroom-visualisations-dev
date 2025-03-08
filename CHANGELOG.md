@@ -12,6 +12,15 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.16.1] - 2025-03-08
+
+* Improve ticks on timeseries x axes.
+
+* Tree: Update view for differing orientations.
+
+* Scatter: Support selection of data points.
+
+
 ## [v3.16.0] - 2025-03-02
 
 * Add tree hierarchy visualisation.
@@ -301,7 +310,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.0...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.1...HEAD
+[v3.16.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.0...v3.16.1
 [v3.15.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.6...v3.16.0
 [v3.15.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.5...v3.15.6
 [v3.15.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.4...v3.15.5
