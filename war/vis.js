@@ -224,7 +224,12 @@ function VisualisationManager() {
     if (vis && currentData) {
       vis.setData(currentContext, currentSettings, currentData);
     } else {
-      console.log(`Not giving vis=${vis} data= ${currentData}`);
+      if (!vis) {
+        console.log(`No update - vis is not ready.`);
+      }
+      if (!currentData) {
+        console.log(`No update - data is not ready.`);
+      }
     }
   };
 
