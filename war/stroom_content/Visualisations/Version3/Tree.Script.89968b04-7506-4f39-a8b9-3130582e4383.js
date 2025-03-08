@@ -43,6 +43,11 @@ if (!visualisations) {
       return new visualisations.Tree(containerNode);
     };
 
+    const NORTH_ORIENTATION = "north";
+    const SOUTH_ORIENTATION = "south";
+    const EAST_ORIENTATION = "east";
+    const WEST_ORIENTATION = "west";
+
     const treePathIndex = 0;
     const treeValueIndex = 1;
     const treeColourIndex = 2;
@@ -61,9 +66,9 @@ if (!visualisations) {
     var visData;
     var drawDepth = 2; // default drawDepth
     var invisibleBackgroundRect;
-    var orientation = "north"; // default Orientation
+    var orientation = NORTH_ORIENTATION; // default Orientation
     var firstTime = true;
-    var lastOrientation = "north";
+    var lastOrientation = NORTH_ORIENTATION;
     const rectWidth = 200;
     const rectHeight = 30;
     const transitionDuration = commonConstants.transitionDuration; 
@@ -217,13 +222,13 @@ if (!visualisations) {
         drawDepth = settings.drawDepth;
       }
 
-      // if (settings.orientation === "north") {
+      // if (settings.orientation === NORTH_ORIENTATION) {
       //   svgGroup.attr("transform", `translate(${width / 2}, 0)`);
-      // } else if (settings.orientation === "south") {
+      // } else if (settings.orientation === SOUTH_ORIENTATION) {
       //   svgGroup.attr("transform", `translate(-${width / 2}, ${height})`);
-      // } else if (settings.orientation === "east") {
+      // } else if (settings.orientation === EAST_ORIENTATION) {
       //   svgGroup.attr("transform", `translate(0, ${height / 2})`);
-      // } else if (settings.orientation === "west") {
+      // } else if (settings.orientation === WEST_ORIENTATION) {
       //   svgGroup.attr("transform", `translate(${width}, ${height / 2})`);
       // }
 
@@ -282,7 +287,7 @@ if (!visualisations) {
   
       var nodeSize = [rectWidth + 50, rectHeight + 50];
 
-        if ((orientation === "east" || orientation === "west")){
+        if ((orientation === EAST_ORIENTATION || orientation === WEST_ORIENTATION)){
           nodeSize = [rectHeight + 50, rectWidth + 50];
         }
 
@@ -312,13 +317,13 @@ if (!visualisations) {
         const xMax = d3.max(nodes, d => d.x) + rectWidth;
         const yMin = d3.min(nodes, d => d.y) - rectHeight;
         const yMax = d3.max(nodes, d => d.y) + rectHeight;
-        if (orientation === "north") {
+        if (orientation === NORTH_ORIENTATION) {
           canvas.attr("viewBox", `${xMin  - rectWidth} ${yMin - rectHeight} ${xMax - xMin + rectWidth} ${yMax - yMin + rectHeight}`);  
-        } else if (orientation === "south") {
+        } else if (orientation === SOUTH_ORIENTATION) {
           canvas.attr("viewBox", `${xMin  - rectWidth} ${- yMax - rectHeight} ${xMax - xMin + rectWidth} ${yMax - yMin + rectHeight}`);  
-        } else if (orientation === "east") { 
+        } else if (orientation === EAST_ORIENTATION) { 
           canvas.attr("viewBox", `${yMin + rectWidth} ${xMin - rectHeight} ${yMax - yMin + rectWidth} ${xMax - xMin + rectHeight}`);  
-        } else if (orientation === "west") { 
+        } else if (orientation === WEST_ORIENTATION) { 
           canvas.attr("viewBox", `${ - yMax + rectWidth} ${xMin - rectHeight} ${yMax - yMin + rectWidth} ${xMax - xMin + rectHeight}`);  
         }
         
@@ -435,7 +440,7 @@ if (!visualisations) {
             if (!currentNode.parent) {
               return;
             }
-            if (orientation === "north" || orientation === "south") {
+            if (orientation === NORTH_ORIENTATION || orientation === SOUTH_ORIENTATION) {
               if (currentNode.parent.x0) {
                 return "translate(" + currentNode.parent.x0 + "," + currentNode.parent.y0 + ")";
               } else if (currentNode.parent.x) {
@@ -536,19 +541,19 @@ if (!visualisations) {
     function calculateNodePosition(d) {
         let x, y;
         switch (orientation) {
-            case "north":
+            case NORTH_ORIENTATION:
               x = d.x;
               y = d.y;
               break;
-            case "south":
+            case SOUTH_ORIENTATION:
               x = d.x;
               y = -d.y;
               break;
-            case "east":
+            case EAST_ORIENTATION:
               x = d.y;
               y = d.x;
                 break;
-            case "west":
+            case WEST_ORIENTATION:
               x = -d.y;
               y = d.x;
               break;
@@ -591,25 +596,25 @@ if (!visualisations) {
     function calculateDiagonal(d) {
       let sourceX, sourceY, targetX, targetY, midX, midY;
       switch (orientation) {
-          case "north":
+          case NORTH_ORIENTATION:
               sourceX = d.source.x; 
               sourceY = d.source.y; 
               targetX = d.target.x; 
               targetY = d.target.y; 
               break;
-          case "south":
+          case SOUTH_ORIENTATION:
               sourceX = d.source.x; 
               sourceY = -d.source.y;
               targetX = d.target.x; 
               targetY = -d.target.y;
               break;
-          case "east":
+          case EAST_ORIENTATION:
               sourceX = d.source.y;
               sourceY = d.source.x; 
               targetX = d.target.y; 
               targetY = d.target.x;
               break;
-          case "west":
+          case WEST_ORIENTATION:
               sourceX = -d.source.y; 
               sourceY = d.source.x;
               targetX = -d.target.y; 
@@ -622,11 +627,11 @@ if (!visualisations) {
       midY = (sourceY + targetY) / 2;
 
       switch (orientation) {
-          case "north":
-          case "south":
+          case NORTH_ORIENTATION:
+          case SOUTH_ORIENTATION:
               return `M${sourceX},${sourceY}L${sourceX},${midY}L${targetX},${midY}L${targetX},${targetY}`;
-          case "east":
-          case "west":
+          case EAST_ORIENTATION:
+          case WEST_ORIENTATION:
               return `M${sourceX},${sourceY}L${midX},${sourceY}L${midX},${targetY}L${targetX},${targetY}`;
       }
     }
