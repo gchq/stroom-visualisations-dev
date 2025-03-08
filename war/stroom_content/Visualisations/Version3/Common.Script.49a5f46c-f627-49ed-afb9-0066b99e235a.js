@@ -1965,7 +1965,13 @@ if(!visualisations) {
     if(!isTextDisplayed) {
       axis.tickFormat("");
     } else {
-      axis.tickFormat(axisSettings.tickFormat);
+      if (axisSettings.tickFormat) {
+        axis.tickFormat(axisSettings.tickFormat);
+      } else if (axisSettings.format) {
+        axis.tickFormat(axisSettings.format);
+      } else {
+        axis.tickFormat(undefined)
+      }
     }
 
     if(axisSettings.scaleType === commonConstants.d3ScaleOrdinal) {
