@@ -17,6 +17,12 @@ if (!visualisations) {
     var visualisations = {};
 }
 visualisations.Scatter = function(containerNode) {
+    var style = `
+        .data-point{
+            stroke-width: 1px;
+            fill-opacity: 0.6;
+            opacity: 0;
+        }`
 
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
@@ -52,7 +58,7 @@ visualisations.Scatter = function(containerNode) {
 
     var canvas ;
 
-    var svg ;
+    var svg;
     var tip;
     var inverseHighlight;
 
@@ -82,15 +88,36 @@ visualisations.Scatter = function(containerNode) {
         canvas = d3.select(element).append("svg:svg");
 
         svg = canvas.append("svg:g");
-
+        
         if (typeof(tip) == "undefined") {
             inverseHighlight = commonFunctions.inverseHighlight();
+
+            inverseHighlight.toSelectionItem = function(d) {
+                const selectedItem =  {
+                     key: `${d[2]}~#~${d[0]},${d[1]}`,
+                    series: d[2],
+                    x: d[0],
+                    y: d[1],
+                };
+                return selectedItem;
+              }
+              
             tip = inverseHighlight.tip()
-                .html(function(tipData) { 
+                .html(function(tipData) {
+
+                    var x = tipData.values[0];
+                    if (tipData.types[0] == commonConstants.dataTypeDateTime){
+                        if (visSettings.seriesDateFormat){
+                            x = commonFunctions.autoFormat(x, visSettings.seriesDateFormat);
+                        } else {
+                            x = new Date(x).toISOString();
+                        }
+
+                    }
                     var html = inverseHighlight.htmlBuilder()
-                        .addTipEntry("Name",commonFunctions.autoFormat(tipData.key, visSettings.seriesDateFormat))
-                        .addTipEntry("X",commonFunctions.autoFormat(xSettings.getValue(tipData.values[0])))
-                        .addTipEntry("Y",commonFunctions.autoFormat(ySettings.getValue(tipData.values[1])))
+                        .addTipEntry("Series", commonFunctions.autoFormat(tipData.key, visSettings.seriesDateFormat))
+                        .addTipEntry("x",commonFunctions.autoFormat(xSettings.getValue(x)))
+                        .addTipEntry("y",commonFunctions.autoFormat(ySettings.getValue(tipData.values[1])))
                         .build();
                     return html;
                 });
@@ -205,9 +232,22 @@ visualisations.Scatter = function(containerNode) {
                 //initialise the hover tip
                 seriesContainer.call(tip);
 
+                const data = visibleValues.map(function(d) {
+                    const mappedData = d.values.map(function(v){
+                        return [v[0], v[1], d.key];
+                    });
+                    const seriesData = {
+                        key: d.key,
+                        values: mappedData,
+                    };
+                    return seriesData;
+                    
+                });
+
+
                 var g = seriesContainer
                     .selectAll("g")
-                    .data(visibleValues, function(d) {
+                    .data(data, function(d) {
                         return d.key;
                     });
 
@@ -228,7 +268,7 @@ visualisations.Scatter = function(containerNode) {
                     var seriesPoints = seriesGroup.selectAll("circle")
                         .data(seriesData.values, function(pointData) {
                             //console.log(seriesData.key + "~#~" + pointData[0]);
-                            return seriesData.key + "~#~" + pointData[0];
+                            return seriesData.key + "~#~" + pointData[0] + "," + pointData[1];
                         });
 
                     var fillFunc = function(d){
@@ -245,7 +285,10 @@ visualisations.Scatter = function(containerNode) {
                         .attr("stroke-width", "1px")
                         .style( "fill-opacity", 0.6)
                         .attr("r", pointSize)
-                        .attr("opacity", "0");
+                        .attr("opacity", "0")
+                        .on("click", (d) =>{
+                            console.log(`clicked on ${d} ${seriesData.key}`);
+                        });
 
                     //Update new and existing points
                     seriesPoints
@@ -255,7 +298,7 @@ visualisations.Scatter = function(containerNode) {
                         .attr("r", pointSize)
                         .attr("cx", function(dataPoint) {
                             var xVal = xScale(dataPoint[0]);
-                            console.log("dataPoint[0]: " + dataPoint[0] + " xVal: " + xVal);
+                            // console.log("dataPoint[0]: " + dataPoint[0] + " xVal: " + xVal);
                             return xVal + "px";
                         })
                         .attr("cy", function(dataPoint) {
@@ -263,7 +306,7 @@ visualisations.Scatter = function(containerNode) {
                             if (!yVal){
                                 yVal = dataPoint[1];
                             }
-                            console.log("dataPoint[1]: " + dataPoint[1] + "yVal: " + yVal);
+                            // console.log("dataPoint[1]: " + dataPoint[1] + "yVal: " + yVal);
                             return yVal + "px";
                         })
                         .transition() //TODO having transition before cx and cy seems to break it in grid mode, not sure why
@@ -287,6 +330,10 @@ visualisations.Scatter = function(containerNode) {
                         "mouseout", 
                         ".vis-coloured-element", 
                         inverseHighlight.makeInverseHighlightMouseOutHandler(seriesContainer, ".vis-coloured-element"));
+
+                    commonFunctions.addDelegateEvent(seriesGroup, 
+                        "click", ".vis-coloured-element", 
+                        inverseHighlight.makeInverseHighlightMouseClickHandler(seriesContainer, ".vis-coloured-element"));
                 });
             }
         }
