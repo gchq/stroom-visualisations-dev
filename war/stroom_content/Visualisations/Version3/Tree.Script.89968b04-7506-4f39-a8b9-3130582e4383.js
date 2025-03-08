@@ -63,6 +63,7 @@ if (!visualisations) {
     var invisibleBackgroundRect;
     var orientation = "north"; // default Orientation
     var firstTime = true;
+    var lastOrientation = "north";
     const rectWidth = 200;
     const rectHeight = 30;
     const transitionDuration = commonConstants.transitionDuration; 
@@ -216,6 +217,16 @@ if (!visualisations) {
         drawDepth = settings.drawDepth;
       }
 
+      // if (settings.orientation === "north") {
+      //   svgGroup.attr("transform", `translate(${width / 2}, 0)`);
+      // } else if (settings.orientation === "south") {
+      //   svgGroup.attr("transform", `translate(-${width / 2}, ${height})`);
+      // } else if (settings.orientation === "east") {
+      //   svgGroup.attr("transform", `translate(0, ${height / 2})`);
+      // } else if (settings.orientation === "west") {
+      //   svgGroup.attr("transform", `translate(${width}, ${height / 2})`);
+      // }
+
       if (data) {
         maxDepth = 1;
         const hierarchy = buildHierarchy(data.values[0].values); //Only one series is supported
@@ -293,15 +304,25 @@ if (!visualisations) {
       // commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
       // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
 
-      if (firstTime) {
+      if (firstTime || lastOrientation !== orientation) {
+        lastOrientation = orientation;
         firstTime = false;
-        const xMin = d3.min(nodes, d => d.x) - rectWidth;
+
+        const xMin = d3.min(nodes, d => d.x);
         const xMax = d3.max(nodes, d => d.x) + rectWidth;
         const yMin = d3.min(nodes, d => d.y) - rectHeight;
         const yMax = d3.max(nodes, d => d.y) + rectHeight;
-        canvas.attr("viewBox", `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`);
+        if (orientation === "north") {
+          canvas.attr("viewBox", `${xMin  - rectWidth} ${yMin - rectHeight} ${xMax - xMin + rectWidth} ${yMax - yMin + rectHeight}`);  
+        } else if (orientation === "south") {
+          canvas.attr("viewBox", `${xMin  - rectWidth} ${- yMax - rectHeight} ${xMax - xMin + rectWidth} ${yMax - yMin + rectHeight}`);  
+        } else if (orientation === "east") { 
+          canvas.attr("viewBox", `${yMin + rectWidth} ${xMin - rectHeight} ${yMax - yMin + rectWidth} ${xMax - xMin + rectHeight}`);  
+        } else if (orientation === "west") { 
+          canvas.attr("viewBox", `${ - yMax + rectWidth} ${xMin - rectHeight} ${yMax - yMin + rectWidth} ${xMax - xMin + rectHeight}`);  
+        }
+        
       }
-      
       
       // Stash the old positions for transition.
       nodes.forEach(function (d) {
