@@ -65,7 +65,7 @@ if (!visualisations) {
     var firstTime = true;
     const rectWidth = 200;
     const rectHeight = 30;
-    const transitionDuration = 750; 
+    const transitionDuration = commonConstants.transitionDuration; 
     var currentNodes = {};
     var baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([1,15]);
 
