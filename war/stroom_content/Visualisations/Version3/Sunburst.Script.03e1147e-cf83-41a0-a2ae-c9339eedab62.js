@@ -195,16 +195,16 @@ if (!visualisations) {
             }
 
             if (settings.initialDepth) {
-                initialDepth = settings.initialDepth;
+                initialDepth = settings.initialDepth - 1;
             }
             
             if (settings.baseColor) {
               baseColor = d3.rgb(settings.baseColor);
               if (settings.gradient == "False"){
-                baseColorDomain = d3.scale.linear().range([settings.baseColor, settings.baseColor]).domain([1,initialDepth]);
+                baseColorDomain = d3.scale.linear().range([settings.baseColor, settings.baseColor]).domain([1,initialDepth+3]);
               }
               else{
-                baseColorDomain = d3.scale.linear().range([settings.baseColor, "black"]).domain([1,initialDepth]);
+                baseColorDomain = d3.scale.linear().range([settings.baseColor, "black"]).domain([1,initialDepth + 3]);
               }
             }
             else{
@@ -223,67 +223,44 @@ if (!visualisations) {
 
         function arrayToHierarchy(arr) {
           // Helper function to recursively create or find a node
-          function findOrCreateNode(children, name, fullPath) {
+          function findOrCreateNode(children, name, value, color, fullPath) {
               let node = children.find(child => child.name === name);
               if (!node) {
-                  node = { name: name, children: [], path: fullPath };
+                  node = { name: name, 
+                    children: [], 
+                    value: value,
+                    path: fullPath,
+                    color: color,
+                };   
                   children.push(node);
               }
               return node;
           }
       
           // Extract all root names (first parts of paths)
-          const rootNames = arr.map(([path]) => path.split(delimiter)[0]);
-          const uniqueRoots = [...new Set(rootNames)];
-      
-          let root;
-          if (uniqueRoots.length === 1) {
-              root = { name: uniqueRoots[0], children: [], path: uniqueRoots[0] };
-              arr.forEach(([path, value, color]) => {
-                  const pathParts = path.split(delimiter);
-                  let currentNode = root;
-      
-                  // Traverse the path and build the hierarchy
-                  for (let i = 1; i < pathParts.length; i++) {
-                      const part = pathParts[i];
-                      const fullPath = pathParts.slice(0, i + 1).join(delimiter);
-      
-                      if (i === pathParts.length - 1) {
-                          currentNode.children.push({
-                              name: part,
-                              value: value,
-                              path: fullPath,
-                              color: color
-                          });
-                      } else {
-                          currentNode = findOrCreateNode(currentNode.children, part, fullPath);
-                      }
-                  }
-              });
-          } else {
-              root = { name: " ", children: [], path: "" };
-              arr.forEach(([path, value, color]) => {
-                  const pathParts = path.split(delimiter);
-                  let currentNode = root;
-      
-                  // Traverse the path and build the hierarchy
-                  for (let i = 0; i < pathParts.length; i++) {
-                      const part = pathParts[i];
-                      const fullPath = " " + delimiter + pathParts.slice(0, i + 1).join(delimiter);
-      
-                      if (i === pathParts.length - 1) {
-                          currentNode.children.push({
-                              name: part,
-                              value: value,
-                              path: fullPath,
-                              color: color
-                          });
-                      } else {
-                          currentNode = findOrCreateNode(currentNode.children, part, fullPath);
-                      }
-                  }
-              });
-          }
+
+        root = { name: "__root", children: [], path: "/" };
+        arr.forEach(([path, value, color]) => {
+            const pathParts = path.split(delimiter);
+            let currentNode = root;
+
+            // Traverse the path and build the hierarchy
+            for (let i = 1; i < pathParts.length; i++) {
+                const part = pathParts[i];
+                const fullPath = delimiter + pathParts.slice(0, i + 1).join(delimiter);
+
+                if (!lastClickedNode || lastClickedNode && fullPath.startsWith(lastClickedNode.path)) {
+
+                    currentNode = findOrCreateNode(currentNode.children, part, value,
+                        (i === pathParts.length - 1)? color : undefined, 
+                        fullPath);
+                    }
+                else {
+                    continue;
+                }
+            }
+        });
+          
       
           // Helper function to recursively calculate sums for non-leaf nodes
           function calculateSums(node) {
@@ -342,8 +319,48 @@ if (!visualisations) {
             var nodes = partition.nodes(formattedData);
 
             // Bind data to the paths, and append new paths
-            var paths = svg.selectAll("path").data(nodes);
+            var paths = svg.selectAll("path").data(nodes, (d) => d.path);
 
+            paths.update = paths.transition().duration(750)
+                    .attr("d", arc);
+            //     .style("stroke", "var(--vis__background-color)")
+            //     .style("fill", function(d) {
+            //         if (d.color) {
+            //           return d3.rgb(d.color);
+            //         }
+            //         if (d.depth === 1) {
+            //             // return baseColor.darker(1);
+            //             return baseColorDomain(1);
+
+            //         }
+            //         if (d.depth > 1) {
+            //             var ancestor = d;
+            //             while (ancestor.depth > 1) {
+            //                 ancestor = ancestor.parent;
+            //             }
+            //             // return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
+            //             return d.children ? baseColorDomain(d.depth) : baseColor.brighter(1);
+            //         }
+            //         return baseColor;
+            //     })
+            //     .style("opacity", function(d) {
+            //         return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
+            //     })
+                // .on("click", function(d) {
+                //     if (commonFunctions.isTrue(visSettings.expand) && d.children) {
+                //         lastClickedNode = d;
+                //         expandArc(d);  // Expand more layers on click
+                //     }
+                // });
+
+            var maxDepth = 0;
+            nodes.forEach(function(d) {
+                if (d.depth > maxDepth) { 
+                    maxDepth = d.depth;
+                }
+            });
+
+            baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([0,maxDepth + 3]);
             paths.enter().append("path")
                 .attr("d", arc)
                 .style("stroke", "var(--vis__background-color)")
@@ -370,8 +387,13 @@ if (!visualisations) {
                     return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
                 })
                 .on("click", function(d) {
-                    if (commonFunctions.isTrue(visSettings.expand) && d.children) {
-                        lastClickedNode = d;
+                    if ((visSettings.expand == undefined || commonFunctions.isTrue(visSettings.expand)) && d.children) {
+                        if (d.name == "__root"){
+                            lastClickedNode = null;
+                        } else {
+                            lastClickedNode = d;
+                        }
+
                         expandArc(d);  // Expand more layers on click
                     }
                 });
@@ -434,7 +456,10 @@ if (!visualisations) {
                 .selectAll("path")
                 .attrTween("d", function(d) {
                     return function() {
-                        if (d.depth <= targetDepth) {
+                        if (lastClickedNode && d.path.startsWith(lastClickedNode.parent.path) 
+                            || !lastClickedNode && d.depth <= targetDepth){
+
+                            console.log(`Expanding ${d.name} path is ${d.path} target depth is ${targetDepth}`);
                             var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
                             var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
 
@@ -459,7 +484,9 @@ if (!visualisations) {
         function updateLabels(targetDepth) {
             svg.selectAll("text.label").remove();
             svg.selectAll("path").each(function(d) {
-                if (d.depth <= targetDepth) {
+                if (lastClickedNode && d.path.startsWith(lastClickedNode.parent.path) 
+                    || !lastClickedNode && d.depth <= targetDepth)  {
+
                     // Apply scaling from the current x and y domains (after transition/zoom)
                     var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
                     var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
