@@ -97,7 +97,7 @@ if (!visualisations) {
                 tip = inverseHighlight.tip()
                     .html(function(tipData) {
                         var htmlBuilder = inverseHighlight.htmlBuilder();
-                        if (tipData.values.name && tipData.values.name !== " ") {
+                        if (tipData.values.name && tipData.values.name !== "__root") {
                             htmlBuilder.addTipEntry("Name", commonFunctions.autoFormat(tipData.values.name));
                         }
 
@@ -223,16 +223,17 @@ if (!visualisations) {
 
         function arrayToHierarchy(arr) {
           // Helper function to recursively create or find a node
-          function findOrCreateNode(children, name, value, color, fullPath) {
-              let node = children.find(child => child.name === name);
+          function findOrCreateNode(currentNode, name, value, color, fullPath) {
+              let node = currentNode.children.find(child => child.name === name);
               if (!node) {
                   node = { name: name, 
+                    _parent: currentNode,
                     children: [], 
                     value: value,
                     path: fullPath,
                     color: color,
                 };   
-                  children.push(node);
+                  currentNode.children.push(node);
               }
               return node;
           }
@@ -245,19 +246,23 @@ if (!visualisations) {
             let currentNode = root;
 
             // Traverse the path and build the hierarchy
-            for (let i = 1; i < pathParts.length; i++) {
+            for (let i = 0; i < pathParts.length; i++) {
                 const part = pathParts[i];
                 const fullPath = delimiter + pathParts.slice(0, i + 1).join(delimiter);
 
-                if (!lastClickedNode || lastClickedNode && fullPath.startsWith(lastClickedNode.path)) {
 
-                    currentNode = findOrCreateNode(currentNode.children, part, value,
-                        (i === pathParts.length - 1)? color : undefined, 
-                        fullPath);
-                    }
-                else {
-                    continue;
-                }
+                currentNode = findOrCreateNode(currentNode, part, value,
+                    (i === pathParts.length - 1)? color : undefined, 
+                    fullPath);
+                // if (!lastClickedNode || lastClickedNode && fullPath.startsWith(lastClickedNode.path)) {
+
+                //     currentNode = findOrCreateNode(currentNode, part, value,
+                //         (i === pathParts.length - 1)? color : undefined, 
+                //         fullPath);
+                //     }
+                // else {
+                //     continue;
+                // }
             }
         });
           
@@ -280,6 +285,9 @@ if (!visualisations) {
 
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
+
+            var nodeToExpand = lastClickedNode ? lastClickedNode._parent : formattedData;
+
             visSettings = settings;
 
             // Calculate dimensions and radius
@@ -316,7 +324,7 @@ if (!visualisations) {
                 .innerRadius(function(d) { return Math.max(0, y(d.y)); })
                 .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-            var nodes = partition.nodes(formattedData);
+            var nodes = partition.nodes(nodeToExpand);
 
             // Bind data to the paths, and append new paths
             var paths = svg.selectAll("path").data(nodes, (d) => d.path);
@@ -388,13 +396,24 @@ if (!visualisations) {
                 })
                 .on("click", function(d) {
                     if ((visSettings.expand == undefined || commonFunctions.isTrue(visSettings.expand)) && d.children) {
+                        var needsUpdate = false;
+                        if (lastClickedNode && lastClickedNode.path.startsWith(d.path)){
+                            needsUpdate = true;
+                        }
                         if (d.name == "__root"){
                             lastClickedNode = null;
                         } else {
                             lastClickedNode = d;
                         }
+                        if (needsUpdate){
+                            // console.log("Need to refresh now!");
+                            let formattedData = arrayToHierarchy(stroomData.values[0].values);
+                            update(750, formattedData, visSettings);
+                        } else {
+                            expandArc(d._parent);  // Expand more layers on click
+                        }
 
-                        expandArc(d);  // Expand more layers on click
+                        
                     }
                 });
             
@@ -409,7 +428,7 @@ if (!visualisations) {
                     if (d.depth > 1) {
                         var ancestor = d;
                         while (ancestor.depth > 1) {
-                            ancestor = ancestor.parent;
+                            ancestor = ancestor._parent;
                         }
                         // return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
                         return d.children ? baseColorDomain(d.depth) : baseColor.brighter(1);
@@ -429,7 +448,6 @@ if (!visualisations) {
             commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
 
-            var nodeToExpand = lastClickedNode || formattedData;
             expandArc(nodeToExpand);
 
         };
@@ -456,10 +474,8 @@ if (!visualisations) {
                 .selectAll("path")
                 .attrTween("d", function(d) {
                     return function() {
-                        if (lastClickedNode && d.path.startsWith(lastClickedNode.parent.path) 
+                        if (lastClickedNode && d.path && d.path.startsWith(lastClickedNode._parent.path) 
                             || !lastClickedNode && d.depth <= targetDepth){
-
-                            console.log(`Expanding ${d.name} path is ${d.path} target depth is ${targetDepth}`);
                             var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
                             var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
 
@@ -484,7 +500,7 @@ if (!visualisations) {
         function updateLabels(targetDepth) {
             svg.selectAll("text.label").remove();
             svg.selectAll("path").each(function(d) {
-                if (lastClickedNode && d.path.startsWith(lastClickedNode.parent.path) 
+                if (lastClickedNode && d.path && d.path.startsWith(lastClickedNode._parent.path) 
                     || !lastClickedNode && d.depth <= targetDepth)  {
 
                     // Apply scaling from the current x and y domains (after transition/zoom)
@@ -500,7 +516,8 @@ if (!visualisations) {
                         var scale = d3.event && d3.event.scale ? d3.event.scale : 1;
                         var fontSize = 13 / scale;
 
-                        var textContent = d.name != null ? commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
+                        var textContent = (d.name != null && d.name != "__root") ?
+                                             commonFunctions.autoFormat(d.name, visSettings.nameDateFormat) :
                                             commonFunctions.autoFormat(d.series, visSettings.seriesDateFormat);
 
                         // Create a temporary text element to measure the text width and height
