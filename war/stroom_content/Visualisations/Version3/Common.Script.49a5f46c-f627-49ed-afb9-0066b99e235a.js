@@ -419,6 +419,9 @@ if(!visualisations) {
           this.valHtml +
           '  </div>' +
           '</div>';
+        if (inverseHighlight.toSelectionItem) {
+            this.html += `<div style="text-align:center; padding-top: 12px; " ><span><i>Ctrl+Click to select/deselect</i?</span></div>`;
+        }
         return this.html
       }
 
