@@ -20,6 +20,7 @@ if (!visualisations) {
 
 (function (){
 
+  const ROOT_LITERAL= "__root";
   var d3 = window.d3;
   var commonFunctions = visualisations.commonFunctions;
   var commonConstants = visualisations.commonConstants;
@@ -248,29 +249,29 @@ if (!visualisations) {
     };
 
     function initialiseTip(settings){
-      // if (typeof(tip) == "undefined") {
-        inverseHighlight = commonFunctions.inverseHighlight();
+      inverseHighlight = commonFunctions.inverseHighlight();
 
-        inverseHighlight.toSelectionItem = function(d) {
-
-          var selection = {
-            key: d.id,
-            // series: d.series,
-          };
-          return selection;
+      inverseHighlight.toSelectionItem = function(d) {
+        const path = d.id.substring(ROOT_LITERAL.length);
+        const valuePropName = settings.valueName ? settings.valueName : "Value";
+        var selection = {
+          key: path,
+          path: path,
+          name: d.name,
+          value: d.value,
         };
+        selection[valuePropName] = d.value;
+        return selection;
+      };
 
-        tip = inverseHighlight.tip()
-            .html(function(tipData) {
-                var html = inverseHighlight.htmlBuilder()
-                    // .addTipEntry("Series",commonFunctions.autoFormat(tipData.values.series, visSettings.seriesDateFormat))
-                    .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
-                    .addTipEntry(settings.valueName ? settings.valueName : "Value",commonFunctions.autoFormat(tipData.values.value, visSettings.nameDateFormat))
-                    .build();
-                return html;
-            });
-      // }
-
+      tip = inverseHighlight.tip()
+          .html(function(tipData) {
+              var html = inverseHighlight.htmlBuilder()
+                  .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, visSettings.nameDateFormat))
+                  .addTipEntry(settings.valueName ? settings.valueName : "Value",commonFunctions.autoFormat(tipData.values.value, visSettings.nameDateFormat))
+                  .build();
+              return html;
+          });
     }
 
     function update(data) {      
@@ -305,7 +306,7 @@ if (!visualisations) {
       commonFunctions.addDelegateEvent(svgGroup, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svgGroup, "rect"));
 
       //as this vis has click and scroll functionality, don't add these tip click handlers
-      // commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
+      commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
       // commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
       // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
 
@@ -341,8 +342,8 @@ if (!visualisations) {
 
     function buildHierarchy(values) {
 
-      var root = { id: "__root", children: [], _children: [] };
-      var all = { "__root": root };
+      var root = { id: ROOT_LITERAL, children: [], _children: [] };
+      var all = { ROOT_LITERAL: root };
   
       values.forEach(function(value) {
           var path = value[treePathIndex];
@@ -354,7 +355,7 @@ if (!visualisations) {
           }
           var parts = path.split(delimiter);
           var current = root;
-          var fullPath = "__root";
+          var fullPath = ROOT_LITERAL;
           var parent = null;
 
           parts.forEach(function(part, index) {
@@ -445,13 +446,13 @@ if (!visualisations) {
           })
           .style("opacity", 1.0);
   
-      nodeEnter.filter(d => { return (d.id === "__root")})
+      nodeEnter.filter(d => { return (d.id === ROOT_LITERAL)})
           .append("circle")
           .attr("r", "5")
           .style("stroke-width", 3)
           .style("fill", "darkgray");
 
-      nodeEnter.filter(d => { return (d.id != "__root")})
+      nodeEnter.filter(d => { return (d.id != ROOT_LITERAL)})
           .append("rect")
           .attr("class", "Tree-rect")
           .attr("transform", `translate(-${rectWidth / 2}, -15)`)
@@ -475,7 +476,7 @@ if (!visualisations) {
           .on("click", nodeClick);
           
   
-      nodeEnter.filter(d => { return (d.id != "__root")})
+      nodeEnter.filter(d => { return (d.id != ROOT_LITERAL)})
           .append("text")
           .attr("class", "Tree-label")
           .attr("dy", 4) // Vertically center text
