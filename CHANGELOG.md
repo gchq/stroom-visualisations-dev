@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.16.2] - 2025-03-11
+
+* Sunburst: Improve handling of new data.
+
+
 ## [v3.16.1] - 2025-03-08
 
 * Improve ticks on timeseries x axes.
@@ -310,7 +315,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.2...HEAD
+[v3.16.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.1...v3.16.2
 [v3.16.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.0...v3.16.1
 [v3.15.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.6...v3.16.0
 [v3.15.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.5...v3.15.6
