@@ -34,12 +34,12 @@
         },
         {
 
-          "id": "initialDepth",
+          "id": "displayDepth",
           "type": "number",
-          "label": "Initial layer depth",
-          "defaultValue": "10",
+          "label": "Number of layers to show",
+          "defaultValue": "8",
           "max": "50",
-          "min": "2"
+          "min": "3"
 
         },
         {
@@ -75,14 +75,14 @@
             "True",
             "False"
           ],
-          "defaultValue": "False"
+          "defaultValue": "True"
         },
         {
           "id": "maxValues",
           "type": "number",
           "label": "Max Values",
-          "defaultValue": "500",
-          "max": "10000",
+          "defaultValue": "10000",
+          "max": "100000",
           "min": "1"
         },
         {
