@@ -240,7 +240,7 @@ if (!visualisations) {
       
           // Extract all root names (first parts of paths)
 
-        root = { name: "__root", children: [], path: "/" };
+        root = { name: "__root", children: [], path: "/", depth: 0 };
         arr.forEach(([path, value, color]) => {
             const pathParts = path.split(delimiter);
             let currentNode = root;
@@ -286,7 +286,7 @@ if (!visualisations) {
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
 
-            var nodeToExpand = lastClickedNode ? lastClickedNode._parent : formattedData;
+            var nodeToExpand = lastClickedNode ? lastClickedNode : formattedData;
 
             visSettings = settings;
 
@@ -324,6 +324,18 @@ if (!visualisations) {
                 .innerRadius(function(d) { return Math.max(0, y(d.y)); })
                 .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
+            if (nodeToExpand._parent) {
+                nodeToExpand = {
+                    name: nodeToExpand._parent.name,
+                    children: [nodeToExpand],
+                    value: nodeToExpand._parent.value,
+                    _parent: nodeToExpand._parent._parent,
+                    path: nodeToExpand._parent.path,
+                    depth: nodeToExpand._parent.depth
+                }
+            } else {
+                nodeToExpand = formattedData;
+            }
             var nodes = partition.nodes(nodeToExpand);
 
             // Bind data to the paths, and append new paths
@@ -405,13 +417,13 @@ if (!visualisations) {
                         } else {
                             lastClickedNode = d;
                         }
-                        if (needsUpdate){
-                            // console.log("Need to refresh now!");
+                        // if (!d._parent){
+                        //     // console.log("Need to refresh now!");
                             let formattedData = arrayToHierarchy(stroomData.values[0].values);
                             update(750, formattedData, visSettings);
-                        } else {
-                            expandArc(d._parent);  // Expand more layers on click
-                        }
+                        // } else {
+                            // expandArc(d);  // Expand more layers on click
+                        // }
 
                         
                     }
