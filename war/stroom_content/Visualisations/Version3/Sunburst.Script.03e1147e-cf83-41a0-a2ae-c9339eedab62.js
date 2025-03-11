@@ -87,9 +87,10 @@ if (!visualisations) {
                 //console.log("selection");
                 //console.log(d);
                 var selection = {
-                    key: d.name,
-                    series: d.series,
+                    key: d.path,
                     value: d.value,
+                    name: d.name,
+                    path: d.path,
                 };
                 //console.log(selection);
                 return selection;
@@ -394,18 +395,20 @@ if (!visualisations) {
                     return d.depth > displayDepth ? 0 : 1;  // Initially hide deeper layers
                 })
                 .on("click", function(d) {
-                    if ((visSettings.expand == undefined || commonFunctions.isTrue(visSettings.expand)) && d.children) {
+                    if (!d3.event.ctrlKey){
+                        if ((visSettings.expand == undefined || commonFunctions.isTrue(visSettings.expand)) && d.children) {
 
-                        if (d.name == "__root"){
-                            lastClickedNode = formattedData;
-                        } else {
-                            lastClickedNode = d;
+                            if (d.name == "__root"){
+                                lastClickedNode = formattedData;
+                            } else {
+                                lastClickedNode = d;
+                            }
+                            if (pathToNodeMap.get(d.path)){
+                                lastClickedNode = pathToNodeMap.get(d.path);
+                            }
+    
+                            update(750, lastClickedNode, visSettings);
                         }
-                        if (pathToNodeMap.get(d.path)){
-                            lastClickedNode = pathToNodeMap.get(d.path);
-                        }
-
-                        update(750, lastClickedNode, visSettings);
                     }
                 });
 
@@ -418,10 +421,12 @@ if (!visualisations) {
 
             commonFunctions.addDelegateEvent(svg, "mouseover", "path", inverseHighlight.makeInverseHighlightMouseOverHandler(stroomData.key, stroomData.types, svg, "path"));
             commonFunctions.addDelegateEvent(svg, "mouseout", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            commonFunctions.addDelegateEvent(svg, "click","path", inverseHighlight.makeInverseHighlightMouseClickHandler(svg, "path"));
+
             //as this vis supports scrolling and panning by mousewheel and mousedown we need to remove the tip when the user
             //pans or zooms
-            commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
-            commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            // commonFunctions.addDelegateEvent(svg, "mousewheel", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
+            // commonFunctions.addDelegateEvent(svg, "mousedown", "path", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "path"));
 
             expandArc(nodeToExpand);
 

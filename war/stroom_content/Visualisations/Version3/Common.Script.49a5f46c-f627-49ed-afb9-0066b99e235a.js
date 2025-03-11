@@ -545,8 +545,11 @@ if(!visualisations) {
 
     inverseHighlight.makeInverseHighlightMouseClickHandler = function(node, cssSelector) {
       const inverseHighlightMouseClickHandler = function(d) {
-        select(d);
-        updateInverseHighlight(node, cssSelector);
+        if (d3.event.ctrlKey) {
+          select(d);
+          updateInverseHighlight(node, cssSelector);
+        }
+        
       };
       return inverseHighlightMouseClickHandler;
     }

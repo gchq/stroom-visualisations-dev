@@ -304,9 +304,9 @@ if (!visualisations) {
 
       commonFunctions.addDelegateEvent(svgGroup, "mouseover", "rect", inverseHighlight.makeInverseHighlightMouseOverHandler(null, visData.types, svgGroup, "rect"));
       commonFunctions.addDelegateEvent(svgGroup, "mouseout", "rect", inverseHighlight.makeInverseHighlightMouseOutHandler(svgGroup, "rect"));
+      commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
 
       //as this vis has click and scroll functionality, don't add these tip click handlers
-      commonFunctions.addDelegateEvent(svgGroup, "click","rect", inverseHighlight.makeInverseHighlightMouseClickHandler(svgGroup, "rect"));
       // commonFunctions.addDelegateEvent(svg, "mousewheel", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
       // commonFunctions.addDelegateEvent(svg, "mousedown", "circle", inverseHighlight.makeInverseHighlightMouseOutHandler(svg, "circle"));
 
@@ -634,24 +634,24 @@ if (!visualisations) {
     }
 
     function nodeClick(d) {
+      if (!d3.event.ctrlKey){
+        const currentNode = findCurrentNode(d);
 
-      const currentNode = findCurrentNode(d);
+        if (currentNode.children) {
+          currentNode.children = null;
+          d.children = null;
+      } else {
+          currentNode.children = currentNode._children;
+          d.children = currentNode._children;
+      }
 
-      if (currentNode.children) {
-        currentNode.children = null;
-        d.children = null;
-    } else {
-        currentNode.children = currentNode._children;
-        d.children = currentNode._children;
+        update(visData);
+      }
     }
-
-      update(visData);
-    }
-
+    
     this.getColourScale = function(){
       return color;
     };
-
   };
 
 }());
