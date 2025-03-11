@@ -320,6 +320,10 @@
         if (iframeWindow) {
             iframeWindow.postMessage(jsonString, '*');
         }
+
+        if (visName == "Sunburst") {
+            settings.displayDepth = 5;
+        }
     }
 
     var commonFunctions = visualisations.commonFunctions;
