@@ -50,11 +50,12 @@ if (!visualisations) {
         var baseColorDomain = d3.scale.linear().range(["darkcyan", "black"]).domain([1,15]);
 
         var stroomData;
+        var pathToNodeMap;
         var x,y;
         var initialised = false;
         var canvas;
         var lastClickedNode = null;
-        var initialDepth = 2; // default depth
+        var displayDepth = 2; // default depth
         var color = commonConstants.categoryGoogle();
         var prevScale = 1;
 
@@ -194,22 +195,22 @@ if (!visualisations) {
                 delimiter = settings.delimiter;
             }
 
-            if (settings.initialDepth) {
-                initialDepth = settings.initialDepth - 1;
+            if (settings.displayDepth) {
+                displayDepth = settings.displayDepth - 1;
             }
             
             if (settings.baseColor) {
               baseColor = d3.rgb(settings.baseColor);
               if (settings.gradient == "False"){
-                baseColorDomain = d3.scale.linear().range([settings.baseColor, settings.baseColor]).domain([1,initialDepth+3]);
+                baseColorDomain = d3.scale.linear().range([settings.baseColor, settings.baseColor]).domain([1,displayDepth+3]);
               }
               else{
-                baseColorDomain = d3.scale.linear().range([settings.baseColor, "black"]).domain([1,initialDepth + 3]);
+                baseColorDomain = d3.scale.linear().range([settings.baseColor, "black"]).domain([1,displayDepth + 3]);
               }
             }
             else{
               if (settings.gradient == "True"){
-                baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([1,initialDepth]);
+                baseColorDomain = d3.scale.linear().range([baseColor, "black"]).domain([1,displayDepth]);
               }
             }
 
@@ -222,50 +223,46 @@ if (!visualisations) {
         };
 
         function arrayToHierarchy(arr) {
-          // Helper function to recursively create or find a node
-          function findOrCreateNode(currentNode, name, value, color, fullPath) {
-              let node = currentNode.children.find(child => child.name === name);
-              if (!node) {
-                  node = { name: name, 
-                    _parent: currentNode,
-                    children: [], 
-                    value: value,
-                    path: fullPath,
-                    color: color,
-                };   
-                  currentNode.children.push(node);
-              }
-              return node;
-          }
-      
-          // Extract all root names (first parts of paths)
+            pathToNodeMap = new Map();
 
-        root = { name: "__root", children: [], path: "/", depth: 0 };
-        arr.forEach(([path, value, color]) => {
-            const pathParts = path.split(delimiter);
-            let currentNode = root;
-
-            // Traverse the path and build the hierarchy
-            for (let i = 0; i < pathParts.length; i++) {
-                const part = pathParts[i];
-                const fullPath = delimiter + pathParts.slice(0, i + 1).join(delimiter);
-
-
-                currentNode = findOrCreateNode(currentNode, part, value,
-                    (i === pathParts.length - 1)? color : undefined, 
-                    fullPath);
-                // if (!lastClickedNode || lastClickedNode && fullPath.startsWith(lastClickedNode.path)) {
-
-                //     currentNode = findOrCreateNode(currentNode, part, value,
-                //         (i === pathParts.length - 1)? color : undefined, 
-                //         fullPath);
-                //     }
-                // else {
-                //     continue;
-                // }
+            // Helper function to recursively create or find a node
+            function findOrCreateNode(currentNode, name, value, color, fullPath) {
+                let node = currentNode.children.find(child => child.name === name);
+                if (!node) {
+                    node = {
+                        name: name,
+                        _parent: currentNode,
+                        children: [],
+                        value: value,
+                        path: fullPath,
+                        color: color,
+                    };
+                    currentNode.children.push(node);
+                    pathToNodeMap.set(fullPath, node);
+                }
+                return node;
             }
-        });
-          
+
+            // Extract all root names (first parts of paths)
+
+            root = { name: "__root", children: [], path: "/", depth: 0 };
+            pathToNodeMap.set("/", root);
+            arr.forEach(([path, value, color]) => {
+                const pathParts = path.split(delimiter);
+                let currentNode = root;
+
+                // Traverse the path and build the hierarchy
+                for (let i = 0; i < pathParts.length; i++) {
+                    const part = pathParts[i];
+                    const fullPath = delimiter + pathParts.slice(0, i + 1).join(delimiter);
+
+
+                    currentNode = findOrCreateNode(currentNode, part, value,
+                        (i === pathParts.length - 1) ? color : undefined,
+                        fullPath);
+                }
+            });
+
       
           // Helper function to recursively calculate sums for non-leaf nodes
           function calculateSums(node) {
@@ -343,35 +340,6 @@ if (!visualisations) {
 
             paths.update = paths.transition().duration(750)
                     .attr("d", arc);
-            //     .style("stroke", "var(--vis__background-color)")
-            //     .style("fill", function(d) {
-            //         if (d.color) {
-            //           return d3.rgb(d.color);
-            //         }
-            //         if (d.depth === 1) {
-            //             // return baseColor.darker(1);
-            //             return baseColorDomain(1);
-
-            //         }
-            //         if (d.depth > 1) {
-            //             var ancestor = d;
-            //             while (ancestor.depth > 1) {
-            //                 ancestor = ancestor.parent;
-            //             }
-            //             // return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
-            //             return d.children ? baseColorDomain(d.depth) : baseColor.brighter(1);
-            //         }
-            //         return baseColor;
-            //     })
-            //     .style("opacity", function(d) {
-            //         return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
-            //     })
-                // .on("click", function(d) {
-                //     if (commonFunctions.isTrue(visSettings.expand) && d.children) {
-                //         lastClickedNode = d;
-                //         expandArc(d);  // Expand more layers on click
-                //     }
-                // });
 
             var maxDepth = 0;
             nodes.forEach(function(d) {
@@ -404,28 +372,21 @@ if (!visualisations) {
                     return baseColor;
                 })
                 .style("opacity", function(d) {
-                    return d.depth > initialDepth ? 0 : 1;  // Initially hide deeper layers
+                    return d.depth > displayDepth ? 0 : 1;  // Initially hide deeper layers
                 })
                 .on("click", function(d) {
                     if ((visSettings.expand == undefined || commonFunctions.isTrue(visSettings.expand)) && d.children) {
-                        var needsUpdate = false;
-                        if (lastClickedNode && lastClickedNode.path.startsWith(d.path)){
-                            needsUpdate = true;
-                        }
+
                         if (d.name == "__root"){
-                            lastClickedNode = null;
+                            lastClickedNode = formattedData;
                         } else {
                             lastClickedNode = d;
                         }
-                        // if (!d._parent){
-                        //     // console.log("Need to refresh now!");
-                            let formattedData = arrayToHierarchy(stroomData.values[0].values);
-                            update(750, formattedData, visSettings);
-                        // } else {
-                            // expandArc(d);  // Expand more layers on click
-                        // }
+                        if (pathToNodeMap.get(d.path)){
+                            lastClickedNode = pathToNodeMap.get(d.path);
+                        }
 
-                        
+                        update(750, lastClickedNode, visSettings);
                     }
                 });
             
@@ -467,7 +428,7 @@ if (!visualisations) {
         var EPSILON = 1e-6;
         var targetDepth;
         function expandArc(data) {
-            targetDepth = data.depth + initialDepth;
+            targetDepth = data.depth + displayDepth;
 
             svg.selectAll("text.label").remove();
             let labelsUpdated = false;
@@ -486,8 +447,7 @@ if (!visualisations) {
                 .selectAll("path")
                 .attrTween("d", function(d) {
                     return function() {
-                        if (lastClickedNode && d.path && d.path.startsWith(lastClickedNode._parent.path) 
-                            || !lastClickedNode && d.depth <= targetDepth){
+                        if (d.depth <= targetDepth) {
                             var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
                             var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
 
@@ -512,8 +472,7 @@ if (!visualisations) {
         function updateLabels(targetDepth) {
             svg.selectAll("text.label").remove();
             svg.selectAll("path").each(function(d) {
-                if (lastClickedNode && d.path && d.path.startsWith(lastClickedNode._parent.path) 
-                    || !lastClickedNode && d.depth <= targetDepth)  {
+                if (d.depth <= targetDepth) {
 
                     // Apply scaling from the current x and y domains (after transition/zoom)
                     var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
