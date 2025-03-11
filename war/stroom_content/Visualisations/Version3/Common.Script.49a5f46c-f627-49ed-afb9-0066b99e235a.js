@@ -255,6 +255,21 @@ if(!visualisations) {
 
   var commonFunctions = {};
 
+  commonFunctions.isLightColor = function (color) {
+
+    if (!color) {
+      return false;
+    }
+    const rgb = d3.rgb(color);
+    
+    const luminance =
+        (0.2126 * rgb.r) / 255 +
+        (0.7152 * rgb.g) / 255 +
+        (0.0722 * rgb.b) / 255;
+    return luminance > 0.5;
+    
+}
+
   commonFunctions.addDelegateEvent = function(rootObj, event, targetSelector,
     handler) {
     return rootObj.on(event, function() {

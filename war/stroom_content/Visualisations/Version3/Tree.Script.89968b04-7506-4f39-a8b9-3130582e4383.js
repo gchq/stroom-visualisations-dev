@@ -407,21 +407,6 @@ if (!visualisations) {
 
       return root;
     }
-
-    function isLightColor(color) {
-
-        if (!color) {
-          return false;
-        }
-        const rgb = d3.rgb(color);
-        
-        const luminance =
-            (0.2126 * rgb.r) / 255 +
-            (0.7152 * rgb.g) / 255 +
-            (0.0722 * rgb.b) / 255;
-        return luminance > 0.5;
-        
-    }
     
     function updateNodes(nodes) {
       
@@ -510,7 +495,7 @@ if (!visualisations) {
             }
             })
           .style("fill", (d) => {
-            return isLightColor(d.colour) ? "black" : "white";
+            return commonFunctions.isLightColor(d.colour) ? "black" : "white";
           })
           .text((d) => {
             if (!d.name) {

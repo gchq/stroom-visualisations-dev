@@ -280,6 +280,25 @@ if (!visualisations) {
           return root;
         }
 
+        const findColour = function(d) {
+            if (d.color) {
+              return d3.rgb(d.color);
+            }
+            if (d.depth === 1) {
+                // return baseColor.darker(1);
+                return baseColorDomain(1);
+            }
+            if (d.depth > 1) {
+                var ancestor = d;
+                while (ancestor.depth > 1) {
+                    ancestor = ancestor._parent;
+                }
+                // return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
+                return d.children ? baseColorDomain(d.depth) : baseColor.brighter(1);
+
+            }
+            return baseColor;
+     }
         // Function to update the visualization
         var update = function(duration, formattedData, settings) {
 
@@ -389,26 +408,9 @@ if (!visualisations) {
                         update(750, lastClickedNode, visSettings);
                     }
                 });
-            
-             paths.style("fill", function(d) {
-                    if (d.color) {
-                      return d3.rgb(d.color);
-                    }
-                    if (d.depth === 1) {
-                        // return baseColor.darker(1);
-                        return baseColorDomain(1);
-                    }
-                    if (d.depth > 1) {
-                        var ancestor = d;
-                        while (ancestor.depth > 1) {
-                            ancestor = ancestor._parent;
-                        }
-                        // return d.children ? baseColor.darker(d.depth) : baseColor.brighter(1);
-                        return d.children ? baseColorDomain(d.depth) : baseColor.brighter(1);
 
-                    }
-                    return baseColor;
-             });
+            
+             paths.style("fill", findColour);
 
             //removed paths
             paths.exit()
@@ -480,6 +482,8 @@ if (!visualisations) {
                     var innerRadius = Math.max(0, y(d.y));
                     var outerRadius = Math.max(0, y(d.y + d.dy));
 
+                    const lightColour = commonFunctions.isLightColor(findColour(d));
+
                     if (commonFunctions.isTrue(visSettings.showLabels)) {
                         var centroid = arc.centroid(d);
                         var arcLength = (endAngle - startAngle) * (outerRadius + innerRadius) / 2;
@@ -527,7 +531,9 @@ if (!visualisations) {
                                 .style("pointer-events", "none")
                                 .style("font-size", fontSize + "px")
                                 .style("text-rendering", "geometricPrecision")
-                                // .style("fill", d3.rgb(0, 0, 0))
+                                .style("fill", (d) => {
+                                    return lightColour ? "black" : "white";
+                                  })
                                 .text(textContent);
 
                         }
