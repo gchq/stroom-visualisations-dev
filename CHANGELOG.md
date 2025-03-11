@@ -12,6 +12,17 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.16.4] - 2025-03-11
+
+* Change selection to require ctrl to be held.
+
+* Tree: Support selection.
+
+* Sunburst: Support selection.
+
+* Bubble: Improve selection.
+
+
 ## [v3.16.3] - 2025-03-11
 
 * Sunburst: Change label colour depending on background.
@@ -322,7 +333,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.3...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.4...HEAD
+[v3.16.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.3...v3.16.4
 [v3.16.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.2...v3.16.3
 [v3.16.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.1...v3.16.2
 [v3.16.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.0...v3.16.1
