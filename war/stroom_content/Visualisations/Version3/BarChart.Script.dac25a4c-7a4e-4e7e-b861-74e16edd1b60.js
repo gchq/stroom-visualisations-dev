@@ -274,19 +274,43 @@ if (!visualisations) {
         var update = function(duration) {
             if (visData) {
 
+                const mappedVisData = Object.assign({}, visData);
+
+                mappedVisData.values = visData.values.map(function(d){
+                    const seriesData = Object.assign({}, d);
+                    const mappedSeriesData = d.values.filter(function(d) {
+                        //This is a visbility feature that needs to be added here
+                        // assume true if prop not present
+                        return (
+                            (!d.hasOwnProperty("isVisible") || d.isVisible) &&
+                            (!d.hasOwnProperty("isZoomVisible") || d.isZoomVisible)
+                        );})
+                        .map(function(v){
+                            return [v[0], v[1], d.key];
+                        });
+
+                    //Copy the series data and add the mapped data, which allows series name to be accessed later as d[2]
+                    seriesData.values = mappedSeriesData;
+                        
+                    return seriesData;
+                });
+
                 if (inverseHighlight) {
                     inverseHighlight.toSelectionItem = function(d) {
-                        if (visData.types[0] == commonConstants.dataTypeDateTime) {
+                        const series=d[2];
+                        if (mappedVisData.types[0] == commonConstants.dataTypeDateTime) {
                             const iso = new Date(d[0]).toISOString();
                             return {
-                                key: iso,
+                                key: `${series}~#~${iso}`,
+                                series: series,
                                 x: iso,
                                 value: d[1],
                                 y: d[1],
                             };
                         } else {
                             return {
-                                key: d[0],
+                                key: `${series}~#~${d[0]}`,
+                                series: series,
                                 x: d[0],
                                 value: d[1],
                                 y: d[1],
@@ -296,7 +320,9 @@ if (!visualisations) {
         
                 }
 
-                var visibleValues = visData.visibleValues();
+                const visibleValues = mappedVisData.values;
+
+
 
                 width = commonFunctions.gridAwareWidthFunc(true, containerNode, element, margins);
                 height = commonFunctions.gridAwareHeightFunc(true, containerNode, element, margins);
@@ -309,25 +335,25 @@ if (!visualisations) {
 
                 svg.attr("transform", "translate(" + margins.left + "," + margins.top + ")");
                 xAxisContainer.attr("transform", "translate(0," + height + ")");
-                //console.log(visData.values[0].values);
+                //console.log(mappedVisData.values[0].values);
 
 
-                xSettings = commonFunctions.createAxis(visData.types[0], 0, width);
+                xSettings = commonFunctions.createAxis(mappedVisData.types[0], 0, width);
                 xScale = xSettings.scale;
 
-                if (visData.types[0] == commonConstants.dataTypeDateTime && bucketSizeMs) {
+                if (mappedVisData.types[0] == commonConstants.dataTypeDateTime && bucketSizeMs) {
                     //bucketised charts are a special case and we need to add the size of the bucket on to the
                     //end of the x scale to account for the last bucket's width
                     xSettings.setExplicitRangeDomain(visibleValues[0].min[0], visibleValues[0].max[0] + bucketSizeMs);
                 } else {
-                    xSettings.setDomain(visData, visibleValues[0].values, 0);
+                    xSettings.setDomain(mappedVisData, visibleValues[0].values, 0);
                 }
 
                 commonFunctions.buildAxis(xAxisContainer, xSettings, "bottom", null, null, visSettings.displayXAxis);
 
-                ySettings = commonFunctions.createAxis(visData.types[1], height, 0);
+                ySettings = commonFunctions.createAxis(mappedVisData.types[1], height, 0);
                 yScale = ySettings.scale;
-                ySettings.setRangeDomain(visData.types[1], visData, 1);
+                ySettings.setRangeDomain(mappedVisData.types[1], mappedVisData, 1);
                 commonFunctions.buildAxis(yAxisContainer, ySettings, "left", null, null, visSettings.displayYAxis);
 
                 if (commonFunctions.resizeMargins(margins, xAxisContainer, yAxisContainer) == true) {
@@ -351,7 +377,7 @@ if (!visualisations) {
 
                     var xOffset = 0;
 
-                    if (visData.types[0] == commonConstants.dataTypeText || visData.types[0] == commonConstants.dataTypeGeneral) {
+                    if (mappedVisData.types[0] == commonConstants.dataTypeText || mappedVisData.types[0] == commonConstants.dataTypeGeneral) {
                         if (visibleValues.length > 1) {
                             barWidth = xScale.rangeBand() / visibleValues.length;
                             xOffset = -barWidth;
@@ -364,7 +390,7 @@ if (!visualisations) {
                         barWidth = 1;
                         if (bucketSizeMs){
                             var seriesCount = visibleValues.length;
-                            var barWidth = (xScale(visData.min[0] + bucketSizeMs) - xScale(visData.min[0])) / seriesCount;
+                            var barWidth = (xScale(mappedVisData.min[0] + bucketSizeMs) - xScale(mappedVisData.min[0])) / seriesCount;
                         } else {
                             var barWidth = 2;
                         }
@@ -372,11 +398,17 @@ if (!visualisations) {
                     xOffset = -barWidth;
 
                     g.each(function(seriesData) {
-                        var e = d3.select(this);
+                        const e = d3.select(this);
+                        const visibleData = seriesData.values;
 
                         var series = e.selectAll("rect")
-                            .data(seriesData.visibleValues(), function(pointData) {
+                            .data(visibleData, function(pointData) {
                                 //console.log(seriesData.key + "~#~" + pointData[0]);
+                                if (mappedVisData.types[0] == commonConstants.dataTypeDateTime) {
+                                    const iso = new Date(d[0]).toISOString();
+                                    return seriesData.key + "~#~" + iso;
+                                }
+
                                 return seriesData.key + "~#~" + pointData[0];
                             });
 
@@ -447,7 +479,7 @@ if (!visualisations) {
                             e,
                             "mouseover",
                             "rect",
-                            inverseHighlight.makeInverseHighlightMouseOverHandler(seriesData.key, visData.types, seriesContainer, "rect"));
+                            inverseHighlight.makeInverseHighlightMouseOverHandler(seriesData.key, mappedVisData.types, seriesContainer, "rect"));
 
                         commonFunctions.addDelegateEvent(
                             e,
