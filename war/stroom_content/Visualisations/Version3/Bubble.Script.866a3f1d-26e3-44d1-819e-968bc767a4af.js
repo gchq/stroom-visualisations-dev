@@ -84,7 +84,8 @@ visualisations.Bubble = function(containerNode) {
               //console.log("selection");
               //console.log(d);
               var selection = {
-                key: d.name,
+                key: `${d.series}~#~${d.name}`,
+                name: d.name,
                 series: d.series,
                 value: d.value,
               };
