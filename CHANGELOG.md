@@ -12,6 +12,13 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.16.3] - 2025-03-11
+
+* Sunburst: Change label colour depending on background.
+
+* Bar Chart: Fix selection bug that highlighted all bars for a key regardless of series.
+
+
 ## [v3.16.2] - 2025-03-11
 
 * Sunburst: Improve handling of new data.
@@ -315,7 +322,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.2...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.3...HEAD
+[v3.16.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.2...v3.16.3
 [v3.16.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.1...v3.16.2
 [v3.16.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.0...v3.16.1
 [v3.15.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.6...v3.16.0
