@@ -12,6 +12,17 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v3.17.0] - 2025-03-16
+
+* BarChart: Fix bug causing crash with time based data.
+
+* Geomap: Support selection of individual points.
+
+* FloorMap & GeoMap: Prevent Popup Covering Markers.
+
+* FloorMap: Support selection of individual points.
+
+
 ## [v3.16.4] - 2025-03-11
 
 * Change selection to require ctrl to be held.
@@ -333,7 +344,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.4...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.0...HEAD
+[v3.17.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.4...v3.17.0
 [v3.16.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.3...v3.16.4
 [v3.16.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.2...v3.16.3
 [v3.16.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.1...v3.16.2
