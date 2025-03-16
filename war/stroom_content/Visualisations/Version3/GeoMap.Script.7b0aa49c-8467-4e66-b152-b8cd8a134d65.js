@@ -193,7 +193,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                     }).bind(this));
             }
             
-            this.addMarkerPopup(newMarker, val, dateFormat) 
+            this.addMarkerPopup(newMarker, val, dateFormat, iconMode) 
             this.markerLayers[gridName].removeLayer(marker);
             this.markerLayers[gridName].addLayer(newMarker);
 
@@ -201,7 +201,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
             stroom.select(selection);
         }
 
-        this.addMarkerPopup = function(marker, val, dateFormat) {
+        this.addMarkerPopup = function(marker, val, dateFormat, iconMode) {
             if ((val.length > geomapIndexName && val[geomapIndexName]) ||
                     (val.length > geomapIndexSeries && val[geomapIndexSeries]) ||
                     ((val.length > geomapIndexEventTime && val[geomapIndexEventTime])))  {
@@ -222,7 +222,8 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
 
                 marker.bindPopup('<p><b>' + popupHeading + '</b><br><br>' 
                     + popupDetail + 
-                    '<br> <br> <i> Ctrl+Click to select/deselect</i> </p>');
+                    '<br> <br> <i> Ctrl+Click to select/deselect</i> </p>',
+                    { offset: L.point(0,iconMode?-30:-5) });
             }
         }
 
@@ -276,7 +277,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                                 className: 'custom-div-icon',
                                 html: markerHtml,
                                 iconSize: [30, 42],
-                                iconAnchor: [15, 42]
+                                iconAnchor: [15, 42],
                             });
 
                             marker = L.marker([lat,lon], { icon: markerIcon })
@@ -285,6 +286,8 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                                         this.toggleSelection(gridName, marker, val, dateFormat, true);
                                     }
                                 }).bind(this));
+                            //Add popup details
+                            this.addMarkerPopup(marker, val, dateFormat, true);
 
                         } else {
                             //Use small circles rather than icons
@@ -300,11 +303,12 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                                     if (e.originalEvent.ctrlKey) {
                                         this.toggleSelection(gridName, marker, val, dateFormat, false);
                                     }
-                                }).bind(this));;
+                                }).bind(this));
+                               //Add popup details
+                            this.addMarkerPopup(marker, val, dateFormat, false);
                         }
 
-                        //Add popup details
-                        this.addMarkerPopup(marker, val, dateFormat);
+                      
                         
                         this.markerLayers[gridName].addLayer(marker);
                     }
