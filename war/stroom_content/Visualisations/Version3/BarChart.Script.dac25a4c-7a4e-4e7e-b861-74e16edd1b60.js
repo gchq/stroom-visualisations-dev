@@ -405,7 +405,7 @@ if (!visualisations) {
                             .data(visibleData, function(pointData) {
                                 //console.log(seriesData.key + "~#~" + pointData[0]);
                                 if (mappedVisData.types[0] == commonConstants.dataTypeDateTime) {
-                                    const iso = new Date(d[0]).toISOString();
+                                    const iso = new Date(pointData[0]).toISOString();
                                     return seriesData.key + "~#~" + iso;
                                 }
 
