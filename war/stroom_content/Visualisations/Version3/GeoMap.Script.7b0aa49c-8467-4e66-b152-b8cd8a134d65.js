@@ -128,7 +128,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
             const lat = val.length > geomapIndexLatitude ? val[geomapIndexLatitude] : undefined;
             const lon = val.length > geomapIndexLongitude ? val[geomapIndexLongitude] : undefined;
             const name = val.length > geomapIndexName ? val[geomapIndexName] : undefined;
-            const series = val.length > geomapIndexGridSeries ? val[geomapIndexGridSeries] : undefined; 
+            const series = val.length > geomapIndexSeries ? val[geomapIndexSeries] : undefined; 
             const icon = val.length > geomapIndexIcon ? val[geomapIndexIcon] : undefined;
             const eventTime = val.length > geomapIndexEventTime ? val[geomapIndexEventTime] : undefined;
 
@@ -138,7 +138,6 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
         
             var selected;
             if (this.selectedMarkers[gridName][id]) {
-                console.log(`Deselecting marker ${id}` );
                 delete this.selectedMarkers[gridName][id];
                 selected = false;
             } else {
@@ -162,7 +161,6 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                     this.selectedMarkers[gridName][id].eventTime = new Date(eventTime).toISOString();;
                 }
                 selected = true;
-                console.log(`Selecting marker ${id}` );
             }
 
             var newMarker = undefined;
@@ -174,9 +172,6 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                     iconSize: marker.options.icon.options.iconSize,
                     iconAnchor: marker.options.icon.options.iconAnchor,
                 });
-
-                console.log(`HTML Before ${marker.options.icon.options.html}`);
-                console.log(`HTML After ${newMarkerIcon.options.html}`);
 
                 newMarker = L.marker([lat,lon], { icon: newMarkerIcon })
                                     .on('click', (function(e) {
@@ -230,6 +225,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                     '<br> <br> <i> Ctrl+Click to select/deselect</i> </p>');
             }
         }
+
         this.setGridCellLevelData = function(map, gridName, context, settings, data) {
 
             var dateFormat = settings.dateFormat;
