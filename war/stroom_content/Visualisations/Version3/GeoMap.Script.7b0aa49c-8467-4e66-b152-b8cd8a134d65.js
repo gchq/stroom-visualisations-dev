@@ -84,6 +84,18 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
             window.document.getElementsByTagName('head')[0].appendChild(scriptElement);
         }
 
+        // const style = `
+        //     .selected-icon {
+        //         background-color: white;
+        //         color: black;
+        //     }
+        //     .not-selected-icon {
+        //         background-color: black;
+        //         color: white;
+        //     }
+
+        // `;
+
           // Create a colour set.
         var color = d3.scale.category20();
 
@@ -106,6 +118,91 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
             
 
            
+        }
+
+        this.selectedMarkers = {};
+
+        this.toggleSelection = function (gridName, marker, val, iconMode) {
+            const id = marker._leaflet_id;
+
+            const lat = val.length > geomapIndexLatitude ? val[geomapIndexLatitude] : undefined;
+            const lon = val.length > geomapIndexLongitude ? val[geomapIndexLongitude] : undefined;
+            const name = val.length > geomapIndexName ? val[geomapIndexName] : undefined;
+            const series = val.length > geomapIndexGridSeries ? val[geomapIndexGridSeries] : undefined; 
+            const icon = val.length > geomapIndexIcon ? val[geomapIndexIcon] : undefined;
+            const eventTime = val.length > geomapIndexEventTime ? val[geomapIndexEventTime] : undefined;
+
+            if (this.selectedMarkers[gridName] == undefined) {
+                this.selectedMarkers[gridName] = {}; 
+            }
+        
+            var selected;
+            if (this.selectedMarkers[gridName][id]) {
+                console.log(`Deselecting marker ${id}` );
+                delete this.selectedMarkers[gridName][id];
+                selected = false;
+            } else {
+                this.selectedMarkers[gridName][id] = {};
+                if (lat) {
+                    this.selectedMarkers[gridName][id].lat = lat;
+                }
+                if (lon) {
+                    this.selectedMarkers[gridName][id].lon = lon;
+                }
+                if (name) {
+                    this.selectedMarkers[gridName][id].name = name;
+                }
+                if (series) {
+                    this.selectedMarkers[gridName][id].series = series;
+                }
+                if (icon) {
+                    this.selectedMarkers[gridName][id].icon = icon;
+                }
+                if (eventTime) {
+                    this.selectedMarkers[gridName][id].eventTime = new Date(eventTime).toISOString();;
+                }
+                selected = true;
+                console.log(`Selecting marker ${id}` );
+            }
+
+            var newMarker = undefined;
+            if (iconMode) {
+                const regex = /(i class="fa fa.*" style="color: )(.*)(;")/;
+                const newMarkerIcon = L.divIcon({
+                    className: marker.options.icon.options.className,
+                    html: marker.options.icon.options.html.replace(regex, selected ? "$1darkorange$3" : "$1black$3"),
+                    iconSize: marker.options.icon.options.iconSize,
+                    iconAnchor: marker.options.icon.options.iconAnchor,
+                });
+
+                console.log(`HTML Before ${marker.options.icon.options.html}`);
+                console.log(`HTML After ${newMarkerIcon.options.html}`);
+
+                newMarker = L.marker([lat,lon], { icon: newMarkerIcon })
+                                    .on('click', (function(e) {
+                                        if (e.originalEvent.ctrlKey) {
+                                            this.toggleSelection(gridName, marker, val, true);
+                                        }
+                                    }).bind(this));
+            } else {
+                newMarker = L.circleMarker([lat,lon], {
+                    radius: 5, 
+                    stroke: selected,
+                    fillOpacity: 1.0,
+                    fillColor: selected ? "darkorange" : marker.options.color,
+                    fill:true,
+                    color: marker.options.color, fill: true}).on('click', (function(e) {
+                        if (e.originalEvent.ctrlKey) {
+                            this.toggleSelection(gridName, marker, val, false);
+                        }
+                    }).bind(this));
+            }
+            
+            this.markerLayers[gridName].removeLayer(marker);
+            this.markerLayers[gridName].addLayer(newMarker);
+
+            const selection = Array.from(Object.values(this.selectedMarkers[gridName]));
+            stroom.select(selection);
         }
 
         this.setGridCellLevelData = function(map, gridName, context, settings, data) {
@@ -133,7 +230,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                  
         
                        
-                        var marker;
+                        let marker;
                         const lat = parseFloat(val[geomapIndexLatitude]);
                         const lon = parseFloat(val[geomapIndexLongitude]);
                         
@@ -151,8 +248,8 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                             if (!colour) {
                                 colour = color(iconName);
                             }
-                            var markerHtml = "<div style='background-color:" + colour + 
-                                "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
+                            var markerHtml = `<div style="background-color: ${colour};" class="marker-pin">
+                                                </div><i class="fa fa-${iconName} awesome" style="color: black;"/>`;
 
                             var markerIcon = L.divIcon({
                                 className: 'custom-div-icon',
@@ -161,7 +258,12 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                                 iconAnchor: [15, 42]
                             });
 
-                            marker = L.marker([lat,lon], { icon: markerIcon });
+                            marker = L.marker([lat,lon], { icon: markerIcon })
+                                .on('click', (function(e) {
+                                    if (e.originalEvent.ctrlKey) {
+                                        this.toggleSelection(gridName, marker, val, true);
+                                    }
+                                }).bind(this));
 
                         } else {
                             //Use small circles rather than icons
@@ -169,33 +271,40 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                                 colour = "red";
                             }
 
-                            marker = L.circleMarker([lat,lon], {radius: 5, 
+                            marker = L.circleMarker([lat,lon], {
+                                radius: 5, 
                                 stroke: false,
                                 fillOpacity: 1.0,
-                                color: colour, fill: true});
+                                color: colour, fill: true}).on('click', (function(e) {
+                                    if (e.originalEvent.ctrlKey) {
+                                        this.toggleSelection(gridName, marker, val, false);
+                                    }
+                                }).bind(this));;
                         }
 
                         //Add popup details
                         if ((val.length > geomapIndexName && val[geomapIndexName]) ||
                         (val.length > geomapIndexSeries && val[geomapIndexSeries]) ||
                         ((val.length > geomapIndexEventTime && val[geomapIndexEventTime])))  {
-                        var popupHeading = "Information";
-                        if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
-                            popupHeading = val[geomapIndexSeries];
+                            var popupHeading = "Information";
+                            if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                                popupHeading = val[geomapIndexSeries];
+                            }
+
+                            let popupDetail = "";
+                            if (val.length > geomapIndexName && val[geomapIndexName]){
+                                popupDetail += val[geomapIndexName];
+                            }
+
+                            if (val.length > geomapIndexEventTime && val[geomapIndexEventTime]) {
+                                popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[geomapIndexEventTime], dateFormat);
+                            
+                            }                         
+
+                            marker.bindPopup('<p><b>' + popupHeading + '</b><br><br>' 
+                                + popupDetail + 
+                                '<br> <br> <i> Ctrl-Click to select</i> </p>');
                         }
-
-                        let popupDetail = "";
-                        if (val.length > geomapIndexName && val[geomapIndexName]){
-                            popupDetail += "<br/>" + val[geomapIndexName];
-                        }
-
-                        if (val.length > geomapIndexEventTime && val[geomapIndexEventTime]) {
-                            popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[geomapIndexEventTime], dateFormat);
-                         
-                        }                           
-
-                        marker.bindPopup('<p><b>' + popupHeading + '</b>' + popupDetail + '</p>');
-                    }
 
                         this.markerLayers[gridName].addLayer(marker);
                     }
