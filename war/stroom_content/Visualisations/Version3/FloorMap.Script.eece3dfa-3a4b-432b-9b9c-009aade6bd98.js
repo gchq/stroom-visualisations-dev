@@ -192,7 +192,7 @@ function getFloormapZonePopupHtml(zoneDictionaryUuid, campus, building, floor, z
 
     if (isShowTagsEnabled) {
         for (var i = 0; i < zoneTags.length; i++) {
-            html +=  "<br/>" + "#" + zoneTags[i];
+            html +=  "<br>" + "#" + zoneTags[i];
         }    
     }
     
@@ -778,6 +778,133 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             }
         }
 
+        
+        this.selectedMarkers = {};
+
+        this.toggleSelection = function (layerId, marker, val, dateFormat, iconMode) {
+            const id = marker._leaflet_id;
+
+            const floor = val.length > floormapIndexFloor ? val[floormapIndexFloor] : undefined;
+            const campus = val.length > floormapIndexCampus ? val[floormapIndexCampus] : undefined;
+            const building = val.length > floormapIndexBuilding ? val[floormapIndexBuilding] : undefined;
+            const isOriginTopLeft = 
+                this.config[campus][building][floor].isOriginTopLeft ?
+                this.config[campus][building][floor].isOriginTopLeft : false;
+            const x = parseFloat(val[floormapIndexX]);
+            const height = this.config[campus][building][floor].height;
+            const y = isOriginTopLeft ? height - parseFloat(val[floormapIndexY]) : parseFloat(val[floormapIndexY]);
+            
+            const name = val.length > floormapIndexName ? val[floormapIndexName] : undefined;
+            const series = val.length > floormapIndexSeries ? val[floormapIndexSeries] : undefined; 
+            const icon = val.length > floormapIndexIcon ? val[floormapIndexIcon] : undefined;
+            const eventTime = val.length > floormapIndexEventTime ? val[floormapIndexEventTime] : undefined;
+
+            if (this.selectedMarkers[layerId] == undefined) {
+                this.selectedMarkers[layerId] = {}; 
+            }
+        
+            var selected;
+            if (this.selectedMarkers[layerId][id]) {
+
+                delete this.selectedMarkers[layerId][id];
+                selected = false;
+            } else {
+                const selectionInfo = {};
+                
+                if (x) {
+                    selectionInfo.x = x;
+                }
+                if (y) {
+                    selectionInfo.y = y;
+                }
+                if (floor) {
+                    selectionInfo.floor = floor;
+                }
+                if (campus) {
+                    selectionInfo.campus = campus;
+                }
+                if (building) {
+                    selectionInfo.building = building;
+                }
+                if (name) {
+                    selectionInfo.name = name;
+                }
+                if (series) {
+                    selectionInfo.series = series;
+                }
+                if (icon) {
+                    selectionInfo.icon = icon;
+                }
+                if (eventTime) {
+                    selectionInfo.eventTime = new Date(eventTime).toISOString();
+                }
+
+                this.selectedMarkers[layerId][id] = selectionInfo;
+
+                selected = true;
+            }
+
+            var newMarker = undefined;
+            if (iconMode) {
+                const regex = /(i class="fa fa.*" style="color: )(.*)(;")/;
+                const newMarkerIcon = L.divIcon({
+                    className: marker.options.icon.options.className,
+                    html: marker.options.icon.options.html.replace(regex, selected ? "$1darkorange$3" : "$1black$3"),
+                    iconSize: marker.options.icon.options.iconSize,
+                    iconAnchor: marker.options.icon.options.iconAnchor,
+                });
+
+                newMarker = L.marker([y,x], { icon: newMarkerIcon })
+                                    .on('click', (function(e) {
+                                        if (e.originalEvent.ctrlKey) {
+                                            this.toggleSelection(layerId, marker, val, dateFormat, true);
+                                        }
+                                    }).bind(this));
+            } else {
+                newMarker = L.circleMarker([y,x], {
+                    radius: 5, 
+                    stroke: selected,
+                    fillOpacity: 1.0,
+                    fillColor: selected ? "darkorange" : marker.options.color,
+                    fill:true,
+                    color: marker.options.color, fill: true}).on('click', (function(e) {
+                        if (e.originalEvent.ctrlKey) {
+                            this.toggleSelection(layerId, marker, val, dateFormat, false);
+                        }
+                    }).bind(this));
+            }
+            
+            this.addMarkerPopup(newMarker, val, dateFormat) 
+            this.markerLayers[layerId].removeLayer(marker);
+            this.markerLayers[layerId].addLayer(newMarker);
+
+            const selection = Array.from(Object.values(this.selectedMarkers[layerId]));
+            stroom.select(selection);
+        }
+
+        this.addMarkerPopup = function(marker, val, dateFormat) {
+            if ((val.length > floormapIndexName && val[floormapIndexName]) ||
+            (val.length > floormapIndexSeries && val[floormapIndexSeries]) ||
+            ((val.length > floormapIndexEventTime && val[floormapIndexEventTime])))  {
+                var popupHeading = "Information";
+                if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
+                    popupHeading = val[floormapIndexSeries];
+                }
+
+                let popupDetail = "";
+                if (val.length > floormapIndexName && val[floormapIndexName]){
+                    popupDetail += "<br>" + val[floormapIndexName];
+                }
+
+                if (val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
+                    popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[floormapIndexEventTime], dateFormat);
+                }                           
+
+                marker.bindPopup('<p><b>' + popupHeading + '</b>' 
+                    + popupDetail  + 
+                    '<br> <br> <i> Ctrl+Click to select/deselect</i> </p>');
+            }
+        }
 
         this.setGridCellLevelData = function (gridName, context, settings, data) {
             var dateFormat = settings.dateFormat;
@@ -979,7 +1106,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                         const dataKey = this.createDataKey(val);
 
-                        var marker;
+                        let marker;
                         let height = 0;
                         let isOriginTopLeft = false;
                         if (this.config[campusId] && this.config[campusId][buildingId] && this.config[campusId][buildingId][floorId]) {
@@ -1007,8 +1134,8 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             if (!colour) {
                                 colour = color(iconName);
                             }
-                            var markerHtml = "<div style='background-color:" + colour + 
-                                "' class='marker-pin'></div><i class='fa fa-" + iconName + " awesome'>";
+                            var markerHtml = `<div style="background-color: ${colour};" class="marker-pin">
+                                                </div><i class="fa fa-${iconName} awesome" style="color: black;"/>`;
 
                             var markerIcon = L.divIcon({
                                 className: 'custom-div-icon',
@@ -1018,7 +1145,12 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             });
 
                             //Position is y,x deriving from latlon
-                            marker = L.marker([y,x], { icon: markerIcon });
+                            marker = L.marker([y,x], { icon: markerIcon })
+                                .on('click', (function(e) {
+                                    if (e.originalEvent.ctrlKey) {
+                                        this.toggleSelection(layerId, marker, val, dateFormat, true);
+                                    }
+                                }).bind(this));
 
                         } else {
                             //Use small circles rather than icons
@@ -1030,29 +1162,15 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                             marker = L.circleMarker([y,x], {radius: 5, 
                                 stroke: false,
                                 fillOpacity: 1.0,
-                                color: colour, fill: true});
+                                color: colour, fill: true}).on('click', (function(e) {
+                                    if (e.originalEvent.ctrlKey) {
+                                        this.toggleSelection(layerId, marker, val, dateFormat, false);
+                                    }
+                                }).bind(this));;
                         }
 
                         //Add popup details
-                        if ((val.length > floormapIndexName && val[floormapIndexName]) ||
-                            (val.length > floormapIndexSeries && val[floormapIndexSeries]) ||
-                            ((val.length > floormapIndexEventTime && val[floormapIndexEventTime])))  {
-                            var popupHeading = "Information";
-                            if (val.length > floormapIndexSeries && val[floormapIndexSeries]) {
-                                popupHeading = val[floormapIndexSeries];
-                            }
-
-                            let popupDetail = "";
-                            if (val.length > floormapIndexName && val[floormapIndexName]){
-                                popupDetail += "<br/>" + val[floormapIndexName];
-                            }
-
-                            if (val.length > floormapIndexEventTime && val[floormapIndexEventTime]) {
-                                popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[floormapIndexEventTime], dateFormat);
-                            }                           
-
-                            marker.bindPopup('<p><b>' + popupHeading + '</b>' + popupDetail + '</p>');
-                        }
+                        this.addMarkerPopup(marker, val, dateFormat);
 
                         this.markerLayers[layerId].addLayer(marker);
                         
