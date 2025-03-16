@@ -122,7 +122,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
 
         this.selectedMarkers = {};
 
-        this.toggleSelection = function (gridName, marker, val, iconMode) {
+        this.toggleSelection = function (gridName, marker, val, dateFormat, iconMode) {
             const id = marker._leaflet_id;
 
             const lat = val.length > geomapIndexLatitude ? val[geomapIndexLatitude] : undefined;
@@ -181,7 +181,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                 newMarker = L.marker([lat,lon], { icon: newMarkerIcon })
                                     .on('click', (function(e) {
                                         if (e.originalEvent.ctrlKey) {
-                                            this.toggleSelection(gridName, marker, val, true);
+                                            this.toggleSelection(gridName, marker, val, dateFormat, true);
                                         }
                                     }).bind(this));
             } else {
@@ -193,11 +193,12 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                     fill:true,
                     color: marker.options.color, fill: true}).on('click', (function(e) {
                         if (e.originalEvent.ctrlKey) {
-                            this.toggleSelection(gridName, marker, val, false);
+                            this.toggleSelection(gridName, marker, val, dateFormat, false);
                         }
                     }).bind(this));
             }
             
+            this.addMarkerPopup(newMarker, val, dateFormat) 
             this.markerLayers[gridName].removeLayer(marker);
             this.markerLayers[gridName].addLayer(newMarker);
 
@@ -205,6 +206,30 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
             stroom.select(selection);
         }
 
+        this.addMarkerPopup = function(marker, val, dateFormat) {
+            if ((val.length > geomapIndexName && val[geomapIndexName]) ||
+                    (val.length > geomapIndexSeries && val[geomapIndexSeries]) ||
+                    ((val.length > geomapIndexEventTime && val[geomapIndexEventTime])))  {
+                var popupHeading = "Information";
+                if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
+                    popupHeading = val[geomapIndexSeries];
+                }
+
+                let popupDetail = "";
+                if (val.length > geomapIndexName && val[geomapIndexName]){
+                    popupDetail += val[geomapIndexName];
+                }
+
+                if (val.length > geomapIndexEventTime && val[geomapIndexEventTime]) {
+                    popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[geomapIndexEventTime], dateFormat);
+                
+                }                         
+
+                marker.bindPopup('<p><b>' + popupHeading + '</b><br><br>' 
+                    + popupDetail + 
+                    '<br> <br> <i> Ctrl+Click to select/deselect</i> </p>');
+            }
+        }
         this.setGridCellLevelData = function(map, gridName, context, settings, data) {
 
             var dateFormat = settings.dateFormat;
@@ -261,7 +286,7 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                             marker = L.marker([lat,lon], { icon: markerIcon })
                                 .on('click', (function(e) {
                                     if (e.originalEvent.ctrlKey) {
-                                        this.toggleSelection(gridName, marker, val, true);
+                                        this.toggleSelection(gridName, marker, val, dateFormat, true);
                                     }
                                 }).bind(this));
 
@@ -277,35 +302,14 @@ function colorByEpochMilli (eventTime, minTime, maxTime) {
                                 fillOpacity: 1.0,
                                 color: colour, fill: true}).on('click', (function(e) {
                                     if (e.originalEvent.ctrlKey) {
-                                        this.toggleSelection(gridName, marker, val, false);
+                                        this.toggleSelection(gridName, marker, val, dateFormat, false);
                                     }
                                 }).bind(this));;
                         }
 
                         //Add popup details
-                        if ((val.length > geomapIndexName && val[geomapIndexName]) ||
-                        (val.length > geomapIndexSeries && val[geomapIndexSeries]) ||
-                        ((val.length > geomapIndexEventTime && val[geomapIndexEventTime])))  {
-                            var popupHeading = "Information";
-                            if (val.length > geomapIndexSeries && val[geomapIndexSeries]) {
-                                popupHeading = val[geomapIndexSeries];
-                            }
-
-                            let popupDetail = "";
-                            if (val.length > geomapIndexName && val[geomapIndexName]){
-                                popupDetail += val[geomapIndexName];
-                            }
-
-                            if (val.length > geomapIndexEventTime && val[geomapIndexEventTime]) {
-                                popupDetail += "<br>" + "Event Time: " + commonFunctions.dateToStr(val[geomapIndexEventTime], dateFormat);
-                            
-                            }                         
-
-                            marker.bindPopup('<p><b>' + popupHeading + '</b><br><br>' 
-                                + popupDetail + 
-                                '<br> <br> <i> Ctrl-Click to select</i> </p>');
-                        }
-
+                        this.addMarkerPopup(marker, val, dateFormat);
+                        
                         this.markerLayers[gridName].addLayer(marker);
                     }
                 }
