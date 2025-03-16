@@ -860,6 +860,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                             this.toggleSelection(layerId, marker, val, dateFormat, true);
                                         }
                                     }).bind(this));
+                this.addMarkerPopup(newMarker, val, dateFormat, true);
             } else {
                 newMarker = L.circleMarker([y,x], {
                     radius: 5, 
@@ -871,10 +872,12 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                         if (e.originalEvent.ctrlKey) {
                             this.toggleSelection(layerId, marker, val, dateFormat, false);
                         }
-                    }).bind(this));
+                       }).bind(this));
+
+                this.addMarkerPopup(newMarker, val, dateFormat, false);
             }
             
-            this.addMarkerPopup(newMarker, val, dateFormat) 
+            
             this.markerLayers[layerId].removeLayer(marker);
             this.markerLayers[layerId].addLayer(newMarker);
 
@@ -882,7 +885,7 @@ function floormapBaseLayerChanged (vis, gridName, e) {
             stroom.select(selection);
         }
 
-        this.addMarkerPopup = function(marker, val, dateFormat) {
+        this.addMarkerPopup = function(marker, val, dateFormat, iconMode) {
             if ((val.length > floormapIndexName && val[floormapIndexName]) ||
             (val.length > floormapIndexSeries && val[floormapIndexSeries]) ||
             ((val.length > floormapIndexEventTime && val[floormapIndexEventTime])))  {
@@ -902,7 +905,8 @@ function floormapBaseLayerChanged (vis, gridName, e) {
 
                 marker.bindPopup('<p><b>' + popupHeading + '</b>' 
                     + popupDetail  + 
-                    '<br> <br> <i> Ctrl+Click to select/deselect</i> </p>');
+                    '<br> <br> <i> Ctrl+Click to select/deselect</i> </p>',
+                    { offset: L.point(0,iconMode?-30:-5) });
             }
         }
 
@@ -1152,6 +1156,8 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     }
                                 }).bind(this));
 
+                                //Add popup details
+                                this.addMarkerPopup(marker, val, dateFormat, false);
                         } else {
                             //Use small circles rather than icons
                             if (!colour) {
@@ -1166,11 +1172,11 @@ function floormapBaseLayerChanged (vis, gridName, e) {
                                     if (e.originalEvent.ctrlKey) {
                                         this.toggleSelection(layerId, marker, val, dateFormat, false);
                                     }
-                                }).bind(this));;
+                                }).bind(this));
+                                
+                                //Add popup details
+                                this.addMarkerPopup(marker, val, dateFormat, false);
                         }
-
-                        //Add popup details
-                        this.addMarkerPopup(marker, val, dateFormat);
 
                         this.markerLayers[layerId].addLayer(marker);
                         
