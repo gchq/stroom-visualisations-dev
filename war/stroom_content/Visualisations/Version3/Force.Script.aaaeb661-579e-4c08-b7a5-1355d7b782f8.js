@@ -908,7 +908,7 @@ updateSearchLabels();
 
         e.style ("stroke", chooseNodeStroke);
         e.style ("fill", chooseNodeFill);
-        e.style ("opacity", 1.0);
+        e.style ("opacity", chooseNodeOpacity);
 
       });
 
@@ -965,6 +965,10 @@ updateSearchLabels();
 
 
  var chooseNodeOpacity = function (d){
+    if (d.group == groupLiteral && isGroupNodeExploded (createNodeId(d))) {
+      return 0.1;
+    }
+
    if (!currentSearch)
     return 1.0;
 
@@ -1137,6 +1141,8 @@ updateSearchLabels();
 
 
   node.style ("fill", chooseNodeFill);
+
+  node.style ("opacity", chooseNodeOpacity);
 
 
 
