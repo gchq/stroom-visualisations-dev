@@ -284,7 +284,7 @@ if(!visualisations) {
           } else if(eventTarget.parentNode == this) {
             handler.call(eventTarget.parentNode,
               eventTarget.parentNode.__data__);
-          } else if(eventTarget.parentNode.parentNode == this) {
+          } else if(eventTarget.parentNode && eventTarget.parentNode.parentNode == this) {
             handler.call(eventTarget.parentNode.parentNode,
               eventTarget.parentNode.parentNode.__data__);
           }
