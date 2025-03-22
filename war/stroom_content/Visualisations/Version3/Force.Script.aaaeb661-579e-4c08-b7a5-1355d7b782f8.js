@@ -19,7 +19,10 @@ if (!visualisations) {
   var visualisations = {};
 }
 visualisations.Force = function() {
- var element = window.document.createElement("div");
+  var commonFunctions = visualisations.commonFunctions;
+  var commonConstants = visualisations.commonConstants;
+
+  var element = window.document.createElement("div");
   this.element = element;
 
   var d3 = window.d3;
@@ -113,6 +116,29 @@ visualisations.Force = function() {
   var stopColour100 = "#eeeeee";
   var stopColourEqual = stopColourVariable;
 
+  var inverseHighlight;
+
+  if (typeof(tip) == "undefined") {
+    inverseHighlight = commonFunctions.inverseHighlight();
+
+    inverseHighlight.toSelectionItem = function(d) {
+      return {
+        key: d.name,
+        name: d.name,
+      };
+    }
+
+    tip = inverseHighlight.tip()
+        .html(function(tipData) {
+            var html = inverseHighlight.htmlBuilder()
+                .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, "%H:%M:%S on %A, %B %e, %Y"))
+                .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
+                .build();
+
+            return html;
+        });
+}
+
   var animationIndex = -1;
 
 
@@ -123,6 +149,8 @@ visualisations.Force = function() {
                .scaleExtent([0.1,10])
                .on("zoom", zoomed);
     svg.call(zoom);
+
+    svg.call(tip);
 
    var freezeTimeout;
    function zoomed () {
@@ -844,8 +872,8 @@ updateSearchLabels();
       if (d.role == "target") {
       e.append("svg:polygon")
       .attr("points", function (d) {return ((d.group == groupLiteral) ?
-       "0,5 5,10 10,10 10,5 5,0 10,-5 10,-10 5,-10 0,-5 -5,-10 -10,-10 -10,-5 -5,0 -10,5 -10,10 -5,10 0,5" :
-      "0,3 3,6 6,6 6,3 3,0 6,-3 6,-6 3,-6 0,-3 -3,-6 -6,-6 -6,-3 -3,0 -6,3 -6,6 -3,6 0,3");})
+       "0,5 7,12 5,5 12,7 5,0 12,-7 5,-5 7,-12 0,-5 -7,-12 -5,-5 -12,-7 -5,0 -12,7 -5,5 -7,12 0,5" :
+      "0,3 4,7 3,3 7,4 3,0 7,-4 3,-3 4,-7 0,-3 -4,-7 -3,-3 -7,-4 -3,0 -7,4 -3,3 -4,7 0,3");})
 
       // .style("stroke", function (d) { return ((d.group == groupLiteral) ? color (d.name) : color (d.group || d.name)); })
       // .style ("stroke", chooseNodeStroke)
@@ -855,10 +883,10 @@ updateSearchLabels();
 
 
       } else if (d.role == "source") {
-      e.append("svg:polygon")
-      .attr("points", function (d) {return ((d.group == groupLiteral) ?
-      "-10,0 0,16 10,0 0,-16" :
-      "-5,0 0,8 5,0 0,-8");})
+        e.append("svg:polygon")
+        .attr("points", function (d) {return ((d.group == groupLiteral) ?
+         "0,5 5,10 10,10 10,5 5,0 10,-5 10,-10 5,-10 0,-5 -5,-10 -10,-10 -10,-5 -5,0 -10,5 -10,10 -5,10 0,5" :
+        "0,3 3,6 6,6 6,3 3,0 6,-3 6,-6 3,-6 0,-3 -3,-6 -6,-6 -6,-3 -3,0 -6,3 -6,6 -3,6 0,3");})
       // .style("fill", function(d)
       // {
       //   if (d.group == groupLiteral && explodedGroupNodes[createNodeId(d)])
@@ -876,8 +904,10 @@ updateSearchLabels();
       ;
       } else if (d.role == "joint")
       {
-      graphic = e.append("svg:circle")
-      .attr("r", function (d) {return ((d.group == groupLiteral) ?  10 : 5);})
+      graphic = e.append("svg:polygon")
+      .attr("points", function (d) {return ((d.group == groupLiteral) ?
+       "0,5 7,12 5,5 12,7 5,0 10,-5 10,-10 5,-10 0,-5 -7,-12 -5,-5 -12,-7 -5,0 -10,5 -10,10 -5,10 0,5" :
+      "0,3 4,7 3,3 7,4 3,0 6,-3 6,-6 3,-6 0,-3 -4,-7 -3,-3 -7,-4 -3,0 -6,3 -6,6 -3,6 0,3");})
       // .style("fill", function(d)
       // {
       //   if (d.group == groupLiteral && explodedGroupNodes[createNodeId(d)])
@@ -966,7 +996,7 @@ updateSearchLabels();
 
  var chooseNodeOpacity = function (d){
     if (d.group == groupLiteral && isGroupNodeExploded (createNodeId(d))) {
-      return 0.1;
+      return 0.5;
     }
 
    if (!currentSearch)
@@ -1306,13 +1336,24 @@ updateSearchLabels();
   if (nodeMovement)
     force.size([width, height]).start();
 
-
+  commonFunctions.addDelegateEvent(nodesLayer, "mouseover", "polygon", inverseHighlight.makeInverseHighlightMouseOverHandler(null, linkData.types, nodesLayer, "polygon"));
+  commonFunctions.addDelegateEvent(nodesLayer, "mouseout", "polygon", inverseHighlight.makeInverseHighlightMouseOutHandler(nodesLayer, "polygon"));
+  commonFunctions.addDelegateEvent(nodesLayer, "click", "polygon", inverseHighlight.makeInverseHighlightMouseClickHandler(nodesLayer, "polygon"));
 
   };
+
+
+
 
   this.resize = function() {
     update(0);
   };
+
+  this.teardown = function() {
+    if (typeof(tip) != "undefined"){
+        tip.destroy();
+    }
+};
 
 
   //update(0);
