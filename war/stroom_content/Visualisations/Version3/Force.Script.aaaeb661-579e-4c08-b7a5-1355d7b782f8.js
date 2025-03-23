@@ -564,7 +564,7 @@ visualisations.Force = function() {
 
    explodeByDefault = false;
 
-  createNodeAndGroups = function (nodeName, nodeId, groupName, groupNodeId, nodesInThisSet, explodeNow) {
+  const createNodeAndGroups = function (nodeName, nodeId, groupName, groupNodeId, nodesInThisSet, explodeNow) {
 
     if (!groupName || explodeNow || isGroupNodeExploded (groupNodeId))
     {
@@ -629,7 +629,7 @@ visualisations.Force = function() {
 
   };
 
-  createStandardLink = function (srcId, dstId, count, forward, index){
+  const createStandardLink = function (srcId, dstId, count, forward, index){
     var linkObj;
 
     var linkId = createLinkId (srcId, dstId);
@@ -696,7 +696,7 @@ visualisations.Force = function() {
 
   };
 
-  updateForceMap = function () {
+  const updateForceMap = function () {
   if (!nodeMovement)
     return;
 
