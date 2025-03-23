@@ -20,7 +20,7 @@ if (!visualisations) {
 }
 visualisations.Force = function() {
   const groupLiteral = "*Group*";
-  
+
   var commonFunctions = visualisations.commonFunctions;
   var commonConstants = visualisations.commonConstants;
 
@@ -878,9 +878,10 @@ updateSearchLabels();
 
       if (d.role == "target") {
       e.append("svg:polygon")
-      .attr("points", function (d) {return ((d.group == groupLiteral) ?
-       "0,5 7,12 5,5 12,7 5,0 12,-7 5,-5 7,-12 0,-5 -7,-12 -5,-5 -12,-7 -5,0 -12,7 -5,5 -7,12 0,5" :
-      "0,3 4,7 3,3 7,4 3,0 7,-4 3,-3 4,-7 0,-3 -4,-7 -3,-3 -7,-4 -3,0 -7,4 -3,3 -4,7 0,3");})
+      .attr("points", function (d) {
+        return ((d.group == groupLiteral) ?
+        "0,7 -5,5 -7,0 -5,-5 0,-7 5,-5 7,0 5,5 0,7 -5,5 -7,0 -5,-5 0,-7 5,-5 7,0 5,5" :
+            "0,4 -3,3 -4,0 -3,-3 0,-4 3,-3 4,0 3,3 0,4 -3,3 -4,0 -3,-3 0,-4 3,-3 4,0 3,3");})
 
       // .style("stroke", function (d) { return ((d.group == groupLiteral) ? color (d.name) : color (d.group || d.name)); })
       // .style ("stroke", chooseNodeStroke)
