@@ -19,6 +19,8 @@ if (!visualisations) {
   var visualisations = {};
 }
 visualisations.Force = function() {
+  const groupLiteral = "*Group*";
+  
   var commonFunctions = visualisations.commonFunctions;
   var commonConstants = visualisations.commonConstants;
 
@@ -122,9 +124,16 @@ visualisations.Force = function() {
     inverseHighlight = commonFunctions.inverseHighlight();
 
     inverseHighlight.toSelectionItem = function(d) {
+
+      if (d.group == groupLiteral){
+        return {
+          key: `Group: ${d.name}`,
+        }
+      }
       return {
-        key: d.name,
+        key: `${d.name} (${d.group})`,
         name: d.name,
+        group: d.group,
       };
     }
 
@@ -464,8 +473,6 @@ visualisations.Force = function() {
   else
     return endA + " to " + endB;
  };
-
- var groupLiteral = "*Group*";
 
  var linkData = null;
 
@@ -885,8 +892,8 @@ updateSearchLabels();
       } else if (d.role == "source") {
         e.append("svg:polygon")
         .attr("points", function (d) {return ((d.group == groupLiteral) ?
-         "0,5 5,10 10,10 10,5 5,0 10,-5 10,-10 5,-10 0,-5 -5,-10 -10,-10 -10,-5 -5,0 -10,5 -10,10 -5,10 0,5" :
-        "0,3 3,6 6,6 6,3 3,0 6,-3 6,-6 3,-6 0,-3 -3,-6 -6,-6 -6,-3 -3,0 -6,3 -6,6 -3,6 0,3");})
+         "0,5 10,10 5,0 10,-10 0,-5 -10,-10 -5,0 -10,10 0,5" :
+        "0,3 6,6 3,0  6,-6 0,-3 -6,-6 -3,0 -6,6 0,3");})
       // .style("fill", function(d)
       // {
       //   if (d.group == groupLiteral && explodedGroupNodes[createNodeId(d)])
@@ -906,8 +913,8 @@ updateSearchLabels();
       {
       graphic = e.append("svg:polygon")
       .attr("points", function (d) {return ((d.group == groupLiteral) ?
-       "0,5 7,12 5,5 12,7 5,0 10,-5 10,-10 5,-10 0,-5 -7,-12 -5,-5 -12,-7 -5,0 -10,5 -10,10 -5,10 0,5" :
-      "0,3 4,7 3,3 7,4 3,0 6,-3 6,-6 3,-6 0,-3 -4,-7 -3,-3 -7,-4 -3,0 -6,3 -6,6 -3,6 0,3");})
+       "0,5 7,12 5,5 12,7 5,0 10,-10 0,-5 -7,-12 -5,-5 -12,-7 -5,0 -10,10 0,5" :
+      "0,3 4,7 3,3 7,4 3,0 6,-6 0,-3 -4,-7 -3,-3 -7,-4 -3,0 -6,6 0,3");})
       // .style("fill", function(d)
       // {
       //   if (d.group == groupLiteral && explodedGroupNodes[createNodeId(d)])
@@ -1255,10 +1262,13 @@ updateSearchLabels();
       return;
 
     //Toggle explodedness of group nodes
-    if (explodedGroupNodes [createNodeId (d)])
+    if (explodedGroupNodes [createNodeId (d)]){
+      nodeMovement = true;
       explodedGroupNodes [createNodeId (d)] = null;
-    else
+    } else {
+      nodeMovement = true;
       explodedGroupNodes [createNodeId (d)] = true;
+    }
 
     updateForceMap ();
  };
