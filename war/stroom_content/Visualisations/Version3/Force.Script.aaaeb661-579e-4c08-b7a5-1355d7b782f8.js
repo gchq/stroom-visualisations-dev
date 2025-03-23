@@ -61,6 +61,7 @@ visualisations.Force = function() {
       else
       {
         searches.pop ();
+        updateSearchLabels();
       }
     }
     else if (keyNum == 13) //Return or enter
