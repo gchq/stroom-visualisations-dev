@@ -139,12 +139,16 @@ visualisations.Force = function() {
 
     tip = inverseHighlight.tip()
         .html(function(tipData) {
-            var html = inverseHighlight.htmlBuilder()
-                .addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name, "%H:%M:%S on %A, %B %e, %Y"))
-                .addTipEntry("Value",commonFunctions.autoFormat(tipData.values.value))
-                .build();
+            var html = inverseHighlight.htmlBuilder();
 
-            return html;
+            if (tipData.values.group == groupLiteral){
+              html.addTipEntry("Group",commonFunctions.autoFormat(tipData.values.name))
+            } else {
+                html.addTipEntry("Name",commonFunctions.autoFormat(tipData.values.name))
+                  .addTipEntry("Group",commonFunctions.autoFormat(tipData.values.group));
+            }
+
+            return html.build();
         });
 }
 
@@ -158,8 +162,6 @@ visualisations.Force = function() {
                .scaleExtent([0.1,10])
                .on("zoom", zoomed);
     svg.call(zoom);
-
-    svg.call(tip);
 
    var freezeTimeout;
    function zoomed () {
@@ -549,6 +551,7 @@ visualisations.Force = function() {
 
   }
 
+    svg.call(tip);
     updateForceMap();
   };
 
@@ -861,10 +864,8 @@ visualisations.Force = function() {
   node.enter().append("svg:g")
       .attr("class", "node")
       .on ("click", mouseUpOnNode)
-      .on ("mousedown", mouseDownOnSomething)
-      //.call(force.drag)
-      .append("svg:title")
-      .text(function(d) { return ((d.group == groupLiteral) ? "Group: " + d.name : d.name + (d.group ? " (" + d.group + ")" : "")); });
+      .on ("mousedown", mouseDownOnSomething);
+      
   node.exit().transition().duration(100).attr("opacity", "0").remove();
 
 
@@ -1347,10 +1348,12 @@ updateSearchLabels();
   if (nodeMovement)
     force.size([width, height]).start();
 
-  commonFunctions.addDelegateEvent(nodesLayer, "mouseover", "polygon", inverseHighlight.makeInverseHighlightMouseOverHandler(null, linkData.types, nodesLayer, "polygon"));
-  commonFunctions.addDelegateEvent(nodesLayer, "mouseout", "polygon", inverseHighlight.makeInverseHighlightMouseOutHandler(nodesLayer, "polygon"));
-  commonFunctions.addDelegateEvent(nodesLayer, "click", "polygon", inverseHighlight.makeInverseHighlightMouseClickHandler(nodesLayer, "polygon"));
-
+  if (inverseHighlight) {
+    commonFunctions.addDelegateEvent(nodesLayer, "mouseover", "polygon", inverseHighlight.makeInverseHighlightMouseOverHandler(null, linkData.types, nodesLayer, "polygon"));
+    commonFunctions.addDelegateEvent(nodesLayer, "mouseout", "polygon", inverseHighlight.makeInverseHighlightMouseOutHandler(nodesLayer, "polygon"));
+    commonFunctions.addDelegateEvent(nodesLayer, "click", "polygon", inverseHighlight.makeInverseHighlightMouseClickHandler(nodesLayer, "polygon"));  
+  }
+ 
   };
 
 
