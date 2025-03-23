@@ -300,7 +300,7 @@ visualisations.Force = function() {
 
 
       var myNodeId =  createNodeId (d).toLowerCase();
-      if (currentSearch && myNodeId.startsWith (currentSearch))
+      if (currentSearch && currentSearch.length > 1 && myNodeId.startsWith (currentSearch))
       {
         var label = e.append ("text").attr("dx", 12).attr("dy",".35em").text (d.name);
         label.style("stroke","#ff0000");
@@ -308,19 +308,19 @@ visualisations.Force = function() {
       }
       else
       {
-        var text = "";
+        let text = "";
         searches.forEach (function (term){
         if (myNodeId.startsWith (term))
           text = d.name;
         });
 
-        if (text)
+        if (text && text.length > 0)
         {
           var label2 = e.append ("text").attr("dx", 12).attr("dy",".35em").text (text);
           if (d.group == groupLiteral)
-            label2.style("stroke","#0000dd");
+            label2.style("stroke","#8000dd");
           else
-            label2.style("stroke","#000000");
+            label2.style("stroke","#0077dd");
         }
       }
     });
