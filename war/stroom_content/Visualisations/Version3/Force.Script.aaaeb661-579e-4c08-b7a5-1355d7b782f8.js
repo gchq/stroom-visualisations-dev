@@ -77,11 +77,11 @@ visualisations.Force = function() {
     else if (keyNum >= 32)
     {
       currentSearch += String.fromCharCode (keyNum).toLowerCase();
-      searchBox.style("border", "solid 1px blue");
+      searchBox.style("border", "solid 1px lightblue");
     }
 
 
-    searchBox.text (currentSearch);
+    searchBox.text (currentSearch).style("color", "red");
 
 
   };
