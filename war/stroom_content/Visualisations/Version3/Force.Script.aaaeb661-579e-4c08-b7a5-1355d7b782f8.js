@@ -1251,6 +1251,12 @@ updateSearchLabels();
 
  var mouseUpOnNode = function (d) {
  panning = null;
+
+  if(d3.event.ctrlKey){
+    //This means select
+    return;
+  }
+
    if (d.group != groupLiteral)
    {
     toggleNodeMovement();
