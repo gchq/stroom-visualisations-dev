@@ -58,10 +58,29 @@
 
       while(i--) nodel.classed(directions[i], false)
       coords = direction_callbacks.get(dir).apply(this)
+      // retrieve the svg container bounds
+      var container = svg.getBoundingClientRect();
+      var tooltipWidth = nodel.node().offsetWidth;
+      var tooltipHeight = nodel.node().offsetHeight;
+      // find top and offset preventing top boundary break
+      var top = coords.top + poffset[0] + scrollTop;
+      if (top < container.top) {
+        top = container.top;
+      // similar as above for lower boundary breaks using top bounds
+      } else if (top + tooltipHeight > container.bottom) {
+        top = container.bottom - tooltipHeight;
+      }
+      // find max for sides like above and offset preventing breaks
+      var left = coords.left + poffset[1] + scrollLeft;
+      if (left < container.left) {
+        left = container.left;
+      } else if (left + tooltipWidth > container.right) {
+        left = container.right - tooltipWidth;
+      }
       nodel.classed(dir, true).style({
-        top: (coords.top +  poffset[0]) + scrollTop + 'px',
-        left: (coords.left + poffset[1]) + scrollLeft + 'px'
-      })
+        top: top + 'px',
+        left: left + 'px'
+      });
 
       return tip
     }
