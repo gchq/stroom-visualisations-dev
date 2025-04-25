@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "4ac9c3f6-d605-4903-b943-0f3be05f10d1",
+  "name" : "FloorMap",
+  "version" : "a16fa0fc-de3e-4f4b-83ac-3d0ca659784c",
+  "description" : "\nA visualisation that can display locations of data on a floorplan.\n\nThere can be a number of floorplans per building, a number of buildings per building group and there can be a number of building groups defined (e.g. one per campus).\n\nIt is necessary to configure FloorMap with configuration for your installation but it is usually easier to create a local floormap visualisation that is configured for your installation.\n\nThis can be achieved by cloning the stroom-visualisations-dev git repository, and following the instructions in stroom-content-local/builders/FloorMapLocalBuilder/README.md.\n\n\n            ",
+  "functionName" : "visualisations.FloorMap",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "eece3dfa-3a4b-432b-9b9c-009aade6bd98",
+    "name" : "FloorMap"
+  }
+}

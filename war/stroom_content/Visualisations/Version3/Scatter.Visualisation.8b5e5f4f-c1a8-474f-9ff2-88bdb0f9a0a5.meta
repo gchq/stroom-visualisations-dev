@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "8b5e5f4f-c1a8-474f-9ff2-88bdb0f9a0a5",
+  "name" : "Scatter",
+  "version" : "db87dce3-224c-4944-8d77-3e1c61bcc365",
+  "description" : "Version: SNAPSHOT\nGit commit: 42cd516461f3c8366e95a64d069a379fcb316669\nGit commit time: 2018-12-14 20:04:46 +0000",
+  "functionName" : "visualisations.Scatter",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "80aac919-980e-43e8-83a1-83eed536ae51",
+    "name" : "Scatter"
+  }
+}

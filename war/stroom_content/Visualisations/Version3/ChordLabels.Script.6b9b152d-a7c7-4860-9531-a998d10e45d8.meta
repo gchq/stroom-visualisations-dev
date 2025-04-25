@@ -1,0 +1,15 @@
+{
+    "type": "Script",
+    "uuid": "6b9b152d-a7c7-4860-9531-a998d10e45d8",
+    "name": "ChordLabels",
+    "version": "Template version",
+    "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "5d4252d6-6f13-4f24-9481-9e98e038747c",
+    "name" : "GenericGrid"
+  } ]
+}

@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "e01f6ba0-509a-40c4-b86d-6524e8b04733",
+  "name" : "SeriesSessionMap",
+  "version" : "d9848528-088f-458c-9e4d-36ebfa8ac9cb",
+  "description" : "Version: SNAPSHOT\n    Git commit: @@GIT_COMMIT@@\n\tGit commit time: @@GIT_COMMIT_TIME@@",
+  "functionName" : "visualisations.SeriesSessionMap",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "3296b381-f383-496f-8f54-9d42a0fd5bf1",
+    "name" : "SeriesSessionMap"
+  }
+}

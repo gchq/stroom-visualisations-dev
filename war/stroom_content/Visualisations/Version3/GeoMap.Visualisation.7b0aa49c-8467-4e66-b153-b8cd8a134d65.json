@@ -1,0 +1,195 @@
+{
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "name",
+                    "type": "field",
+                    "label": "Name"
+                },
+                {
+                    "id": "lat",
+                    "type": "field",
+                    "label": "Latitude"
+                },
+                {
+                    "id": "lon",
+                    "type": "field",
+                    "label": "Longitude"
+                },
+                {
+                    "id": "eventTime",
+                    "type": "field",
+                    "label": "Event Time (optional)"
+                  },
+                {
+                    "id": "iconName",
+                    "type": "field",
+                    "label": "Icon Name"
+                },
+                {
+                    "id": "series",
+                    "type": "field",
+                    "label": "Series"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series"
+                }
+            ]
+        },
+        {
+            "name": "GeoMap",
+            "controls": [
+                {
+                    "id": "initialLatitude",
+                    "type": "text",
+                    "label": "Initial Latitude",
+                    "defaultValue": "51.0",
+                    "max": "85",
+                    "min": "-85"
+                },
+                {
+                    "id": "initialLongitude",
+                    "type": "text",
+                    "label": "Initial Longitude",
+                    "defaultValue": "0.0",
+                    "max": "+180",
+                    "min": "-180"
+                },
+                {
+                    "id": "initialZoomLevel",
+                    "type": "number",
+                    "label": "Initial Zoom Level",
+                    "defaultValue": "13",
+                    "max": "25",
+                    "min": "1"
+                },
+                {
+                    "id": "tileServerUrl",
+                    "type": "text",
+                    "label": "Tile Server URL",
+                    "defaultValue": "https://{s}.tile.osm.org/{z}/{x}/{y}.png",
+                    "max": "+180",
+                    "min": "-180"
+                },
+                {
+                    "id": "tileServerAttribution",
+                    "type": "text",
+                    "label": "Tile Server URL",
+                    "defaultValue": "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
+                    "max": "+180",
+                    "min": "-180"
+                },
+                {
+                    "id": "isColourByEventTimeEnabled",
+                    "type": "selection",
+                    "label": "Colour by event time: green (earlier) to blue (later)",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "maxValues",
+                    "type": "number",
+                    "label": "Max Values",
+                    "defaultValue": "10000",
+                    "max": "500000",
+                    "min": "1"
+                },
+                {
+                    "id": "sortSeries",
+                    "type": "selection",
+                    "label": "Sort Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "sortGridSeries",
+                    "type": "selection",
+                    "label": "Sort Grid Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "id": "${gridSeries}",
+                    "sort": {
+                        "direction": "${sortGridSeries}",
+                        "enabled": "true",
+                        "priority": 0
+                    }
+                },
+                "nest": {
+                    "key": {
+                        "id": "${series}",
+                        "sort": {
+                            "direction": "${sortSeries}",
+                            "enabled": "true",
+                            "priority": 1
+                        }
+                    },
+                    "values": {
+                        "fields": [
+                            {
+                                "id": "${name}",
+                                "sort": {
+                                    "direction": "Ascending",
+                                    "enabled": "true",
+                                    "priority": 2
+                                }
+                            },
+                            {
+                                "id": "${lat}"
+                            },
+                            {
+                                "id": "${lon}"
+                            },
+                            {
+                                "id": "${eventTime}"
+                            },
+                            {
+                                "id": "${iconName}"
+                            },
+                            {
+                                "id": "${series}"
+                            },
+                            {
+                                "id": "${gridSeries}"
+                            }
+                        ],
+                        "limit": {
+                            "enabled": "true",
+                            "size": "${maxValues}"
+                        }
+                    },
+                    "limit": {
+                        "enabled": "true",
+                        "size": "100"
+                    }
+                },
+                "limit": {
+                    "enabled": "true",
+                    "size": "25"
+                }
+            }
+        }
+    }
+}

@@ -223,6 +223,13 @@ function VisualisationManager() {
   var update = function(callback) {
     if (vis && currentData) {
       vis.setData(currentContext, currentSettings, currentData);
+    } else {
+      if (!vis) {
+        console.log(`No update - vis is not ready.`);
+      }
+      if (!currentData) {
+        console.log(`No update - data is not ready.`);
+      }
     }
   };
 
@@ -234,6 +241,8 @@ function VisualisationManager() {
           injectNextScript(scripts, callback);
         },
         onFailure : function(ex) {
+          console.log("Failed to inject script '" + script.name + "' - "
+              + ex.message);
           callback.onFailure("Failed to inject script '" + script.name + "' - "
               + ex.message);
         }
@@ -272,20 +281,20 @@ function VisualisationManager() {
     doEnd();
   };
 
-  this.setVisType = function(type, callback) {
+  this.setVisType = function(type, className, callback) {
     try {
       vis = eval("new " + type + "()");
       callback.onSuccess(null);
+      console.log(`Set Vis Type Succeeded for ${type}`);
     } catch (ex) {
+      console.log(`Set Vis Type Fails: ${ex.message}`);
       callback.onFailure(ex.message);
     }
 
     if (vis && vis.element) {
       document.body.innerHTML = "";
       document.body.appendChild(vis.element);
-      vis.element.style.width = "100%";
-      vis.element.style.height = "100%";
-      vis.element.className = "vis";
+      vis.element.className = className;
 
       if (running) {
         doStart();
@@ -294,11 +303,18 @@ function VisualisationManager() {
     }
   };
 
+  this.setClassName = function(className, callback) {
+    if (vis && vis.element) {
+      vis.element.className = className;
+    }
+  };
+
   this.setData = function(context, settings, data, callback) {
     currentContext = context;
     currentSettings = settings;
     currentData = data;
 
+    console.log("setData invoked", data);
     update();
   };
 
@@ -361,6 +377,7 @@ var messageListener = function(event) {
     }
     params.push(callback);
 
+    console.log(`Calling ${json.data.functionName} frameId is ${frameId}`);
     eval(json.data.functionName + ".apply(this, params);");
   }
 }

@@ -28,7 +28,7 @@ Common features of these visualisations:
 * Axes that can be optionally hidden
 * Text labels that can be optionally hidden (e.g. doughnut)
 
-Stroom visualisations all conform to the following criteria:
+Stroom visualisations usually conform to the following criteria:
 
 * Fully data driven so respond when the source data is changed, i.e. the visualisations display the Stroom search results as soon as some data is found without having to wait for the full result set.
 * Responsive to the size of the container they are displayed within
@@ -66,7 +66,7 @@ Stroom Visualisations Development is designed to generate random test data appli
 
 ## Stroom Content Packs
 
-Stroom has an import feature allowing a set of Stroom entities (such as Visualisation and Script) to be imported as a content pack bundle. Stroom Visualisations Development includes a script for generating a visualisations content pack for Stroom. See [Building a Stroom Import Bundle](buildingImportBundle.md).
+Stroom has an import feature allowing a set of Stroom entities (such as Visualisation and Script) to be imported as a content pack.
 
 ## Running Stroom Visualisations Development
 
@@ -88,8 +88,13 @@ Alternatively if you use Tmuxinator/Tmux/Vim/Chrome then a Tmuxinator config fil
 
 For more details on what visualisations are available and how to develop them see the [Documentation](./docs/SUMMARY.md).
 
+## Building a release
 
+Once you have committed and pushed all changes:
+1. Run `log_change.sh` specifing the GH issue id (or 0 if there isn't one) and your update comment.
+1. Run `tag_release.sh` specifying a new release number of the form `vX.Y.Z`.
 
+When this new tag is pushed to GitHub, a release will be created automatically.
 
 
 

@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "$uuid_json",
+  "name" : "$vis_name",
+  "version" : "Template version",
+  "description" : "Template Visualisation.meta",
+  "functionName" : "visualisations.$vis_name",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "$uuid_js",
+    "name" : "$vis_name"
+  }
+}

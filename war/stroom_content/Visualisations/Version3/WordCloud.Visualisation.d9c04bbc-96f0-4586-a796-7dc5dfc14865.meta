@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "3123fc02-b504-412c-8611-026233c0b745on",
+  "name" : "WordCloud",
+  "version" : "Template version",
+  "description" : "Template Visualisation.meta",
+  "functionName" : "visualisations.WordCloud",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "3123fc02-b504-412c-8611-026233c0b745",
+    "name" : "WordCloud"
+  }
+}

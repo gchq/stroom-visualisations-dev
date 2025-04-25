@@ -1,0 +1,62 @@
+{
+  "tabs": [{
+      "name": "Data",
+      "controls": [{
+          "id": "names",
+          "type": "field",
+          "label": "Names"
+        },
+        {
+          "id": "values",
+          "type": "field",
+          "label": "Values"
+        },
+        {
+          "id": "series",
+          "type": "field",
+          "label": "Series"
+        }
+      ]
+    },
+    {
+      "name": "TreeMap",
+      "controls": [
+
+        {
+          "id": "mode",
+          "type": "selection",
+          "label": "Mode",
+          "values": [
+            "squarify",
+            "slice-dice",
+            "dice",
+            "slice"
+          ],
+          "defaultValue": "squarify"
+        }
+      ]
+    }
+  ],
+  "data": {
+    "structure": {
+      "nest": {
+        "key": {
+          "sort": {
+            "direction": "${series}",
+            "enabled": "true"
+          },
+          "id": "${series}"
+        },
+        "values": {
+          "fields": [{
+              "id": "${names}"
+            },
+            {
+              "id": "${values}"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

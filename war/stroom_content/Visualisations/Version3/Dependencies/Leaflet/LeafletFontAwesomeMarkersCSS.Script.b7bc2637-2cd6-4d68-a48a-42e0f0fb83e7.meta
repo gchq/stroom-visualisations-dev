@@ -1,0 +1,7 @@
+{
+  "type" : "Script",
+  "uuid" : "b7bc2637-2cd6-4d68-a48a-42e0f0fb83e7",
+  "name" : "LeafletFontAwesomeMarkersCSS",
+  "version" : "cbea786c-8aa8-4581-8cda-2c8d63bf2508",
+  "dependencies" : [ ]
+}

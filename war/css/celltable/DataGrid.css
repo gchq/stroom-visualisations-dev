@@ -1,0 +1,293 @@
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+.dataGridWidget {
+	width: 100%;
+	height: 100%;
+}
+
+.dataGridWidget input,select {
+	margin: 0px;
+}
+
+.dataGridFirstColumn {
+
+}
+
+.dataGridLastColumn {
+
+}
+
+.dataGridHeaderBackground {
+}
+
+.dataGridFooter {
+	padding: 1px;
+	padding-left: 2px;
+	padding-right: 2px;
+	vertical-align: top;
+	text-align: left;
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: 500;
+	cursor: default;
+}
+
+.dataGridHeader {
+    padding: var(--row__padding--vertical) var(--row__padding--horizontal) 0 var(--row__padding--horizontal);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 500;
+	cursor: default;
+    vertical-align: middle;
+}
+
+.dataGridHeader.center-align {
+  text-align: center;
+}
+
+.dataGridHeader.right-align {
+  text-align: right;
+}
+
+.dataGridHeader * {
+	font-weight: 500;
+}
+
+.dataGridCell {
+	overflow: hidden;
+	white-space: nowrap;
+
+	-moz-user-focus: initial;
+	-moz-user-input: initial;
+	-webkit-user-focus: initial;
+	-webkit-user-input: initial;
+	user-focus: initial;
+	user-input: initial;
+
+    -moz-user-select: text;
+    -webkit-user-select: text;
+    user-select: text;
+
+    vertical-align: middle;
+}
+
+.dataGridHeader > div,
+.dataGridCell > div,
+.cellTableCell > div {
+	text-overflow: ellipsis;
+	overflow-x: hidden;
+	padding: var(--row__padding--vertical) var(--row__padding--horizontal) var(--row__padding--vertical) var(--row__padding--horizontal);
+}
+
+.dataGridCell-text-measurement {
+    display: inline-block;
+    padding: var(--row__padding--vertical) var(--row__padding--horizontal) var(--row__padding--vertical) var(--row__padding--horizontal);
+    min-height: 10px;
+    opacity: 0;
+}
+
+.multiline .dataGridCell {
+    vertical-align: top;
+}
+
+.multiline .dataGridHeader > div,
+.multiline .dataGridCell > div {
+	white-space: normal;
+}
+
+.dataGridResizableCell {
+	border-right: 5px solid transparent;
+	white-space: nowrap;
+
+	-moz-user-focus: initial;
+	-moz-user-input: initial;
+	-webkit-user-focus: initial;
+	-webkit-user-input: initial;
+	user-focus: initial;
+	user-input: initial;
+
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    user-select: text;
+}
+
+.dataGridFirstColumnFooter {
+
+}
+
+.dataGridFirstColumnHeader {
+
+}
+
+.dataGridLastColumnFooter {
+
+}
+
+.dataGridLastColumnHeader {
+
+}
+
+.dataGridSortableHeader {
+	cursor: pointer;
+	cursor: hand;
+	text-decoration: underline;
+}
+
+.dataGridSortableHeader:hover {
+}
+
+.dataGridSortedHeaderAscending {
+
+}
+
+.dataGridSortedHeaderDescending {
+
+}
+
+.dataGridEvenRow {
+    background-color: var(--row__background-color--even);
+}
+
+.dataGridEvenRowCell {
+}
+
+.dataGridOddRow {
+    background-color: var(--row__background-color--odd);
+}
+
+.dataGridOddRowCell {
+}
+
+.dataGridHoveredRow {
+}
+
+.dataGridHoveredRowCell {
+}
+
+.dataGridKeyboardSelectedRow {
+}
+
+.dataGridKeyboardSelectedRowCell {
+
+}
+
+.dataGridDisabledCell {
+    color: var(--text-color--disabled);
+}
+
+.dataGridDisabledCell .tickBox {
+    cursor: default;
+    color: #000;
+    opacity: 0.3;
+}
+
+.dataGridSelectedRow {
+    background-color: var(--row__background-color--selected);
+    color: var(--row__text-color--selected);
+}
+
+.dataGridOddRow:hover,
+.dataGridEvenRow:hover {
+    background-color: var(--row__background-color--hovered);
+}
+
+.dataGridSelectedRow:hover {
+    background-color: var(--row__background-color--selected--hovered);
+}
+
+.dataGridOddRow:focus-within,
+.dataGridEvenRow:focus-within {
+    background-color: var(--row__background-color--focussed);
+}
+
+.dataGridSelectedRow:focus-within {
+    background-color: var(--row__background-color--selected--focussed);
+}
+
+.dataGridSelectedRowCell {
+}
+
+/**
+ * The keyboard selected cell is visible over selection.
+ */
+.dataGridKeyboardSelectedCell {
+}
+
+.resizeHandle {
+	position: absolute;
+	width: 10px;
+	z-index: 1000;
+	background-color: #A49AED;
+	opacity: 0.3;
+	cursor: col-resize;
+}
+
+.resizeLine {
+	position: absolute;
+	width: 2px;
+	z-index: 1000;
+	background-color: #A49AED;
+	cursor: col-resize;
+}
+
+.resizeGlass {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	margin: 0px;
+	padding: 0px;
+	border-width: 0px;
+	/* We need to set the background color or mouse events will go right */
+	/* through the glassElem. If the layout contains an iframe, the */
+	/* iframe will capture the event and the slider will stop moving. */
+	background-color: white;
+	opacity: 0;
+	z-index: 10;
+	cursor: col-resize;
+}
+
+.moveHandle {
+	position: absolute;
+	z-index: 1000;
+	background-color: gray;
+	opacity: 0.3;
+	cursor: default;
+}
+
+.moveLine {
+	position: absolute;
+	width: 2px;
+	z-index: 1000;
+	background-color: #A49AED;
+	cursor: default;
+}
+
+.moveGlass {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	margin: 0px;
+	padding: 0px;
+	border-width: 0px;
+	/* We need to set the background color or mouse events will go right */
+	/* through the glassElem. If the layout contains an iframe, the */
+	/* iframe will capture the event and the slider will stop moving. */
+	background-color: white;
+	opacity: 0;
+	z-index: 10;
+	cursor: default;
+}

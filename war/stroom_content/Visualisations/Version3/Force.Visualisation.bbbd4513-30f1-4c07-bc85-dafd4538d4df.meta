@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "bbbd4513-30f1-4c07-bc85-dafd4538d4df",
+  "name" : "Force",
+  "version" : "06e8d9f2-61e7-46d0-8e52-ecc7f3492f3d",
+  "description" : "",
+  "functionName" : "visualisations.Force",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "aaaeb661-579e-4c08-b7a5-1355d7b782f8",
+    "name" : "Force"
+  }
+}

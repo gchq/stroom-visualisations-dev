@@ -1,0 +1,52 @@
+{
+  "tabs": [
+    {
+    "name": "Data",
+    "controls": [{
+        "id": "source",
+        "type": "field",
+        "label": "Source"
+      },
+      {
+        "id": "target",
+        "type": "field",
+        "label": "Target"
+      },
+      {
+        "id": "count",
+        "type": "field",
+        "label": "Count"
+      }
+    ]
+  },
+    {
+    "name": "Chord",
+    "controls": [{
+          "id": "padding",
+          "type": "number",
+          "label": "Padding",
+          "defaultValue": "3",
+          "max": "10",
+          "min": "1"
+      }
+    ]
+  }
+  ],
+  "data": {
+    "structure": {
+      "values": {
+        "fields": [{
+            "id": "${source}"
+          },
+          {
+            "id": "${target}"
+          },
+          {
+            "id": "${count}"
+
+          }
+        ]
+      }
+    }
+  }
+}
