@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-project:
-    runs-on: ubuntu-20.04  
+    runs-on: ubuntu-24.04
     env:                 
       # Github runners limited to 2 cores, 7Gb RAM
       # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources  
