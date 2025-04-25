@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v4.0] - 2025-04-25
+
+* Multiple improvements.
+
+
 ## [v3.17.1] - 2025-03-29
 
 * Force: Dim exploded groups.
