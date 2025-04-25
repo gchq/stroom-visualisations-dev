@@ -4,12 +4,110 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## [Unreleased]
 
+~~~
+DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
+~~~
 
-## [v3.13] - 2024-03-22
 
-* Changes to fix issues with empty data.
+## [v3.17.1] - 2025-03-29
+
+* Force: Dim exploded groups.
+
+
+## [v3.17.0] - 2025-03-16
+
+* BarChart: Fix bug causing crash with time based data.
+
+* Geomap: Support selection of individual points.
+
+* FloorMap & GeoMap: Prevent Popup Covering Markers.
+
+* FloorMap: Support selection of individual points.
+
+
+## [v3.16.4] - 2025-03-11
+
+* Change selection to require ctrl to be held.
+
+* Tree: Support selection.
+
+* Sunburst: Support selection.
+
+* Bubble: Improve selection.
+
+
+## [v3.16.3] - 2025-03-11
+
+* Sunburst: Change label colour depending on background.
+
+* Bar Chart: Fix selection bug that highlighted all bars for a key regardless of series.
+
+
+## [v3.16.2] - 2025-03-11
+
+* Sunburst: Improve handling of new data.
+
+
+## [v3.16.1] - 2025-03-08
+
+* Improve ticks on timeseries x axes.
+
+* Tree: Update view for differing orientations.
+
+* Scatter: Support selection of data points.
+
+
+## [v3.16.0] - 2025-03-02
+
+* Add tree hierarchy visualisation.
+
+
+## [v3.15.6] - 2025-02-07
+
+* Scatter now has scaled Y axis.
+
+
+## [v3.15.5] - 2025-02-05
+
+* Add scaling to Linechart Y axis.
+
+
+## [v3.15.4] - 2025-02-02
+
+* Fix Scatter header.
+
+
+## [v3.15.3] - 2025-02-02
+
+* Allow User to specify colour of segment in Doughnut.
+
+
+## [v3.15.2] - 2025-02-02
+
+* Allow user to specify point size in Scatter.
+
+
+## [v3.15.1] - 2025-01-29
+
+* Add gradient to SunBurst.
+
+
+## [v3.15.0] - 2025-01-28
+
+* Sunburst now displays a gradient.
+
+
+## [v3.14.0-1] - 2025-01-27
+
+* Put beta release visualisations into separate folder, within Stroom.
+
+
+## [v3.14.0] - 2025-01-27
+
+* Put beta visualisations into the same zip archive as fully released visualisations, but in separate folder.
 
 
 ## [v3.12-alpha.2] - 2023-05-18
@@ -26,15 +124,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * FloorMap/Geomap - support colour by event time.
 
+
 ## [v3.9.0] - 2021-09-08
 
 * gh-48 FloorMap - Tags for zones
+
 * Fix gh-53 GeoMap - Markers not updating when display settings change.
+
 * Fix gh-52 FloorMap/GeoMap - Map zooming out when new data arrives
+
 
 ## [v3.8.1] - 2021-09-07
 
 * Fix gh-50 Save button not enabled after rename zone.
+
 * Improve support for analytic tags within zone names.
 
 
@@ -42,27 +145,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Fix gh-47 FloorMap - Zone format incorrect (lat/lng vice x/y)
 
+
 ## [v3.7.1] - 2021-08-27
 
 * Fix gh-44 FloorMap - Apply changed marker settings without having to save.
+
 * Fix gh-45 FloorMap - Update markers when dashboard filters are applied.
+
 * Fix gh-43 FloorMap - Save zones only works once.
 
 
 ## [v3.7.0] - 2021-08-20
 
 * FloorMap - Improve configuration error alerting.
+
 * FloorMap - Fix bug in handling config provided via settings vice js.
+
 * FloorMap - Make zone editing configurable.
+
 * FloorMap/GeoMap - use small circle markers if icon not set in data.
+
 
 ## [v3.6.1-2] - 2021-08-18
 
 * Fix Leaflet and L.draw CSS JS dependencies.
 
+
 ## [v3.6.1-1] - 2021-08-17
 
 * Fix Leaflet and L.draw CSS JS dependencies (attempt).
+
 
 ## [v3.6.1] - 2021-08-17
 
@@ -71,8 +183,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v3.6.0] - 2021-08-17
 
-
 * Fixed CSS dependencies.
+
 * Added Local Visualisation Builders archive to build
 
 
@@ -80,9 +192,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Changed `FloorMap` - Removed unnecessary console output.
 
+
 ## [v3.5.0] - 2021-08-12
 
 * Changed `FloorMap` - user now creates a local vis using a utility
+
 * Changed `FloorMap` - supports creation of zones (requires Leaflet.draw)
 
 
@@ -94,7 +208,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [v3.4.0] - 2021-07-20
 
 * Added `GeoMap` - LeafletJS based mapping visualisation for lat/lon data
+
 * Added `FloorMap` - LeafletJS visualiation for x/y coord data on floorplans
+
 
 ## [v3.3.2] - 2021-05-26
 
@@ -152,7 +268,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v3.0.6] - 2018-11-28
 
-### Changed
+#
+
+
+## Changed
 
 * Fixed issue **#24** - Increased cell padding to 14px.
 
@@ -161,44 +280,67 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v3.0.5] - 2018-05-03
 
-### Changed
+#
+
+
+## Changed
 
 * Fix failing visualisations following introduction of Object.values() and Array.values() in Javascript ES 2017
 
 
 ## [v3.0.4] - 2017-02-02
 
-### Changed
+#
+
+
+## Changed
 
 * Fixed issue **#19** - Removed synchYAxis from SeriesSessionMap as it is redundant and that was causing the x axis to be synched
 
 
 ## [v3.0.3] - 2017-01-24
 
-### Changed
+#
+
+
+## Changed
 
 * Fixed issue **#15** - SeriesSessionMap now doesn't truncate the end of the rightmost session.
+
 * Added state text and session number to the hover tip in SeriesSessionMap
+
 * Re-worked the sessionisation logic for SeriesSessionMap
+
 * Fixed issue **#12** - Bucketised bar wasn't displaying the last bar
 
 
 ## [v3.0.2] - 2017-01-17
 
-### Added
+#
+
+
+## Added
 
 * Added the Gauge visualisation
 
-### Changed
+#
+
+
+## Changed
 
 * Fixed issue **#10** - Interpolation mode being ignored on stacked area
+
 * Randomised RAG bands in test data for RAG/TrafficLight/Guage
+
 * Fixed issue **#13** - RAG band settings now accept floats
 
 
 ## [v3.0.1] - 2016-11-08
 
-### Changed
+#
+
+
+## Changed
 
 * Fixed issue **#9** - RAG status and traffic lights now work Red-Green, i.e. where red is a lower value than green.
 
@@ -207,7 +349,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.1...HEAD
+[v3.17.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.0...v3.17.1
+[v3.17.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.4...v3.17.0
+[v3.16.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.3...v3.16.4
+[v3.16.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.2...v3.16.3
+[v3.16.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.1...v3.16.2
+[v3.16.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.0...v3.16.1
+[v3.15.7]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.6...v3.16.0
+[v3.15.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.5...v3.15.6
+[v3.15.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.4...v3.15.5
+[v3.15.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.3...v3.15.4
+[v3.15.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.2...v3.15.3
+[v3.15.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.1...v3.15.2
+[v3.15.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.15.0...v3.15.1
+[v3.15.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.14.0-1...v3.15.0
+[v3.14.0-1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.14.0...v3.14.0-1
+[v3.14.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...v3.14.0
 [v3.13]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.12-alpha.2...v3.13
 [v3.12-alpha.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.11.0...v3.12-alpha.2
 [v3.11.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.10.0...v3.11.0

@@ -1,0 +1,74 @@
+name: Zip files on push
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-project:
+    runs-on: ubuntu-20.04  
+    env:                 
+      # Github runners limited to 2 cores, 7Gb RAM
+      # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources  
+      MAX_WORKERS: 3
+      # path of the unix file socket that the agent uses
+      SSH_AUTH_SOCK: "/tmp/ssh-agent.sock"
+
+    steps:
+      - name: Checkout
+        id: checkout_code
+        uses: actions/checkout@v2
+        # See https://github.com/actions/runner/issues/712
+        with:
+          ref: ${{ github.ref }}
+
+
+        # Set variables in github's special env file which are then automatically 
+        # read into env vars in each subsequent step
+      - name: Set Environment Variables
+        id: set_env_var
+        run: |
+          {
+            # Map the GITHUB env vars to our own
+            echo "BUILD_DIR=${GITHUB_WORKSPACE}"
+            echo "BUILD_COMMIT=${GITHUB_SHA}"
+            echo "ACTIONS_SCRIPTS_DIR=${GITHUB_WORKSPACE}/.github/workflows/scripts"
+
+            if [[ ${GITHUB_REF} =~ ^refs/tags/ ]]; then
+              # strip off the 'refs/tags/' bit
+              tag="${GITHUB_REF#refs/tags/}"
+              echo "BUILD_TAG=${tag}"
+            fi
+
+            if [[ ${GITHUB_REF} =~ ^refs/heads/ ]]; then
+              # strip off the 'ref/heads/' bit
+              echo "BUILD_BRANCH=${GITHUB_REF#refs/heads/}"
+            fi
+
+            if [[ ${GITHUB_REF} =~ ^refs/pulls/ ]]; then
+              echo "BUILD_IS_PULL_REQUEST=true"
+            else
+              echo "BUILD_IS_PULL_REQUEST=false"
+            fi
+
+            if [[ ${GITHUB_REF} =~ ^refs/tags/v ]]; then
+              echo "BUILD_IS_RELEASE=true"
+            else
+              echo "BUILD_IS_RELEASE=false"
+            fi
+          } >> $GITHUB_ENV
+
+      # Zipping, test_dir not packaged in with release
+      - name: Zip
+        run: |
+          mkdir -p "${BUILD_DIR}/build/release_artefacts/"
+          pushd ./war/stroom_content && zip -r "${BUILD_DIR}/build/release_artefacts/stroom-visualisations-${BUILD_TAG}.zip" . && popd
+
+      # Running release script
+      - name: Release to Github
+        id: create_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bash "${ACTIONS_SCRIPTS_DIR}/create_github_release.sh"
+

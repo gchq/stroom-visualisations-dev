@@ -1,0 +1,7 @@
+{
+  "type" : "Script",
+  "uuid" : "8355d807-2330-4fce-a87d-f8958f759dad",
+  "name" : "LeafletDrawCSS",
+  "version" : "24e4cc53-63f5-4b66-bbf9-d81f77c74d14",
+  "dependencies" : [ ]
+}

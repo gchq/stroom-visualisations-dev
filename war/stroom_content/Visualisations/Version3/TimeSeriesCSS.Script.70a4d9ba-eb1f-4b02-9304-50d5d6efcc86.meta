@@ -1,0 +1,7 @@
+{
+  "type" : "Script",
+  "uuid" : "70a4d9ba-eb1f-4b02-9304-50d5d6efcc86",
+  "name" : "TimeSeriesCSS",
+  "version" : "eb5b9358-3c0e-4c7e-ba54-30ee5ad1d9c7",
+  "dependencies" : [ ]
+}

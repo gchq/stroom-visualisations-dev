@@ -1,0 +1,15 @@
+{
+  "type" : "Script",
+  "uuid" : "7b0aa49c-8467-4e66-b152-b8cd8a134d65",
+  "name" : "GeoMap",
+  "version" : "425a9d6f-ada1-46ea-9fed-bbc55a46b3ba",
+  "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "7e997977-765a-45b8-bddd-4bfdb0af95ad",
+    "name" : "Leaflet"
+  } ]
+}

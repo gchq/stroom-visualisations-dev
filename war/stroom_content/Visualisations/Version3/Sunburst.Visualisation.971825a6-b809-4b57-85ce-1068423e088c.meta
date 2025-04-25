@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "971825a6-b809-4b57-85ce-1068423e088c",
+  "name" : "Sunburst",
+  "version" : "Template version",
+  "description" : "Template Visualisation.meta",
+  "functionName" : "visualisations.Sunburst",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "03e1147e-cf83-41a0-a2ae-c9339eedab62",
+    "name" : "Sunburst"
+  }
+}

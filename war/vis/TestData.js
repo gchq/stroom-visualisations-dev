@@ -19,6 +19,8 @@ function TestData() {
     //as these define the data structures and defaul settings values.
     //Ideally the TestVis UI would also be driven from the same json data, meaning
     //only the controls appropiate to the vis would be show foe that vis
+
+    window.callNumber = window.callNumber || 0;
     var commonFunctions = visualisations.commonFunctions;
     var commonConstants = visualisations.commonConstants;
 
@@ -58,6 +60,7 @@ function TestData() {
     var VIS_TYPE_STATEFUL_LINE_CHART = "LineChart-Stateful";
     var VIS_TYPE_STATEFUL_SESSION_MAP = "SeriesSessionMap-Stateful";
     var VIS_TYPE_STROOM = "Stroom";
+    var VIS_TYPE_SUNBURST = "Sunburst";
     var VIS_TYPE_TEXT_VALUE = "TextValue";
     var VIS_TYPE_TIME_SERIES = "TimeSeries";
     var VIS_TYPE_TRAFFIC_LIGHTS_GR = "TrafficLights-GreenRed";
@@ -91,7 +94,9 @@ function TestData() {
         VIS_TYPE_TEXT_VALUE,
         VIS_TYPE_TIME_SERIES,
         VIS_TYPE_TRAFFIC_LIGHTS_GR,
-        VIS_TYPE_TRAFFIC_LIGHTS_RG
+        VIS_TYPE_TRAFFIC_LIGHTS_RG,
+        VIS_TYPE_TREE,
+        VIS_TYPE_SUNBURST
     ];
 
     this.visTestDataSettingsMap = (function() {
@@ -243,8 +248,10 @@ function TestData() {
         var nestValues = false;
         var fieldZeroType = commonConstants.dataTypeDateTime;
 
-        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
+
+        if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS || visType == VIS_TYPE_RADIAL_TREE) {
             seriesCount = 1;
+            fieldZeroType = commonConstants.dataTypeNumber;
         } else if (visType === VIS_TYPE_DOUGHNUT) {
             seriesCount = 1;
             valueFunctions[0] = generateTextValue;
@@ -280,7 +287,7 @@ function TestData() {
             fieldZeroType = commonConstants.dataTypeGeneral;
             valueFunctions[0] = generateTextValue;
             valueFunctions[1] = generateFloatValue;
-        } else if (visType == VIS_TYPE_BAR_CHART_BUCKET) {
+        } else if (visType == VIS_TYPE_BAR_CHART_BUCKET || visType == VIS_TYPE_TREE) {
             seriesCount = 1;
             nestValues = true;
         } else if (visType == VIS_TYPE_FLOOR_MAP) {
@@ -309,6 +316,9 @@ function TestData() {
             valueFunctions[5] = generateSeriesValue;
             valueCountLimit = 6;
             fieldZeroType = commonConstants.dataTypeGeneral;
+        } else if (visType == VIS_TYPE_SUNBURST) {
+            nestValues = true;
+            seriesCount = 1;
         } else {
             // define a random number of series
             seriesCount = Math.max(1, Math.round(Math.random() * maxSeries));
@@ -622,9 +632,18 @@ function TestData() {
             else if (visType == VIS_TYPE_FORCE || visType == VIS_TYPE_FORCE_CANVAS) {
                 values = createSeriesForceData(pass);
             } 
-            else if (visType == VIS_TYPE_TREE || visType == VIS_TYPE_RADIAL_TREE) {
+            else if (visType == VIS_TYPE_RADIAL_TREE) {
                 values = createSeriesTreeData();
-            } 
+            }
+            else if (visType == VIS_TYPE_TREE){
+                values = createPathTreeData();
+            }
+            else if (visType == VIS_TYPE_SUNBURST){
+                // if (!callNumber){
+                //     callNumber = 0;
+                // }
+                values = createSunburstData();
+            }
 
             else {
                 //while loop to make sure we have at leat one data point
@@ -820,6 +839,280 @@ function TestData() {
 
             return data;
         };
+
+        function createPathTreeData(){
+            data = [
+                ["home/user/documents/reports/2024/summary.txt"],
+                ["home/user/documents/reports/2024/financials.xlsx"],
+                ["home/user/documents/reports/2023/summary.txt"],
+                ["home/user/documents/reports/2023/financials.xlsx"],
+                ["home/user/documents/reports/2023/notes.txt"],
+                ["home/user/documents/presentations/2024/q1_review.pptx"],
+                ["home/user/documents/presentations/2024/q2_review.pptx"],
+                ["home/user/documents/presentations/2023/annual_review.pptx"],
+                ["home/user/music/playlists/rock/summer2024.m3u"],
+                ["home/user/music/playlists/pop/top_hits_2023.m3u"],
+                ["home/user/music/playlists/rock/classics.m3u"],
+                ["home/user/music/albums/rock/album1/song1.mp3"],
+                ["home/user/music/albums/rock/album1/song2.mp3"],
+                ["home/user/music/albums/pop/album2/song1.mp3"],
+                ["home/user/music/albums/pop/album2/song2.mp3"],
+                ["home/user/pictures/vacation_2023/beach.jpg"],
+                ["home/user/pictures/vacation_2023/mountains.jpg"],
+                ["home/user/pictures/vacation_2024/beach.jpg"],
+                ["home/user/pictures/family/holidays/christmas_2023.jpg"],
+                ["home/user/pictures/family/holidays/christmas_2024.jpg"],
+                ["home/user/pictures/family/reunion_2023/group_photo.jpg"],
+                ["var/log/apache2/access.log"],
+                ["var/log/apache2/error.log"],
+                ["var/log/nginx/access.log"],
+                ["var/log/nginx/error.log"],
+                ["etc/nginx/sites-available/default"],
+                ["etc/nginx/sites-available/example.com"],
+                ["etc/nginx/sites-enabled/default"],
+                ["etc/nginx/sites-enabled/example.com"],
+                ["etc/ssh/sshd_config"],
+                ["etc/ssh/ssh_config"],
+                ["home/user/projects/myapp/src/main.py"],
+                ["home/user/projects/myapp/src/utils/helpers.py"],
+                ["home/user/projects/myapp/tests/test_main.py"],
+                ["home/user/projects/myapp/tests/test_helpers.py"],
+                ["home/user/.config/code/settings.json"],
+                ["home/user/.config/code/keybindings.json"],
+                ["home/user/.config/terminal/config.json"],
+                ["opt/software/config/settings.yaml"],
+                ["opt/software/config/backup.yaml"],
+                ["opt/software/logs/install.log"],
+                ["opt/software/logs/update.log"],
+                ["var/www/html/index.html"],
+                ["var/www/html/about.html"],
+                ["var/www/html/css/styles.css"],
+                ["var/www/html/js/scripts.js"],
+                ["mnt/external_drive/backups/2024/q1_backup.tar.gz"],
+                ["mnt/external_drive/backups/2024/q2_backup.tar.gz"],
+                ["mnt/external_drive/backups/2023/full_backup.tar.gz"],
+                ["mnt/external_drive/photos/vacation_2023/beach.jpg"]
+            ];
+
+            // Below to only return random 5 paths
+            // for (let i = data.length - 1; i > 0; i--) {
+            //     const j = Math.floor(Math.random() * (i + 1));
+            //     [data[i], data[j]] = [data[j], data[i]];
+            // }
+                
+            // return data.slice(0, 5);
+            return data;
+        };
+
+        function createSunburstData(){
+            const data = [
+                ["analytics/cluster/AgglomerativeCluster", 3938],
+                ["a/analytics/cluster/CommunityStructure", 3812],
+                ["a/analytics/cluster/HierarchicalCluster", 6714],
+                ["a/analytics/cluster/MergeEdge", 743],
+                ["a/analytics/graph/BetweennessCentrality", 3534],
+                ["a/analytics/graph/LinkDistance", 5731],
+                ["a/analytics/graph/MaxFlowMinCut", 7840],
+                ["a/analytics/graph/ShortestPaths", 5914],
+                ["a/analytics/graph/SpanningTree", 3416],
+                ["a/analytics/optimization/AspectRatioBanker", 7074],
+                ["a/animate/Easing", 17010],
+                ["a/animate/FunctionSequence", 5842],
+                ["a/animate/interpolate/ArrayInterpolator", 1983],
+                ["a/animate/interpolate/ColorInterpolator", 2047],
+                ["a/animate/interpolate/DateInterpolator", 1375],
+                ["a/animate/interpolate/Interpolator", 8746],
+                ["a/animate/interpolate/MatrixInterpolator", 2202],
+                ["a/animate/interpolate/NumberInterpolator", 1382],
+                ["a/animate/interpolate/ObjectInterpolator", 1629],
+                ["a/animate/interpolate/PointInterpolator", 1675],
+                ["a/animate/interpolate/RectangleInterpolator", 2042],
+                ["a/animate/ISchedulable", 1041],
+                ["a/animate/Parallel", 5176],
+                ["a/animate/Pause", 449],
+                ["a/animate/Scheduler", 5593],
+                ["a/animate/Sequence", 5534],
+                ["a/animate/Transition", 9201],
+                ["a/animate/Transitioner", 19975],
+                ["a/animate/TransitionEvent", 1116],
+                ["a/animate/Tween", 6006],
+                ["a/data/converters/Converters", 721],
+                ["a/data/converters/DelimitedTextConverter", 4294],
+                ["a/data/converters/GraphMLConverter", 9800],
+                ["a/data/converters/IDataConverter", 1314],
+                ["a/data/converters/JSONConverter", 2220],
+                ["a/data/DataField", 1759],
+                ["a/data/DataSchema", 2165],
+                ["a/data/DataSet", 586],
+                ["a/data/DataSource", 3331],
+                ["a/data/DataTable", 772],
+                ["a/data/DataUtil", 3322],
+                ["a/display/DirtySprite", 8833],
+                ["a/display/LineSprite", 1732],
+                ["a/display/RectSprite", 3623],
+                ["a/display/TextSprite", 10066],
+                ["a/flex/FlareVis", 4116],
+                ["a/physics/DragForce", 1082],
+                ["a/physics/GravityForce", 1336],
+                ["a/physics/IForce", 319],
+                ["a/physics/NBodyForce", 10498],
+                ["a/physics/Particle", 2822],
+                ["a/physics/Simulation", 9983],
+                ["a/physics/Spring", 2213],
+                ["a/physics/SpringForce", 1681],
+                ["a/query/AggregateExpression", 1616],
+                ["a/query/And", 1027],
+                ["a/query/Arithmetic", 3891],
+                ["a/query/Average", 891],
+                ["a/query/BinaryExpression", 2893],
+                ["a/query/Comparison", 5103],
+                ["a/query/CompositeExpression", 3677],
+                ["a/query/Count", 781],
+                ["a/query/DateUtil", 4141],
+                ["a/query/Distinct", 933],
+                ["a/query/Expression", 5130],
+                ["a/query/ExpressionIterator", 3617],
+                ["a/query/Fn", 3240],
+                ["a/query/If", 2732],
+                ["a/query/IsA", 2039],
+                ["a/query/Literal", 1214],
+                ["a/query/Match", 3748],
+                ["a/query/Maximum", 843],
+                ["a/query/methods/add", 593],
+                ["a/query/methods/and", 330],
+                ["a/query/methods/average", 287],
+                ["a/query/methods/count", 277],
+                ["a/query/methods/distinct", 292],
+                ["a/query/methods/div", 595],
+                ["a/query/methods/eq", 594],
+                ["a/query/methods/fn", 460],
+                ["a/query/methods/gt", 603],
+                ["a/query/methods/gte", 625],
+                ["a/query/methods/iff", 748],
+                ["a/query/methods/isa", 461],
+                ["a/query/methods/lt", 597],
+                ["a/query/methods/lte", 619],
+                ["a/query/methods/max", 283],
+                ["a/query/methods/min", 283],
+                ["a/query/methods/mod", 591],
+                ["a/query/methods/mul", 603],
+                ["a/query/methods/neq", 599],
+                ["a/query/methods/not", 386],
+                ["a/query/methods/or", 323],
+                ["a/query/methods/orderby", 307],
+                ["a/query/methods/range", 772],
+                ["a/query/methods/select", 296],
+                ["a/query/methods/stddev", 363],
+                ["a/query/methods/sub", 600],
+                ["a/query/methods/sum", 280],
+                ["a/query/methods/update", 307],
+                ["a/query/methods/variance", 335],
+                ["a/query/methods/where", 299],
+                ["a/query/methods/xor", 354],
+                ["a/query/methods/_", 264],
+                ["a/query/Minimum", 843],
+                ["a/query/Not", 1554],
+                ["a/query/Or", 970],
+                ["a/query/Query", 13896],
+                ["a/query/Range", 1594],
+                ["a/query/StringUtil", 4130],
+                ["a/query/Sum", 791],
+                ["a/query/Variable", 1124],
+                ["a/query/Variance", 1876],
+                ["a/query/Xor", 1101],
+                ["a/scale/IScaleMap", 2105],
+                ["a/scale/LinearScale", 1316],
+                ["a/scale/LogScale", 3151],
+                ["a/scale/OrdinalScale", 3770],
+                ["a/scale/QuantileScale", 2435],
+                ["a/scale/QuantitativeScale", 4839],
+                ["a/scale/RootScale", 1756],
+                ["a/scale/Scale", 4268],
+                ["a/scale/ScaleType", 1821],
+                ["a/scale/TimeScale", 5833],
+                ["a/util/Arrays", 8258],
+                ["a/util/Colors", 10001],
+                ["a/util/Dates", 8217],
+                ["a/util/Displays", 12555],
+                ["a/util/Filter", 2324],
+                ["a/util/Geometry", 10993],
+                ["a/util/heap/FibonacciHeap", 9354],
+                ["a/util/heap/HeapNode", 1233],
+                ["a/util/IEvaluable", 335],
+                ["a/util/IPredicate", 383],
+                ["a/util/IValueProxy", 874],
+                ["a/util/math/DenseMatrix", 3165],
+                ["a/util/math/IMatrix", 2815],
+                ["a/util/math/SparseMatrix", 3366],
+                ["a/util/Maths", 17705],
+                ["a/util/Orientation", 1486],
+                ["a/util/palette/ColorPalette", 6367],
+                ["a/util/palette/Palette", 1229],
+                ["a/util/palette/ShapePalette", 2059],
+                ["a/util/palette/SizePalette", 2291],
+                ["a/util/Property", 5559],
+                ["a/util/Shapes", 19118],
+                ["a/util/Sort", 6887],
+                ["a/util/Stats", 6557],
+                ["a/util/Strings", 22026],
+                ["a/vis/axis/Axes", 1302],
+                ["a/vis/axis/Axis", 24593],
+                ["a/vis/axis/AxisGridLine", 652],
+                ["a/vis/axis/AxisLabel", 636],
+                ["a/vis/axis/CartesianAxes", 6703],
+                ["a/vis/controls/AnchorControl", 2138],
+                ["a/vis/controls/ClickControl", 3824],
+                ["a/vis/controls/Control", 1353],
+                ["a/vis/controls/ControlList", 4665],
+                ["a/vis/controls/DragControl", 2649],
+                ["a/vis/controls/ExpandControl", 2832],
+                ["a/vis/controls/HoverControl", 4896],
+                ["a/vis/controls/IControl", 763],
+                ["a/vis/controls/PanZoomControl", 5222],
+                ["a/vis/controls/SelectionControl", 7862],
+                ["a/vis/controls/TooltipControl", 8435],
+                ["a/vis/data/Data", 20544],
+                ["a/vis/data/DataList", 19788],
+                ["a/vis/data/DataSprite", 10349],
+                ["a/vis/data/EdgeSprite", 3301],
+                ["a/vis/data/NodeSprite", 19382],
+                ["a/vis/data/render/ArrowType", 698],
+                ["a/vis/data/render/EdgeRenderer", 5569],
+                ["a/vis/data/render/IRenderer", 353],
+                ["a/vis/data/render/ShapeRenderer", 2247],
+                ["a/vis/events/DataEvent", 2313],
+                ["a/vis/events/SelectionEvent", 1880],
+                ["a/vis/events/TooltipEvent", 1701],
+                ["a/vis/events/VisualizationEvent", 1117],
+                ["a/vis/operator/IOperator", 1286],
+                ["a/vis/operator/Operator", 2490],
+                ["a/vis/operator/OperatorList", 5248],
+                ["a/vis/operator/OperatorSequence", 4190],
+                ["a/vis/operator/OperatorSwitch", 2581],
+                ["a/vis/operator/filter/FisheyeTreeFilter", 5219],
+                ["a/vis/operator/filter/GraphDistanceFilter", 3165],
+                ["a/vis/operator/filter/VisibilityFilter", 3509],
+                ["a/vis/operator/layout/BundledEdgeRouter", 3727],
+                ["a/vis/operator/layout/CircleLayout", 9317],
+                ["a/vis/operator/layout/CirclePackingLayout", 12003],
+                ["a/vis/operator/layout/DendrogramLayout", 4853],
+                ["a/vis/operator/layout/ForceDirectedLayout", 8411],
+                ["a/vis/operator/layout/IndentedTreeLayout", 3174],
+                ["a/vis/operator/layout/Layout", 7881],
+                ["a/vis/operator/layout/NodeLinkTreeLayout", 12870],
+                ["a/vis/operator/layout/PartitionLayout", 6108],
+                ["a/vis/operator/layout/RadialTreeLayout", 12348],
+                ["a/vis/operator/layout/RandomLayout", 870],
+                ["a/vis/operator/layout/StackedAreaLayout", 9121],
+                ["a/vis/operator/layout/TreeMapLayout", 9191],
+                ["a/vis/Visualization", 16540]
+              ];              
+            // window.callNumber += 1;
+            // const numItems = Math.min(window.callNumber * 10, data.length);
+            // return data.slice(0, numItems);
+
+            return data;
+        }
 
         function createBucketisedTimeData(randomMaxVal, bucketSizeMs) {
 

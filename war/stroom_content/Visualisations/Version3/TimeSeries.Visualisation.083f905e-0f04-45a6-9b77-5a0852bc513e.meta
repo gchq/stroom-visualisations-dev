@@ -1,0 +1,13 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "083f905e-0f04-45a6-9b77-5a0852bc513e",
+  "name" : "TimeSeries",
+  "version" : "74977234-3fab-4d8f-9f29-de09142867d8",
+  "description" : "Version: SNAPSHOT\nGit commit: 2124f570b931bd10f19157feb999ae26b5c82222\nGit commit time: 2021-05-13 12:59:40 +0100",
+  "functionName" : "visualisations.TimeSeries",
+  "scriptRef" : {
+    "type" : "Script",
+    "uuid" : "aa7029ff-b6f5-434d-81a9-9c53fe4116ac",
+    "name" : "TimeSeries"
+  }
+}

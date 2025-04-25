@@ -1,0 +1,11 @@
+{
+  "type" : "Script",
+  "uuid" : "c7030ab0-6cd0-4892-b362-dbd07d2e5d01",
+  "name" : "FontAwesomeCSS",
+  "version" : "be382a3f-d71d-4f1d-83e0-78135d7b8780",
+  "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "61cc6424-9899-4f38-ad77-f4204f9de166",
+    "name" : "D3"
+  } ]
+}
