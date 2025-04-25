@@ -354,7 +354,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v4.0...HEAD
+[v4.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.1...v4.0
 [v3.17.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.0...v3.17.1
 [v3.17.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.4...v3.17.0
 [v3.16.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.3...v3.16.4
