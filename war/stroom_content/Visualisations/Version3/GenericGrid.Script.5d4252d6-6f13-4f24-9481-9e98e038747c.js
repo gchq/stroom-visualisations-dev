@@ -26,7 +26,7 @@
 //that Stroom calls and the object instances created for each grid cell.  At the moment it is just a single object
 //i.e. visualisations.BarChart which contains everything.  We could instead have visualisations.BarChart and
 //visualisations.BarChartContent, with the former exposing setData() and the latter exposing setDataInsideGrid().
-//Further to this we could do with some form of prototype for a geeric gridded visualisation as we have a lot of
+//Further to this we could do with some form of prototype for a generic gridded visualisation as we have a lot of
 //repeated code.
 
 
@@ -308,10 +308,12 @@ visualisations.GenericGrid = function(element) {
         var cellVis = visualisationMap[data.key];
         var legendNode = legendMap[data.key];
         var colourScale;
-        if (cellVis.hasOwnProperty("getColourScale")) {
-            colourScale = cellVis.getColourScale();
-        } else {
-            console.log("ERROR - Expecting the visualisation to expose a getColourScale() method");
+        if (cellVis) {
+            if (cellVis.hasOwnProperty("getColourScale")) {
+                colourScale = cellVis.getColourScale();
+            } else {
+                console.log("ERROR - Expecting the visualisation to expose a getColourScale() method");
+            }
         }
         //console.log('colourScale range size: ' + colourScale.domain().length);
 
@@ -323,7 +325,7 @@ visualisations.GenericGrid = function(element) {
         var legendMouseHandler = function(d) {
             if (typeof(colourScale) != "undefined"){
                 //define the function instance to call to refresh the data inside a grid cell
-                //so the legend can enable/diable series and then update the vis
+                //so the legend can enable/disable series and then update the vis
                 var setDataFunc = function() {
                     update(transitionDuration);
                 };
@@ -340,7 +342,7 @@ visualisations.GenericGrid = function(element) {
             });
     };
 
-    //recurrsive function to add .isVisible and .visibleValues properties
+    //recursive function to add .isVisible and .visibleValues properties
     //to each level of the data tree
     var addVisibilityFeatures = function(d) {
         if (!d.hasOwnProperty("isVisible")){
@@ -409,7 +411,7 @@ visualisations.GenericGrid = function(element) {
         visContext = context;
         visSynchedFields = synchedFields;
 
-        //Ensure all branches have key properties as a lot of the visuaisations rely on them
+        //Ensure all branches have key properties as a lot of the visualisations rely on them
         commonFunctions.cleanMissingKeys(data);
 
         if (callingVis.hasOwnProperty("getLegendKeyField")){
@@ -483,11 +485,11 @@ visualisations.GenericGrid = function(element) {
                 commonFunctions.computeUniqueKeys(visData);
 
                 if (commonFunctions.isTrue(visSettings.synchSeries)) {
-                    //create a single coulour scale for all grid cells as they are synched
+                    //create a single colour scale for all grid cells as they are synched
                     commonFunctions.setColourDomain(colour, visData, legendKeyField, "SYNCHED_SERIES");
                     visContext.color = colour;
                 } else if (commonFunctions.isTrue(visSettings.synchNames)) {
-                    //create a single coulour scale for all grid cells as they are synched
+                    //create a single colour scale for all grid cells as they are synched
                     commonFunctions.setColourDomain(colour, visData, legendKeyField, "VALUE");
                     visContext.color = colour;
                 }
@@ -513,7 +515,7 @@ visualisations.GenericGrid = function(element) {
                     });
                 } else {
                     //zoomed in so re-compute the aggregates for the single grid cell so the axes are scaled to its data
-                    //Only need to re-compute aggregates one level deep as the rest should be uneffected
+                    //Only need to re-compute aggregates one level deep as the rest should be unaffected
                     if (visData.visibleValues){
                         var zoomedInCellData = visData.visibleValues()[0];
                         if (zoomedInCellData){
@@ -722,26 +724,27 @@ visualisations.GenericGrid = function(element) {
     var updateExistingSeries = function(data) {
         //console.log('updating series: ' + data.key + ' valueCount:' + data.values.length);
         var cellVis = visualisationMap[data.key];
+        if (cellVis) {
+            var legendIcon = d3.select(this).select(".vis-cellVisualisation-legendIcon");
+            if (commonFunctions.isTrue(visSettings.requiresLegend, true)){
+                legendIcon
+                    .style("opacity", "1")
+                    .style("cursor", "pointer");
+            } else {
+                legendIcon
+                    .style("opacity", "0.2")
+                    .style("cursor", "default");
+            }
 
-        var legendIcon = d3.select(this).select(".vis-cellVisualisation-legendIcon");
-        if (commonFunctions.isTrue(visSettings.requiresLegend, true)){
-            legendIcon
-                .style("opacity", "1")
-                .style("cursor", "pointer");
-        } else {
-            legendIcon
-                .style("opacity", "0.2")
-                .style("cursor", "default");
+            //call back to the visualisation to build the vis inside the grid cell
+            cellVis.setDataInsideGrid(visContext, visSettings, data);
         }
-
-        //call back to the visualisation to build the vis inside the grid cell
-        cellVis.setDataInsideGrid(visContext, visSettings, data);
     }
 
     var removeExistingSeries = function(data) {
         //console.log('removing series: ' + data.key + ' valueCount:' + data.values.length);
 
-        //Call optional teardown method to do any tidying up before the object is deleted
+        //Call optional tear down method to do any tidying up before the object is deleted
         var cellVis = visualisationMap[data.key];
         if (cellVis && cellVis.hasOwnProperty("teardown")){
             cellVis.teardown();
