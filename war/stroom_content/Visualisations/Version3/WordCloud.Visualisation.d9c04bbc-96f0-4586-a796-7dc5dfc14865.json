@@ -1,0 +1,60 @@
+{
+  "data": {
+    "structure": {
+      "values": {
+        "fields": [{
+          "id": "${words}"
+        }]
+      }
+    }
+  },
+  "tabs": [{
+      "name": "Data",
+      "controls": [{
+        "id": "words",
+        "type": "field",
+        "label": "Text"
+      }]
+    },
+    {
+      "name": "Word Cloud",
+      "controls": [{
+          "id": "spiral",
+          "type": "selection",
+          "label": "Spiral",
+          "values": [
+            "archimedean",
+            "rectangular"
+          ],
+          "defaultValue": "archimedean"
+        },
+        {
+          "id": "font",
+          "type": "selection",
+          "label": "Font",
+          "values": [
+            "Tahoma",
+            "serif"
+          ],
+          "defaultValue": "Tahoma"
+        },
+        {
+          "id": "angle",
+          "type": "number",
+          "label": "Rotation Angle",
+          "defaultValue": "20",
+          "max": "30",
+          "min": "1"
+        }, {
+          "id": "padding",
+          "type": "number",
+          "label": "Padding",
+          "defaultValue": "2",
+          "max": "10",
+          "min": "1"
+        }
+
+      ]
+    }
+  ]
+}

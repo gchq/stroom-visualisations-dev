@@ -1,0 +1,19 @@
+{
+    "type": "Script",
+    "uuid": "3123fc02-b504-412c-8611-026233c0b745",
+    "name": "WordCloud",
+    "version": "Template version",
+    "dependencies" : [ {
+    "type" : "Script",
+    "uuid" : "49a5f46c-f627-49ed-afb9-0066b99e235a",
+    "name" : "Common"
+  }, {
+    "type" : "Script",
+    "uuid" : "aadec945-38d1-4ddd-8460-ac1b8ff2f469",
+    "name" : "d3.layout.cloud"
+  }, {
+    "type" : "Script",
+    "uuid" : "5d4252d6-6f13-4f24-9481-9e98e038747c",
+    "name" : "GenericGrid"
+  } ]
+}
