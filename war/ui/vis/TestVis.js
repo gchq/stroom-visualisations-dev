@@ -13,39 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function() {
+(function () {
     var visName;
-    this.changeVis = async function() {
-        manageIframe();
+    this.changeVis = async function () {
+        console.log("changeVis");
         visName = getVisName();
-        await fetchAndInjectScripts(visName);
+        const isAsset = await manageIframe(visName);
+        console.log("visName: " + visName);
+        if (!isAsset) {
+            await fetchAndInjectScripts(visName);
+        }
 
         // Should ideally work with callbacks to know when the vis has finished loading the scripts.
         // Timeout to wait for script loading
-        setTimeout(function() {
+        setTimeout(function () {
             setVisType();
         }, 4000);
     }
-    
+
     function getVisName() {
         if (visType.value.includes("-")) {
             let index = visType.value.indexOf("-")
             let visName = visType.value.substring(0, index);
+            console.log("visName with - : " + visName + "; originally " + visType.value);
             return visName;
         } else {
             let visName = visType.value;
+            console.log("visName without - : " + visName);
             return visName;
         }
     }
 
     // Default theme
     let selectedTheme = "stroom-theme-dark"
-    this.changeTheme = function() {
+    this.changeTheme = function () {
         const themeSelector = document.getElementById("themeSelector");
         selectedTheme = themeSelector.value;
         const logo = document.getElementById("logo");
 
-        document.documentElement.classList.remove("stroom-theme-dark","stroom-theme-dark2","stroom-theme-light")
+        document.documentElement.classList.remove("stroom-theme-dark", "stroom-theme-dark2", "stroom-theme-light")
         document.documentElement.classList.add(selectedTheme);
 
         if (selectedTheme === "stroom-theme-light") {
@@ -59,49 +65,85 @@
     function getVisType() {
         var visType = document.getElementById("visType");
         var index = visType.selectedIndex;
-        var value = visType.options[index].value; 
+        var value = visType.options[index].value;
         return value;
     }
 
     function getBucketSize() {
         var bucketSize = document.getElementById("bucketSize");
         var index = bucketSize.selectedIndex;
-        var value = bucketSize.options[index].value; 
+        var value = bucketSize.options[index].value;
         return value;
     }
 
     function getOrientation() {
         var orientation = document.getElementById("orientation");
         var index = orientation.selectedIndex;
-        var value = orientation.options[index].value; 
+        var value = orientation.options[index].value;
         return value;
     }
 
+    async function findAssetIndex(visName) {
+        console.log("Looking for path-assets folder for " + visName);
 
-    function manageIframe() {
+        const baseUrl = "../stroom_content/Visualisations/Version3";
+        const visFiles = await fetchFileList(baseUrl);
+        const folderPattern = new RegExp(`^${visName}\.Visualisation\.[-0-9a-fA-F]{36}-path-assets/$`);
+        const assetDir = visFiles.find(file => folderPattern.test(file));
+        console.log("assetDir: " + assetDir);
+        if (assetDir) {
+            console.log("Found asset directory: " + assetDir + "; looking for index.html");
+            // Got the asset directory; now look for index.html
+            // Load the file and see if it works...
+            const pathToIndexHtml = `${baseUrl}/${assetDir}/index.html`;
+            const responseForIndexHtml = await fetch(pathToIndexHtml);
+            if (responseForIndexHtml.ok) {
+                console.log("Found index.html here: " + pathToIndexHtml);
+                return pathToIndexHtml;
+            } else {
+                console.log("Did not find index.html in " + assetDir);
+            }
+        }
+        console.log("Did not find asset directory for " + visName);
+        return undefined;
+    }
+
+    async function manageIframe(visName) {
+        console.log("manageIframe: " + visName);
+
+        // If the asset index.html exists then load it; otherwise load default vis.html
+        var isAsset = true;
+        var pathToIframeHtml = await findAssetIndex(visName);
+        if (!pathToIframeHtml) {
+            pathToIframeHtml = "vis.html";
+            isAsset = false;
+        }
+
         var iframe = document.getElementById('myIframe');
-    
+
         if (iframe) {
             iframe.parentNode.removeChild(iframe);
         }
-    
+
         var newIframe = document.createElement('iframe');
         newIframe.id = 'myIframe';
         // Append a random query string to force the browser to fetch a new document
-        newIframe.src = 'vis.html?' + new Date().getTime();
+        newIframe.src = pathToIframeHtml + '?' + new Date().getTime();
         document.getElementById('iframe').appendChild(newIframe);
-
+        console.log("newIframe: " + newIframe);
         const iframeWindow = newIframe.contentWindow;
         // iframeWindow.addEventListener("message", (message)=> { console.log(`iFrameWindow Message: ${message.data}`); });
-        this.addEventListener("message", (message)=> { 
-        
+        this.addEventListener("message", (message) => {
+
             document.getElementById("events").innerHTML = JSON.stringify(JSON.parse(message.data), undefined, 4);
             document.getElementById("eventsLabel").innerText = `At ${new Date().toLocaleTimeString()}:`;
-            // console.log(`content window Message: ${message.data}`); 
+            console.log(`content window Message: ${message.data}`);
         });
 
         loadedScripts.clear();
-    }    
+
+        return isAsset;
+    }
 
     // Set to store loaded script names
     let loadedScripts = new Set();
@@ -109,51 +151,64 @@
     let pendingFetches = 0;
 
     async function fetchAndInjectScripts(visName) {
+        console.log("fetchAndInjectScripts: " + visName);
+
         // Check if script is already loaded
         if (loadedScripts.has(visName)) {
-          checkAndAssembleScripts();
-          return;
+            console.log("Script already loaded: " + visName);
+            checkAndAssembleScripts();
+            return;
         }
-      
+
+        console.log("Fetching scripts for: " + visName);
         pendingFetches++;
         try {
-          const { metaText, url } = await fetchAndParseMeta(visName);
-          const scripts = await loadDependencies(metaText, url, visName);
-          scriptQueue = scriptQueue.concat(scripts);
-          // Mark the script as loaded after dependencies are processed
-          loadedScripts.add(visName);
-          pendingFetches--;
-          checkAndAssembleScripts();
+            console.log("Calling fetchAndParseMeta");
+            // Don't load met or dependencies if this is an asset
+            const { metaText, url } = await fetchAndParseMeta(visName);
+            console.log("Calling loadDependencies");
+            const scripts = await loadDependencies(metaText, url, visName);
+            scriptQueue = scriptQueue.concat(scripts);
+            // Mark the script as loaded after dependencies are processed
+            console.log("Marking script as loaded: " + visName);
+            loadedScripts.add(visName);
+            pendingFetches--;
+            console.log("Calling checkAndAssembleScripts");
+            checkAndAssembleScripts();
         } catch (error) {
-          console.error("Failed to fetch and inject scripts:", error);
-          pendingFetches--;
-          checkAndAssembleScripts();
+            console.error("Failed to fetch and inject scripts:", error);
+            pendingFetches--;
+            checkAndAssembleScripts();
         }
-      }
-      
+    }
+
 
     async function fetchFileList(directory) {
         const apiEndpoint = `*/${directory}`;
         try {
+            console.log("fetchFileList: " + apiEndpoint);
+
             const response = await fetch(apiEndpoint);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const text = await response.text();
+            //console.log("text: " + text);
             // Parse the HTML and extract the href attributes
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'text/html');
             const links = doc.querySelectorAll('a[href]');
             return Array.from(links).map(link => link.getAttribute('href'));
-            } catch (error) {
-                console.error(`Failed to fetch file list from ${apiEndpoint}:`, error);
-                throw error;
-            }
+        } catch (error) {
+            console.error(`Failed to fetch file list from ${apiEndpoint}:`, error);
+            throw error;
+        }
     }
 
     // this isn't the best
     // as leafletDraw folder has LeafletDrawCSS.script.resource.js etc
     async function dependencyUrls(visName) {
+        console.log("dependencyUrls: " + visName);
         const baseName = visName.split('.')[0];
         const baseUrls = [
             "../stroom_content/Visualisations/Version3",
@@ -161,11 +216,13 @@
             "../stroom_content/Visualisations/Version3/Dependencies/Leaflet",
             "../stroom_content/Visualisations/Version3/Dependencies/LeafletDraw"
         ];
-    
+
         let urls = [];
         for (const baseUrl of baseUrls) {
             try {
+                console.log("dependencyUrls: " + visName + "; checking " + baseUrl);
                 const url = await getMetaFile(baseName, baseUrl);
+                console.log("dependencyUrls: " + visName + "; baseUrl: " + baseUrl + "; found " + url);
                 if (url) {
                     urls.push(url);
                     break; // Exit the loop as soon as a valid URL is found
@@ -176,12 +233,41 @@
         }
         return urls;
     }
-    
-    async function getMetaFile(baseName, directory) {
+
+    /**
+     * Gets the functionName value from the .Visualisation*.meta file.
+     */
+    async function getVisMetaFileFunctionName(baseName, directory) {
+        console.log("getVisMetaFile: " + baseName + "; directory: " + directory);
         try {
             const files = await fetchFileList(directory);
+            const pattern = new RegExp(`^${baseName}\.Visualisation\.[-a-fA-F0-9]{36}\.meta$`);
+            const visMetaFile = files.find(file => pattern.test(file));
+
+            console.log("getVisMetaFile: " + baseName + "; directory: " + directory + "; metaFile: " + visMetaFile);
+            if (visMetaFile) {
+                const visMetaResponse = await fetch(directory + "/" + visMetaFile);
+                const visMetaText = await visMetaResponse.text();
+                console.log("visMetaText: " + visMetaText);
+                const visMeta = JSON.parse(visMetaText);
+                return visMeta.functionName;
+            }
+        } catch (error) {
+            console.error(`Error fetching vis meta functionName from ${directory}:`, error);
+        }
+
+        // Return the baseName (which used to be used all the time as the functionName)
+        return baseName;
+    }
+
+    async function getMetaFile(baseName, directory) {
+        console.log("getMetaFile: " + baseName + "; directory: " + directory);
+        try {
+            const files = await fetchFileList(directory);
+            //console.log("getMetaFile: " + baseName + "; directory: " + directory + "; files: " + files);
             const pattern = new RegExp(`^${baseName}\\.Script\\.[a-fA-F0-9-]{36}\\.meta$`);
             const metaFile = files.find(file => pattern.test(file));
+            console.log("getMetaFile: " + baseName + "; directory: " + directory + "; metaFile: " + metaFile);
             if (!metaFile) {
                 console.log(`No .meta file found for ${baseName} in ${directory}.`);
                 return null; // Return null if no meta file is found
@@ -191,27 +277,30 @@
             console.error(`Error fetching file list from ${directory}:`, error);
             return null; // Return null in case of an error fetching the file list
         }
-    }    
+    }
 
     async function fetchAndParseMeta(visName) {
         try {
+            console.log("fetchAndParseMeta: " + visName + "; calling dependencyUrls");
             const urls = await dependencyUrls(visName);
             const fetchPromises = urls.map(async url => {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Fetch failed for ${url}. Status: ${response.status}`);
-            }
-            const metaText = await response.text();
-            return { metaText, url };
+                console.log("fetchAndParseMeta: " + visName + "; fetching " + url);
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Fetch failed for ${url}. Status: ${response.status}`);
+                }
+                const metaText = await response.text();
+                console.log("fetchAndParseMeta: " + visName + "; metaText: " + metaText);
+                return { metaText, url };
             });
-        
+
             const result = await Promise.any(fetchPromises);
             return result;
         } catch (error) {
             console.error("Failed to fetch and parse .meta:", error);
             throw error;
         }
-    }      
+    }
 
     function loadDependencies(metaText, baseUrl, visName) {
         return new Promise((resolve, reject) => {
@@ -225,17 +314,17 @@
                 reject(console.error("No dependencies found"));
                 return;
             }
-    
+
             for (let i = 0; i < dependenciesArray.length; i++) {
                 let type = dependenciesArray[i].type;
                 let name = dependenciesArray[i].name;
                 name = name.replace(/-/g, '_');
-    
+
                 if (type === 'Script') {
                     fetchAndInjectScripts(name); // Recursive call
                 }
             }
-    
+
             if (scripts.length > 0) {
                 resolve(scripts);
             } else {
@@ -249,14 +338,14 @@
             // Deduplicate scripts
             const uniqueScripts = [];
             const scriptNames = new Set();
-    
+
             scriptQueue.forEach(script => {
                 if (!scriptNames.has(script.name)) {
                     uniqueScripts.push(script);
                     scriptNames.add(script.name);
                 }
             });
-    
+
             // Move D3 script to the front if it exists
             const d3Index = uniqueScripts.findIndex(script => script.name === 'D3');
             if (d3Index !== -1) {
@@ -282,19 +371,19 @@
     function assembleAndPostJSON(scripts) {
         const iframe = document.getElementById('myIframe');
         const iframeWindow = iframe.contentWindow;
-    
+
         let params = scripts.map(script => ({
             name: script.name,
             url: script.url
         }));
-    
+
         let json = {
             data: {
                 functionName: "visualisationManager.injectScripts",
                 params: [params]
             }
         };
-    
+
         let jsonString = JSON.stringify(json);
         if (iframeWindow) {
             iframeWindow.postMessage(jsonString, '*');
@@ -303,22 +392,27 @@
 
     // .setVisType instansiates the specific vis
     // add selected theme
-    function setVisType(){
+    async function setVisType() {
         vis = visName;
+        const functionName = await getVisMetaFileFunctionName(visName, "../stroom_content/Visualisations/Version3/");
+        console.log("Setting functionname to " + functionName);
         const iframe = document.getElementById('myIframe');
         const iframeWindow = iframe.contentWindow;
         let json = {
             data: {
-               functionName: "visualisationManager.setVisType",
-               params: [
-                "visualisations." + visName,
-                "vis " + selectedTheme
-               ]
+                functionName: "visualisationManager.setVisType",
+                params: [
+                    functionName,
+                    "vis " + selectedTheme
+                ]
             }
         };
         let jsonString = JSON.stringify(json);
         if (iframeWindow) {
+            console.log("Sending message to iframe: " + jsonString);
             iframeWindow.postMessage(jsonString, '*');
+        } else {
+            console.log("No iframe window found");
         }
 
         if (visName == "Sunburst") {
@@ -336,32 +430,32 @@
     var dataChangeCounter = 1;
     var randomMax;
 
-    function getDataChangeCounter(){
+    function getDataChangeCounter() {
         return dataChangeCounter++;
     }
 
-    this.openTab = function(evt, cityName) {
+    this.openTab = function (evt, cityName) {
         // Declare all variables
         var i, tabcontent, tablinks;
-      
+
         // Get all elements with class="tabcontent" and hide them
         tabcontent = document.getElementsByClassName("tabcontent");
         for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
+            tabcontent[i].style.display = "none";
         }
-      
+
         // Get all elements with class="tablinks" and remove the class "active"
         tablinks = document.getElementsByClassName("tablinks");
         for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" active", "");
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
         }
-      
+
         // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(cityName).style.display = "block";
         evt.currentTarget.className += " active";
-      }
+    }
 
-    this.update = function() {
+    this.update = function () {
         //remove any d3-tip divs left in the dom otherwise they build up on on each
         //call, cluttering up the dom
         // d3.selectAll(".d3-tip")
@@ -369,7 +463,7 @@
 
         const settingsJson = document.getElementById("settings").value;
 
-        if (settingsJson && settingsJson.length > 10){
+        if (settingsJson && settingsJson.length > 10) {
             settings = JSON.parse(settingsJson);
         }
 
@@ -425,7 +519,7 @@
 
         if (document.getElementById("thresholdMs").value) {
             settings.thresholdMs = document.getElementById("thresholdMs").value;
-        } 
+        }
 
         if (document.getElementById("bucketSize").value && getVisType() == "BarChart-bucket") {
             settings.bucketSize = getBucketSize();
@@ -435,52 +529,47 @@
             settings.orientation = getOrientation();
         }
 
-        if (document.getElementById("yScale").value){
+        if (document.getElementById("yScale").value) {
             settings.scaleYAxis = document.getElementById("yScale").value;
         }
 
         settings.stateChange = null;
         const visType = getVisType();
 
-        if (visType == "SeriesSessionMap-Stateful")
-        {
+        if (visType == "SeriesSessionMap-Stateful") {
             settings.stateChange = "Not a real field";
         }
 
-        if (visType == "LineChart-Stateful")
-        {
+        if (visType == "LineChart-Stateful") {
             settings.stateCounting = "True";
         }
 
-        if (visType == "Bubble-flat")
-        {
+        if (visType == "Bubble-flat") {
             settings.flattenSeries = "True";
         } else {
             settings.flattenSeries = "False";
         }
 
-        if (visType == "GeoMap")
-        {
+        if (visType == "GeoMap") {
             settings.initialLatitude = "51.5";
             settings.initialLongitude = "0.0";
             settings.initialZoomLevel = 13;
             settings.tileServerUrl = "https://{s}.tile.osm.org/{z}/{x}/{y}.png";
             settings.tileServerAttribution = "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors";
 
-            if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+            if ((Math.floor(Math.random() * 1000) % 2) == 0) {
                 settings.isColourByEventTimeEnabled = "False";
             } else {
                 settings.isColourByEventTimeEnabled = "True";
             }
         }
 
-        if (visType == 'FloorMap')
-        {
+        if (visType == 'FloorMap') {
             settings.config = '';
 
             settings.isEditZoneModeEnabled = 'True';
 
-            if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+            if ((Math.floor(Math.random() * 1000) % 2) == 0) {
                 settings.originLocation = "Top Left";
             } else {
                 settings.originLocation = "Bottom Left";
@@ -546,26 +635,26 @@
         // of data
         randomMax = Math.pow(10, Math.floor(Math.random() * 8));
 
-        if ((Math.floor(Math.random()  * 1000) % 3) == 0) {
+        if ((Math.floor(Math.random() * 1000) % 3) == 0) {
             settings.isEditZoneModeEnabled = "False";
             settings.dateFormat = "";
         } else {
             settings.dateFormat = "%H:%M:%S on %A";
         }
 
-        if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+        if ((Math.floor(Math.random() * 1000) % 2) == 0) {
             settings.isColourByEventTimeEnabled = "False";
         } else {
             settings.isColourByEventTimeEnabled = "True";
         }
 
-        if ((Math.floor(Math.random()  * 1000) % 2) == 0) {
+        if ((Math.floor(Math.random() * 1000) % 2) == 0) {
             settings.isShowTagsEnabled = "True";
         } else {
             settings.isShowTagsEnabled = "False";
         }
 
-        
+
         document.getElementById("settings").innerHTML = JSON.stringify(settings, undefined, 4);
 
         testData = new TestData();
@@ -577,7 +666,7 @@
         sendDataToVis(dat);
     }
 
-    var sendDataToVis = function(data) {
+    var sendDataToVis = function (data) {
 
         //make a copy so that if the vis changes the data we always have a copy of the original
         var datCopy = clone(data);
@@ -587,12 +676,12 @@
         const iframeWindow = iframe.contentWindow;
         let json = {
             data: {
-               functionName: "visualisationManager.setData",
-               params: [
-                {},
-                settings,
-                datCopy
-               ]
+                functionName: "visualisationManager.setData",
+                params: [
+                    {},
+                    settings,
+                    datCopy
+                ]
             },
             frameId: 1,
         };
@@ -602,13 +691,13 @@
         }
     };
 
-    this.resize = function() {
+    this.resize = function () {
         if (vis != null) {
             const iframe = document.getElementById('myIframe');
             const iframeWindow = iframe.contentWindow;
             let json = {
                 data: {
-                functionName: "visualisationManager.resize",
+                    functionName: "visualisationManager.resize",
                 }
             };
             let jsonString = JSON.stringify(json);
@@ -618,13 +707,13 @@
         }
     };
 
-    this.autoResize = function() {
+    this.autoResize = function () {
         if (document.getElementById("autoResize").checked) {
             resize();
         }
     };
 
-    this.autoUpdate = function() {
+    this.autoUpdate = function () {
         if (document.getElementById("autoUpdate").checked) {
             update();
         }
@@ -639,20 +728,20 @@
         var newSeries = dataGenFunc();
         newSeries.key = seriesName;
 
-        if (originalDataObj.values.map(function(d) { return d.key }).indexOf(newSeries.key) === -1) {
+        if (originalDataObj.values.map(function (d) { return d.key }).indexOf(newSeries.key) === -1) {
             //the key of the new series doesn't already exist so fine to add it
 
             console.log("Adding new series before position " + insertBeforePos + " with key " + newSeries.key);
 
             var newValuesArr = [];
-            for (i=0; i < existingSeriesCount; i++){
-                if (i === insertBeforePos){
+            for (i = 0; i < existingSeriesCount; i++) {
+                if (i === insertBeforePos) {
                     //Add our new grid series 
                     newValuesArr.push(newSeries);
                 }
                 newValuesArr.push(originalDataObj.values[i]);
             }
-            if (insertBeforePos === existingSeriesCount){
+            if (insertBeforePos === existingSeriesCount) {
                 newValuesArr.push(newSeries);
             }
 
@@ -671,9 +760,9 @@
         return insertBeforePos;
     };
 
-    this.addGridSeries = function() {
+    this.addGridSeries = function () {
         if (useGridSeries) {
-            var dataGenFunc = function() {
+            var dataGenFunc = function () {
                 var newDat = testData.create(getVisType(), pass++, useGridSeries, settings, randomMax);
                 return newDat.values[0];
             };
@@ -687,7 +776,7 @@
         }
     };
 
-    this.addSeries = function() {
+    this.addSeries = function () {
         var gridSeriesPosToAddTo;
         if (useGridSeries) {
             //series is inside a grid series
@@ -697,8 +786,8 @@
             gridSeriesPosToAddTo = 0;
         }
 
-        if (dat.values[0].values[0].hasOwnProperty("key")){
-            var dataGenFunc = function() {
+        if (dat.values[0].values[0].hasOwnProperty("key")) {
+            var dataGenFunc = function () {
                 var newDat = testData.create(getVisType(), pass++, useGridSeries, settings, randomMax);
                 //data is random so just return the first series of the first grid series
                 return newDat.values[0].values[0];
@@ -717,7 +806,7 @@
         }
     };
 
-    function removeGenericSeries(originalDataObj){
+    function removeGenericSeries(originalDataObj) {
         var existingSeriesCount = originalDataObj.values.length;
         if (existingSeriesCount > 1) {
             var removePos = Math.round(Math.random() * (existingSeriesCount - 1));
@@ -725,8 +814,8 @@
 
             console.log("Removing series at position " + removePos + " with key " + originalDataObj.values[removePos].key);
 
-            for (i=0; i < existingSeriesCount; i++){
-                if (i !== removePos){
+            for (i = 0; i < existingSeriesCount; i++) {
+                if (i !== removePos) {
                     newValuesArr.push(originalDataObj.values[i]);
                 }
             }
@@ -743,14 +832,14 @@
         }
     };
 
-    this.removeGridSeries = function() {
+    this.removeGridSeries = function () {
         if (useGridSeries) {
             removeGenericSeries(dat);
             sendDataToVis(dat);
         }
     };
 
-    this.removeSeries = function() {
+    this.removeSeries = function () {
         if (dat.values[0].values[0].hasOwnProperty("key")) {
             var gridSeriesPosToRemoveFrom;
             if (useGridSeries) {
@@ -770,10 +859,10 @@
         }
     };
 
-    this.alterValues = function() {
-        var valueChanger = function(originalDataObj) {
-            var idxToAlter = Math.round(Math.random() * ( originalDataObj.values.length - 1 ));
-            if (originalDataObj.values[0].hasOwnProperty("key")){
+    this.alterValues = function () {
+        var valueChanger = function (originalDataObj) {
+            var idxToAlter = Math.round(Math.random() * (originalDataObj.values.length - 1));
+            if (originalDataObj.values[0].hasOwnProperty("key")) {
                 //this is a series level so pick one of them to work on
                 valueChanger(originalDataObj.values[idxToAlter]);
 
@@ -801,7 +890,7 @@
         sendDataToVis(dat);
     };
 
-    this.saveSvg = function(){
+    this.saveSvg = function () {
         var html = d3.select(".vis-canvas")
             .attr("version", 1.1)
             .attr("xmlns", "http://www.w3.org/2000/svg")
@@ -819,13 +908,13 @@
         var canvas = document.querySelector("canvas");
         var context = canvas.getContext("2d");
         context.beginPath();
-        context.rect(0,0,1000,1000);
+        context.rect(0, 0, 1000, 1000);
         context.fillStyle = "white";
         context.fill();
         var image = new Image;
         image.src = imgsrc;
-        image.onload = function() {
-            context.drawImage(image, 0 , 0);
+        image.onload = function () {
+            context.drawImage(image, 0, 0);
             var canvasdata = canvas.toDataURL("image/png");
             //var pngimg = '<img src="' + canvasdata + '">';
             //d3.select 
@@ -840,10 +929,10 @@
 
         //function to set settings.[Green|Amber|Red][Hi|Lo] according to the data
         //if isReversed, Reg->Green else Green->Red
-        var setRAGSettigns = function(data, isReversed, addOutliers) {
+        var setRAGSettigns = function (data, isReversed, addOutliers) {
             //Need to define the thresholds based on the data we have generated
-            var valueGetterFunc = function(d) {
-                    return d.values[0][0];
+            var valueGetterFunc = function (d) {
+                return d.values[0][0];
             };
 
             //top and bottom 5% are treated as outliers
@@ -864,7 +953,7 @@
                 var outlierBand = 0;
             }
 
-            var posOrNeg = function() {
+            var posOrNeg = function () {
                 return (Math.random() > 0.5 ? 1 : -1);
             };
 
@@ -890,9 +979,9 @@
             }
 
             console.log("Green: " + commonFunctions.autoFormat(settings.GreenLo) + " - " + commonFunctions.autoFormat(settings.GreenHi));
-            console.log("Amber: " + commonFunctions.autoFormat(settings.AmberLo)  + " - " + commonFunctions.autoFormat(settings.AmberHi));
+            console.log("Amber: " + commonFunctions.autoFormat(settings.AmberLo) + " - " + commonFunctions.autoFormat(settings.AmberHi));
             console.log("Red:   " + commonFunctions.autoFormat(settings.RedLo) + " - " + commonFunctions.autoFormat(settings.RedHi));
-            console.log("values:   " + data.values.map(function(d) { return commonFunctions.autoFormat(d.values[0][0]); }));
+            console.log("values:   " + data.values.map(function (d) { return commonFunctions.autoFormat(d.values[0][0]); }));
         };
 
         if (getVisType() === "RAGStatus-GreenRed" || getVisType() === "TrafficLights-GreenRed") {

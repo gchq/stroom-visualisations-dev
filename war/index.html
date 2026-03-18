@@ -17,7 +17,7 @@
 <html class="stroom stroom-theme-dark">
 
 <head>
-	<link rel="stylesheet" type="text/css" href="index.css" />
+	<link rel="stylesheet" type="text/css" href="./ui/css/index.css" />
 
 	<!--3rd party dependencies -->
 	<script
@@ -42,8 +42,8 @@
 		charset="utf-8"></script>
 	<script src="./stroom_content/Visualisations/Version3/ThemeCSS.Script.2c17169f-704c-4e5a-99f3-8e100f4a4677.js"
 		charset="utf-8"></script>
-	<script src="./vis/TestData.js" charset="utf-8"></script>
-	<script src="./vis/TestVis.js" charset="utf-8"></script>
+	<script src="./ui/vis/TestData.js" charset="utf-8"></script>
+	<script src="./ui/vis/TestVis.js" charset="utf-8"></script>
 </head>
 
 <body onload="changeVis();" onresize="autoResize()">
@@ -58,6 +58,7 @@
 				<option value="Bubble-nested">Bubble (Nested)</option>
 				<option value="DayWeekHeatMap">Day/Week Heat Map</option>
 				<option value="Doughnut">Doughnut</option>
+				<option value="Doughnut_Assets">Doughnut (assets)</option>
 				<option value="FloorMap">FloorMap</option>
 				<option value="Force">Force</option>
 				<option value="ForceCanvas">Force Canvas</option>
@@ -158,21 +159,16 @@
 		<div id="JSON" class="tabcontent">
 			<div>
 				<label for="settings">Settings JSON</label>
-				<textarea id="settings" class="settings" 
-					overflow-x="scroll" overflow-y="scroll" 
-					wrap="off" rows="20" style="resize: none"
-					style="width: 100%;">
+				<textarea id="settings" class="settings" overflow-x="scroll" overflow-y="scroll" wrap="off" rows="20"
+					style="resize: none" style="width: 100%;">
 			</textarea>
 			</div>
 		</div>
 
 		<div id="Events" class="tabcontent">
 			<label id="eventsLabel" for="events">Events</label>
-			<textarea id="events" class="events" 
-				overflow-x="scroll" overflow-y="scroll" 
-				wrap="off" rows="20" style="resize: none"
-				readonly="true"
-				style="width: 100%;">
+			<textarea id="events" class="events" overflow-x="scroll" overflow-y="scroll" wrap="off" rows="20"
+				style="resize: none" readonly="true" style="width: 100%;">
 		</textarea>
 		</div>
 
@@ -186,7 +182,7 @@
 			</select>
 		</div>
 
-		<div id="buttonControls" class="control-group" >
+		<div id="buttonControls" class="control-group">
 			<button onclick="addGridSeries()">G+</button>
 			<button onclick="removeGridSeries()">G-</button>
 			<button onclick="addSeries()">S+</button>
@@ -196,7 +192,7 @@
 			<input id="useGridSeries" type="checkbox" checked="checked" onChange="changeVis()">Grid</input>
 		</div>
 
-		
+
 
 		<div id="resizeControls" class="control-group">
 			<button onclick="resize()">Resize</button>
