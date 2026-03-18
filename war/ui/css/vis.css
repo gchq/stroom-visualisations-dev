@@ -24,7 +24,8 @@
 
 @import url("webkit-scrollbar.css");
 
-html, body {
+html,
+body {
 	width: 100%;
 	height: 100%;
 	padding: 0;
@@ -50,13 +51,12 @@ html, body {
 	stroke-width: 0.5px;
 }
 
-.vis-area {
-}
+.vis-area {}
 
-.vis-axis {
-}
+.vis-axis {}
 
-.vis-axis path,line {
+.vis-axis path,
+line {
 	fill: none;
 	stroke: #000;
 	shape-rendering: crispEdges;
@@ -66,31 +66,30 @@ html, body {
 	shape-rendering: crispEdges;
 }
 
-.vis-series {
-}
+.vis-series {}
 
 .vis-series path {
 	fill: none;
 }
 
 .vis-marker {
-    position: absolute;
-    stroke: #000;
-    stroke-width: 1.5px;
+	position: absolute;
+	stroke: #000;
+	stroke-width: 1.5px;
 }
 
 .vis-label {
-    position: absolute;
-    left: 0;
-    top: 0;
+	position: absolute;
+	left: 0;
+	top: 0;
 }
 
 .vis-seriesLabel {
-    position: absolute;
-    left: 0;
-    top: 0;
-    background-color: rgba(255,255,255,0.8);
-    white-space: nowrap;
+	position: absolute;
+	left: 0;
+	top: 0;
+	background-color: rgba(255, 255, 255, 0.8);
+	white-space: nowrap;
 }
 
 .vis-glass {

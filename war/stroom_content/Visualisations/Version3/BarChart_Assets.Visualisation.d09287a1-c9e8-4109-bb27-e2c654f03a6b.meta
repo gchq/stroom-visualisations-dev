@@ -1,0 +1,7 @@
+{
+  "type" : "Visualisation",
+  "uuid" : "d09287a1-c9e8-4109-bb27-e2c654f03a6b",
+  "name" : "BarChart_Assets",
+  "version" : "57aacb11-97d6-4e1a-9c3e-db295fc12771",
+  "functionName" : "visualisations.BarChart"
+}

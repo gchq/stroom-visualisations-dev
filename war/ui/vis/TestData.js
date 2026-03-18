@@ -35,6 +35,7 @@ function TestData() {
     var VIS_TYPE_BAR_CHART = "BarChart";
     var VIS_TYPE_BAR_CHART_BUCKET = "BarChart-bucket";
     var VIS_TYPE_BAR_CHART_ORDINAL = "BarChart-ordinal";
+    var VIS_TYPE_BAR_CHART_ASSETS = "BarChart_Assets";
     var VIS_TYPE_BUBBLE_FLAT = "Bubble-flat";
     var VIS_TYPE_BUBBLE_NESTED = "Bubble-nested";
     var VIS_TYPE_DAY_WEEK_HEAT_MAP = "DayWeekHeatMap";
@@ -73,6 +74,7 @@ function TestData() {
         VIS_TYPE_BAR_CHART,
         VIS_TYPE_BAR_CHART_BUCKET,
         VIS_TYPE_BAR_CHART_ORDINAL,
+        VIS_TYPE_BAR_CHART_ASSETS,
         VIS_TYPE_BUBBLE_FLAT,
         VIS_TYPE_BUBBLE_NESTED,
         VIS_TYPE_DOUGHNUT,
@@ -280,7 +282,7 @@ function TestData() {
         } else if (visType === VIS_TYPE_BUBBLE_FLAT || visType === VIS_TYPE_BUBBLE_NESTED) {
             seriesCount = 10;
             nestValues = true;
-        } else if (visType == VIS_TYPE_BAR_CHART_ORDINAL) {
+        } else if (visType == VIS_TYPE_BAR_CHART_ORDINAL || visType == VIS_TYPE_BAR_CHART_ASSETS) {
             seriesCount = Math.max(1, Math.round(Math.random() * 5));
             //seriesCount = 2;
             nestValues = true;

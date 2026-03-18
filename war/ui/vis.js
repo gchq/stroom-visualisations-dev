@@ -21,110 +21,110 @@ var stroomOrigin;
 // DEPRECATED - HERE FOR BACKWARD COMPATIBILITY
 // Send a message to Stroom to open a link
 // e.g. `stroomLink('type=Dashboard&uuid=<TARGET_DASHBOARD_UUID>&title=title&params=userId%3Duser2', 'DASHBOARD')`
-var stroomLink = function(href, target) {
+var stroomLink = function (href, target) {
+  target = (typeof target === 'undefined') ? 'browser' : target;
+
+  if (stroomParent && stroomFrameId && stroomOrigin) {
+    var obj = {
+      frameId: stroomFrameId,
+      functionName: 'link',
+      href: String(encodeURI(href)),
+      target: String(encodeURI(target)),
+    };
+
+    var message = JSON.stringify(obj);
+    stroomParent.postMessage(message, stroomOrigin);
+  }
+}
+
+!function () {
+  var stroom = {};
+
+  function addUrlParam(url, param, value) {
+    if (param && value) {
+      if (url.length == 0) {
+        url += "?";
+      } else {
+        url += "&";
+      }
+      url += param + "=" + encodeURI(value);
+    }
+    return url;
+  }
+
+  stroom.select = function (selection) {
+    if (stroomParent && stroomFrameId && stroomOrigin) {
+      var obj = {
+        frameId: stroomFrameId,
+        functionName: 'select',
+        selection: selection,
+      };
+
+      var message = JSON.stringify(obj);
+      stroomParent.postMessage(message, stroomOrigin);
+    }
+  };
+
+  // Send a message to Stroom to open a link
+  // e.g. `stroom.link('type=Dashboard&uuid=<TARGET_DASHBOARD_UUID>&title=title&params=userId%3Duser2', 'DASHBOARD')`
+  stroom.link = function (href, target) {
     target = (typeof target === 'undefined') ? 'browser' : target;
 
     if (stroomParent && stroomFrameId && stroomOrigin) {
-        var obj = {
-          frameId : stroomFrameId,
-          functionName : 'link',
-          href : String(encodeURI(href)),
-          target : String(encodeURI(target)),
-        };
+      var obj = {
+        frameId: stroomFrameId,
+        functionName: 'link',
+        href: String(encodeURI(href)),
+        target: String(encodeURI(target)),
+      };
 
-        var message = JSON.stringify(obj);
-        stroomParent.postMessage(message, stroomOrigin);
+      var message = JSON.stringify(obj);
+      stroomParent.postMessage(message, stroomOrigin);
     }
-}
+  };
 
-!function() {
-    var stroom = {};
+  stroom.dashboard = function (uuid, params, queryOnOpen) {
+    var url = "";
+    url = addUrlParam(url, "uuid", uuid);
+    url = addUrlParam(url, "params", params);
+    url = addUrlParam(url, "queryOnOpen", queryOnOpen);
+    stroom.link(url, "dashboard");
+  };
 
-    function addUrlParam(url, param, value) {
-        if (param && value) {
-            if (url.length == 0) {
-                url += "?";
-            } else {
-                url += "&";
-            }
-            url += param + "=" + encodeURI(value);
-        }
-        return url;
-    }
+  stroom.annotation = function (annotationId, streamId, eventId, title, subject, status, assignedTo, comment) {
+    var url = "";
+    url = addUrlParam(url, "annotationId", annotationId);
+    url = addUrlParam(url, "streamId", streamId);
+    url = addUrlParam(url, "eventId", eventId);
+    url = addUrlParam(url, "title", title);
+    url = addUrlParam(url, "subject", subject);
+    url = addUrlParam(url, "status", status);
+    url = addUrlParam(url, "assignedTo", assignedTo);
+    url = addUrlParam(url, "comment", comment);
+    stroom.link(url, "annotation");
+  };
 
-    stroom.select = function(selection) {
-        if (stroomParent && stroomFrameId && stroomOrigin) {
-            var obj = {
-              frameId : stroomFrameId,
-              functionName : 'select',
-              selection : selection,
-            };
+  stroom.stepping = function (id, partNo, recordNo) {
+    var url = "";
+    url = addUrlParam(url, "id", id);
+    url = addUrlParam(url, "partNo", partNo);
+    url = addUrlParam(url, "recordNo", recordNo);
+    stroom.link(url, "stepping");
+  };
 
-            var message = JSON.stringify(obj);
-            stroomParent.postMessage(message, stroomOrigin);
-        }
-    };
+  stroom.data = function (id, partNo, recordNo, lineFrom, colFrom, lineTo, colTo) {
+    var url = "";
+    url = addUrlParam(url, "id", id);
+    url = addUrlParam(url, "partNo", partNo);
+    url = addUrlParam(url, "recordNo", recordNo);
+    url = addUrlParam(url, "lineFrom", lineFrom);
+    url = addUrlParam(url, "colFrom", colFrom);
+    url = addUrlParam(url, "lineTo", lineTo);
+    url = addUrlParam(url, "colTo", colTo);
+    stroom.link(url, "data");
+  };
 
-    // Send a message to Stroom to open a link
-    // e.g. `stroom.link('type=Dashboard&uuid=<TARGET_DASHBOARD_UUID>&title=title&params=userId%3Duser2', 'DASHBOARD')`
-    stroom.link = function(href, target) {
-        target = (typeof target === 'undefined') ? 'browser' : target;
-
-        if (stroomParent && stroomFrameId && stroomOrigin) {
-            var obj = {
-              frameId : stroomFrameId,
-              functionName : 'link',
-              href : String(encodeURI(href)),
-              target : String(encodeURI(target)),
-            };
-
-            var message = JSON.stringify(obj);
-            stroomParent.postMessage(message, stroomOrigin);
-        }
-    };
-
-    stroom.dashboard = function(uuid, params, queryOnOpen) {
-       var url = "";
-       url = addUrlParam(url, "uuid", uuid);
-       url = addUrlParam(url, "params", params);
-       url = addUrlParam(url, "queryOnOpen", queryOnOpen);
-       stroom.link(url, "dashboard");
-    };
-
-    stroom.annotation = function(annotationId, streamId, eventId, title, subject, status, assignedTo, comment) {
-       var url = "";
-       url = addUrlParam(url, "annotationId", annotationId);
-       url = addUrlParam(url, "streamId", streamId);
-       url = addUrlParam(url, "eventId", eventId);
-       url = addUrlParam(url, "title", title);
-       url = addUrlParam(url, "subject", subject);
-       url = addUrlParam(url, "status", status);
-       url = addUrlParam(url, "assignedTo", assignedTo);
-       url = addUrlParam(url, "comment", comment);
-       stroom.link(url, "annotation");
-    };
-
-    stroom.stepping = function(id, partNo, recordNo) {
-       var url = "";
-       url = addUrlParam(url, "id", id);
-       url = addUrlParam(url, "partNo", partNo);
-       url = addUrlParam(url, "recordNo", recordNo);
-       stroom.link(url, "stepping");
-    };
-
-    stroom.data = function(id, partNo, recordNo, lineFrom, colFrom, lineTo, colTo) {
-       var url = "";
-       url = addUrlParam(url, "id", id);
-       url = addUrlParam(url, "partNo", partNo);
-       url = addUrlParam(url, "recordNo", recordNo);
-       url = addUrlParam(url, "lineFrom", lineFrom);
-       url = addUrlParam(url, "colFrom", colFrom);
-       url = addUrlParam(url, "lineTo", lineTo);
-       url = addUrlParam(url, "colTo", colTo);
-       stroom.link(url, "data");
-    };
-
-    this.stroom = stroom;
+  this.stroom = stroom;
 }();
 
 /**
@@ -138,12 +138,12 @@ function Callback(event, frameId, callbackId) {
   var event = event;
   var frameId = frameId;
   var callbackId = callbackId;
-  var sendCallback = function(event, frameId, callbackId, functionName, param) {
+  var sendCallback = function (event, frameId, callbackId, functionName, param) {
     var obj = {
-      frameId : frameId,
-      callbackId : callbackId,
-      functionName : functionName,
-      param : param
+      frameId: frameId,
+      callbackId: callbackId,
+      functionName: functionName,
+      param: param
     };
 
     var message = JSON.stringify(obj);
@@ -151,10 +151,10 @@ function Callback(event, frameId, callbackId) {
     event.source.postMessage(message, event.origin);
   }
 
-  this.onSuccess = function(message) {
+  this.onSuccess = function (message) {
     sendCallback(event, frameId, callbackId, "onSuccess", message);
   };
-  this.onFailure = function(ex) {
+  this.onFailure = function (ex) {
     sendCallback(event, frameId, callbackId, "onFailure", ex);
   };
 }
@@ -163,21 +163,21 @@ function Callback(event, frameId, callbackId) {
  * AN OBJECT TO PERFORM SCRIPT INJECTION
  */
 function ScriptInjector() {
-  var makeScriptElement = function(doc) {
+  var makeScriptElement = function (doc) {
     var script = doc.createElement("script");
     script.setAttribute("type", "text/javascript");
     script.setAttribute("charset", "UTF-8");
     return script;
   }
 
-  var attachListeners = function(scriptElement, url, callback, removeTag) {
-    var clearCallbacks = function() {
+  var attachListeners = function (scriptElement, url, callback, removeTag) {
+    var clearCallbacks = function () {
       scriptElement.onerror = scriptElement.onreadystatechange = scriptElement.onload = null;
       if (removeTag) {
         scriptElement.parentNode.removeChild(scriptElement);
       }
     };
-    scriptElement.onload = function() {
+    scriptElement.onload = function () {
       clearCallbacks();
       if (callback) {
         callback.onSuccess(url);
@@ -185,21 +185,21 @@ function ScriptInjector() {
     };
     // or possibly more portable script_tag.addEventListener('error',
     // function(){...}, true);
-    scriptElement.onerror = function() {
+    scriptElement.onerror = function () {
       clearCallbacks();
       if (callback) {
         var ex = "onerror() called.";
         callback.onFailure(ex);
       }
     };
-    scriptElement.onreadystatechange = function() {
+    scriptElement.onreadystatechange = function () {
       if (/loaded|complete/.test(scriptElement.readyState)) {
         scriptElement.onload();
       }
     };
   }
 
-  this.inject = function(url, callback) {
+  this.inject = function (url, callback) {
     var wnd = window;
     var doc = wnd.document;
 
@@ -220,7 +220,7 @@ function VisualisationManager() {
   var currentData = null;
   var running = false;
 
-  var update = function(callback) {
+  var update = function (callback) {
     if (vis && currentData) {
       vis.setData(currentContext, currentSettings, currentData);
     } else {
@@ -233,18 +233,18 @@ function VisualisationManager() {
     }
   };
 
-  var injectNextScript = function(scripts, callback) {
+  var injectNextScript = function (scripts, callback) {
     if (scripts.length > 0) {
       var script = scripts.splice(0, 1)[0];
       var cb = {
-        onSuccess : function(message) {
+        onSuccess: function (message) {
           injectNextScript(scripts, callback);
         },
-        onFailure : function(ex) {
+        onFailure: function (ex) {
           console.log("Failed to inject script '" + script.name + "' - "
-              + ex.message);
+            + ex.message);
           callback.onFailure("Failed to inject script '" + script.name + "' - "
-              + ex.message);
+            + ex.message);
         }
       };
 
@@ -255,33 +255,33 @@ function VisualisationManager() {
     }
   };
 
-  var doStart = function(callback) {
+  var doStart = function (callback) {
     running = true;
     if (vis && vis.start) {
       vis.start();
     }
   };
 
-  var doEnd = function(callback) {
+  var doEnd = function (callback) {
     if (vis && vis.end) {
       vis.end();
     }
     running = false;
   };
 
-  this.injectScripts = function(scripts, callback) {
+  this.injectScripts = function (scripts, callback) {
     injectNextScript(scripts, callback);
   };
 
-  this.start = function(callback) {
+  this.start = function (callback) {
     doStart();
   };
 
-  this.end = function(callback) {
+  this.end = function (callback) {
     doEnd();
   };
 
-  this.setVisType = function(type, className, callback) {
+  this.setVisType = function (type, className, callback) {
     try {
       vis = eval("new " + type + "()");
       callback.onSuccess(null);
@@ -303,13 +303,13 @@ function VisualisationManager() {
     }
   };
 
-  this.setClassName = function(className, callback) {
+  this.setClassName = function (className, callback) {
     if (vis && vis.element) {
       vis.element.className = className;
     }
   };
 
-  this.setData = function(context, settings, data, callback) {
+  this.setData = function (context, settings, data, callback) {
     currentContext = context;
     currentSettings = settings;
     currentData = data;
@@ -318,7 +318,7 @@ function VisualisationManager() {
     update();
   };
 
-  this.resize = function(callback) {
+  this.resize = function (callback) {
     if (vis) {
       vis.resize();
     }
@@ -333,11 +333,13 @@ var visualisationManager = new VisualisationManager();
 /**
  * LISTEN TO WINDOW MESSAGES
  */
-var messageListener = function(event) {
-  var sendMessage = function(event, frameId, data) {
+var messageListener = function (event) {
+  console.log(`messageListener: ${event.data}`);
+
+  var sendMessage = function (event, frameId, data) {
     var obj = {
-      frameId : frameId,
-      data : data
+      frameId: frameId,
+      data: data
     }
 
     var message = JSON.stringify(obj);
@@ -373,7 +375,7 @@ var messageListener = function(event) {
     var callback = new Callback(event, frameId, callbackId);
     var params = json.data.params;
     if (!params) {
-        params = [];
+      params = [];
     }
     params.push(callback);
 
