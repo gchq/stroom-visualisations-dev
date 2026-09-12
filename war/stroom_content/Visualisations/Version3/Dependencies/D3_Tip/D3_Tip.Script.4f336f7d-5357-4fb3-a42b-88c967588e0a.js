@@ -58,29 +58,26 @@
 
       while(i--) nodel.classed(directions[i], false)
       coords = direction_callbacks.get(dir).apply(this)
-      // retrieve the svg container bounds
+      // Clamp against both the SVG bounds and the visible viewport.
       var container = svg.getBoundingClientRect();
       var tooltipWidth = nodel.node().offsetWidth;
       var tooltipHeight = nodel.node().offsetHeight;
-      // find top and offset preventing top boundary break
+      var viewportWidth = document.documentElement.clientWidth;
+      var viewportHeight = document.documentElement.clientHeight;
+      var minTop = Math.max(container.top + scrollTop, scrollTop);
+      var maxBottom = Math.min(container.bottom + scrollTop, scrollTop + viewportHeight);
+      var minLeft = Math.max(container.left + scrollLeft, scrollLeft);
+      var maxRight = Math.min(container.right + scrollLeft, scrollLeft + viewportWidth);
       var top = coords.top + poffset[0] + scrollTop;
-      if (top < container.top) {
-        top = container.top;
-      // similar as above for lower boundary breaks using top bounds
-      } else if (top + tooltipHeight > container.bottom) {
-        top = container.bottom - tooltipHeight;
-      }
-      // find max for sides like above and offset preventing breaks
       var left = coords.left + poffset[1] + scrollLeft;
-      if (left < container.left) {
-        left = container.left;
-      } else if (left + tooltipWidth > container.right) {
-        left = container.right - tooltipWidth;
-      }
+
+      top = Math.max(minTop, Math.min(top, maxBottom - tooltipHeight));
+      left = Math.max(minLeft, Math.min(left, maxRight - tooltipWidth));
+
       nodel.classed(dir, true).style({
         top: top + 'px',
         left: left + 'px'
-      });
+      })
 
       return tip
     }

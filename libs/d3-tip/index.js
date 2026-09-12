@@ -58,9 +58,24 @@
 
       while(i--) nodel.classed(directions[i], false)
       coords = direction_callbacks.get(dir).apply(this)
+      var container = svg.getBoundingClientRect();
+      var tooltipWidth = nodel.node().offsetWidth;
+      var tooltipHeight = nodel.node().offsetHeight;
+      var viewportWidth = document.documentElement.clientWidth;
+      var viewportHeight = document.documentElement.clientHeight;
+      var minTop = Math.max(container.top + scrollTop, scrollTop);
+      var maxBottom = Math.min(container.bottom + scrollTop, scrollTop + viewportHeight);
+      var minLeft = Math.max(container.left + scrollLeft, scrollLeft);
+      var maxRight = Math.min(container.right + scrollLeft, scrollLeft + viewportWidth);
+      var top = coords.top + poffset[0] + scrollTop;
+      var left = coords.left + poffset[1] + scrollLeft;
+
+      top = Math.max(minTop, Math.min(top, maxBottom - tooltipHeight));
+      left = Math.max(minLeft, Math.min(left, maxRight - tooltipWidth));
+
       nodel.classed(dir, true).style({
-        top: (coords.top +  poffset[0]) + scrollTop + 'px',
-        left: (coords.left + poffset[1]) + scrollLeft + 'px'
+        top: top + 'px',
+        left: left + 'px'
       })
 
       return tip
