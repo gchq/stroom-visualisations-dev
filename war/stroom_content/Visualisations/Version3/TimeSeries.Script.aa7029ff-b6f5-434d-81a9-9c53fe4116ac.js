@@ -190,12 +190,26 @@ visualisations.TimeSeries = function (containerNode) {
       // });
 
       dataset = [];
-      if (visData) {
-        var arr = visData.values[0].values[0].values;
-        for (var i = 0; i < arr.length; i++) {
-          var obj = { count: arr[i][1], month: new Date(arr[i][0]) };
-          dataset.push(obj);
+      var seriesData = [];
+      if (visData && visData.values.length > 0) {
+        var rawSeries = visData.values[0].values;
+        for (var seriesIndex = 0; seriesIndex < rawSeries.length; seriesIndex++) {
+          var values = [];
+          var arr = rawSeries[seriesIndex].values;
+          for (var i = 0; i < arr.length; i++) {
+            var obj = { count: arr[i][1], month: new Date(arr[i][0]) };
+            values.push(obj);
+            dataset.push(obj);
+          }
+          values.sort(function (a, b) {
+            return d3.ascending(a.month, b.month);
+          });
+          seriesData.push({ key: rawSeries[seriesIndex].key, values: values });
         }
+        dataset.sort(function (a, b) {
+          return d3.ascending(a.month, b.month);
+        });
+        colour.domain(seriesData.map(function (series) { return series.key; }));
       }
 
       /*
@@ -629,7 +643,15 @@ visualisations.TimeSeries = function (containerNode) {
         .call(yAxis)
         .attr("transform", "translate(" + width + ", 0)");
 
-      focus.append("path").datum(dataset).attr("class", "area").attr("d", area);
+      focus
+        .selectAll("path.area")
+        .data(seriesData, function (d) { return d.key; })
+        .enter()
+        .append("path")
+        .attr("class", "area")
+        .style("fill", function (d) { return colour(d.key); })
+        .style("fill-opacity", 0.15)
+        .attr("d", function (d) { return area(d.values); });
 
       focus
         .append("g")
@@ -637,21 +659,35 @@ visualisations.TimeSeries = function (containerNode) {
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
 
-      focus.append("path").datum(dataset).attr("class", "line").attr("d", line);
+      focus
+        .selectAll("path.line")
+        .data(seriesData, function (d) { return d.key; })
+        .enter()
+        .append("path")
+        .attr("class", "line")
+        .style("stroke", function (d) { return colour(d.key); })
+        .attr("d", function (d) { return line(d.values); });
 
       /* === context chart === */
 
       context
+        .selectAll("path.area")
+        .data(seriesData, function (d) { return d.key; })
+        .enter()
         .append("path")
-        .datum(dataset)
         .attr("class", "area")
-        .attr("d", area_context);
+        .style("fill", function (d) { return colour(d.key); })
+        .style("fill-opacity", 0.15)
+        .attr("d", function (d) { return area_context(d.values); });
 
       context
+        .selectAll("path.line")
+        .data(seriesData, function (d) { return d.key; })
+        .enter()
         .append("path")
-        .datum(dataset)
         .attr("class", "line")
-        .attr("d", line_context);
+        .style("stroke", function (d) { return colour(d.key); })
+        .attr("d", function (d) { return line_context(d.values); });
 
       context
         .append("g")
@@ -716,8 +752,8 @@ visualisations.TimeSeries = function (containerNode) {
 
       function brushed() {
         x.domain(brush.empty() ? x2.domain() : brush.extent());
-        focus.select(".area").attr("d", area);
-        focus.select(".line").attr("d", line);
+        focus.selectAll(".area").attr("d", function (d) { return area(d.values); });
+        focus.selectAll(".line").attr("d", function (d) { return line(d.values); });
         focus.select(".x.axis").call(xAxis);
         // Reset zoom scale's domain
         zoom.x(x);
@@ -727,8 +763,8 @@ visualisations.TimeSeries = function (containerNode) {
 
       function draw() {
         setYdomain();
-        focus.select(".area").attr("d", area);
-        focus.select(".line").attr("d", line);
+        focus.selectAll(".area").attr("d", function (d) { return area(d.values); });
+        focus.selectAll(".line").attr("d", function (d) { return line(d.values); });
         focus.select(".x.axis").call(xAxis);
         //focus.select(".y.axis").call(yAxis);
         // Force changing brush range
@@ -836,72 +872,46 @@ visualisations.TimeSeries = function (containerNode) {
       }
 
       function setYdomain() {
-        // this function dynamically changes the y-axis to fit the data in focus
-
-        // get the min and max date in focus
+        // Dynamically fit the y-axis to all series currently in focus.
         var xleft = new Date(x.domain()[0]);
         var xright = new Date(x.domain()[1]);
-
-        // a function that finds the nearest point to the right of a point
-        var bisectDate = d3.bisector(function (d) {
-          return d.month;
-        }).right;
-
-        // get the y value of the line at the left edge of view port:
-        var iL = bisectDate(dataset, xleft);
-
-        if (dataset[iL] !== undefined && dataset[iL - 1] !== undefined) {
-          var left_dateBefore = dataset[iL - 1].month,
-            left_dateAfter = dataset[iL].month;
-
-          var intfun = d3.interpolateNumber(
-            dataset[iL - 1].count,
-            dataset[iL].count
-          );
-          var yleft = intfun(
-            (xleft - left_dateBefore) / (left_dateAfter - left_dateBefore)
-          );
-        } else {
-          var yleft = 0;
-        }
-
-        // get the x value of the line at the right edge of view port:
-        var iR = bisectDate(dataset, xright);
-
-        if (dataset[iR] !== undefined && dataset[iR - 1] !== undefined) {
-          var right_dateBefore = dataset[iR - 1].month,
-            right_dateAfter = dataset[iR].month;
-
-          var intfun = d3.interpolateNumber(
-            dataset[iR - 1].count,
-            dataset[iR].count
-          );
-          var yright = intfun(
-            (xright - right_dateBefore) / (right_dateAfter - right_dateBefore)
-          );
-        } else {
-          var yright = 0;
-        }
-
-        // get the y values of all the actual data points that are in view
-        var dataSubset = dataset.filter(function (d) {
-          return d.month >= xleft && d.month <= xright;
-        });
+        var bisectDate = d3.bisector(function (d) { return d.month; }).right;
         var countSubset = [];
-        dataSubset.map(function (d) {
-          countSubset.push(d.count);
+
+        seriesData.forEach(function (series) {
+          var values = series.values;
+          var iL = bisectDate(values, xleft);
+          if (values[iL] !== undefined && values[iL - 1] !== undefined) {
+            var leftBefore = values[iL - 1];
+            var leftAfter = values[iL];
+            var leftInterpolator = d3.interpolateNumber(leftBefore.count, leftAfter.count);
+            countSubset.push(leftInterpolator(
+              (xleft - leftBefore.month) / (leftAfter.month - leftBefore.month)
+            ));
+          }
+
+          var iR = bisectDate(values, xright);
+          if (values[iR] !== undefined && values[iR - 1] !== undefined) {
+            var rightBefore = values[iR - 1];
+            var rightAfter = values[iR];
+            var rightInterpolator = d3.interpolateNumber(rightBefore.count, rightAfter.count);
+            countSubset.push(rightInterpolator(
+              (xright - rightBefore.month) / (rightAfter.month - rightBefore.month)
+            ));
+          }
+
+          values.forEach(function (d) {
+            if (d.month >= xleft && d.month <= xright) {
+              countSubset.push(d.count);
+            }
+          });
         });
 
-        // add the edge values of the line to the array of counts in view, get the max y;
-        countSubset.push(yleft);
-        countSubset.push(yright);
         var ymax_new = d3.max(countSubset);
-
-        if (ymax_new == 0) {
+        if (!ymax_new || ymax_new <= 0) {
           ymax_new = dataYrange[1];
         }
 
-        // reset and redraw the yaxis
         y.domain([0, ymax_new * 1.05]);
         focus.select(".y.axis").call(yAxis);
       }
