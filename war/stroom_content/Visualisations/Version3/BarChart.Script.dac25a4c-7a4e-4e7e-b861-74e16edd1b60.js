@@ -344,7 +344,7 @@ if (!visualisations) {
                 if (mappedVisData.types[0] == commonConstants.dataTypeDateTime && bucketSizeMs) {
                     //bucketised charts are a special case and we need to add the size of the bucket on to the
                     //end of the x scale to account for the last bucket's width
-                    xSettings.setExplicitRangeDomain(visibleValues[0].min[0], visibleValues[0].max[0] + bucketSizeMs);
+                    xSettings.setExplicitRangeDomain(mappedVisData.min[0], mappedVisData.max[0] + bucketSizeMs);
                 } else {
                     xSettings.setDomain(mappedVisData, visibleValues[0].values, 0);
                 }
