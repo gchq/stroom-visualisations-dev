@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "6a3b6d31-94c9-4a1e-9f6d-b6a3bb07ed2d",
+  "name": "Force 2D",
+  "version": "df6efccf-c60d-3381-0e0b-905a83291e73",
+  "description": "A network of sources and targets drawn on a canvas, quick for big networks: lines as thick as their counts, with arrowheads and dots flowing the way the counts went, and the nodes of a group drawn as one node for it unless it is expanded. Nodes are coloured by group, or by how busy they are.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.Force2D"
+}

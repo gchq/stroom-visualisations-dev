@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "4e857807-1e41-4b5d-8bc6-2b1aa29cb044",
+  "name": "Force 3D",
+  "version": "8f489c60-227a-bac4-eaa4-0ad0d924fc79",
+  "description": "A network of sources and targets in three dimensions, which can be turned to look at it from any side: lines as thick as their counts, with arrowheads and dots flowing the way the counts went, and the nodes of a group drawn as one node for it unless it is expanded. Nodes are coloured by group, or by how busy they are.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.Force3D"
+}

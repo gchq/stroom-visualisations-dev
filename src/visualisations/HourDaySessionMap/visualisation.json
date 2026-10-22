@@ -1,0 +1,7 @@
+{
+    "uuid": "63a3a18a-3651-4833-ba82-6a2d6794f5f4",
+    "name": "HourDaySessionMap",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.HourDaySessionMap",
+    "description": "Each series' events joined into sessions, as bars by time of day on the row of their day, each series in its own lane and colour, in a grid of maps if a Grid Series field is chosen."
+}

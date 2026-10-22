@@ -1,0 +1,71 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The housing is dark on either theme (set by the chart), edged so that it shows on the dark one */
+.vis-traffic__housing {
+    stroke: var(--vis-axis__color);
+    stroke-width: 1px;
+}
+
+/* A lamp, lit or dimmed (its colour set by the chart); the lit one glows */
+.vis-traffic__lamp--lit {
+    filter: drop-shadow(0 0 4px rgb(255 255 255 / 35%));
+}
+
+.vis-traffic__value,
+.vis-traffic__status {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    text-anchor: middle;
+}
+
+.vis-traffic__value {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* A value outside the bands stands out by its weight and an underline, not only by no lamp lit */
+.vis-traffic__value--outside {
+    font-weight: 800;
+    text-decoration: underline;
+}
+
+/* With forced colours (see shared.css), the housing and the unlit lamps are the theme's
+   background edged in its text colour, and the lit lamp is filled in the text colour, so which
+   is lit shows by more than its colour */
+@media (forced-colors: active) {
+    .vis-traffic__housing {
+        fill: Canvas !important;
+        stroke: CanvasText;
+    }
+
+    .vis-traffic__lamp {
+        fill: Canvas !important;
+        stroke: CanvasText;
+        stroke-width: 1px;
+    }
+
+    .vis-traffic__lamp--lit {
+        fill: CanvasText !important;
+        stroke-width: 3px;
+        filter: none;
+    }
+
+    .vis-traffic__value,
+    .vis-traffic__status {
+        fill: CanvasText;
+    }
+}

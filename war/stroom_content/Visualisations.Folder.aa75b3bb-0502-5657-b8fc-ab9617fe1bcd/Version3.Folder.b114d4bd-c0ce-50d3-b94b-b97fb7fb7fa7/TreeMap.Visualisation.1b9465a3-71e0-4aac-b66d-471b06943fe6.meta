@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "1b9465a3-71e0-4aac-b66d-471b06943fe6",
+  "name": "TreeMap",
+  "version": "37b7b3b2-fa63-47dc-c98a-de2a6014e59a",
+  "description": "A box for each name, as big as its value, in a block for each series.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.TreeMap"
+}

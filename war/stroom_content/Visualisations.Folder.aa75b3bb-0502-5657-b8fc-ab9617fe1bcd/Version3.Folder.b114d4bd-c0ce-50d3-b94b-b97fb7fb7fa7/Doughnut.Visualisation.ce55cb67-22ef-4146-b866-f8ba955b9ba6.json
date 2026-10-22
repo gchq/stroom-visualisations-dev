@@ -1,0 +1,175 @@
+{
+    "inputs": [
+        {
+            "id": "names",
+            "label": "Names",
+            "description": "What each slice is",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "values",
+            "label": "Values",
+            "description": "How big each slice is: its share of the total; only values above zero have a slice",
+            "types": [
+                "NUMBER"
+            ],
+            "required": true
+        },
+        {
+            "id": "colour",
+            "label": "Colour",
+            "description": "A colour for each slice, e.g. 'red' or '#d62728', rather than the dashboard's colour for its name",
+            "types": [
+                "TEXT"
+            ],
+            "required": false
+        },
+        {
+            "id": "gridSeries",
+            "label": "Grid series",
+            "description": "Draws a separate doughnut for each value",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "names",
+                    "type": "field",
+                    "label": "Names"
+                },
+                {
+                    "id": "values",
+                    "type": "field",
+                    "label": "Values"
+                },
+                {
+                    "id": "colour",
+                    "type": "field",
+                    "label": "Colour (Optional)"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series"
+                }
+            ]
+        },
+        {
+            "name": "Doughnut",
+            "controls": [
+                {
+                    "id": "maxValues",
+                    "type": "number",
+                    "label": "Max Values",
+                    "defaultValue": "20",
+                    "max": "100",
+                    "min": "1"
+                },
+                {
+                    "id": "sort",
+                    "type": "boolean",
+                    "label": "Sort By Value",
+                    "defaultValue": "true"
+                },
+                {
+                    "id": "nameDateFormat",
+                    "type": "text",
+                    "label": "Name Date Format (opt.)",
+                    "defaultValue": ""
+                },
+                {
+                    "id": "sortGridSeries",
+                    "type": "selection",
+                    "label": "Sort Grid Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "maxGridSeries",
+                    "type": "number",
+                    "label": "Max Grid Series",
+                    "defaultValue": "36",
+                    "max": "144",
+                    "min": "1"
+                },
+                {
+                    "id": "gridSeriesDateFormat",
+                    "type": "text",
+                    "label": "Grid Series Date Format (opt.)",
+                    "defaultValue": ""
+                },
+                {
+                    "id": "showLabels",
+                    "type": "selection",
+                    "label": "Show Segment Labels",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "False"
+                },
+                {
+                    "id": "fillStyle",
+                    "type": "selection",
+                    "label": "Fill Style",
+                    "values": [
+                        "Solid",
+                        "Outline"
+                    ],
+                    "defaultValue": "Solid"
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "sort": {
+                        "direction": "${sortGridSeries}",
+                        "enabled": "true"
+                    },
+                    "id": "${gridSeries}"
+                },
+                "values": {
+                    "fields": [
+                        {
+                            "id": "${names}"
+                        },
+                        {
+                            "id": "${values}"
+                        },
+                        {
+                            "id": "${colour}"
+                        }
+                    ],
+                    "limit": {
+                        "enabled": "true",
+                        "size": "${maxValues}"
+                    }
+                },
+                "limit": {
+                    "size": "${maxGridSeries}",
+                    "enabled": "true"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,69 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* A zooming X axis (axisZoom.js): its strip is dragged along, framed only when it has the
+   keyboard's focus, the span dragged shaded */
+.vis-axis-zoom {
+    outline: none;
+}
+
+.vis-axis-zoom__frame {
+    fill: none;
+    stroke: none;
+}
+
+.vis-axis-zoom:focus-visible .vis-axis-zoom__frame {
+    stroke: var(--focus-border);
+    stroke-width: 2px;
+}
+
+.vis-axis-zoom__brush .overlay {
+    cursor: ew-resize;
+}
+
+.vis-axis-zoom__brush .selection {
+    fill: var(--vis-text__color);
+    fill-opacity: 0.15;
+    stroke: var(--vis-text__color);
+    stroke-width: 1px;
+}
+
+/* What a zoomed axis shows, at the top right of the plot, over anything drawn there */
+.vis-axis-zoom__note {
+    fill: var(--vis-text__color);
+    font-size: 11px;
+    text-anchor: end;
+    dominant-baseline: hanging;
+    paint-order: stroke;
+    stroke: var(--vis__background-color);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+}
+
+@media (forced-colors: active) {
+    .vis-axis-zoom__brush .selection {
+        stroke: CanvasText;
+    }
+
+    .vis-axis-zoom:focus-visible .vis-axis-zoom__frame {
+        stroke: Highlight;
+    }
+
+    .vis-axis-zoom__note {
+        fill: CanvasText;
+        stroke: Canvas;
+    }
+}

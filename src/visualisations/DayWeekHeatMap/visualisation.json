@@ -1,0 +1,7 @@
+{
+    "uuid": "195fbed2-5a75-456f-bd98-f2dd184b94f9",
+    "name": "DayWeekHeatMap",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.DayWeekHeatMap",
+    "description": "A heat map of a value by day: a column for each week and a row for each day of the week, each day in the colour of its value."
+}

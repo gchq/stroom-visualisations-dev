@@ -1,0 +1,7 @@
+{
+    "uuid": "76cebdac-f75a-434c-9579-ce29f2bd3b57",
+    "name": "Session",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.Session",
+    "description": "Sessions, each given by its start and end, as bars along a time axis, each series on a row of its own, in a grid of timelines if a Grid Series field is chosen."
+}

@@ -1,0 +1,57 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The line between one day and the next */
+.vis-session-map__day-line {
+    stroke: var(--vis-text__color--faint);
+    stroke-width: 1px;
+}
+
+/* A session, in its series' colour (set by the chart) */
+.vis-session-map__session {
+    cursor: pointer;
+    transition: fill-opacity 0.15s ease;
+}
+
+/* The session shown, and those selected, ringed in the text's colour */
+.vis-session-map__session--shown,
+.vis-session-map__session--selected {
+    stroke: var(--vis-text__color);
+    stroke-width: 2px;
+}
+
+/* Every series but that of the session shown: only its bars' fills fade */
+.vis-session-map__series--faded .vis-session-map__session {
+    fill-opacity: 0.2;
+}
+
+/* With forced colours (see shared.css), each session keeps its series' colour but is edged in the
+   theme's text colour, so that it shows on the theme's background */
+@media (forced-colors: active) {
+    .vis-session-map__day-line {
+        stroke: CanvasText;
+    }
+
+    .vis-session-map__session {
+        stroke: CanvasText;
+        stroke-width: 1px;
+    }
+
+    .vis-session-map__session--shown,
+    .vis-session-map__session--selected {
+        stroke-width: 2px;
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "uuid": "bbbd4513-30f1-4c07-bc85-dafd4538d4df",
+    "name": "Force",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.Force",
+    "description": "A network of sources and targets, joined by lines as thick as their counts, the nodes of a group drawn as one node for it unless it is expanded."
+}

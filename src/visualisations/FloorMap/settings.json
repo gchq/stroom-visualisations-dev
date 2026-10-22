@@ -1,0 +1,326 @@
+{
+    "inputs": [
+        {
+            "id": "name",
+            "label": "Name",
+            "description": "What each marker is, the title of its tooltip",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        },
+        {
+            "id": "group",
+            "label": "Building group or campus",
+            "description": "The campus of each marker's floor plan in the config",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": true
+        },
+        {
+            "id": "building",
+            "label": "Building",
+            "description": "The building of each marker's floor plan in the config",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": true
+        },
+        {
+            "id": "floor",
+            "label": "Floor",
+            "description": "The floor of each marker's floor plan in the config",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": true
+        },
+        {
+            "id": "xPos",
+            "label": "X position",
+            "description": "How far across the plan each marker is, in the plan's units",
+            "types": [
+                "NUMBER",
+                "TEXT"
+            ],
+            "required": true
+        },
+        {
+            "id": "yPos",
+            "label": "Y position",
+            "description": "How far up the plan (or down, if its origin is its top left) each marker is",
+            "types": [
+                "NUMBER",
+                "TEXT"
+            ],
+            "required": true
+        },
+        {
+            "id": "eventTime",
+            "label": "Event time",
+            "description": "When each marker was there, which can colour it, from earliest to latest",
+            "types": [
+                "DATE_TIME"
+            ],
+            "required": false
+        },
+        {
+            "id": "iconName",
+            "label": "Icon name",
+            "description": "Gives each marker an icon: person, people, desktop, laptop, server, phone, building, home, car, truck, plane, ship, flag, warning, lock, wifi, globe, camera, envelope, cloud, database, shield, bolt, fire, pin, key, clock or eye (or FontAwesome 4's name for one, e.g. male or ambulance); or a shape: circle, square, triangle, diamond, star, cross or wye; or for any other value, a shape of its own",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": false
+        },
+        {
+            "id": "series",
+            "label": "Series",
+            "description": "Gives each value's markers its colour, and a legend to hide them",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        },
+        {
+            "id": "gridSeries",
+            "label": "Grid series",
+            "description": "Draws a separate floor plan for each value",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "name",
+                    "type": "field",
+                    "label": "Name"
+                },
+                {
+                    "id": "group",
+                    "type": "field",
+                    "label": "Building Group or Campus"
+                },
+                {
+                    "id": "building",
+                    "type": "field",
+                    "label": "Building"
+                },
+                {
+                    "id": "floor",
+                    "type": "field",
+                    "label": "Floor"
+                },
+                {
+                    "id": "xPos",
+                    "type": "field",
+                    "label": "X position"
+                },
+                {
+                    "id": "yPos",
+                    "type": "field",
+                    "label": "Y position"
+                },
+                {
+                    "id": "eventTime",
+                    "type": "field",
+                    "label": "Event Time (optional)"
+                },
+                {
+                    "id": "iconName",
+                    "type": "field",
+                    "label": "Icon Name"
+                },
+                {
+                    "id": "series",
+                    "type": "field",
+                    "label": "Series"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series"
+                }
+            ]
+        },
+        {
+            "name": "FloorMap",
+            "controls": [
+                {
+                    "id": "isEditZoneModeEnabled",
+                    "type": "selection",
+                    "label": "Enable Zone Editing",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "False"
+                },
+                {
+                    "id": "isShowTagsEnabled",
+                    "type": "selection",
+                    "label": "List Analytic Tags When Showing Zone Name",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "False"
+                },
+                {
+                    "id": "isColourByEventTimeEnabled",
+                    "type": "selection",
+                    "label": "Colour By Event Time (earliest dark, latest light)",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "dateFormat",
+                    "type": "text",
+                    "label": "Event Time Display Format (optional)",
+                    "defaultValue": ""
+                },
+                {
+                    "id": "maxValues",
+                    "type": "number",
+                    "label": "Max Values",
+                    "defaultValue": "10000",
+                    "max": "500000",
+                    "min": "1"
+                },
+                {
+                    "id": "sortSeries",
+                    "type": "selection",
+                    "label": "Sort Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "sortGridSeries",
+                    "type": "selection",
+                    "label": "Sort Grid Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "gridSeriesDateFormat",
+                    "type": "text",
+                    "label": "Grid Series Date Format (opt.)",
+                    "defaultValue": ""
+                }
+            ]
+        },
+        {
+            "name": "Internal",
+            "controls": [
+                {
+                    "id": "config",
+                    "type": "text",
+                    "label": "FloorMap Config JSON",
+                    "defaultValue": ""
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "id": "${gridSeries}",
+                    "sort": {
+                        "direction": "${sortGridSeries}",
+                        "enabled": "true",
+                        "priority": 0
+                    }
+                },
+                "nest": {
+                    "key": {
+                        "id": "${series}",
+                        "sort": {
+                            "direction": "${sortSeries}",
+                            "enabled": "true",
+                            "priority": 1
+                        }
+                    },
+                    "values": {
+                        "fields": [
+                            {
+                                "id": "${name}",
+                                "sort": {
+                                    "direction": "Ascending",
+                                    "enabled": "true",
+                                    "priority": 2
+                                }
+                            },
+                            {
+                                "id": "${group}"
+                            },
+                            {
+                                "id": "${building}"
+                            },
+                            {
+                                "id": "${floor}"
+                            },
+                            {
+                                "id": "${xPos}"
+                            },
+                            {
+                                "id": "${yPos}"
+                            },
+                            {
+                                "id": "${eventTime}"
+                            },
+                            {
+                                "id": "${iconName}"
+                            },
+                            {
+                                "id": "${series}"
+                            },
+                            {
+                                "id": "${gridSeries}"
+                            }
+                        ],
+                        "limit": {
+                            "enabled": "true",
+                            "size": "${maxValues}"
+                        }
+                    },
+                    "limit": {
+                        "enabled": "true",
+                        "size": "100"
+                    }
+                },
+                "limit": {
+                    "enabled": "true",
+                    "size": "25"
+                }
+            }
+        }
+    }
+}

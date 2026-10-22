@@ -58,6 +58,29 @@ jobs:
             fi
           } >> $GITHUB_ENV
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Bundles the asset-based visualisations and writes the whole pack, in Stroom's V2
+      # import/export format, to war/stroom_content
+      - name: Build
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      # The pack is committed with the source (Stroom's content store imports it from git), so the
+      # build must have made exactly what is committed: no changed, added or removed files
+      - name: Check the committed content pack is up to date
+        run: |
+          if [ -n "$(git status --porcelain -- war/stroom_content)" ]; then
+            git status --short -- war/stroom_content
+            echo "war/stroom_content doesn't match the source: run 'npm run build' and commit the result"
+            exit 1
+          fi
+
       # Zipping, test_dir not packaged in with release
       - name: Zip
         run: |

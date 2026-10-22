@@ -1,0 +1,135 @@
+{
+    "inputs": [
+        {
+            "id": "source",
+            "label": "Source",
+            "description": "The node each count is from",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "target",
+            "label": "Target",
+            "description": "The node each count is to",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "sourceGroup",
+            "label": "Source group",
+            "description": "The group of the source node, whose nodes are drawn as one unless the group is expanded",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": false
+        },
+        {
+            "id": "targetGroup",
+            "label": "Target group",
+            "description": "The group of the target node",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": false
+        },
+        {
+            "id": "count",
+            "label": "Count",
+            "description": "How much goes from the source to the target; without it each row counts once",
+            "types": [
+                "NUMBER"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "source",
+                    "type": "field",
+                    "label": "Source"
+                },
+                {
+                    "id": "target",
+                    "type": "field",
+                    "label": "Target"
+                },
+                {
+                    "id": "sourceGroup",
+                    "type": "field",
+                    "label": "Source Group (Optional)"
+                },
+                {
+                    "id": "targetGroup",
+                    "type": "field",
+                    "label": "Target Group (Optional)"
+                },
+                {
+                    "id": "count",
+                    "type": "field",
+                    "label": "Count (Optional)"
+                }
+            ]
+        },
+        {
+            "name": "Force",
+            "controls": [
+                {
+                    "id": "maxNodes",
+                    "type": "number",
+                    "label": "Max Nodes",
+                    "defaultValue": "100000",
+                    "min": "1",
+                    "max": "10000000"
+                },
+                {
+                    "id": "animate",
+                    "type": "boolean",
+                    "label": "Animate",
+                    "defaultValue": "false"
+                },
+                {
+                    "id": "expandGroups",
+                    "type": "boolean",
+                    "label": "Expand Groups",
+                    "defaultValue": "false"
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "values": {
+                "fields": [
+                    {
+                        "id": "${source}"
+                    },
+                    {
+                        "id": "${target}"
+                    },
+                    {
+                        "id": "${sourceGroup}"
+                    },
+                    {
+                        "id": "${targetGroup}"
+                    },
+                    {
+                        "id": "${count}"
+                    }
+                ]
+            }
+        }
+    }
+}

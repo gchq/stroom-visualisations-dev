@@ -1,0 +1,78 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The chart can be dragged to pan it */
+.vis-bubble {
+    cursor: grab;
+}
+
+/* A bubble, in its colour (set by the chart) */
+.vis-bubble__bubble {
+    stroke: var(--vis__background-color);
+    stroke-width: 1px;
+    transition: fill-opacity 0.15s ease;
+    cursor: pointer;
+}
+
+/* Every bubble but the one shown or focused, and those selected: only its fill fades, towards the
+   background, so its edge still shows where it is */
+.vis-bubble__bubble--faded {
+    fill-opacity: 0.25;
+}
+
+/* A selected bubble is edged in the theme's text colour */
+.vis-bubble__bubble--selected {
+    stroke: var(--vis-text__color) !important;
+    stroke-width: 2px;
+}
+
+/* A series' bubble, around its own: a faint fill of its colour inside a line of it */
+.vis-bubble__group {
+    fill-opacity: 0.08;
+    stroke-width: 1.5px;
+    pointer-events: none;
+}
+
+/* A bubble's name, in black or white, whichever reads on its colour (set by the chart) */
+.vis-bubble__label {
+    font-family: var(--regular-font-family);
+    font-size: 11px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+}
+
+/* A faded bubble's name, in the theme's text colour, which reads on the faded bubble */
+.vis-bubble__label--faded {
+    fill: var(--vis-text__color) !important;
+}
+
+/* With forced colours (see shared.css), each bubble keeps its colour but is edged in the theme's
+   text colour, so that it shows on the theme's background */
+@media (forced-colors: active) {
+    .vis-bubble__bubble,
+    .vis-bubble__group {
+        stroke: CanvasText !important;
+    }
+
+    .vis-bubble__label--faded {
+        fill: CanvasText !important;
+    }
+
+    .vis-bubble__bubble--selected {
+        stroke: Highlight !important;
+    }
+}

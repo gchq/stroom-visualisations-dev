@@ -1,0 +1,179 @@
+{
+    "inputs": [
+        {
+            "id": "path",
+            "label": "Path",
+            "description": "Where each row is in the tree, its parts split by the path delimiter, e.g. 'home/alice/notes.txt'",
+            "types": [
+                "TEXT"
+            ],
+            "required": true
+        },
+        {
+            "id": "value",
+            "label": "Value",
+            "description": "More about a path, written in its box and its tooltip",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        },
+        {
+            "id": "color",
+            "label": "Leaf colour",
+            "description": "A colour for a path's box, e.g. 'red' or '#d62728', rather than its branch's",
+            "types": [
+                "TEXT"
+            ],
+            "required": false
+        },
+        {
+            "id": "gridSeries",
+            "label": "Grid series",
+            "description": "Draws a separate tree for each value",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "path",
+                    "type": "field",
+                    "label": "Path"
+                },
+                {
+                    "id": "value",
+                    "type": "field",
+                    "label": "Value (Optional)"
+                },
+                {
+                    "id": "color",
+                    "type": "field",
+                    "label": "Leaf Colour (Optional)"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series (Optional)"
+                }
+            ]
+        },
+        {
+            "name": "Tree",
+            "controls": [
+                {
+                    "id": "delimiter",
+                    "type": "text",
+                    "label": "Path delimiter",
+                    "defaultValue": "/"
+                },
+                {
+                    "id": "orientation",
+                    "type": "selection",
+                    "label": "Orientation",
+                    "values": [
+                        "north",
+                        "south",
+                        "east",
+                        "west",
+                        "radial"
+                    ],
+                    "defaultValue": "north"
+                },
+                {
+                    "id": "valueName",
+                    "type": "text",
+                    "label": "Name of additional value",
+                    "defaultValue": "Value"
+                },
+                {
+                    "id": "baseColor",
+                    "type": "text",
+                    "label": "Base colour"
+                },
+                {
+                    "id": "gradient",
+                    "type": "selection",
+                    "label": "Colour Gradient",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "drawDepth",
+                    "type": "number",
+                    "label": "Initial Draw Depth",
+                    "defaultValue": "3",
+                    "max": "50",
+                    "min": "1"
+                },
+                {
+                    "id": "maxValues",
+                    "type": "number",
+                    "label": "Max Values",
+                    "defaultValue": "500",
+                    "max": "10000",
+                    "min": "1"
+                },
+                {
+                    "id": "maxGridSeries",
+                    "type": "number",
+                    "label": "Max Grid Series",
+                    "defaultValue": "36",
+                    "min": "1",
+                    "max": "144"
+                },
+                {
+                    "id": "gridSeriesDateFormat",
+                    "type": "text",
+                    "label": "Grid Series Date Format (opt.)",
+                    "defaultValue": ""
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "id": "${gridSeries}",
+                    "sort": {
+                        "enabled": "false"
+                    }
+                },
+                "values": {
+                    "fields": [
+                        {
+                            "id": "${path}"
+                        },
+                        {
+                            "id": "${value}"
+                        },
+                        {
+                            "id": "${color}"
+                        }
+                    ],
+                    "limit": {
+                        "enabled": "true",
+                        "size": "${maxValues}"
+                    }
+                },
+                "limit": {
+                    "enabled": "true",
+                    "size": "${maxGridSeries}"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "1666949a-2b32-4a95-a25f-64916b4ace56",
+  "name": "RAGStatus",
+  "version": "3df91023-8692-8a93-47af-d42283ada792",
+  "description": "A tile in a value's red, amber or green status, with the value and its status written on it, in a grid of tiles if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.RAGStatus"
+}

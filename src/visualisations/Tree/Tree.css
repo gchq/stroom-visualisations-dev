@@ -1,0 +1,160 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The tree can be dragged to pan it */
+.vis-tree {
+    cursor: grab;
+}
+
+/* A line from a box to each of its children */
+.vis-tree__link {
+    fill: none;
+    stroke: var(--vis-axis__color);
+    stroke-width: 1.5px;
+}
+
+/* A box, in its colour (set by the chart), edged in the background */
+.vis-tree__node {
+    cursor: pointer;
+}
+
+/* A box (or radial, dot) is edged in the background's colour, or if it is too pale to show against
+   the background by itself, in a deeper shade of its colour (set by the chart) */
+.vis-tree__box {
+    rx: 4px;
+    stroke: var(--vis-tree__edge, var(--vis__background-color));
+    stroke-width: 1px;
+}
+
+/* The root, 'All', in the background's colour, edged in the text's */
+.vis-tree__node--root .vis-tree__box {
+    fill: var(--vis__background-color);
+    stroke: var(--vis-text__color);
+}
+
+/* A branch whose children are hidden has a dashed edge (and a +) */
+.vis-tree__node--closed .vis-tree__box {
+    stroke: var(--vis-text__color);
+    stroke-dasharray: 4 2;
+}
+
+/* The box shown (hovered or focused) has a thick edge in the text's colour */
+.vis-tree__node--shown .vis-tree__box {
+    stroke: var(--vis-text__color);
+    stroke-width: 3px;
+    stroke-dasharray: none;
+}
+
+/* A selected box (or radial, dot) has a ring round it in the text's colour, so that it is told apart
+   from the one shown */
+.vis-tree__ring {
+    display: none;
+    fill: none;
+    stroke: var(--vis-text__color);
+    stroke-width: 2px;
+    pointer-events: none;
+}
+
+.vis-tree__node--selected .vis-tree__ring--box,
+.vis-tree--radial .vis-tree__node--selected .vis-tree__ring--dot {
+    display: inline;
+}
+
+.vis-tree--radial .vis-tree__node--selected .vis-tree__ring--box {
+    display: none;
+}
+
+/* A box's words, black or white to read on it (set by the chart), and a branch's sign */
+.vis-tree__label,
+.vis-tree__sign {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    font-size: 12px;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.vis-tree__sign {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Radial, each node is a dot (in its colour, set by the chart) with its words beside it in the
+   theme's text colour, rather than a box */
+.vis-tree__dot {
+    display: none;
+    stroke: var(--vis-tree__edge, var(--vis__background-color));
+    stroke-width: 1.5px;
+}
+
+.vis-tree--radial .vis-tree__box {
+    display: none;
+}
+
+.vis-tree--radial .vis-tree__dot {
+    display: inline;
+}
+
+/* A halo of the background round a dot's words, so that they read where a line crosses them */
+.vis-tree--radial .vis-tree__label {
+    paint-order: stroke;
+    stroke: var(--vis__background-color);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+}
+
+.vis-tree--radial .vis-tree__node--root .vis-tree__dot {
+    fill: var(--vis__background-color);
+    stroke: var(--vis-text__color);
+}
+
+.vis-tree--radial .vis-tree__node--closed .vis-tree__dot {
+    stroke: var(--vis-text__color);
+    stroke-dasharray: 2 2;
+}
+
+.vis-tree--radial .vis-tree__node--shown .vis-tree__dot {
+    stroke: var(--vis-text__color);
+    stroke-width: 3px;
+    stroke-dasharray: none;
+}
+
+/* With forced colours (see shared.css), each box keeps its colour but is edged in the theme's text
+   colour, as are the lines */
+@media (forced-colors: active) {
+    .vis-tree__box,
+    .vis-tree__dot {
+        stroke: CanvasText !important;
+    }
+
+    .vis-tree__link {
+        stroke: CanvasText;
+    }
+
+    .vis-tree--radial .vis-tree__label {
+        fill: CanvasText;
+        stroke: Canvas;
+    }
+
+    .vis-tree__node--shown .vis-tree__box,
+    .vis-tree__node--shown .vis-tree__dot {
+        stroke: Highlight !important;
+    }
+
+    .vis-tree__ring {
+        stroke: Highlight;
+    }
+}

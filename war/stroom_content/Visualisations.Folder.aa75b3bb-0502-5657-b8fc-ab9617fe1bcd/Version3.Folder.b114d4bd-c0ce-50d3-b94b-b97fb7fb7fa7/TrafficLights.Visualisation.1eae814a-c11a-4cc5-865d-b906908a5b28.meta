@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "1eae814a-c11a-4cc5-865d-b906908a5b28",
+  "name": "TrafficLights",
+  "version": "c6f213aa-f1f2-357f-46be-733c5a314a4f",
+  "description": "A traffic light with the lamp of a value's red, amber or green status lit, and the value and its status written under it, in a grid of lights if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.TrafficLights"
+}

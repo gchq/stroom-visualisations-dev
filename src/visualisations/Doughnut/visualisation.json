@@ -1,0 +1,7 @@
+{
+    "uuid": "ce55cb67-22ef-4146-b866-f8ba955b9ba6",
+    "name": "Doughnut",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.Doughnut",
+    "description": "A ring of slices, one for each name, each its share of the total, in a grid of doughnuts if a Grid Series field is chosen."
+}

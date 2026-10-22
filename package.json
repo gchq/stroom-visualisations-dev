@@ -1,0 +1,20 @@
+{
+  "name": "stroom-visualisations",
+  "version": "4.0.0-SNAPSHOT",
+  "description": "Visualisations for Stroom dashboards",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "test": "node --test scripts/ src/"
+  },
+  "devDependencies": {
+    "d3": "7.9.0",
+    "esbuild": "0.28.2",
+    "leaflet": "1.9.4",
+    "leaflet-draw": "1.0.4",
+    "three": "0.186.1"
+  }
+}

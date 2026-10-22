@@ -1,8 +1,9 @@
 # Table of Contents
 
-* [Stroom Entities](stroomEntities.md)
+* [Stroom Documents](stroomEntities.md)
 * [Developing Visualisations](developingVisualisations.md)
-* [Structure of a Visualisation Script](structureOfAVisualisationScript.md)
+* [Structure of a Visualisation](structureOfAVisualisation.md)
+* [Importing into Stroom](importToStroom.md)
 * [Visualisation Settings Structure](visualisationsSettingsStructure.md)
 * [Data Structure](dataStructure.md)
 * [FAQ](FAQ.md)

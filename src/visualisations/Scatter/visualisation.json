@@ -1,0 +1,7 @@
+{
+    "uuid": "8b5e5f4f-c1a8-474f-9ff2-88bdb0f9a0a5",
+    "name": "Scatter",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.Scatter",
+    "description": "A point for each X and Y value, coloured by series, in a grid of charts if a Grid Series field is chosen."
+}

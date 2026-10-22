@@ -1,100 +1,83 @@
-# Stroom Visualisations Development
+# Stroom Visualisations
 
-Stroom Visualisations Development is a test harness for working with the custom data visualisations used within Stroom dashboards.  Stroom has the capability for custom JavaScript data visualisations to be added in at run time by end users. To allow for quick and easy development and testing of these visualisations this test harness was built. It currently generates randomised test data for each visualisation to enable development outside of Stroom.  It also servers as the master repository for the visualisation scripts created for Stroom and the metadata files that accompany them.
+The visualisations of Stroom's dashboards: charts, maps, networks and status displays that draw
+the results of a dashboard's queries. Each one is an asset-based Stroom Visualisation document, a
+bundle of an `index.html`, a JavaScript file and a CSS file that Stroom loads into a frame on the
+dashboard. The visualisations are built from the source here into a content pack that is imported
+into Stroom.
 
-The custom visualisation framework in Stroom provides a means of adding any data visualisation that can be coded in JavaScript, without having to re-deploy a version of Stroom. Visualisations can be authored and managed by end users completely within the front-end of Stroom.
+## The visualisations
 
-The aim of the Stroom Visualisations is to provide a set of visualisations with a consistent look and feel that conform to the Stroom visualisations API. Stroom stores a lot of data and often you need to visualise data at multiple levels of grouping. As a result of this the concept of the gridded visualisation was created to enable each visualisation to be displayed as grid of multiple visualisations, with one group of data per grid cell.
+| Kind | Visualisations |
+|---|---|
+| Charts of series | BarChart, LineChart, StackedArea, Scatter, Bubble, TimeSeries |
+| Parts of a whole and hierarchies | Doughnut, Sunburst, TreeMap, Tree |
+| Time grids | DayWeekHeatMap, HourDayMultiHeatMap, HourDayPointMap, HourDaySessionMap, Session, SeriesSessionMap |
+| Status | Gauge, RAGStatus, TrafficLights, TextValue |
+| Links and words | Force, Force 2D, Force 3D, ChordLabels, WordCloud |
+| Maps | GeoMap, FloorMap |
 
-While these visualisations have been built for Stroom they are not tightly integrated with it and can easily be used in other applications as long as the data contract and API are met.
+What they have in common:
 
-## Demo
+* A grid of charts, one for each value of a Grid Series field, where a visualisation can draw one.
+* A legend of the series (or categories), shown from Stroom's toolbar, that shows and hides them.
+* The dashboard's colour for each value, so that a value has the same colour in every visualisation
+  of the dashboard, in the palette the user chose, on the light and dark themes.
+* Tooltips that Stroom shows on its page, so that they aren't cut off by the visualisation's frame.
+* Every data point reachable from the keyboard, named for screen readers, with a summary of the chart.
+* Selection: a click selects a point (Ctrl+Click adds to the selection), and the dashboard is told,
+  so that other components can use it, e.g. to filter a table.
+* Times in the user's time zone and date-time pattern.
+* Typed inputs: each data field a visualisation takes is declared, so that Stroom offers only fields
+  of the right type.
 
-To see the visualisations test harness in action visit the [demo page](https://gchq.github.io/stroom-visualisations-dev/), choose your visualisation/settings and click _Update_.
+## Building
 
-> _Note:_ Some of the visualisations are work in progress so may have bugs or may not be working at all in the test harness.
+You will need Node.js 22.
 
-## Visualisation Features
+```bash
+npm ci          # Installs the build's dependencies (esbuild, d3, Leaflet, three.js)
+npm test        # Runs the unit tests
+npm run build   # Writes the content pack to war/stroom_content
+npm run watch   # Builds again whenever a source file changes
+```
 
-Common features of these visualisations:
+`npm run build` bundles each visualisation in `src/visualisations/` with esbuild and writes the
+content pack in Stroom's V2 import format (see [Stroom Documents](./docs/stroomEntities.md)).
 
-* Grid layout for displaying multiple groups of data on one screen/container
-* Series/value colour pop-up legend, available by clicking the legend icon
-* Series/value colour scales that can be synchronised across all grid cells
-* Zoom in/out of individual grid cells by clicking the icon or grid cell title
-* Highlight a series/value across all grid cells (whether the colour scales have been synchronised or not) by hovering over the legend key
-* Hide/show series/values (with the visualisations re-scaling to suit) by clicking the legend key
-* Axes that can be optionally synchronised across all grid cells
-* Axes that can be optionally hidden
-* Text labels that can be optionally hidden (e.g. doughnut)
+The pack in `war/stroom_content` is committed with the source that built it, as Stroom's content
+store imports it straight from this repository at a given commit. So run `npm run build` and commit
+`war/stroom_content` with every change to `src/`. The build makes the same files from the same
+source, and CI fails if the committed pack isn't what the source builds.
 
-Stroom visualisations usually conform to the following criteria:
+## Trying them out
 
-* Fully data driven so respond when the source data is changed, i.e. the visualisations display the Stroom search results as soon as some data is found without having to wait for the full result set.
-* Responsive to the size of the container they are displayed within
-* Common flexible source data structure
-* Common colour scheme and look/feel
-* Built within the grid framework so we can optionally group data outside the level of the individual visualisation, and provide common controls such as legends
-* Support hover tips and series/value highlighting
-* Support user controlled hiding/showing of values or series
+Stroom's GWT workbench (in the Stroom repository, `stroom-gwt/stroom-gwt-workbench`) has a story for
+every visualisation, which draws it on a dashboard with test data and checks what it does. The
+workbench serves the visualisations from `war/stroom_content`, so build them first.
 
-## Some examples
-
-### Ordinal Bar Chart
-
-![Bar Chart](./docs/resources/BarChart.png)
-
-### Bubble
-
-![Bubble](./docs/resources/BubbleFlat.png)
-
-### Hour Day Multi Heat Map
-
-![Hour Day Multi Heat Map](./docs/resources/HourDayMultiHeatMap.png)
-
-### Hour Day Point Map
-
-![Hour Day Point Map](./docs/resources/HourDayPointMap.png)
-
-### Series Session Map
-
-![SeriesSessionMap](./docs/resources/SeriesSessionMap.png)
-
-## Test Data
-
-Stroom Visualisations Development is designed to generate random test data applicable to each visualisation.  It also provides controls for configuring aspects of the visualisation, e.g. whether axes are displayed, whether series are synchronised, etc.  Controls are also provided for making changes to the data (e.g. adding a grid cell, series or altering values) to verify that the visualisation responds correctly to changes to the source data set.
-
-## Stroom Content Packs
-
-Stroom has an import feature allowing a set of Stroom entities (such as Visualisation and Script) to be imported as a content pack.
-
-## Running Stroom Visualisations Development
-
-`cd` into the war directory and run one of the following commands (depending on your python version) to start the python simple web server on port 8888
-
-`python -m SimpleHTTPServer 8888` (python2)
-
-`python -m http.server 8888` (python3)
-
-In the browser (currently they have only been tested in Google Chrome) enter the URL
-
-`http://localhost:8888/`
-
-Select a visualisation from the drop-down list and click update.  The various tick boxes control some of the settings for the visualisations, though not all apply to all visualisations.  At some point we will improve the Stroom Visualisations Development front-end to be driven off the .settings.json files so the various configurations options displayed are specific to the vis chosen.
-
-Alternatively if you use Tmuxinator/Tmux/Vim/Chrome then a Tmuxinator config file `stroom-visualisations-dev.yml` is provided to spin up the web server and open some of the source files in vim.
+To use them in Stroom, import the content pack: see [Importing into Stroom](./docs/importToStroom.md).
 
 ## Documentation
 
-For more details on what visualisations are available and how to develop them see the [Documentation](./docs/SUMMARY.md).
+See the [Documentation](./docs/SUMMARY.md), in particular
+[Developing Visualisations](./docs/developingVisualisations.md).
 
 ## Building a release
 
 Once you have committed and pushed all changes:
-1. Run `log_change.sh` specifing the GH issue id (or 0 if there isn't one) and your update comment.
+
+1. Set `version` in `package.json` to the release number (e.g. `4.0.0`), run `npm run build`, and
+   commit both: each visualisation's description in the pack says which version it is.
+1. Run `log_change.sh` specifying the GitHub issue id (or 0 if there isn't one) and your update comment.
 1. Run `tag_release.sh` specifying a new release number of the form `vX.Y.Z`.
 
-When this new tag is pushed to GitHub, a release will be created automatically.
+When this new tag is pushed to GitHub, the build (`.github/workflows/build_and_release.yml`)
+creates a release with the content pack zipped.
 
+Stroom gets the pack in two ways, which should both name the release:
 
-
+* `content-packs.json` downloads the release's zip
+  (`.../releases/download/vX.Y.Z/stroom-visualisations-vX.Y.Z.zip`).
+* `content-packs.yml` (the content store) imports `war/stroom_content` from this repository, at the
+  `commit` it gives: use the hash of the release's tagged commit.

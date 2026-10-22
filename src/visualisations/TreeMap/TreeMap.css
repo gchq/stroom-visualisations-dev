@@ -1,0 +1,157 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The tree map, filling its cell, its blocks and boxes placed in it (by the chart) */
+.vis-treemap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    font-family: var(--regular-font-family);
+}
+
+.vis-treemap__empty {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    color: var(--vis-text__color);
+    font-size: 13px;
+    text-align: center;
+    transform: translateY(-50%);
+}
+
+/* A series' block: its header, with its boxes over it below that */
+.vis-treemap__block {
+    position: absolute;
+    box-sizing: border-box;
+    border: 1px solid var(--vis-text__color--faint);
+    border-radius: 4px;
+}
+
+.vis-treemap__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 4px;
+    overflow: hidden;
+    color: var(--vis-text__color);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.vis-treemap__swatch {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.vis-treemap__series {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* A header that zooms in to its series (+) or back out (−), with a focus ring inside it */
+.vis-treemap__header--zoomable {
+    cursor: pointer;
+}
+
+.vis-treemap__header--zoomable:hover .vis-treemap__series {
+    text-decoration: underline;
+}
+
+.vis-treemap__header.vis-point:focus-visible {
+    outline-offset: -2px;
+}
+
+.vis-treemap__zoom {
+    flex: none;
+    margin-left: auto;
+    font-size: 14px;
+}
+
+/* A box, in its colour, its words in black or white, whichever reads on it (set by the chart) */
+.vis-treemap__box {
+    position: absolute;
+    background-color: var(--vis-treemap__colour);
+    color: var(--vis-treemap__text);
+    box-sizing: border-box;
+    padding: 4px 6px;
+    overflow: hidden;
+    border: 1px solid var(--vis-treemap__edge, var(--vis__background-color));
+    border-radius: 3px;
+    font-size: 11px;
+    line-height: 1.35;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+}
+
+/* The focus ring inside the box, so that the edge of the tree map doesn't cut it off */
+.vis-treemap__box.vis-point:focus-visible {
+    outline-offset: -3px;
+}
+
+.vis-treemap__name {
+    overflow: hidden;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.vis-treemap__value {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* A box too small for its words shows them in its tooltip only */
+.vis-treemap__box--no-label .vis-treemap__name,
+.vis-treemap__box--no-label .vis-treemap__value,
+.vis-treemap__box--no-value .vis-treemap__value {
+    display: none;
+}
+
+/* Every box but the one shown or focused, and those selected: only its background fades, towards
+   the background, its words in the theme's text colour so that they can still be read */
+.vis-treemap__box--faded {
+    background-color: color-mix(in srgb, var(--vis-treemap__colour) 25%, var(--vis__background-color));
+    color: var(--vis-text__color);
+}
+
+/* A selected box is edged in the theme's text colour (its focus ring is drawn inside it) */
+.vis-treemap__box--selected {
+    border: 2px solid var(--vis-text__color);
+}
+
+/* With forced colours (see shared.css), the boxes keep their colours, which tell them apart, and
+   are edged in the theme's text colour */
+@media (forced-colors: active) {
+    .vis-treemap__box,
+    .vis-treemap__swatch {
+        border-color: CanvasText;
+        forced-color-adjust: none;
+    }
+
+    /* A faded box is the theme's background and text, as the boxes' colours aren't forced */
+    .vis-treemap__box--faded {
+        background-color: Canvas;
+        color: CanvasText;
+    }
+
+    .vis-treemap__box--selected {
+        border-color: Highlight;
+    }
+}

@@ -1,0 +1,48 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* A bar, outlined in the background so that touching bars have a gap the glow shows in */
+.vis-bar-chart__bar {
+    stroke: var(--vis__background-color);
+    stroke-width: 1px;
+    transition: opacity 0.15s ease;
+    cursor: pointer;
+}
+
+/* The Outline fill style: a line of the bar's colour (set by the chart) around a fade of it */
+.vis-bar-chart__bar--outline {
+    stroke-width: 2px;
+}
+
+/* Every bar but the one hovered or focused, and those selected */
+.vis-bar-chart__bar--faded {
+    opacity: 0.2;
+}
+
+/* With forced colours (see shared.css), each bar keeps its series' colour but is outlined in the
+   theme's text colour, over the chart's own outline colour (of the Outline style too), so that it
+   shows on the theme's background */
+@media (forced-colors: active) {
+    .vis-bar-chart__bar {
+        stroke: CanvasText !important;
+    }
+
+    /* Only the fill fades, so that a faded bar's outline still shows where it is */
+    .vis-bar-chart__bar--faded {
+        opacity: 1;
+        fill-opacity: 0.2;
+    }
+}

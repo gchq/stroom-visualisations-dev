@@ -1,0 +1,89 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The dial's track, under its bands, in the theme's faint text colour */
+.vis-gauge__track {
+    fill: var(--vis-text__color--faint);
+}
+
+/* A band, in its status's colour (set by the chart) */
+.vis-gauge__band {
+    stroke: var(--vis__background-color);
+    stroke-width: 1px;
+}
+
+.vis-gauge__tick {
+    stroke: var(--vis-axis__color);
+    stroke-width: 1px;
+}
+
+/* The pointer and its hub, in the theme's text colour */
+.vis-gauge__pointer,
+.vis-gauge__hub {
+    fill: var(--vis-text__color);
+}
+
+.vis-gauge__end,
+.vis-gauge__value,
+.vis-gauge__status {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+}
+
+.vis-gauge__end {
+    font-size: 10px;
+    text-anchor: middle;
+}
+
+.vis-gauge__value,
+.vis-gauge__status {
+    text-anchor: middle;
+}
+
+.vis-gauge__value {
+    font-weight: 600;
+}
+
+/* A value outside the bands stands out by its weight and an underline, not only its colour */
+.vis-gauge__value--outside {
+    font-weight: 800;
+    text-decoration: underline;
+}
+
+/* With forced colours (see shared.css), the bands keep their colours, edged in the theme's text
+   colour, and the pointer and words are in it */
+@media (forced-colors: active) {
+    .vis-gauge__band {
+        stroke: CanvasText;
+    }
+
+    .vis-gauge__track {
+        fill: Canvas;
+        stroke: CanvasText;
+    }
+
+    .vis-gauge__tick {
+        stroke: CanvasText;
+    }
+
+    .vis-gauge__pointer,
+    .vis-gauge__hub,
+    .vis-gauge__end,
+    .vis-gauge__value,
+    .vis-gauge__status {
+        fill: CanvasText;
+    }
+}

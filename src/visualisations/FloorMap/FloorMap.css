@@ -1,0 +1,141 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The list of floors, at the top right of the plan */
+.vis-floor-map__floors {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background-color: var(--vis__background-color);
+    color: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    font-size: 12px;
+}
+
+.vis-floor-map__floor-list {
+    font: inherit;
+    color: inherit;
+    background-color: var(--vis__background-color);
+    border: 1px solid var(--vis-text__color--faint);
+    border-radius: 3px;
+}
+
+.vis-floor-map__floor-list:focus-visible {
+    outline: 2px solid var(--focus-border);
+}
+
+/* The plan's own background, so that a plan with a transparent background reads on either theme */
+.vis-map .leaflet-image-layer {
+    background-color: #ffffff;
+}
+
+/* Zone editing (zoneEditor.js; its tools are in Stroom's toolbar): whether there are changes to save
+   and what became of the last save, at the top left when there is something to say, and the form in
+   a zone's popup to rename it */
+.vis-floor-map__save {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 6px;
+    background-color: var(--vis__background-color);
+    color: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    font-size: 12px;
+}
+
+.vis-floor-map__save--empty {
+    display: none;
+}
+
+.vis-floor-map__rename-button {
+    font: inherit;
+    padding: 2px 8px;
+    color: var(--vis-text__color);
+    background-color: var(--vis__background-color);
+    border: 1px solid var(--vis-text__color--faint);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.vis-floor-map__rename-button:focus-visible,
+.vis-floor-map__rename-input:focus-visible {
+    outline: 2px solid var(--focus-border);
+}
+
+/* A save that failed says so in bold (in the text colour, which reads on either theme) */
+.vis-floor-map__save-status--failed {
+    font-weight: 600;
+}
+
+.vis-floor-map__rename {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--regular-font-family);
+    font-size: 12px;
+}
+
+.vis-floor-map__rename-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.vis-floor-map__rename-input {
+    font: inherit;
+    min-width: 180px;
+}
+
+.vis-floor-map__rename-button {
+    align-self: flex-end;
+}
+
+/* Leaflet.draw's own toolbar is hidden: its tools are started from Stroom's toolbar. What a tool asks
+   for while it is in use (e.g. Finish, Delete last point, Cancel; Save, Cancel) is shown at the map's
+   edge where the toolbar would have been, in the theme's colours */
+.vis-map .leaflet-draw-toolbar {
+    display: none;
+}
+
+.vis-map .leaflet-draw-actions {
+    left: 0;
+    top: 0;
+}
+
+.vis-map .leaflet-draw-actions a {
+    background-color: var(--vis__background-color);
+    color: var(--vis-text__color);
+    border-left: 1px solid var(--vis-text__color--faint);
+    font-family: var(--regular-font-family);
+}
+
+.vis-map .leaflet-draw-actions a:hover {
+    background-color: var(--vis__background-color);
+    color: var(--vis-icon__color--hover);
+}
+
+.vis-map .leaflet-draw-actions {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* With forced colours (see shared.css), the list is edged in the theme's text colour */
+@media (forced-colors: active) {
+    .vis-floor-map__floor-list,
+    .vis-floor-map__rename-button {
+        border-color: CanvasText;
+    }
+}

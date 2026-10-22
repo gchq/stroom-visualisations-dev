@@ -1,0 +1,326 @@
+/* src/shared/shared.css */
+.vis {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--vis__background-color);
+  color: var(--vis-text__color);
+}
+.vis-look {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.vis-grid {
+  display: grid;
+  gap: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+}
+.vis-grid--single {
+  padding: 0;
+}
+.vis-grid__cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--vis-text__color--faint);
+  border-radius: 4px;
+}
+.vis-grid--single .vis-grid__cell {
+  border: none;
+}
+.vis-grid__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 0 8px;
+}
+.vis-grid__header[hidden] {
+  display: none;
+}
+.vis-grid__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.vis-grid__zoom {
+  display: inline-flex;
+  padding: 3px;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  color: var(--vis-icon__color);
+  cursor: pointer;
+}
+.vis-grid__zoom:hover {
+  color: var(--vis-icon__color--hover);
+}
+.vis-grid__zoom:focus-visible {
+  outline: 2px solid var(--focus-border);
+}
+.vis-grid__zoom svg {
+  width: 14px;
+  height: 14px;
+}
+.vis-grid__body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.vis-chart {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.vis-axis__line,
+.vis-axis__tick {
+  fill: none;
+  stroke: var(--vis-axis__color);
+  shape-rendering: crispEdges;
+}
+.vis-axis__label {
+  fill: var(--vis-text__color);
+  font-family: var(--regular-font-family);
+  font-size: 11px;
+}
+.vis-empty {
+  fill: var(--vis-text__color);
+  font-family: var(--regular-font-family);
+  font-size: 13px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.vis-nearest {
+  fill: transparent;
+  pointer-events: all;
+  cursor: crosshair;
+}
+.vis-legend {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  flex-direction: column;
+  max-width: 40%;
+  max-height: calc(100% - 12px);
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid var(--vis-text__color--faint);
+  border-radius: 4px;
+  background-color: var(--vis__background-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.vis-legend[hidden] {
+  display: none;
+}
+.vis-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  color: var(--vis-text__color);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.vis-legend__item:hover {
+  background-color: var(--vis-text__color--faint);
+}
+.vis-legend__item:focus-visible {
+  outline: 2px solid var(--focus-border);
+}
+.vis-legend__item--hidden .vis-legend__swatch {
+  opacity: 0.3;
+}
+.vis-legend__item--hidden .vis-legend__label {
+  text-decoration: line-through;
+}
+.vis-legend__swatch {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+.vis-legend__swatch--line {
+  width: 24px;
+}
+.vis-legend__swatch--line svg {
+  display: block;
+  width: 24px;
+  height: 12px;
+  stroke-width: 3px;
+}
+.vis-legend__label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.stroom-theme-dark .vis-glow {
+  filter: url(#vis-glow);
+}
+.stroom-theme-light .vis-glow {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+}
+.stroom-theme-dark .vis-glow--line {
+  filter: url(#vis-glow-line);
+}
+@media (prefers-reduced-motion: reduce) {
+  .vis *,
+  .vis *::before,
+  .vis *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .vis-axis__line,
+  .vis-axis__tick {
+    stroke: CanvasText;
+  }
+  .vis-axis__label,
+  .vis-empty {
+    fill: CanvasText;
+  }
+  .vis .vis-glow,
+  .vis .vis-glow--line {
+    filter: none;
+  }
+  .vis-legend__swatch {
+    box-sizing: border-box;
+    border: 1px solid CanvasText;
+    forced-color-adjust: none;
+  }
+}
+.vis-search {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid var(--vis-text__color--faint);
+  border-radius: 4px;
+  background-color: var(--vis__background-color);
+  color: var(--vis-text__color);
+  font-family: var(--regular-font-family);
+  font-size: 12px;
+}
+.vis-search[hidden] {
+  display: none;
+}
+.vis-search__input {
+  margin-left: 4px;
+  font: inherit;
+  color: inherit;
+  background-color: var(--vis__background-color);
+  border: 1px solid var(--vis-text__color--faint);
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+.vis-search__input:focus-visible {
+  outline: 2px solid var(--focus-border);
+}
+.vis-search__count:empty {
+  display: none;
+}
+@media (forced-colors: active) {
+  .vis-search,
+  .vis-search__input {
+    border-color: CanvasText;
+  }
+}
+
+/* src/visualisations/TimeSeries/TimeSeries.css */
+.vis-time-series__header {
+  fill: var(--vis-text__color);
+  font-family: var(--regular-font-family);
+  font-size: 11px;
+}
+.vis-time-series__line {
+  fill: none;
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.vis-time-series__casing {
+  display: none;
+  fill: none;
+}
+.vis-time-series__series--faded .vis-time-series__line {
+  stroke-opacity: 0.15;
+}
+.vis-time-series__series--faded .vis-time-series__area {
+  fill-opacity: 0.15;
+}
+.vis-time-series__point {
+  opacity: 0;
+  stroke: var(--vis__background-color);
+  stroke-width: 1.5px;
+  pointer-events: none;
+}
+.vis-time-series__point--lone,
+.vis-time-series__point--shown,
+.vis-time-series__point:focus {
+  opacity: 1;
+}
+.vis-time-series__overview {
+  outline: none;
+}
+.vis-time-series__overview-frame {
+  fill: none;
+  stroke: var(--vis-text__color--faint);
+  stroke-width: 1px;
+}
+.vis-time-series__overview:focus-visible .vis-time-series__overview-frame {
+  stroke: var(--focus-border);
+  stroke-width: 2px;
+}
+.vis-time-series__overview-line {
+  fill: none;
+  stroke-width: 1px;
+}
+.vis-time-series__brush .selection {
+  fill: var(--vis-text__color);
+  fill-opacity: 0.15;
+  stroke: var(--vis-text__color);
+  stroke-width: 1px;
+}
+@media (forced-colors: active) {
+  .vis-time-series__casing {
+    display: inline;
+    stroke: CanvasText;
+    stroke-width: 5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .vis-time-series__point {
+    stroke: CanvasText;
+  }
+  .vis-time-series__header {
+    fill: CanvasText;
+  }
+  .vis-time-series__overview-frame,
+  .vis-time-series__brush .selection {
+    stroke: CanvasText;
+  }
+  .vis-time-series__overview:focus-visible .vis-time-series__overview-frame {
+    stroke: Highlight;
+  }
+}

@@ -1,0 +1,71 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* A series' line, in its colour (set by the chart) */
+.vis-line-chart__line {
+    fill: none;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+/* Under the line, only shown with a high contrast theme (below) */
+.vis-line-chart__casing {
+    display: none;
+    fill: none;
+}
+
+/* Every line but that of the point shown */
+.vis-line-chart__series {
+    transition: opacity 0.15s ease;
+}
+
+.vis-line-chart__series--faded {
+    opacity: 0.15;
+}
+
+/* A point on a line: the mouse finds the nearest (over .vis-nearest), so it needn't be
+   pointed at, and its dot only shows when it is shown, focused or selected */
+.vis-line-chart__point {
+    opacity: 0;
+    stroke: var(--vis__background-color);
+    stroke-width: 1.5px;
+    pointer-events: none;
+}
+
+/* A lone point (no line to either side of it) always shows its dot, as there is nothing else to see */
+.vis-line-chart__point--lone,
+.vis-line-chart__point--shown,
+.vis-line-chart__point--selected,
+.vis-line-chart__point:focus {
+    opacity: 1;
+}
+
+/* With forced colours (see shared.css), each line keeps its series' colour over a casing in the
+   theme's text colour, and each dot is edged in it, so that they show on the theme's background */
+@media (forced-colors: active) {
+    .vis-line-chart__casing {
+        display: inline;
+        stroke: CanvasText;
+        stroke-width: 5px;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+    .vis-line-chart__point {
+        stroke: CanvasText;
+    }
+}

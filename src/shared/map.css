@@ -1,0 +1,233 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The maps (GeoMap, FloorMap): a Leaflet map filling its cell, with markers over it */
+.vis-map {
+    width: 100%;
+    height: 100%;
+    font-family: var(--regular-font-family);
+}
+
+/* The map has the keyboard's focus (arrow keys pan it, plus and minus zoom it) */
+.vis-map.leaflet-container:focus-visible {
+    outline: 2px solid var(--focus-border);
+    outline-offset: -2px;
+}
+
+/* A marker, in its colour (set by the chart), with a white edge and a dark shadow so that it shows
+   on any map, light or dark: its shape takes the marker's colours */
+.vis-map__marker {
+    stroke: #ffffff;
+    stroke-width: 1.5px;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8));
+    cursor: pointer;
+    /* Leaflet's overlay takes no pointer events, but a marker does */
+    pointer-events: auto;
+}
+
+/* The clear circle round a marker's shape, 24 pixels across, that the mouse points at and the focus
+   ring goes round (the shape itself is too small to point at easily) */
+.vis-map__hit {
+    fill: transparent;
+    stroke: none !important;
+    pointer-events: all;
+}
+
+.vis-map__shape,
+.vis-map__badge {
+    pointer-events: none;
+}
+
+/* An icon on a marker's badge: a line drawing (see mapIcons.js), black or white to read on the
+   badge (set by the chart), whatever the marker's edge */
+.vis-map__icon {
+    fill: none;
+    stroke-width: 1.6px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+    filter: none;
+}
+
+/* Coloured by time, a marker is edged in its series' colour (set by the chart) */
+.vis-map__marker--edged {
+    stroke-width: 2.5px;
+}
+
+/* The marker shown (hovered or focused) has a dark edge */
+.vis-map__marker--shown {
+    stroke: #000000 !important;
+    stroke-width: 3px;
+}
+
+/* A selected marker has a dark ring round it, so that it is told apart from the one shown */
+.vis-map__ring {
+    display: none;
+    fill: none;
+    stroke: #000000 !important;
+    stroke-width: 2.5px;
+    pointer-events: none;
+}
+
+.vis-map__marker--selected .vis-map__ring {
+    display: inline;
+}
+
+/* An area (e.g. a floor's zone): a tint with a dark edge, which shows on a light plan; the one shown
+   (hovered or focused) is tinted more */
+.vis-map__area {
+    fill: #1f78b4;
+    fill-opacity: 0.12;
+    stroke: #1f4e79;
+    stroke-width: 2px;
+    cursor: default;
+}
+
+.vis-map__area--shown {
+    fill-opacity: 0.3;
+}
+
+/* 'No data', over the middle of a map with no markers */
+.vis-map__empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: var(--vis__background-color);
+    color: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    pointer-events: none;
+}
+
+.vis-map__empty[hidden] {
+    display: none;
+}
+
+/* The key of the time colours */
+.vis-map__time-key {
+    padding: 4px 6px;
+    border-radius: 4px;
+    background-color: var(--vis__background-color);
+    color: var(--vis-text__color);
+    font-size: 11px;
+}
+
+.vis-map__time-key-bar {
+    width: 160px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.vis-map__time-key-labels {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 2px;
+}
+
+/* Leaflet's attribution in the theme's colours */
+.vis-map .leaflet-control-attribution {
+    background-color: var(--vis__background-color);
+    color: var(--vis-text__color);
+}
+
+.vis-map .leaflet-control-attribution a {
+    color: var(--vis-text__color);
+    text-decoration: underline;
+}
+
+/* The map's buttons (zoom in, zoom out, fit), at its top left: Stroom's icon buttons, in the theme's
+   icon colour on a panel of its background that stands off the map */
+.vis-map__buttons {
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    background-color: var(--vis__background-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.vis-map__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    color: var(--vis-icon__color);
+    cursor: pointer;
+}
+
+.vis-map__button + .vis-map__button {
+    border-top: 1px solid var(--vis-text__color--faint);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.vis-map__button:hover:enabled {
+    color: var(--vis-icon__color--hover);
+}
+
+.vis-map__button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.vis-map__button:focus-visible {
+    outline: 2px solid var(--focus-border);
+    outline-offset: -2px;
+}
+
+.vis-map__button svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* With forced colours (see shared.css), each marker keeps its colour but is edged in the theme's
+   text colour, the one shown or selected in its highlight colour */
+@media (forced-colors: active) {
+    .vis-map__marker {
+        stroke: CanvasText !important;
+    }
+
+    .vis-map__marker--shown,
+    .vis-map__ring {
+        stroke: Highlight !important;
+    }
+
+    .vis-map__time-key,
+    .vis-map__buttons {
+        border: 1px solid CanvasText;
+    }
+
+    .vis-map__button:disabled {
+        color: GrayText;
+    }
+
+    .vis-map__area {
+        stroke: CanvasText;
+    }
+}

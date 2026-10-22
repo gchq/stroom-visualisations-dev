@@ -1,0 +1,170 @@
+{
+    "inputs": [
+        {
+            "id": "words",
+            "label": "Text",
+            "description": "The text whose words are counted, or, not split into words, each value counted as it is",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "count",
+            "label": "Count",
+            "description": "How many times each row counts, e.g. count(); without it each row counts once",
+            "types": [
+                "NUMBER"
+            ],
+            "required": false
+        },
+        {
+            "id": "gridSeries",
+            "label": "Grid series",
+            "description": "Draws a separate cloud for each value",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "words",
+                    "type": "field",
+                    "label": "Text"
+                },
+                {
+                    "id": "count",
+                    "type": "field",
+                    "label": "Count (Optional)"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series"
+                }
+            ]
+        },
+        {
+            "name": "Word Cloud",
+            "controls": [
+                {
+                    "id": "splitWords",
+                    "type": "boolean",
+                    "label": "Split Into Words",
+                    "defaultValue": "true"
+                },
+                {
+                    "id": "skipCommonWords",
+                    "type": "boolean",
+                    "label": "Leave Out Common Words",
+                    "defaultValue": "true"
+                },
+                {
+                    "id": "maxWords",
+                    "type": "number",
+                    "label": "Max Words",
+                    "defaultValue": "100",
+                    "max": "500",
+                    "min": "1"
+                },
+                {
+                    "id": "spiral",
+                    "type": "selection",
+                    "label": "Spiral",
+                    "values": [
+                        "archimedean",
+                        "rectangular"
+                    ],
+                    "defaultValue": "archimedean"
+                },
+                {
+                    "id": "font",
+                    "type": "selection",
+                    "label": "Font",
+                    "values": [
+                        "Regular",
+                        "Serif"
+                    ],
+                    "defaultValue": "Regular"
+                },
+                {
+                    "id": "angle",
+                    "type": "number",
+                    "label": "Rotation Angle",
+                    "defaultValue": "20",
+                    "max": "30",
+                    "min": "0"
+                },
+                {
+                    "id": "padding",
+                    "type": "number",
+                    "label": "Padding",
+                    "defaultValue": "2",
+                    "max": "10",
+                    "min": "1"
+                },
+                {
+                    "id": "sortGridSeries",
+                    "type": "selection",
+                    "label": "Sort Grid Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "maxGridSeries",
+                    "type": "number",
+                    "label": "Max Grid Series",
+                    "defaultValue": "36",
+                    "max": "144",
+                    "min": "1"
+                },
+                {
+                    "id": "gridSeriesDateFormat",
+                    "type": "text",
+                    "label": "Grid Series Date Format (opt.)",
+                    "defaultValue": ""
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "sort": {
+                        "direction": "${sortGridSeries}",
+                        "enabled": "true"
+                    },
+                    "id": "${gridSeries}"
+                },
+                "values": {
+                    "fields": [
+                        {
+                            "id": "${words}"
+                        },
+                        {
+                            "id": "${count}"
+                        }
+                    ]
+                },
+                "limit": {
+                    "size": "${maxGridSeries}",
+                    "enabled": "true"
+                }
+            }
+        }
+    }
+}

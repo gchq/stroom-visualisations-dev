@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "8b5e5f4f-c1a8-474f-9ff2-88bdb0f9a0a5",
+  "name": "Scatter",
+  "version": "a4849941-1656-d71c-ffe3-6bd2b1ff1591",
+  "description": "A point for each X and Y value, coloured by series, in a grid of charts if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.Scatter"
+}

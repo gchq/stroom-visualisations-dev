@@ -1,0 +1,158 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The network can be dragged to pan it */
+.vis-force {
+    cursor: grab;
+}
+
+/* A line between two nodes, as thick as their counts (set by the chart), with arrowheads */
+.vis-force__link {
+    stroke: var(--vis-axis__color);
+    stroke-linecap: round;
+    transition: stroke-opacity 0.15s ease;
+}
+
+.vis-force__arrow path {
+    fill: var(--vis-axis__color);
+}
+
+/* A line from an expanded group to each of its members */
+.vis-force__link--membership {
+    stroke-dasharray: 3 3;
+}
+
+/* A node, in its colour (set by the chart), edged in the background */
+.vis-force__node {
+    stroke: var(--vis__background-color);
+    stroke-width: 1.5px;
+    cursor: pointer;
+    transition: fill-opacity 0.15s ease;
+}
+
+/* A group is edged thickly in the text's colour; expanded, it is hollow, edged in its colour (set by
+   the chart) */
+.vis-force__node--group {
+    stroke: var(--vis-text__color);
+    stroke-width: 2.5px;
+}
+
+.vis-force__node--expanded {
+    fill: var(--vis__background-color);
+    stroke-width: 3px;
+}
+
+/* Every node and line but those joined to the node shown: only fills and lines fade, never names */
+.vis-force__node--faded {
+    fill-opacity: 0.2;
+}
+
+.vis-force__link--faded {
+    stroke-opacity: 0.15;
+}
+
+/* A selected node has a thick edge in the text's colour */
+.vis-force__node--selected {
+    stroke: var(--vis-text__color) !important;
+    stroke-width: 3.5px;
+}
+
+/* The target in the middle of a line: clear, unless the line can be expanded to the members it
+   joins (or back), when it is a small ring; the keyboard's focus ring goes round it either way */
+.vis-force__handle {
+    fill: transparent;
+    stroke: none;
+    cursor: default;
+}
+
+.vis-force__handle--expandable {
+    fill: var(--vis__background-color);
+    stroke: var(--vis-axis__color);
+    stroke-width: 1.5px;
+    cursor: pointer;
+}
+
+.vis-force__link--expandable {
+    cursor: pointer;
+}
+
+/* A node the search matches has a thick edge in the text's colour */
+.vis-force__node--match {
+    stroke: var(--vis-text__color);
+    stroke-width: 3px;
+}
+
+/* The replay of the rows: the dot running along a line, and the two nodes it joins lit */
+.vis-force__zap {
+    fill: var(--vis-text__color);
+    stroke: var(--vis__background-color);
+    stroke-width: 1.5px;
+    pointer-events: none;
+}
+
+.vis-force__node--lit {
+    stroke: var(--vis-text__color);
+    stroke-width: 3px;
+}
+
+/* A node's name beside it */
+.vis-force__label {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    font-size: 11px;
+    pointer-events: none;
+}
+
+.vis-force__label--group {
+    font-weight: 600;
+}
+
+/* With forced colours (see shared.css), each node keeps its colour but is edged in the theme's text
+   colour, and the lines, arrowheads and names are in it */
+@media (forced-colors: active) {
+    .vis-force__node {
+        stroke: CanvasText !important;
+    }
+
+    .vis-force__node--selected {
+        stroke: Highlight !important;
+    }
+
+    .vis-force__link {
+        stroke: CanvasText;
+    }
+
+    .vis-force__arrow path {
+        fill: CanvasText;
+    }
+
+    .vis-force__label {
+        fill: CanvasText;
+    }
+
+    .vis-force__handle--expandable {
+        stroke: CanvasText;
+    }
+
+    .vis-force__node--match,
+    .vis-force__node--lit {
+        stroke: Highlight !important;
+    }
+
+    .vis-force__zap {
+        fill: Highlight;
+    }
+}

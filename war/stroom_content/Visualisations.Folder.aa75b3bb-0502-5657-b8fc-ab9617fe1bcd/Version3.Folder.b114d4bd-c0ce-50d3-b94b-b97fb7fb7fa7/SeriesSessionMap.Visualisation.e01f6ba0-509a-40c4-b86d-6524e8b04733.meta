@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "e01f6ba0-509a-40c4-b86d-6524e8b04733",
+  "name": "SeriesSessionMap",
+  "version": "e809f2de-a0b0-99ca-df25-8b44cc44d179",
+  "description": "Each series' events joined into sessions, as bars along a time axis, each series on a row of its own, in a grid of timelines if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.SeriesSessionMap"
+}

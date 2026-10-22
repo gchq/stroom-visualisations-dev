@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "d23d4513-30f1-4c07-bc85-dafd4538d4df",
+  "name": "Gauge",
+  "version": "065b7693-b37b-c86c-a8b0-92721b9ae67b",
+  "description": "A dial with red, amber and green bands pointing to a value, in a grid of gauges if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.Gauge"
+}

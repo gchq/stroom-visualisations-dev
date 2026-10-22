@@ -1,0 +1,72 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* A name's arc and a ribbon, in their colours (set by the chart), edged in the background so that
+   they stand apart */
+.vis-chord__arc,
+.vis-chord__ribbon {
+    stroke: var(--vis__background-color);
+    stroke-width: 1px;
+    transition: fill-opacity 0.15s ease;
+    cursor: pointer;
+}
+
+.vis-chord__ribbon {
+    fill-opacity: 0.75;
+}
+
+/* Every arc and ribbon but those shown, focused or selected and those joined to them: only the fill
+   fades, so that the edges still show where they are */
+.vis-chord__arc--faded {
+    fill-opacity: 0.25;
+}
+
+.vis-chord__ribbon--faded {
+    fill-opacity: 0.1;
+}
+
+/* A selected name's arc, or a selected ribbon, is edged in the theme's text colour */
+.vis-chord__arc--selected,
+.vis-chord__ribbon--selected {
+    stroke: var(--vis-text__color) !important;
+    stroke-width: 2px;
+}
+
+/* A name beside its arc */
+.vis-chord__label {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* With forced colours (see shared.css), each arc and ribbon keeps its colour but is edged in the
+   theme's text colour, and the names are in it */
+@media (forced-colors: active) {
+    .vis-chord__arc,
+    .vis-chord__ribbon {
+        stroke: CanvasText !important;
+    }
+
+    .vis-chord__label {
+        fill: CanvasText;
+    }
+
+    .vis-chord__arc--selected,
+    .vis-chord__ribbon--selected {
+        stroke: Highlight !important;
+    }
+}

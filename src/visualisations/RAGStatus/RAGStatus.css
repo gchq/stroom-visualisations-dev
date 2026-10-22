@@ -1,0 +1,89 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Filling the cell, as any chart does (.vis-chart) */
+.vis-rag {
+    font-family: var(--regular-font-family);
+}
+
+/* The tile, in its status's colour, with its words in black or white, whichever reads better on it
+   (both set by the chart) */
+.vis-rag__tile {
+    position: absolute;
+    inset: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 8px;
+    overflow: hidden;
+    background-color: var(--vis-rag__colour);
+    color: var(--vis-rag__text);
+    line-height: 1.2;
+    text-align: center;
+}
+
+/* The focus ring just outside the tile, against the background (inside it, on the tile's own colour,
+   it couldn't be seen); the tile is inset from its cell's edge enough for it */
+.vis-rag__tile.vis-point:focus-visible {
+    outline-offset: 1px;
+}
+
+.vis-rag__value {
+    max-width: 100%;
+    overflow: hidden;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.vis-rag__status {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* A value outside the bands stands out by its words' weight and an underline, not only its colour */
+.vis-rag__tile--outside .vis-rag__value {
+    font-weight: 800;
+    text-decoration: underline;
+}
+
+.vis-rag__empty {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    color: var(--vis-text__color);
+    font-size: 13px;
+    text-align: center;
+    transform: translateY(-50%);
+}
+
+/* With forced colours (see shared.css), the tile keeps its status's colour, edged in the theme's
+   text colour */
+@media (forced-colors: active) {
+    .vis-rag__tile {
+        border: 2px solid CanvasText;
+        forced-color-adjust: none;
+    }
+
+    .vis-rag__empty {
+        color: CanvasText;
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "e4c3baee-2a5c-4d6e-93af-aadfe374835c",
+  "name": "StackedArea",
+  "version": "ed5a8ee5-34ff-bb9c-224b-3204a7351abd",
+  "description": "An area for each series, stacked one on another, in a grid of charts if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.StackedArea"
+}

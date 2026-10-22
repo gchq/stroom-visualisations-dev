@@ -1,0 +1,77 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The cloud takes its font from the theme (the words' font is set by the chart) */
+.vis-word-cloud {
+    font-family: var(--regular-font-family);
+}
+
+/* A word, in its colour, size and font (set by the chart) */
+.vis-word-cloud__word {
+    cursor: pointer;
+}
+
+/* The word shown (hovered or focused) is underlined: words never fade, as faded text doesn't read */
+.vis-word-cloud__item--shown .vis-word-cloud__word {
+    text-decoration: underline;
+}
+
+/* A selected word is framed */
+.vis-word-cloud__mark {
+    display: none;
+    fill: none;
+    stroke: var(--vis-text__color);
+    stroke-width: 1.5px;
+    rx: 3px;
+}
+
+.vis-word-cloud__item--selected .vis-word-cloud__mark {
+    display: inline;
+}
+
+/* The focus ring: drawn round the word's letters (set by the chart), in place of the browser's
+   outline, which goes round the text's line box and doesn't fit the word */
+.vis-word-cloud__word.vis-point:focus-visible {
+    outline: none;
+}
+
+.vis-word-cloud__focus {
+    display: none;
+    fill: none;
+    stroke: var(--focus-border);
+    stroke-width: 2px;
+    rx: 4px;
+    pointer-events: none;
+}
+
+.vis-word-cloud__item:has(.vis-word-cloud__word:focus-visible) .vis-word-cloud__focus {
+    display: inline;
+}
+
+/* With forced colours (see shared.css), the words and frames are in the theme's text colour */
+@media (forced-colors: active) {
+    .vis-word-cloud__word {
+        fill: CanvasText !important;
+    }
+
+    .vis-word-cloud__mark {
+        stroke: CanvasText;
+    }
+
+    .vis-word-cloud__focus {
+        stroke: Highlight;
+    }
+}

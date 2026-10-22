@@ -1,0 +1,109 @@
+{
+    "inputs": [
+        {
+            "id": "names",
+            "label": "Names",
+            "description": "What each box is",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "values",
+            "label": "Values",
+            "description": "How big each box is: its area; only values above zero have a box",
+            "types": [
+                "NUMBER"
+            ],
+            "required": true
+        },
+        {
+            "id": "series",
+            "label": "Series",
+            "description": "Groups the boxes in a block for each series, each in its own colour",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "names",
+                    "type": "field",
+                    "label": "Names"
+                },
+                {
+                    "id": "values",
+                    "type": "field",
+                    "label": "Values"
+                },
+                {
+                    "id": "series",
+                    "type": "field",
+                    "label": "Series"
+                }
+            ]
+        },
+        {
+            "name": "TreeMap",
+            "controls": [
+                {
+                    "id": "mode",
+                    "type": "selection",
+                    "label": "Mode",
+                    "values": [
+                        "squarify",
+                        "slice-dice",
+                        "dice",
+                        "slice"
+                    ],
+                    "defaultValue": "squarify"
+                },
+                {
+                    "id": "zoomSeries",
+                    "type": "boolean",
+                    "label": "Zoom Into Series",
+                    "defaultValue": "true"
+                },
+                {
+                    "id": "seriesDateFormat",
+                    "type": "text",
+                    "label": "Series Date Format (opt.)",
+                    "defaultValue": ""
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "sort": {
+                        "direction": "Ascending",
+                        "enabled": "true"
+                    },
+                    "id": "${series}"
+                },
+                "values": {
+                    "fields": [
+                        {
+                            "id": "${names}"
+                        },
+                        {
+                            "id": "${values}"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

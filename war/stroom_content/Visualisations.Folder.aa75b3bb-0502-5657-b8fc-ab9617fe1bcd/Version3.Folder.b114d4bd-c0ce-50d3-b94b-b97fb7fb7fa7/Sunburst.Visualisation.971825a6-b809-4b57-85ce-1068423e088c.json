@@ -1,0 +1,178 @@
+{
+    "inputs": [
+        {
+            "id": "path",
+            "label": "Path",
+            "description": "Where each value is in the tree, e.g. 'var/log/stroom', split by the Delimiter setting",
+            "types": [
+                "TEXT"
+            ],
+            "required": true
+        },
+        {
+            "id": "value",
+            "label": "Value",
+            "description": "How big each path is: its share of its ring; only values above zero count",
+            "types": [
+                "NUMBER"
+            ],
+            "required": true
+        },
+        {
+            "id": "color",
+            "label": "Leaf colour",
+            "description": "A colour for each path, e.g. 'red' or '#d62728', rather than its branch's",
+            "types": [
+                "TEXT"
+            ],
+            "required": false
+        },
+        {
+            "id": "gridSeries",
+            "label": "Grid series",
+            "description": "Draws a separate sunburst for each value",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "path",
+                    "type": "field",
+                    "label": "Path"
+                },
+                {
+                    "id": "value",
+                    "type": "field",
+                    "label": "Value"
+                },
+                {
+                    "id": "color",
+                    "type": "field",
+                    "label": "Leaf Colour (Optional)"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series (Optional)"
+                }
+            ]
+        },
+        {
+            "name": "Sunburst",
+            "controls": [
+                {
+                    "id": "delimiter",
+                    "type": "text",
+                    "label": "Path delimiter",
+                    "defaultValue": "/"
+                },
+                {
+                    "id": "displayDepth",
+                    "type": "number",
+                    "label": "Number of layers to show",
+                    "defaultValue": "8",
+                    "max": "50",
+                    "min": "3"
+                },
+                {
+                    "id": "showLabels",
+                    "type": "selection",
+                    "label": "Show Labels",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "baseColor",
+                    "type": "text",
+                    "label": "Base colour"
+                },
+                {
+                    "id": "gradient",
+                    "type": "selection",
+                    "label": "Colour Gradient",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "expand",
+                    "type": "selection",
+                    "label": "Click to expand",
+                    "values": [
+                        "True",
+                        "False"
+                    ],
+                    "defaultValue": "True"
+                },
+                {
+                    "id": "maxValues",
+                    "type": "number",
+                    "label": "Max Values",
+                    "defaultValue": "10000",
+                    "max": "100000",
+                    "min": "1"
+                },
+                {
+                    "id": "maxGridSeries",
+                    "type": "number",
+                    "label": "Max Grid Series",
+                    "defaultValue": "36",
+                    "min": "1",
+                    "max": "144"
+                },
+                {
+                    "id": "gridSeriesDateFormat",
+                    "type": "text",
+                    "label": "Grid Series Date Format (opt.)",
+                    "defaultValue": ""
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "id": "${gridSeries}",
+                    "sort": {
+                        "enabled": "false"
+                    }
+                },
+                "limit": {
+                    "enabled": "true",
+                    "size": "${maxGridSeries}"
+                },
+                "values": {
+                    "fields": [
+                        {
+                            "id": "${path}"
+                        },
+                        {
+                            "id": "${value}"
+                        },
+                        {
+                            "id": "${color}"
+                        }
+                    ],
+                    "limit": {
+                        "enabled": "true",
+                        "size": "${maxValues}"
+                    }
+                }
+            }
+        }
+    }
+}

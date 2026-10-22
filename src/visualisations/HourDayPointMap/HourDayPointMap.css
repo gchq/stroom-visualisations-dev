@@ -1,0 +1,60 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* The line between one day and the next */
+.vis-point-map__day-line {
+    stroke: var(--vis-text__color--faint);
+    stroke-width: 1px;
+}
+
+/* A point, in its series' colour (set by the chart), see-through where points overlap. The mouse
+   finds the nearest (over .vis-nearest), so it needn't be pointed at */
+.vis-point-map__point {
+    fill-opacity: 0.6;
+    stroke-width: 1px;
+    pointer-events: none;
+}
+
+/* The point shown, and those selected, ringed */
+.vis-point-map__point--shown {
+    fill-opacity: 1;
+    stroke: var(--vis-text__color) !important;
+    stroke-width: 2px;
+}
+
+.vis-point-map__point--selected {
+    fill-opacity: 1;
+    stroke: var(--vis-text__color) !important;
+    stroke-width: 1.5px;
+}
+
+/* Every series but that of the point shown: only its points' fills fade */
+.vis-point-map__series--faded .vis-point-map__point {
+    fill-opacity: 0.12;
+    stroke-opacity: 0.3;
+}
+
+/* With forced colours (see shared.css), each point keeps its series' colour but is edged in the
+   theme's text colour, so that it shows on the theme's background */
+@media (forced-colors: active) {
+    .vis-point-map__day-line {
+        stroke: CanvasText;
+    }
+
+    .vis-point-map__point {
+        stroke: CanvasText !important;
+    }
+}

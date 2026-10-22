@@ -1,0 +1,7 @@
+{
+    "uuid": "7b0aa49c-8467-4e66-b153-b8cd8a134d65",
+    "name": "GeoMap",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.GeoMap",
+    "description": "A map of the world, from a tile server, with a marker at the latitude and longitude of each row, in its series' colour or coloured by time, in a grid of maps if a Grid Series field is chosen."
+}

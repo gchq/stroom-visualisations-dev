@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "ce55cb67-22ef-4146-b866-f8ba955b9ba6",
+  "name": "Doughnut",
+  "version": "8d8e8c8b-6bb9-08c9-e844-09b1cfb79d24",
+  "description": "A ring of slices, one for each name, each its share of the total, in a grid of doughnuts if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.Doughnut"
+}

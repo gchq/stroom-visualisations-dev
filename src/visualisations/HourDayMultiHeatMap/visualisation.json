@@ -1,0 +1,7 @@
+{
+    "uuid": "aad53ec0-c33d-4430-b2b2-5a83eccb13e7",
+    "name": "HourDayMultiHeatMap",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.HourDayMultiHeatMap",
+    "description": "Heat maps of a value by hour, one for each series: a column for each hour of the day and a row for each day, each hour in the colour of its value."
+}

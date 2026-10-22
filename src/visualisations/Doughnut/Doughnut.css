@@ -1,0 +1,98 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* A slice, in its colour (set by the chart), edged in the background so that slices have a gap */
+.vis-doughnut__slice {
+    stroke: var(--vis__background-color);
+    stroke-width: 1px;
+    transition: opacity 0.15s ease;
+    cursor: pointer;
+}
+
+/* The Outline fill style: a line of the slice's colour (set by the chart) around a fade of it */
+.vis-doughnut__slice--outline {
+    stroke-width: 2px;
+}
+
+/* Every slice but the one shown or focused, and those selected */
+.vis-doughnut__slice--faded {
+    opacity: 0.25;
+}
+
+/* A selected slice is edged in the theme's text colour */
+.vis-doughnut__slice--selected {
+    stroke: var(--vis-text__color) !important;
+    stroke-width: 2px;
+}
+
+/* The total in the middle */
+.vis-doughnut__total text {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    text-anchor: middle;
+}
+
+.vis-doughnut__total-label {
+    font-size: 11px;
+}
+
+.vis-doughnut__total-value {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* A slice's name, value and share beside it, with a line to it */
+.vis-doughnut__label text {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    font-size: 11px;
+    dominant-baseline: middle;
+}
+
+.vis-doughnut__label-name {
+    font-weight: 600;
+}
+
+.vis-doughnut__label-line {
+    stroke: var(--vis-axis__color);
+}
+
+/* With forced colours (see shared.css), each slice keeps its colour but is edged in the theme's
+   text colour, and the words and lines are in it */
+@media (forced-colors: active) {
+    .vis-doughnut__slice {
+        stroke: CanvasText !important;
+    }
+
+    .vis-doughnut__total text,
+    .vis-doughnut__label text {
+        fill: CanvasText;
+    }
+
+    .vis-doughnut__label-line {
+        stroke: CanvasText;
+    }
+
+    /* Only the fill fades, so that a faded slice's edge still shows where it is */
+    .vis-doughnut__slice--faded {
+        opacity: 1;
+        fill-opacity: 0.25;
+    }
+
+    .vis-doughnut__slice--selected {
+        stroke: Highlight !important;
+    }
+}

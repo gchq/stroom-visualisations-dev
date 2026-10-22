@@ -1,0 +1,7 @@
+{
+    "uuid": "3c96900b-ca86-43af-a6de-df6478023612",
+    "name": "Tree",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.Tree",
+    "description": "A tree of paths, each part a box joined to the part before it, whose branches can be shown or hidden, in a grid of trees if a Grid Series field is chosen."
+}

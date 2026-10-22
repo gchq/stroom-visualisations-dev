@@ -1,0 +1,230 @@
+{
+    "inputs": [
+        {
+            "id": "source",
+            "label": "Source",
+            "description": "The node each count is from",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "target",
+            "label": "Target",
+            "description": "The node each count is to",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "sourceGroup",
+            "label": "Source group",
+            "description": "The group of the source node, whose nodes are drawn as one unless the group is expanded",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": false
+        },
+        {
+            "id": "targetGroup",
+            "label": "Target group",
+            "description": "The group of the target node",
+            "types": [
+                "TEXT",
+                "NUMBER"
+            ],
+            "required": false
+        },
+        {
+            "id": "count",
+            "label": "Count",
+            "description": "How much goes from the source to the target; without it each row counts once",
+            "types": [
+                "NUMBER"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "source",
+                    "type": "field",
+                    "label": "Source"
+                },
+                {
+                    "id": "target",
+                    "type": "field",
+                    "label": "Target"
+                },
+                {
+                    "id": "sourceGroup",
+                    "type": "field",
+                    "label": "Source Group (Optional)"
+                },
+                {
+                    "id": "targetGroup",
+                    "type": "field",
+                    "label": "Target Group (Optional)"
+                },
+                {
+                    "id": "count",
+                    "type": "field",
+                    "label": "Count (Optional)"
+                }
+            ]
+        },
+        {
+            "name": "Force 2D",
+            "controls": [
+                {
+                    "id": "maxNodes",
+                    "type": "number",
+                    "label": "Max Nodes",
+                    "defaultValue": "2000",
+                    "min": "1",
+                    "max": "20000"
+                },
+                {
+                    "id": "expandGroups",
+                    "type": "boolean",
+                    "label": "Expand Groups",
+                    "defaultValue": "false"
+                },
+                {
+                    "id": "nodeShape",
+                    "type": "selection",
+                    "label": "Node Shape",
+                    "values": [
+                        "By Role",
+                        "Circle"
+                    ],
+                    "defaultValue": "By Role"
+                },
+                {
+                    "id": "colourBy",
+                    "type": "selection",
+                    "label": "Colour By",
+                    "values": [
+                        "Group",
+                        "Activity"
+                    ],
+                    "defaultValue": "Group"
+                },
+                {
+                    "id": "shading",
+                    "type": "selection",
+                    "label": "Shading",
+                    "values": [
+                        "Shiny",
+                        "Flat"
+                    ],
+                    "defaultValue": "Shiny"
+                },
+                {
+                    "id": "showNames",
+                    "type": "selection",
+                    "label": "Show Names",
+                    "values": [
+                        "Auto",
+                        "All",
+                        "None"
+                    ],
+                    "defaultValue": "Auto"
+                },
+                {
+                    "id": "lineWidth",
+                    "type": "selection",
+                    "label": "Line Width",
+                    "values": [
+                        "By Count",
+                        "Same"
+                    ],
+                    "defaultValue": "By Count"
+                },
+                {
+                    "id": "showArrows",
+                    "type": "boolean",
+                    "label": "Show Arrows",
+                    "defaultValue": "true"
+                },
+                {
+                    "id": "flow",
+                    "type": "boolean",
+                    "label": "Show Flow",
+                    "defaultValue": "true"
+                },
+                {
+                    "id": "flowSpeed",
+                    "type": "selection",
+                    "label": "Flow Speed",
+                    "values": [
+                        "Slow",
+                        "Medium",
+                        "Fast"
+                    ],
+                    "defaultValue": "Medium"
+                },
+                {
+                    "id": "charge",
+                    "type": "number",
+                    "label": "Charge",
+                    "defaultValue": "240",
+                    "min": "10",
+                    "max": "1000"
+                },
+                {
+                    "id": "linkDistance",
+                    "type": "number",
+                    "label": "Link Distance",
+                    "defaultValue": "80",
+                    "min": "10",
+                    "max": "400"
+                },
+                {
+                    "id": "damping",
+                    "type": "selection",
+                    "label": "Damping",
+                    "values": [
+                        "Low",
+                        "Medium",
+                        "High"
+                    ],
+                    "defaultValue": "Medium"
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "values": {
+                "fields": [
+                    {
+                        "id": "${source}"
+                    },
+                    {
+                        "id": "${target}"
+                    },
+                    {
+                        "id": "${sourceGroup}"
+                    },
+                    {
+                        "id": "${targetGroup}"
+                    },
+                    {
+                        "id": "${count}"
+                    }
+                ]
+            }
+        }
+    }
+}

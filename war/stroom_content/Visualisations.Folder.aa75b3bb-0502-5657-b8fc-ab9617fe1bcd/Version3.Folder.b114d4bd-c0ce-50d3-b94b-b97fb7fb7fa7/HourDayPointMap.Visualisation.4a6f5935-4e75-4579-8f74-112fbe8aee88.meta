@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "4a6f5935-4e75-4579-8f74-112fbe8aee88",
+  "name": "HourDayPointMap",
+  "version": "09707c71-31f5-8646-eb43-901bd6f70794",
+  "description": "Events as points by time of day and day, each series in its own lane and colour, in a grid of maps if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.HourDayPointMap"
+}

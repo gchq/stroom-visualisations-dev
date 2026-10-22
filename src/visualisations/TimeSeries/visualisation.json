@@ -1,0 +1,7 @@
+{
+    "uuid": "083f905e-0f04-45a6-9b77-5a0852bc513e",
+    "name": "TimeSeries",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.TimeSeries",
+    "description": "A line for each series over time, showing a window of time chosen on an overview of all of it, which Stroom is told as the selection."
+}

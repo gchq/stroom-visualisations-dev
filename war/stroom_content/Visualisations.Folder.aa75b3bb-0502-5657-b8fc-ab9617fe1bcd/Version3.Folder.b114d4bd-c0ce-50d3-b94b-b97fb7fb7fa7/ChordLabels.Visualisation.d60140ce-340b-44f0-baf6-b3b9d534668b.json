@@ -1,0 +1,141 @@
+{
+    "inputs": [
+        {
+            "id": "source",
+            "label": "Source",
+            "description": "The name each count is from",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "target",
+            "label": "Target",
+            "description": "The name each count is to",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": true
+        },
+        {
+            "id": "count",
+            "label": "Count",
+            "description": "How much goes from the source to the target; only counts above zero have a ribbon",
+            "types": [
+                "NUMBER"
+            ],
+            "required": true
+        },
+        {
+            "id": "gridSeries",
+            "label": "Grid series",
+            "description": "Draws a separate diagram for each value",
+            "types": [
+                "TEXT",
+                "NUMBER",
+                "DATE_TIME"
+            ],
+            "required": false
+        }
+    ],
+    "tabs": [
+        {
+            "name": "Data",
+            "controls": [
+                {
+                    "id": "source",
+                    "type": "field",
+                    "label": "Source"
+                },
+                {
+                    "id": "target",
+                    "type": "field",
+                    "label": "Target"
+                },
+                {
+                    "id": "count",
+                    "type": "field",
+                    "label": "Count"
+                },
+                {
+                    "id": "gridSeries",
+                    "type": "field",
+                    "label": "Grid Series"
+                }
+            ]
+        },
+        {
+            "name": "Chord",
+            "controls": [
+                {
+                    "id": "padding",
+                    "type": "number",
+                    "label": "Padding",
+                    "defaultValue": "3",
+                    "max": "10",
+                    "min": "1"
+                },
+                {
+                    "id": "sortGridSeries",
+                    "type": "selection",
+                    "label": "Sort Grid Series",
+                    "values": [
+                        "",
+                        "Ascending",
+                        "Descending"
+                    ],
+                    "defaultValue": "Ascending"
+                },
+                {
+                    "id": "maxGridSeries",
+                    "type": "number",
+                    "label": "Max Grid Series",
+                    "defaultValue": "36",
+                    "max": "144",
+                    "min": "1"
+                },
+                {
+                    "id": "gridSeriesDateFormat",
+                    "type": "text",
+                    "label": "Grid Series Date Format (opt.)",
+                    "defaultValue": ""
+                }
+            ]
+        }
+    ],
+    "data": {
+        "structure": {
+            "nest": {
+                "key": {
+                    "sort": {
+                        "direction": "${sortGridSeries}",
+                        "enabled": "true"
+                    },
+                    "id": "${gridSeries}"
+                },
+                "values": {
+                    "fields": [
+                        {
+                            "id": "${source}"
+                        },
+                        {
+                            "id": "${target}"
+                        },
+                        {
+                            "id": "${count}"
+                        }
+                    ]
+                },
+                "limit": {
+                    "size": "${maxGridSeries}",
+                    "enabled": "true"
+                }
+            }
+        }
+    }
+}

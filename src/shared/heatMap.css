@@ -1,0 +1,83 @@
+/*
+ * Copyright 2026 Crown Copyright
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* A place with no value: the background, faintly edged, so that it isn't taken for a low value */
+.vis-heat__slot {
+    fill: none;
+    stroke: var(--vis-text__color--faint);
+    stroke-width: 1px;
+}
+
+/* A value, in its heat colour (set by the chart); one too pale to show against the background by
+   itself (the lowest values) is edged in a deeper shade of its colour (also set by the chart, see
+   edges.js) */
+.vis-heat__cell {
+    stroke: var(--vis-heat__edge, none);
+    cursor: pointer;
+    transition: fill-opacity 0.15s ease;
+}
+
+/* The ring around the highest value, in the text's colour, just outside the cell so that it shows
+   against the background whatever the cell's colour; around the lowest, in dashes; around those
+   selected, thicker */
+.vis-heat__ring {
+    fill: none;
+    stroke: var(--vis-text__color);
+    stroke-width: 2px;
+    pointer-events: none;
+}
+
+.vis-heat__ring--lowest {
+    stroke-dasharray: 4 3;
+}
+
+.vis-heat__ring--selected {
+    stroke-width: 3px;
+}
+
+/* Every cell but the one shown or focused, and those selected: only its fill fades */
+.vis-heat__cell--faded {
+    fill-opacity: 0.3;
+}
+
+.vis-heat__key-label {
+    fill: var(--vis-text__color);
+    font-family: var(--regular-font-family);
+    font-size: 10px;
+    dominant-baseline: middle;
+}
+
+.vis-heat__key-swatch {
+    stroke: var(--vis-text__color--faint);
+    stroke-width: 1px;
+}
+
+/* With forced colours (see shared.css), the cells keep their heat colours, and the places with no
+   value, the outlines and the key are in the theme's text colour */
+@media (forced-colors: active) {
+    .vis-heat__slot,
+    .vis-heat__key-swatch {
+        stroke: CanvasText;
+    }
+
+    .vis-heat__ring {
+        stroke: CanvasText;
+    }
+
+    .vis-heat__key-label {
+        fill: CanvasText;
+    }
+}

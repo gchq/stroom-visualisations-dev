@@ -1,0 +1,7 @@
+{
+    "uuid": "d9c04bbc-96f0-4586-a796-7dc5dfc14865",
+    "name": "WordCloud",
+    "folder": "Visualisations/Version3/Beta",
+    "functionName": "visualisations.WordCloud",
+    "description": "The words of some text, each as big as how often it is seen (or how many times its rows count), the most seen in the middle, in a grid of clouds if a Grid Series field is chosen."
+}

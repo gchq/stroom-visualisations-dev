@@ -1,0 +1,8 @@
+{
+  "type": "Visualisation",
+  "uuid": "547b440d-4bb1-4d3b-86b7-ff2e41b49311",
+  "name": "BarChart",
+  "version": "1eb2883c-9b61-3b6d-86ab-b778d9ac76b8",
+  "description": "A bar for each X value of each series, in a grid of charts if a Grid Series field is chosen.\nVersion: 4.0.0-SNAPSHOT",
+  "functionName": "visualisations.BarChart"
+}

@@ -4,6 +4,7 @@ Each visualisation entity is accompanied by a JSON object that defines how Stroo
 
 The following features are defined in the JSON:
 
+* The data fields it takes, and their types (`inputs`)
 * Dashboard dialogue controls
     * Data fields
     * Settings values
@@ -246,13 +247,40 @@ Each item in the `controls` array is a single screen control which has the follo
 * **type** - The type of control, one of:
     * **field** - A data field drop-down, whose value will be selected from the list of table fields available in the dashboard
     * **selection** - A drop down list of statically defined values
-    * **number** - A numeric field with value spinner
+    * **number** - A numeric field with value spinner (whole numbers only)
+    * **boolean** - A tick box, giving `true` or `false`
     * **text** - A free text field
 * **label** - The UI label for the control
 * **values** - An array of values for the control, used for `selection` type controls
 * **defaultValue** - An optional default value for the control
 * **min** - The minimum value for `numeric` type controls
 * **max** - The maximum value for `numeric` type controls
+
+## 'inputs' Array
+
+The `inputs` array declares each data field the visualisation takes: one for each `field` control,
+with the same `id`. Stroom uses them to offer only fields of the right type in the control, to mark
+the fields that are required and to give the visualisation each field's values as their type. The
+build checks them (`scripts/inputs.mjs`).
+
+```json
+    "inputs": [
+        {
+            "id": "x",
+            "label": "X Axis",
+            "description": "When each event was",
+            "types": ["DATE_TIME"],
+            "required": true
+        }
+    ]
+```
+
+* **id** - The id of the `field` control it describes
+* **label** - Its name, as the control's label
+* **description** - What it is for (optional)
+* **types** - The types of field it takes: any of `TEXT`, `NUMBER` and `DATE_TIME`
+* **required** - Whether the visualisation needs it (optional, false if left out)
+* **multiple** - Whether it takes several fields (optional, false if left out)
 
 ## 'data' Object
 

@@ -1,0 +1,3 @@
+# The content pack is built from src/ (npm run build) and committed only so that Stroom can import
+# it from git, so its diffs are hidden and GitHub folds it away in pull requests
+war/stroom_content/** -diff linguist-generated=true

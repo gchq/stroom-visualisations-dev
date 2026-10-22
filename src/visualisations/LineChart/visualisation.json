@@ -1,0 +1,7 @@
+{
+    "uuid": "567f4ba6-c420-4068-86a6-cc854165926b",
+    "name": "LineChart",
+    "folder": "Visualisations/Version3",
+    "functionName": "visualisations.LineChart",
+    "description": "A line for each series through its points, in a grid of charts if a Grid Series field is chosen."
+}
