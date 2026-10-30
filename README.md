@@ -67,7 +67,8 @@ See the [Documentation](./docs/SUMMARY.md), in particular
 
 Once you have committed and pushed all changes:
 
-1. Set `version` in `package.json` to the release number (e.g. `4.0.0`), run `npm run build`, and
+1. Set `version` in `package.json` to the release number (e.g. `8.0.0-beta.2` for the tag
+   `v8.0-beta.2`), run `npm run build`, and
    commit both: each visualisation's description in the pack says which version it is.
 1. Run `log_change.sh` specifying the GitHub issue id (or 0 if there isn't one) and your update comment.
 1. Run `tag_release.sh` specifying a new release number of the form `vX.Y.Z`.
@@ -75,9 +76,9 @@ Once you have committed and pushed all changes:
 When this new tag is pushed to GitHub, the build (`.github/workflows/build_and_release.yml`)
 creates a release with the content pack zipped.
 
-Stroom gets the pack in two ways, which should both name the release:
-
-* `content-packs.json` downloads the release's zip
-  (`.../releases/download/vX.Y.Z/stroom-visualisations-vX.Y.Z.zip`).
-* `content-packs.yml` (the content store) imports `war/stroom_content` from this repository, at the
-  `commit` it gives: use the hash of the release's tagged commit.
+Stroom gets the pack from the release's zip: its `content-packs.json` names the zip
+(`.../releases/download/vX.Y.Z/stroom-visualisations-vX.Y.Z.zip`), which Stroom's Docker and zip
+distribution builds and `SetupSampleData` download, and which a new Stroom imports at boot when
+content pack import is enabled. Stroom's `content-packs.yml` and `ContentPacks.java` also pin a
+`commit` of this repository; nothing reads them to give Stroom its visualisations, but set them to
+the release's tagged commit so they don't mislead.
