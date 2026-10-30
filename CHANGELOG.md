@@ -12,6 +12,13 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v8.0-beta.2] - 2026-10-30
+
+* Rewrite every visualisation as an asset-based visualisation for Stroom 8.0: d3 7, keyboard and screen reader support, Stroom-drawn tooltips, the user's colour palette and time zone, and the new Force 2D and Force 3D networks.
+
+* Update visualisations for version 8.
+
+
 ## [v8.0-beta.1] - 2026-10-30
 
 * Update visualisations for version 8.
@@ -359,7 +366,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.1...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.2...HEAD
+[v8.0-beta.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.1...v8.0-beta.2
 [v8.0-beta.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.2...v8.0-beta.1
 [v3.17.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.1...v3.17.2
 [v3.17.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.0...v3.17.1
