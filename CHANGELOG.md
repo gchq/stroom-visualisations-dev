@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v8.0-beta.1] - 2026-10-30
+
+* Update visualisations for version 8.
+
+
 ## [v3.17.2] - 2025-05-29
 
 * Fix branch
@@ -354,7 +359,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.2...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.1...HEAD
+[v8.0-beta.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.2...v8.0-beta.1
 [v3.17.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.1...v3.17.2
 [v3.17.1]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.17.0...v3.17.1
 [v3.17.0]: https://github.com/gchq/stroom-visualisations-dev/compare/v3.16.4...v3.17.0
