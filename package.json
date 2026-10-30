@@ -1,6 +1,6 @@
 {
   "name": "stroom-visualisations",
-  "version": "4.0.0-SNAPSHOT",
+  "version": "8.0.0-beta.1",
   "description": "Visualisations for Stroom dashboards",
   "private": true,
   "license": "Apache-2.0",
