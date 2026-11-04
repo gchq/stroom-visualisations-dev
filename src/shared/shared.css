@@ -57,7 +57,7 @@
     flex-direction: column;
     min-width: 0;
     min-height: 0;
-    border: 1px solid var(--vis-text__color--faint);
+    border: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
     border-radius: 4px;
 }
 
@@ -165,7 +165,7 @@
     max-height: calc(100% - 12px);
     padding: 4px;
     overflow-y: auto;
-    border: 1px solid var(--vis-text__color--faint);
+    border: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
     border-radius: 4px;
     background-color: var(--vis__background-color);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
@@ -294,7 +294,7 @@
     flex-direction: column;
     gap: 2px;
     padding: 6px 8px;
-    border: 1px solid var(--vis-text__color--faint);
+    border: 1px solid var(--vis-control__border-color, var(--vis-text__color--faint));
     border-radius: 4px;
     background-color: var(--vis__background-color);
     color: var(--vis-text__color);
@@ -311,7 +311,7 @@
     font: inherit;
     color: inherit;
     background-color: var(--vis__background-color);
-    border: 1px solid var(--vis-text__color--faint);
+    border: 1px solid var(--vis-control__border-color, var(--vis-text__color--faint));
     border-radius: 3px;
     padding: 2px 4px;
 }

@@ -36,7 +36,7 @@
 .vis-treemap__block {
     position: absolute;
     box-sizing: border-box;
-    border: 1px solid var(--vis-text__color--faint);
+    border: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
     border-radius: 4px;
 }
 

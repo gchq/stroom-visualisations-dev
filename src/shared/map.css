@@ -177,7 +177,7 @@
 }
 
 .vis-map__button + .vis-map__button {
-    border-top: 1px solid var(--vis-text__color--faint);
+    border-top: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }

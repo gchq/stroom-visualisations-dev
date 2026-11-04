@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "aad53ec0-c33d-4430-b2b2-5a83eccb13e7",
   "name": "HourDayMultiHeatMap",
-  "version": "bfbf7519-302f-f6b6-761a-c34e8d3c7fb5",
-  "description": "Heat maps of a value by hour, one for each series: a column for each hour of the day and a row for each day, each hour in the colour of its value.\nVersion: 8.0.0-beta.3",
+  "version": "031f4b14-bdbe-82f3-0bc6-6c56cb3ef609",
+  "description": "Heat maps of a value by hour, one for each series: a column for each hour of the day and a row for each day, each hour in the colour of its value.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.HourDayMultiHeatMap"
 }

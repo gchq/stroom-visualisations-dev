@@ -29,7 +29,7 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  border: 1px solid var(--vis-text__color--faint);
+  border: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
   border-radius: 4px;
 }
 .vis-grid--single .vis-grid__cell {
@@ -117,7 +117,7 @@
   max-height: calc(100% - 12px);
   padding: 4px;
   overflow-y: auto;
-  border: 1px solid var(--vis-text__color--faint);
+  border: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
   border-radius: 4px;
   background-color: var(--vis__background-color);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
@@ -215,7 +215,7 @@
   flex-direction: column;
   gap: 2px;
   padding: 6px 8px;
-  border: 1px solid var(--vis-text__color--faint);
+  border: 1px solid var(--vis-control__border-color, var(--vis-text__color--faint));
   border-radius: 4px;
   background-color: var(--vis__background-color);
   color: var(--vis-text__color);
@@ -230,7 +230,7 @@
   font: inherit;
   color: inherit;
   background-color: var(--vis__background-color);
-  border: 1px solid var(--vis-text__color--faint);
+  border: 1px solid var(--vis-control__border-color, var(--vis-text__color--faint));
   border-radius: 3px;
   padding: 2px 4px;
 }
@@ -262,7 +262,7 @@
   font: inherit;
   color: inherit;
   background-color: var(--vis__background-color);
-  border: 1px solid var(--vis-text__color--faint);
+  border: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
   border-radius: 3px;
 }
 .vis-floor-map__floor-list:focus-visible {
@@ -289,7 +289,7 @@
   padding: 2px 8px;
   color: var(--vis-text__color);
   background-color: var(--vis__background-color);
-  border: 1px solid var(--vis-text__color--faint);
+  border: 1px solid var(--vis-control__border-color, var(--vis-text__color--faint));
   border-radius: 3px;
   cursor: pointer;
 }
@@ -329,7 +329,7 @@
 .vis-map .leaflet-draw-actions a {
   background-color: var(--vis__background-color);
   color: var(--vis-text__color);
-  border-left: 1px solid var(--vis-text__color--faint);
+  border-left: 1px solid var(--vis-control__border-color, var(--vis-text__color--faint));
   font-family: var(--regular-font-family);
 }
 .vis-map .leaflet-draw-actions a:hover {
@@ -1079,7 +1079,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   cursor: pointer;
 }
 .vis-map__button + .vis-map__button {
-  border-top: 1px solid var(--vis-text__color--faint);
+  border-top: 1px solid var(--vis-border__color, var(--vis-text__color--faint));
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
