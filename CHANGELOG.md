@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v8.0-beta.5] - 2026-11-12
+
+* Show the traffic lights, sunburst, force and map visualisations clearly in high contrast (forced colours).
+
+
 ## [v8.0-beta.4] - 2026-11-04
 
 * Use Stroom's border colours for visualisation panels, legends and fields.
@@ -376,7 +381,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.4...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.5...HEAD
+[v8.0-beta.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.4...v8.0-beta.5
 [v8.0-beta.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.3...v8.0-beta.4
 [v8.0-beta.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.2...v8.0-beta.3
 [v8.0-beta.2]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.1...v8.0-beta.2
