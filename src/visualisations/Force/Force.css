@@ -121,10 +121,16 @@
 }
 
 /* With forced colours (see shared.css), each node keeps its colour but is edged in the theme's text
-   colour, and the lines, arrowheads and names are in it */
+   colour, and the lines, arrowheads and names are in it. An expanded group, whose colour is its
+   edge, keeps that edge, hollow on the theme's background (the page's colour, which forced colours
+   leave on an SVG, was the dark theme's on a light high contrast background) */
 @media (forced-colors: active) {
-    .vis-force__node {
+    .vis-force__node:not(.vis-force__node--expanded) {
         stroke: CanvasText !important;
+    }
+
+    .vis-force__node--expanded {
+        fill: Canvas;
     }
 
     .vis-force__node--selected {

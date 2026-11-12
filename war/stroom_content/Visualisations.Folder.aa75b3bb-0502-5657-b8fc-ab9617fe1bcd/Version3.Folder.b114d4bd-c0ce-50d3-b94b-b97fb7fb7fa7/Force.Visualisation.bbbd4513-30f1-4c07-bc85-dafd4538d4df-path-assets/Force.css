@@ -324,8 +324,11 @@
   font-weight: 600;
 }
 @media (forced-colors: active) {
-  .vis-force__node {
+  .vis-force__node:not(.vis-force__node--expanded) {
     stroke: CanvasText !important;
+  }
+  .vis-force__node--expanded {
+    fill: Canvas;
   }
   .vis-force__node--selected {
     stroke: Highlight !important;

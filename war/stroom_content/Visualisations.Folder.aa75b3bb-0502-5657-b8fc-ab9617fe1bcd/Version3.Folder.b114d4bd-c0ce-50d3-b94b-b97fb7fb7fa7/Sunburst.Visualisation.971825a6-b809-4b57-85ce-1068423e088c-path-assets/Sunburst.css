@@ -290,4 +290,10 @@
   .vis-sunburst__node--selected {
     stroke: Highlight !important;
   }
+  .vis-sunburst__node--middle:not([style*=fill]) {
+    fill: Canvas;
+  }
+  .vis-sunburst__label:not([style*=fill]) {
+    fill: CanvasText;
+  }
 }

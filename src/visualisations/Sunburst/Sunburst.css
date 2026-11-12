@@ -78,4 +78,14 @@
     .vis-sunburst__node--selected {
         stroke: Highlight !important;
     }
+
+    /* The whole tree's middle, which has no colour of its own, and its name: the theme's colours,
+       which forced colours leave on an SVG, were near white on white in a light high contrast theme */
+    .vis-sunburst__node--middle:not([style*="fill"]) {
+        fill: Canvas;
+    }
+
+    .vis-sunburst__label:not([style*="fill"]) {
+        fill: CanvasText;
+    }
 }

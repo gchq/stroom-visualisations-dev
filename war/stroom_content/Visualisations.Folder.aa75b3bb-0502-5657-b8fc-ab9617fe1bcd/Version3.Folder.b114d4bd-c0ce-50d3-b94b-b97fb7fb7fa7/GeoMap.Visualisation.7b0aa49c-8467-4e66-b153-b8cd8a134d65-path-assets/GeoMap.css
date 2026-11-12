@@ -1022,4 +1022,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .vis-map__area {
     stroke: CanvasText;
   }
+  .vis-map__time-key-bar {
+    forced-color-adjust: none;
+    border: 1px solid CanvasText;
+  }
 }

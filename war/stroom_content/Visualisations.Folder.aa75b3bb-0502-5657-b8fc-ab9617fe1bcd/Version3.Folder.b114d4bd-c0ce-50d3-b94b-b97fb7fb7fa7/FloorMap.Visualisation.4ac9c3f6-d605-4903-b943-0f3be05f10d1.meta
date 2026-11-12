@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "4ac9c3f6-d605-4903-b943-0f3be05f10d1",
   "name": "FloorMap",
-  "version": "d305310d-43e3-9dc9-e7ba-a24a1a4914c9",
+  "version": "47237f50-d454-1ded-6e62-4dd1030610e6",
   "description": "A floor plan with a marker where each row was on it, and any zones drawn on it, one floor at a time, in a grid of plans if a Grid Series field is chosen. With Enable Zone Editing on, the zone tools in the toolbar act on the first plan in the grid that edits zones.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.FloorMap"
 }

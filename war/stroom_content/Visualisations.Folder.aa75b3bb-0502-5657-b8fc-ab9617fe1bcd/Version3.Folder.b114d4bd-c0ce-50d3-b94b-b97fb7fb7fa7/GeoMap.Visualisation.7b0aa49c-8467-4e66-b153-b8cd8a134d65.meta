@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "7b0aa49c-8467-4e66-b153-b8cd8a134d65",
   "name": "GeoMap",
-  "version": "ba936b5f-af47-91de-7e80-8b3fddcd5c75",
+  "version": "06b7eb0c-ed34-c0dd-6e53-cb175fd2d306",
   "description": "A map of the world, from a tile server, with a marker at the latitude and longitude of each row, in its series' colour or coloured by time, in a grid of maps if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.GeoMap"
 }

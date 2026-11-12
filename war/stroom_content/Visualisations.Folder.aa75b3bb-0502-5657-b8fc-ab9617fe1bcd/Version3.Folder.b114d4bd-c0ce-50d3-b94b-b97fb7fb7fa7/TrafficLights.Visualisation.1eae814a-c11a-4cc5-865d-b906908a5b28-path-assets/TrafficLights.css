@@ -275,12 +275,13 @@
     stroke: CanvasText;
   }
   .vis-traffic__lamp {
-    fill: Canvas !important;
     stroke: CanvasText;
     stroke-width: 1px;
   }
+  .vis-traffic__lamp:not(.vis-traffic__lamp--lit) {
+    fill: Canvas !important;
+  }
   .vis-traffic__lamp--lit {
-    fill: CanvasText !important;
     stroke-width: 3px;
     filter: none;
   }

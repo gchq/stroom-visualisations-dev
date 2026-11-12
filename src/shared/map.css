@@ -230,4 +230,11 @@
     .vis-map__area {
         stroke: CanvasText;
     }
+
+    /* The time key's bar keeps its ramp of the markers' colours (forced colours drop a background
+       image), edged in the text colour, as a legend's swatches are */
+    .vis-map__time-key-bar {
+        forced-color-adjust: none;
+        border: 1px solid CanvasText;
+    }
 }

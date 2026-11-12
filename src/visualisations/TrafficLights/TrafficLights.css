@@ -44,7 +44,8 @@
 }
 
 /* With forced colours (see shared.css), the housing and the unlit lamps are the theme's
-   background edged in its text colour, and the lit lamp is filled in the text colour, so which
+   background edged in its text colour, and the lit lamp keeps its red, amber or green (the data's
+   colour, kept as other charts' series colours are) with a thick edge in the text colour, so which
    is lit shows by more than its colour */
 @media (forced-colors: active) {
     .vis-traffic__housing {
@@ -53,13 +54,15 @@
     }
 
     .vis-traffic__lamp {
-        fill: Canvas !important;
         stroke: CanvasText;
         stroke-width: 1px;
     }
 
+    .vis-traffic__lamp:not(.vis-traffic__lamp--lit) {
+        fill: Canvas !important;
+    }
+
     .vis-traffic__lamp--lit {
-        fill: CanvasText !important;
         stroke-width: 3px;
         filter: none;
     }
