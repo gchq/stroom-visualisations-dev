@@ -45,6 +45,8 @@ const MAX_TINT = 0.45;
 const MIN_LABEL_WIDTH = 30;
 const MIN_LABEL_HEIGHT = 18;
 const MIN_VALUE_HEIGHT = 32;
+// A box's line as designed (TreeMap.css: 11px, 1.35 high), which MIN_VALUE_HEIGHT allows for
+const DESIGN_LINE_HEIGHT = 11 * 1.35;
 
 class TreeMap extends Chart {
 
@@ -228,13 +230,15 @@ class TreeMapCell {
             // A value too wide or too low for its box (a small box, or text a user has spaced wider
             // or its lines taller) shows in its tooltip only, as a number cut short would read as
             // another
-            .each(function () {
+            .each(function (box) {
                 const value = this.querySelector(".vis-treemap__value");
                 if (value.offsetParent === null) {
                     return;
                 }
-                const bottom = this.clientHeight - parseFloat(getComputedStyle(this).paddingBottom);
-                if (value.scrollWidth > value.clientWidth || value.offsetTop + value.offsetHeight > bottom + 0.5) {
+                // As tall as MIN_VALUE_HEIGHT, its lines drawn taller than designed
+                const lineScale = Math.max(1, value.getBoundingClientRect().height / DESIGN_LINE_HEIGHT);
+                const tallEnough = box.y1 - box.y0 >= MIN_VALUE_HEIGHT * lineScale;
+                if (value.scrollWidth > value.clientWidth || !tallEnough) {
                     this.classList.add("vis-treemap__box--no-value");
                 }
             })

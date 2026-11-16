@@ -4681,7 +4681,7 @@
     group.call(axis2);
     group.select(".domain").attr("class", "domain vis-axis__line");
     group.selectAll(".tick line").attr("class", "vis-axis__tick");
-    const labels = group.selectAll(".tick text").attr("class", "vis-axis__label");
+    const labels = group.selectAll(".tick text").attr("class", "vis-axis__label").style("display", null);
     if (side === "bottom" && isOrdinal(options.type) && !options.tickValues) {
       const bandWidth = scale.bandwidth() + scale.step() * scale.paddingInner();
       const label = options.tickFormat || ((value) => formatKey(value, options.datePattern));
@@ -4689,7 +4689,6 @@
         fitText(this, label(value), bandWidth - 2);
       });
     } else if (side === "bottom") {
-      labels.style("display", null);
       const nodes = labels.nodes();
       const boxes = nodes.map((node) => {
         const box = node.getBoundingClientRect();

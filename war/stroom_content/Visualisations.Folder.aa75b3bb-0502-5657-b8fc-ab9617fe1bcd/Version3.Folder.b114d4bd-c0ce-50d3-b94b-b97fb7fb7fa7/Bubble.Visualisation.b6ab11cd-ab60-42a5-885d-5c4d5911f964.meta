@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "b6ab11cd-ab60-42a5-885d-5c4d5911f964",
   "name": "Bubble",
-  "version": "6aacd7c5-8e82-662f-31ac-4fa874f7d017",
+  "version": "2dcbffeb-67d5-c676-e1eb-d21c93410035",
   "description": "A bubble for each name, as big as its value, grouped or coloured by series, in a grid of charts if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.Bubble"
 }

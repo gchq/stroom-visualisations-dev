@@ -4982,7 +4982,7 @@
       const showLabels = isTrue(settings.showLabels, true);
       const labels = this.labelsGroup.selectAll("text.vis-sunburst__label").data(showLabels ? nodes : [], (one2) => one2.data.path).join("text").attr("class", "vis-sunburst__label").text((one2) => one2 === view ? this.chart.pathWords(one2) : one2.data.name).style("fill", (one2) => one2 === view && view.depth === 0 ? null : textColourOn(cell.colourOf(one2)));
       labels.each(function(one2) {
-        const label = select_default2(this);
+        const label = select_default2(this).style("display", null);
         if (one2 === view) {
           label.attr("transform", null).style("display", this.getComputedTextLength() <= 2 * ringWidth - 6 ? null : "none");
           return;

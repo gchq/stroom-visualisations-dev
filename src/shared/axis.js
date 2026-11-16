@@ -126,7 +126,8 @@ export function drawAxis(group, scale, side, options) {
     group.call(axis);
     group.select(".domain").attr("class", "domain vis-axis__line");
     group.selectAll(".tick line").attr("class", "vis-axis__tick");
-    const labels = group.selectAll(".tick text").attr("class", "vis-axis__label");
+    // Shown while they are measured: a label thinned out by the last draw measures nothing
+    const labels = group.selectAll(".tick text").attr("class", "vis-axis__label").style("display", null);
 
     // A category's label is cut to the width of its band
     if (side === "bottom" && isOrdinal(options.type) && !options.tickValues) {
@@ -139,7 +140,6 @@ export function drawAxis(group, scale, side, options) {
         // Other labels along the bottom (times, numbers, a heat map's hours) are as wide as they
         // are drawn: if they would run into each other (a narrow chart, or text a user has spaced
         // wider), only every so many is shown, evenly, their ticks still marked
-        labels.style("display", null);
         const nodes = labels.nodes();
         const boxes = nodes.map(node => {
             const box = node.getBoundingClientRect();

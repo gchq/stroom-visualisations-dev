@@ -207,7 +207,8 @@ class SunburstCell {
             .text(one => one === view ? this.chart.pathWords(one) : one.data.name)
             .style("fill", one => one === view && view.depth === 0 ? null : textColourOn(cell.colourOf(one)));
         labels.each(function(one) {
-            const label = select(this);
+            // Shown while it is measured: a label hidden by the last draw measures nothing
+            const label = select(this).style("display", null);
             if (one === view) {
                 label.attr("transform", null).style("display", this.getComputedTextLength() <= 2 * ringWidth - 6 ? null : "none");
                 return;

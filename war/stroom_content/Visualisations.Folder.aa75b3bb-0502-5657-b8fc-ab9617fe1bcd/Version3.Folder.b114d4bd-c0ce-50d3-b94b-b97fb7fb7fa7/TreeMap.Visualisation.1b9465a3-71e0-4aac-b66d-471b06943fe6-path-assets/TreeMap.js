@@ -4715,6 +4715,7 @@
   var MIN_LABEL_WIDTH = 30;
   var MIN_LABEL_HEIGHT = 18;
   var MIN_VALUE_HEIGHT = 32;
+  var DESIGN_LINE_HEIGHT = 11 * 1.35;
   var TreeMap = class extends Chart {
     constructor() {
       super((body, chart) => new TreeMapCell(body, chart), "series");
@@ -4832,13 +4833,14 @@
       }).call(place).classed("vis-treemap__box--no-label", (box) => box.x1 - box.x0 < MIN_LABEL_WIDTH || box.y1 - box.y0 < MIN_LABEL_HEIGHT).classed("vis-treemap__box--no-value", (box) => box.y1 - box.y0 < MIN_VALUE_HEIGHT).style("--vis-treemap__colour", colourOf).style("--vis-treemap__edge", (box) => edgeColour(
         colourOf(box),
         this.chart.isDarkTheme() ? DARK_BACKGROUND : LIGHT_BACKGROUND
-      )).style("--vis-treemap__text", (box) => textColourOn(colourOf(box))).call((box) => box.select(".vis-treemap__name").text((one2) => this.chart.nameOf(one2.row[0]))).call((box) => box.select(".vis-treemap__value").text((one2) => formatValue(one2.row[1], this.chart.data.types[1]))).each(function() {
+      )).style("--vis-treemap__text", (box) => textColourOn(colourOf(box))).call((box) => box.select(".vis-treemap__name").text((one2) => this.chart.nameOf(one2.row[0]))).call((box) => box.select(".vis-treemap__value").text((one2) => formatValue(one2.row[1], this.chart.data.types[1]))).each(function(box) {
         const value = this.querySelector(".vis-treemap__value");
         if (value.offsetParent === null) {
           return;
         }
-        const bottom = this.clientHeight - parseFloat(getComputedStyle(this).paddingBottom);
-        if (value.scrollWidth > value.clientWidth || value.offsetTop + value.offsetHeight > bottom + 0.5) {
+        const lineScale = Math.max(1, value.getBoundingClientRect().height / DESIGN_LINE_HEIGHT);
+        const tallEnough = box.y1 - box.y0 >= MIN_VALUE_HEIGHT * lineScale;
+        if (value.scrollWidth > value.clientWidth || !tallEnough) {
           this.classList.add("vis-treemap__box--no-value");
         }
       }).order();

@@ -211,6 +211,8 @@ class BubbleCell {
             .style("fill", bubble => textColourOn(cell.colourOf(bubble)))
             .text(bubble => this.chart.nameOf(bubble.row[0]));
         labels.each(function(bubble) {
+            // Shown while it is measured: a label hidden by the last draw measures nothing
+            this.style.display = "";
             this.style.display = this.getComputedTextLength() <= 2 * bubble.r - 4 ? "" : "none";
         });
 

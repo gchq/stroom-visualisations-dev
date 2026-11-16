@@ -5403,6 +5403,7 @@
       bubbleGroups.selectAll("circle.vis-bubble__bubble").data((key) => bubbles.filter((bubble) => bubble.seriesKey === key), (bubble) => bubble.id).join("circle").attr("class", "vis-bubble__bubble").attr("cx", (bubble) => bubble.x).attr("cy", (bubble) => bubble.y).attr("r", (bubble) => bubble.r).style("fill", (bubble) => cell.colourOf(bubble));
       const labels = this.labelsGroup.selectAll("text.vis-bubble__label").data(isTrue(settings.showLabels, false) ? bubbles : [], (bubble) => bubble.id).join("text").attr("class", "vis-bubble__label").attr("x", (bubble) => bubble.x).attr("y", (bubble) => bubble.y).style("fill", (bubble) => textColourOn(cell.colourOf(bubble))).text((bubble) => this.chart.nameOf(bubble.row[0]));
       labels.each(function(bubble) {
+        this.style.display = "";
         this.style.display = this.getComputedTextLength() <= 2 * bubble.r - 4 ? "" : "none";
       });
       this.summary = this.describe(cell, bubbles);

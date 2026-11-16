@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "971825a6-b809-4b57-85ce-1068423e088c",
   "name": "Sunburst",
-  "version": "29cd0383-003b-f4a4-4108-682887420128",
+  "version": "c48356a5-098f-df6b-1816-26ad298b1d91",
   "description": "Rings of a tree of paths, each part of a path its share of its ring, in a grid of sunbursts if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.Sunburst"
 }
