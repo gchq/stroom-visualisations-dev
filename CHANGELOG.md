@@ -12,6 +12,11 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 ~~~
 
 
+## [v8.0-beta.6] - 2026-11-16
+
+* Fit text to its tile, tree map box, word cloud and axis as drawn, so a user's text spacing still fits.
+
+
 ## [v8.0-beta.5] - 2026-11-12
 
 * Show the traffic lights, sunburst, force and map visualisations clearly in high contrast (forced colours).
@@ -381,7 +386,8 @@ DO NOT ADD CHANGES HERE - ADD THEM USING log_change.sh
 
 * Intial open source release
 
-[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.5...HEAD
+[Unreleased]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.6...HEAD
+[v8.0-beta.6]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.5...v8.0-beta.6
 [v8.0-beta.5]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.4...v8.0-beta.5
 [v8.0-beta.4]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.3...v8.0-beta.4
 [v8.0-beta.3]: https://github.com/gchq/stroom-visualisations-dev/compare/v8.0-beta.2...v8.0-beta.3
