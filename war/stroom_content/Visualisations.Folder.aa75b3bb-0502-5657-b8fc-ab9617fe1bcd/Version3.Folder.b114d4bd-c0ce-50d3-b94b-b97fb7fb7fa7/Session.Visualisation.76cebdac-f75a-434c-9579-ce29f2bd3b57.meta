@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "76cebdac-f75a-434c-9579-ce29f2bd3b57",
   "name": "Session",
-  "version": "d2e73d3b-ade7-bafe-36dd-61a4d9e8cfff",
+  "version": "ac07877b-a3de-56cb-ed78-2805c6e0f33d",
   "description": "Sessions, each given by its start and end, as bars along a time axis, each series on a row of its own, in a grid of timelines if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.Session"
 }

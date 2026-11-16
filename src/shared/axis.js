@@ -18,10 +18,14 @@
 
 import { axisBottom, axisLeft, format, scaleBand, scaleLinear, scalePow, scaleSqrt, scaleSymlog } from "d3";
 import { DATE_TIME, NUMBER, isOrdinal } from "./data.js";
+import { labelStep } from "./fit.js";
 import { formatKey } from "./format.js";
 import { currentZone, zonedTimeScale } from "./time.js";
 
 const formatShortNumber = format("~s");
+// The least room, in pixels, between two labels along the bottom: they may touch, as at the medium
+// text size the hours of a heat map do
+const LABEL_GAP = 0;
 
 // A scale for a field along a chart, by the field's type: a band for each category of a text field,
 // otherwise continuous between `min` and `max` (a date field's in the user's time zone, so that its
@@ -130,6 +134,20 @@ export function drawAxis(group, scale, side, options) {
         const label = options.tickFormat || (value => formatKey(value, options.datePattern));
         labels.each(function(value) {
             fitText(this, label(value), bandWidth - 2);
+        });
+    } else if (side === "bottom") {
+        // Other labels along the bottom (times, numbers, a heat map's hours) are as wide as they
+        // are drawn: if they would run into each other (a narrow chart, or text a user has spaced
+        // wider), only every so many is shown, evenly, their ticks still marked
+        labels.style("display", null);
+        const nodes = labels.nodes();
+        const boxes = nodes.map(node => {
+            const box = node.getBoundingClientRect();
+            return { left: box.left, right: box.right };
+        });
+        const step = labelStep(boxes, LABEL_GAP);
+        nodes.forEach((node, i) => {
+            node.style.display = i % step === 0 ? null : "none";
         });
     }
 }

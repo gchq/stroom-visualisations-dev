@@ -27,7 +27,7 @@ import "../../shared/shared.css";
 import "./RAGStatus.css";
 import { select } from "d3";
 import { textColourOn } from "../../shared/colour.js";
-import { fitFontSize } from "../../shared/fit.js";
+import { fitFontSize, shrunkToFit, textMetricsIn } from "../../shared/fit.js";
 import { formatNumber } from "../../shared/format.js";
 import { isTrue } from "../../shared/settings.js";
 import { OUTSIDE, statusWords } from "../../shared/status.js";
@@ -85,14 +85,18 @@ class RAGStatusCell {
             // The value as big as fits, with its status under it
             const innerWidth = width - 2 * (MARGIN + PADDING);
             const innerHeight = height - 2 * (MARGIN + PADDING);
+            // Measured as drawn (an outside value bolder), so a user's text spacing still fits
+            this.tile.classed("vis-rag__tile--outside", cell.status === OUTSIDE);
+            this.valueText.style("display", showValue ? null : "none");
             const valueSize = showValue
-                ? fitFontSize(value.length, innerWidth, innerHeight / (1 + STATUS_SCALE), 10, 160)
+                ? fitFontSize(value.length, innerWidth, innerHeight / (1 + STATUS_SCALE), 10, 160,
+                    textMetricsIn(this.valueText.node(), value))
                 : 0;
             // Without the value, the status has the room, but isn't shouted
             const statusSize = fitFontSize(status.length, innerWidth, innerHeight, 10,
-                showValue ? Math.max(10, valueSize * STATUS_SCALE) : 48);
+                showValue ? Math.max(10, valueSize * STATUS_SCALE) : 48,
+                textMetricsIn(this.statusText.node(), status));
             this.tile
-                .classed("vis-rag__tile--outside", cell.status === OUTSIDE)
                 .style("--vis-rag__colour", colour)
                 .style("--vis-rag__text", textColourOn(colour))
                 .style("border-radius", Math.min(width, height) / 15 + "px");
@@ -100,9 +104,13 @@ class RAGStatusCell {
                 .style("display", showValue ? null : "none")
                 .style("font-size", valueSize + "px")
                 .text(value);
+            if (showValue) {
+                this.valueText.style("font-size", shrunkToFit(this.valueText.node(), valueSize, 10) + "px");
+            }
             this.statusText
                 .style("font-size", statusSize + "px")
                 .text(status);
+            this.statusText.style("font-size", shrunkToFit(this.statusText.node(), statusSize, 10) + "px");
         }
 
         this.chart.gridPoints.refresh();

@@ -59,6 +59,11 @@ export class Chart {
 
         // Stroom changes the theme by changing the element's class, and the colours depend on it
         new MutationObserver(() => this.redraw()).observe(this.element, { attributes: true, attributeFilter: ["class"] });
+        // Text is sized and laid out as it is drawn (see fit.js and axis.js), so it is drawn again
+        // once a font it uses has loaded, rather than staying as it was in a fallback font
+        if (typeof document !== "undefined" && document.fonts) {
+            document.fonts.addEventListener("loadingdone", () => this.redraw());
+        }
         // Times are shown in the user's time zone and date-time pattern, which can change
         if (typeof stroom !== "undefined" && typeof stroom.onTimeChanged === "function") {
             stroom.onTimeChanged(() => this.redraw());

@@ -3396,9 +3396,10 @@
   // src/shared/fit.js
   var CHARACTER_WIDTH = 0.6;
   var LINE_HEIGHT = 1.2;
-  function fitFontSize(length, width, height, min2, max2) {
-    const byWidth = width / (Math.max(1, length) * CHARACTER_WIDTH);
-    const byHeight = height / LINE_HEIGHT;
+  var ESTIMATED = { characterWidth: CHARACTER_WIDTH, lineHeight: LINE_HEIGHT };
+  function fitFontSize(length, width, height, min2, max2, metrics = ESTIMATED) {
+    const byWidth = width / (Math.max(1, length) * metrics.characterWidth);
+    const byHeight = height / metrics.lineHeight;
     return Math.max(min2, Math.min(max2, byWidth, byHeight));
   }
 
@@ -4258,6 +4259,9 @@
       this.cells = /* @__PURE__ */ new Set();
       this.grid = new Grid(this.element, (body) => createCell(body, this));
       new MutationObserver(() => this.redraw()).observe(this.element, { attributes: true, attributeFilter: ["class"] });
+      if (typeof document !== "undefined" && document.fonts) {
+        document.fonts.addEventListener("loadingdone", () => this.redraw());
+      }
       if (typeof stroom !== "undefined" && typeof stroom.onTimeChanged === "function") {
         stroom.onTimeChanged(() => this.redraw());
       }

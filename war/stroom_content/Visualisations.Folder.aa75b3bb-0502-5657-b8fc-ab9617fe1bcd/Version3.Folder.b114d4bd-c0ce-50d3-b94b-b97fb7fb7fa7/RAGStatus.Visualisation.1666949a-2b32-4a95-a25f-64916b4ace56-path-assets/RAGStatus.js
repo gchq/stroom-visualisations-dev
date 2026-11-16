@@ -3531,10 +3531,34 @@
   // src/shared/fit.js
   var CHARACTER_WIDTH = 0.6;
   var LINE_HEIGHT = 1.2;
-  function fitFontSize(length, width, height, min2, max2) {
-    const byWidth = width / (Math.max(1, length) * CHARACTER_WIDTH);
-    const byHeight = height / LINE_HEIGHT;
+  function textMetricsIn(element, text) {
+    const length = Math.max(1, text.length);
+    const probe = element.ownerDocument.createElement("span");
+    probe.setAttribute("aria-hidden", "true");
+    probe.style.cssText = "position: absolute; visibility: hidden; white-space: pre; font-size: 100px;";
+    probe.textContent = text;
+    element.appendChild(probe);
+    const width = probe.getBoundingClientRect().width;
+    const style = element.ownerDocument.defaultView.getComputedStyle(probe);
+    const lineHeight = parseFloat(style.lineHeight) / 100;
+    probe.remove();
+    return {
+      characterWidth: width > 0 ? Math.max(CHARACTER_WIDTH, width / (100 * length)) : CHARACTER_WIDTH,
+      lineHeight: lineHeight > 0 ? Math.max(LINE_HEIGHT, lineHeight) : LINE_HEIGHT
+    };
+  }
+  var ESTIMATED = { characterWidth: CHARACTER_WIDTH, lineHeight: LINE_HEIGHT };
+  function fitFontSize(length, width, height, min2, max2, metrics = ESTIMATED) {
+    const byWidth = width / (Math.max(1, length) * metrics.characterWidth);
+    const byHeight = height / metrics.lineHeight;
     return Math.max(min2, Math.min(max2, byWidth, byHeight));
+  }
+  function shrunkToFit(element, fontSize, min2) {
+    const over = element.scrollWidth - element.clientWidth;
+    if (over <= 0 || element.scrollWidth <= 0) {
+      return fontSize;
+    }
+    return Math.max(min2, Math.floor(fontSize * element.clientWidth / element.scrollWidth * 10) / 10);
   }
 
   // src/shared/data.js
@@ -4261,6 +4285,9 @@
       this.cells = /* @__PURE__ */ new Set();
       this.grid = new Grid(this.element, (body) => createCell(body, this));
       new MutationObserver(() => this.redraw()).observe(this.element, { attributes: true, attributeFilter: ["class"] });
+      if (typeof document !== "undefined" && document.fonts) {
+        document.fonts.addEventListener("loadingdone", () => this.redraw());
+      }
       if (typeof stroom !== "undefined" && typeof stroom.onTimeChanged === "function") {
         stroom.onTimeChanged(() => this.redraw());
       }
@@ -4484,17 +4511,31 @@
         const status = statusWords(cell.value, cell.bands);
         const innerWidth = width - 2 * (MARGIN + PADDING);
         const innerHeight = height - 2 * (MARGIN + PADDING);
-        const valueSize = showValue ? fitFontSize(value.length, innerWidth, innerHeight / (1 + STATUS_SCALE), 10, 160) : 0;
+        this.tile.classed("vis-rag__tile--outside", cell.status === OUTSIDE);
+        this.valueText.style("display", showValue ? null : "none");
+        const valueSize = showValue ? fitFontSize(
+          value.length,
+          innerWidth,
+          innerHeight / (1 + STATUS_SCALE),
+          10,
+          160,
+          textMetricsIn(this.valueText.node(), value)
+        ) : 0;
         const statusSize = fitFontSize(
           status.length,
           innerWidth,
           innerHeight,
           10,
-          showValue ? Math.max(10, valueSize * STATUS_SCALE) : 48
+          showValue ? Math.max(10, valueSize * STATUS_SCALE) : 48,
+          textMetricsIn(this.statusText.node(), status)
         );
-        this.tile.classed("vis-rag__tile--outside", cell.status === OUTSIDE).style("--vis-rag__colour", colour).style("--vis-rag__text", textColourOn(colour)).style("border-radius", Math.min(width, height) / 15 + "px");
+        this.tile.style("--vis-rag__colour", colour).style("--vis-rag__text", textColourOn(colour)).style("border-radius", Math.min(width, height) / 15 + "px");
         this.valueText.style("display", showValue ? null : "none").style("font-size", valueSize + "px").text(value);
+        if (showValue) {
+          this.valueText.style("font-size", shrunkToFit(this.valueText.node(), valueSize, 10) + "px");
+        }
         this.statusText.style("font-size", statusSize + "px").text(status);
+        this.statusText.style("font-size", shrunkToFit(this.statusText.node(), statusSize, 10) + "px");
       }
       this.chart.gridPoints.refresh();
     }

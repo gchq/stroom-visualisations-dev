@@ -16,7 +16,7 @@
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { fitFontSize, fitOf, fitText, shortened } from "./fit.js";
+import { CHARACTER_WIDTH, LINE_HEIGHT, fitFontSize, fitOf, fitText, labelStep, shortened } from "./fit.js";
 
 test("content is fitted in the middle, no bigger than it is and no smaller than the least", () => {
     assert.deepEqual(fitOf({ left: 0, top: 0, right: 100, bottom: 50 }, 400, 200, 0.5), { k: 1, x: 150, y: 75 });
@@ -56,6 +56,22 @@ test("a sentence too long for one line wraps, bigger than it would be on one lin
     assert.ok(fitted.fontSize * 0.6 * "destination".length <= 600);
 });
 
+test("text drawn wider or taller, as with a user's text spacing, is fitted smaller", () => {
+    // Letters (and words) spaced wider and lines 1.5 high (WCAG 1.4.12)
+    const spaced = { characterWidth: 0.75, lineHeight: 1.5 };
+    assert.equal(fitFontSize(10, 375, 1000, 10, 200, spaced), 50);
+    assert.equal(fitFontSize(1, 1000, 150, 10, 200, spaced), 100);
+    // Without metrics, the estimates
+    assert.equal(fitFontSize(10, 360, 1000, 10, 200), 60);
+    assert.equal(fitFontSize(10, 360, 1000, 10, 200, { characterWidth: CHARACTER_WIDTH, lineHeight: LINE_HEIGHT }), 60);
+    // Wrapped, the longest word still fits across at its measured width
+    const text = "The nightly export to the archive failed after four retries because the destination volume was full";
+    const fitted = fitText(text, 600, 400, 12, 200, spaced);
+    assert.equal(fitted.wraps, true);
+    assert.ok(fitted.fontSize * 0.75 * "destination".length <= 600);
+    assert.ok(fitted.fontSize < fitText(text, 600, 400, 12, 200).fontSize);
+});
+
 test("in a wide, low box a sentence stays on one line", () => {
     assert.equal(fitText("Disk nearly full", 2000, 40, 12, 200).wraps, false);
 });
@@ -66,4 +82,23 @@ test("text too long for its room is shortened with an ellipsis", () => {
     assert.equal(shortened("an admin", 4), "an…");
     assert.equal(shortened("alice", 1), "");
     assert.equal(shortened("", 0), "");
+});
+
+test("labels far enough apart are all shown", () => {
+    const boxes = [0, 50, 100, 150].map(left => ({ left, right: left + 40 }));
+    assert.equal(labelStep(boxes, 4), 1);
+});
+
+test("labels that would run into each other are thinned evenly", () => {
+    // 40 wide, 30 apart: every other one is 20 clear
+    const boxes = [0, 30, 60, 90, 120].map(left => ({ left, right: left + 40 }));
+    assert.equal(labelStep(boxes, 4), 2);
+    // 60 wide (spaced wider): every third
+    assert.equal(labelStep([0, 30, 60, 90, 120].map(left => ({ left, right: left + 60 })), 4), 3);
+});
+
+test("labels with nothing drawn, or only one, need no thinning", () => {
+    assert.equal(labelStep([], 4), 1);
+    assert.equal(labelStep([{ left: 0, right: 500 }], 4), 1);
+    assert.equal(labelStep([0, 0, 0].map(() => ({ left: 0, right: 0 })), 4), 1);
 });

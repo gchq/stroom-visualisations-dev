@@ -4201,6 +4201,9 @@
       this.cells = /* @__PURE__ */ new Set();
       this.grid = new Grid(this.element, (body) => createCell(body, this));
       new MutationObserver(() => this.redraw()).observe(this.element, { attributes: true, attributeFilter: ["class"] });
+      if (typeof document !== "undefined" && document.fonts) {
+        document.fonts.addEventListener("loadingdone", () => this.redraw());
+      }
       if (typeof stroom !== "undefined" && typeof stroom.onTimeChanged === "function") {
         stroom.onTimeChanged(() => this.redraw());
       }
@@ -4500,9 +4503,19 @@
     fontFamily(element) {
       return SERIF_FONTS.has(this.settings.font) ? "serif" : getComputedStyle(element).fontFamily;
     }
-    // How big a word is written at a size, as {width, ascent, descent}
-    measure(text, fontSize, fontFamily) {
+    // The letter and word spacing words are written with, as shares of their font size: none, or
+    // what a user has set for themselves (WCAG 1.4.12), which a canvas doesn't take from the page
+    spacingOf(element) {
+      const style = getComputedStyle(element);
+      const fontSize = parseFloat(style.fontSize);
+      const share = (value) => fontSize > 0 && parseFloat(value) > 0 ? parseFloat(value) / fontSize : 0;
+      return { letter: share(style.letterSpacing), word: share(style.wordSpacing) };
+    }
+    // How big a word is written at a size, with a spacing (see spacingOf), as {width, ascent, descent}
+    measure(text, fontSize, fontFamily, spacing) {
       this.measuring.font = FONT_WEIGHT + " " + fontSize + "px " + fontFamily;
+      this.measuring.letterSpacing = spacing.letter * fontSize + "px";
+      this.measuring.wordSpacing = spacing.word * fontSize + "px";
       const metrics = this.measuring.measureText(text);
       return {
         width: metrics.width,
@@ -4544,12 +4557,13 @@
       this.centre.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
       this.emptyText.attr("x", width / 2).attr("y", height / 2).text(cell.words.length === 0 ? "No data" : "");
       const fontFamily = chart.fontFamily(node);
+      const spacing = chart.spacingOf(node);
       const angle = Number(settings.angle);
       const padding = Number(settings.padding);
       const layout = layoutWords(cell.words, {
         width: Math.max(0, width - 2 * MARGIN),
         height: Math.max(0, height - 2 * MARGIN),
-        measure: (text, fontSize) => chart.measure(text, fontSize, fontFamily),
+        measure: (text, fontSize) => chart.measure(text, fontSize, fontFamily, spacing),
         rotate: (text, index) => rotationOf(text, index, angle),
         spiral: settings.spiral === "rectangular" ? "rectangular" : "archimedean",
         padding: padding >= 0 ? padding : 2,

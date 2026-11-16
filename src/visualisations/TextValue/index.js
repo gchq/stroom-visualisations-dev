@@ -27,7 +27,7 @@ import "./TextValue.css";
 import { select } from "d3";
 import { Chart } from "../../shared/chart.js";
 import { hasValue, keyOf } from "../../shared/data.js";
-import { fitText } from "../../shared/fit.js";
+import { fitText, shrunkToFit, textMetricsIn } from "../../shared/fit.js";
 import { formatKey, formatValue } from "../../shared/format.js";
 import { GridPoints } from "../../shared/gridPoints.js";
 
@@ -113,12 +113,18 @@ class TextValueCell {
         if (!empty) {
             // As big as fits, on one line or wrapped; what still doesn't fit is cut off
             const innerHeight = height - 2 * PADDING;
-            const { fontSize, wraps } = fitText(cell.text, width - 2 * PADDING, innerHeight, MIN_FONT_SIZE, 200);
+            // Measured as drawn, so a user's text spacing still fits
+            const metrics = textMetricsIn(this.value.node(), cell.text);
+            const { fontSize, wraps } = fitText(cell.text, width - 2 * PADDING, innerHeight, MIN_FONT_SIZE, 200, metrics);
+            const lines = Math.max(1, Math.floor(innerHeight / (fontSize * metrics.lineHeight)));
             this.value
                 .classed("vis-text-value__value--wrapped", wraps)
                 .style("font-size", fontSize + "px")
-                .style("-webkit-line-clamp", wraps ? String(Math.max(1, Math.floor(innerHeight / (fontSize * 1.2)))) : null)
+                .style("-webkit-line-clamp", wraps ? String(lines) : null)
                 .text(cell.text);
+            if (!wraps) {
+                this.value.style("font-size", shrunkToFit(this.value.node(), fontSize, MIN_FONT_SIZE) + "px");
+            }
         }
 
         this.chart.gridPoints.refresh();

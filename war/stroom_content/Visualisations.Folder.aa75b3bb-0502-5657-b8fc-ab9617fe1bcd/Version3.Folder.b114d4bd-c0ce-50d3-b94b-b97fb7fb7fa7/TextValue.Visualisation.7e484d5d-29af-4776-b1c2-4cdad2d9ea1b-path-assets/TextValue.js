@@ -4204,6 +4204,9 @@
       this.cells = /* @__PURE__ */ new Set();
       this.grid = new Grid(this.element, (body) => createCell(body, this));
       new MutationObserver(() => this.redraw()).observe(this.element, { attributes: true, attributeFilter: ["class"] });
+      if (typeof document !== "undefined" && document.fonts) {
+        document.fonts.addEventListener("loadingdone", () => this.redraw());
+      }
       if (typeof stroom !== "undefined" && typeof stroom.onTimeChanged === "function") {
         stroom.onTimeChanged(() => this.redraw());
       }
@@ -4244,18 +4247,43 @@
   // src/shared/fit.js
   var CHARACTER_WIDTH = 0.6;
   var LINE_HEIGHT = 1.2;
-  function fitFontSize(length, width, height, min2, max2) {
-    const byWidth = width / (Math.max(1, length) * CHARACTER_WIDTH);
-    const byHeight = height / LINE_HEIGHT;
+  function textMetricsIn(element, text) {
+    const length = Math.max(1, text.length);
+    const probe = element.ownerDocument.createElement("span");
+    probe.setAttribute("aria-hidden", "true");
+    probe.style.cssText = "position: absolute; visibility: hidden; white-space: pre; font-size: 100px;";
+    probe.textContent = text;
+    element.appendChild(probe);
+    const width = probe.getBoundingClientRect().width;
+    const style = element.ownerDocument.defaultView.getComputedStyle(probe);
+    const lineHeight = parseFloat(style.lineHeight) / 100;
+    probe.remove();
+    return {
+      characterWidth: width > 0 ? Math.max(CHARACTER_WIDTH, width / (100 * length)) : CHARACTER_WIDTH,
+      lineHeight: lineHeight > 0 ? Math.max(LINE_HEIGHT, lineHeight) : LINE_HEIGHT
+    };
+  }
+  var ESTIMATED = { characterWidth: CHARACTER_WIDTH, lineHeight: LINE_HEIGHT };
+  function fitFontSize(length, width, height, min2, max2, metrics = ESTIMATED) {
+    const byWidth = width / (Math.max(1, length) * metrics.characterWidth);
+    const byHeight = height / metrics.lineHeight;
     return Math.max(min2, Math.min(max2, byWidth, byHeight));
   }
   var WRAPPED_FILL = 0.8;
-  function fitText(text, width, height, min2, max2) {
-    const oneLine = fitFontSize(text.length, width, height, min2, max2);
+  function fitText(text, width, height, min2, max2, metrics = ESTIMATED) {
+    const { characterWidth, lineHeight } = metrics;
+    const oneLine = fitFontSize(text.length, width, height, min2, max2, metrics);
     const longestWord = Math.max(1, ...text.split(/\s+/).map((word) => word.length));
-    const byArea = Math.sqrt(width * height / (Math.max(1, text.length) * CHARACTER_WIDTH * LINE_HEIGHT)) * WRAPPED_FILL;
-    const wrapped = Math.max(min2, Math.min(max2, byArea, width / (longestWord * CHARACTER_WIDTH), height / LINE_HEIGHT));
+    const byArea = Math.sqrt(width * height / (Math.max(1, text.length) * characterWidth * lineHeight)) * WRAPPED_FILL;
+    const wrapped = Math.max(min2, Math.min(max2, byArea, width / (longestWord * characterWidth), height / lineHeight));
     return wrapped > oneLine ? { fontSize: wrapped, wraps: true } : { fontSize: oneLine, wraps: false };
+  }
+  function shrunkToFit(element, fontSize, min2) {
+    const over = element.scrollWidth - element.clientWidth;
+    if (over <= 0 || element.scrollWidth <= 0) {
+      return fontSize;
+    }
+    return Math.max(min2, Math.floor(fontSize * element.clientWidth / element.scrollWidth * 10) / 10);
   }
 
   // src/shared/gridPoints.js
@@ -4347,8 +4375,13 @@
       this.summary = this.describe(cell);
       if (!empty2) {
         const innerHeight = height - 2 * PADDING;
-        const { fontSize, wraps } = fitText(cell.text, width - 2 * PADDING, innerHeight, MIN_FONT_SIZE, 200);
-        this.value.classed("vis-text-value__value--wrapped", wraps).style("font-size", fontSize + "px").style("-webkit-line-clamp", wraps ? String(Math.max(1, Math.floor(innerHeight / (fontSize * 1.2)))) : null).text(cell.text);
+        const metrics = textMetricsIn(this.value.node(), cell.text);
+        const { fontSize, wraps } = fitText(cell.text, width - 2 * PADDING, innerHeight, MIN_FONT_SIZE, 200, metrics);
+        const lines = Math.max(1, Math.floor(innerHeight / (fontSize * metrics.lineHeight)));
+        this.value.classed("vis-text-value__value--wrapped", wraps).style("font-size", fontSize + "px").style("-webkit-line-clamp", wraps ? String(lines) : null).text(cell.text);
+        if (!wraps) {
+          this.value.style("font-size", shrunkToFit(this.value.node(), fontSize, MIN_FONT_SIZE) + "px");
+        }
       }
       this.chart.gridPoints.refresh();
     }

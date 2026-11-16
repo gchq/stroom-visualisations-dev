@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "1b9465a3-71e0-4aac-b66d-471b06943fe6",
   "name": "TreeMap",
-  "version": "2eab8f8b-a9ee-07b4-4150-731412283efe",
+  "version": "1b4d8ea2-3496-f930-5b2c-0e4987075e81",
   "description": "A box for each name, as big as its value, in a block for each series.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.TreeMap"
 }

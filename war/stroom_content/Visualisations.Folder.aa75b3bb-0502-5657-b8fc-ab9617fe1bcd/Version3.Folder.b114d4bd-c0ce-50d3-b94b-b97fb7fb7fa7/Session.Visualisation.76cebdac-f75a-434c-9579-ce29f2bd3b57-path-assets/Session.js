@@ -4344,6 +4344,24 @@
     return parts.join(" ");
   }
 
+  // src/shared/fit.js
+  function labelStep(boxes, gap) {
+    for (let step = 1; step < boxes.length; step++) {
+      let last = null;
+      let apart = true;
+      for (let i = 0; i < boxes.length && apart; i += step) {
+        if (boxes[i].right > boxes[i].left) {
+          apart = last === null || boxes[i].left >= last.right + gap;
+          last = boxes[i];
+        }
+      }
+      if (apart) {
+        return step;
+      }
+    }
+    return Math.max(1, boxes.length);
+  }
+
   // src/shared/format.js
   var formatInteger = format(",");
   var formatDecimal = format(",.3~f");
@@ -4375,6 +4393,7 @@
 
   // src/shared/axis.js
   var formatShortNumber = format("~s");
+  var LABEL_GAP = 0;
   function fieldScale(type2, categories, min2, max2, range2) {
     if (isOrdinal(type2)) {
       return band().domain(categories).range(range2).paddingInner(0.15).paddingOuter(0.05);
@@ -4440,6 +4459,17 @@
       const label = options.tickFormat || ((value) => formatKey(value, options.datePattern));
       labels.each(function(value) {
         fitText(this, label(value), bandWidth - 2);
+      });
+    } else if (side === "bottom") {
+      labels.style("display", null);
+      const nodes = labels.nodes();
+      const boxes = nodes.map((node) => {
+        const box = node.getBoundingClientRect();
+        return { left: box.left, right: box.right };
+      });
+      const step = labelStep(boxes, LABEL_GAP);
+      nodes.forEach((node, i) => {
+        node.style.display = i % step === 0 ? null : "none";
       });
     }
   }
@@ -5100,6 +5130,9 @@
       this.cells = /* @__PURE__ */ new Set();
       this.grid = new Grid(this.element, (body) => createCell(body, this));
       new MutationObserver(() => this.redraw()).observe(this.element, { attributes: true, attributeFilter: ["class"] });
+      if (typeof document !== "undefined" && document.fonts) {
+        document.fonts.addEventListener("loadingdone", () => this.redraw());
+      }
       if (typeof stroom !== "undefined" && typeof stroom.onTimeChanged === "function") {
         stroom.onTimeChanged(() => this.redraw());
       }

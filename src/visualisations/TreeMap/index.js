@@ -225,6 +225,19 @@ class TreeMapCell {
             .style("--vis-treemap__text", box => textColourOn(colourOf(box)))
             .call(box => box.select(".vis-treemap__name").text(one => this.chart.nameOf(one.row[0])))
             .call(box => box.select(".vis-treemap__value").text(one => formatValue(one.row[1], this.chart.data.types[1])))
+            // A value too wide or too low for its box (a small box, or text a user has spaced wider
+            // or its lines taller) shows in its tooltip only, as a number cut short would read as
+            // another
+            .each(function () {
+                const value = this.querySelector(".vis-treemap__value");
+                if (value.offsetParent === null) {
+                    return;
+                }
+                const bottom = this.clientHeight - parseFloat(getComputedStyle(this).paddingBottom);
+                if (value.scrollWidth > value.clientWidth || value.offsetTop + value.offsetHeight > bottom + 0.5) {
+                    this.classList.add("vis-treemap__box--no-value");
+                }
+            })
             .order();
 
         this.summary = this.describe(boxes);

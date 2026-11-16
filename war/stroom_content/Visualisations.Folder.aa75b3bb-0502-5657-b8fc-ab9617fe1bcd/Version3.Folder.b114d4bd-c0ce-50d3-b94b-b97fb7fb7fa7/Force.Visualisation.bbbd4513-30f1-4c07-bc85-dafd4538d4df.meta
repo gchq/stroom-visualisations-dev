@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "bbbd4513-30f1-4c07-bc85-dafd4538d4df",
   "name": "Force",
-  "version": "1ee45425-cd1e-a6f2-1883-25d1c6be2da2",
+  "version": "92d70f2d-34a8-66a3-dad7-3b2bec653f67",
   "description": "A network of sources and targets, joined by lines as thick as their counts, the nodes of a group drawn as one node for it unless it is expanded.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.Force"
 }

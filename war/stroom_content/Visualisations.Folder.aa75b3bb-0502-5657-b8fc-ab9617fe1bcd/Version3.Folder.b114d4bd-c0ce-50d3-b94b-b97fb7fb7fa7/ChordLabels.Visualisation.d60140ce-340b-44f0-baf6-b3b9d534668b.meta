@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "d60140ce-340b-44f0-baf6-b3b9d534668b",
   "name": "ChordLabels",
-  "version": "8d479ae1-b9c3-ea25-ad66-8fd69ad75252",
+  "version": "7cd7a70d-80f2-b5c6-d623-6cc51f984cc2",
   "description": "A chord diagram: each source and target name an arc round a ring, with a ribbon between each two names as wide at each end as the count from that end, in a grid of diagrams if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.ChordLabels"
 }

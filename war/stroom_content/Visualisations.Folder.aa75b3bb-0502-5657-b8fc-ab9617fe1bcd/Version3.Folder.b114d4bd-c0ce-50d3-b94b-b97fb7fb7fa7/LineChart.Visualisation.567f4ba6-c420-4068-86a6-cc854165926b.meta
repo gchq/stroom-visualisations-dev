@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "567f4ba6-c420-4068-86a6-cc854165926b",
   "name": "LineChart",
-  "version": "a6adbf23-e157-c30f-14a7-e1d05670d873",
+  "version": "c0c9012c-b52b-2575-ca3c-17d6c3b339d4",
   "description": "A line for each series through its points, in a grid of charts if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.LineChart"
 }
