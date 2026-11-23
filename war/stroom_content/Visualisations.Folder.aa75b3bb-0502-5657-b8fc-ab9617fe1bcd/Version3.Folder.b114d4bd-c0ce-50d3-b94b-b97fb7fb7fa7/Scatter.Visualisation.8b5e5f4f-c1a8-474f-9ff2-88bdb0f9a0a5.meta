@@ -3,6 +3,6 @@
   "uuid": "8b5e5f4f-c1a8-474f-9ff2-88bdb0f9a0a5",
   "name": "Scatter",
   "version": "4eeb57ce-60e2-3143-8abf-073e3c45bbbf",
-  "description": "A point for each X and Y value, coloured by series, in a grid of charts if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
+  "description": "A point for each X and Y value, coloured by series, in a grid of charts if a Grid Series field is chosen.\nVersion: 8.0.0-beta.7",
   "functionName": "visualisations.Scatter"
 }

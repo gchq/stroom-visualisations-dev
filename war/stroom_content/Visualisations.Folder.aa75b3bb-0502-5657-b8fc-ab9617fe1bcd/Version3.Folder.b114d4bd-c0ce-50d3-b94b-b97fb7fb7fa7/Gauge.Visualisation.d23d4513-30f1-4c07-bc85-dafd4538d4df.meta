@@ -3,6 +3,6 @@
   "uuid": "d23d4513-30f1-4c07-bc85-dafd4538d4df",
   "name": "Gauge",
   "version": "51821567-a558-3550-11ec-10647257fd4a",
-  "description": "A dial with red, amber and green bands pointing to a value, in a grid of gauges if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
+  "description": "A dial with red, amber and green bands pointing to a value, in a grid of gauges if a Grid Series field is chosen.\nVersion: 8.0.0-beta.7",
   "functionName": "visualisations.Gauge"
 }
