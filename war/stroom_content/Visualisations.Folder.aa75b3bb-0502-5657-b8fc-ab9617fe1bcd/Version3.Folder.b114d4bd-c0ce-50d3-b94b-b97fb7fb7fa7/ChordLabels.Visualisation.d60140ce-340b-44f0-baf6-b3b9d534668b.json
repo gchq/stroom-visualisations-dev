@@ -43,6 +43,24 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "name",
+            "label": "Name"
+        },
+        {
+            "key": "source",
+            "label": "Source"
+        },
+        {
+            "key": "target",
+            "label": "Target"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

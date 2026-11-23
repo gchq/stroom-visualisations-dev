@@ -4253,6 +4253,11 @@
     return towards;
   }
 
+  // src/shared/selectionItems.js
+  function wordItem(text, cell) {
+    return inCell({ key: text, name: text }, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -4600,7 +4605,7 @@
     }
     // What Stroom is told of a selected word
     selectionItem(word) {
-      return inCell({ key: word.text, name: word.text }, this.cell);
+      return wordItem(word.text, this.cell);
     }
     // The cloud for a screen reader, e.g. 'Word cloud of Message: 24 words, most seen disk 12', and
     // how many of them had no room, if any

@@ -7112,7 +7112,11 @@
 
   // src/shared/selection.js
   function selectedValue(value, type2) {
-    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? new Date(value).toISOString() : value;
+    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? isoTime(value) : value;
+  }
+  function isoTime(time) {
+    const date2 = new Date(time);
+    return Number.isNaN(date2.getTime()) ? time : date2.toISOString();
   }
   function inCell(item, cell) {
     if (!cell || !(cell.gridCellCount > 1)) {
@@ -7387,6 +7391,16 @@
     return fitted;
   }
 
+  // src/shared/selectionItems.js
+  function scatterPointItem(seriesKey, row, cell) {
+    return inCell({
+      key: seriesKey + "~#~" + row[0] + "," + row[1],
+      series: seriesKey,
+      x: selectedValue(row[0], cell.xType),
+      y: row[1]
+    }, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -7587,12 +7601,7 @@
     }
     // What Stroom is told of a selected point (as the legacy chart told it)
     selectionItem(point2) {
-      return inCell({
-        key: point2.seriesKey + "~#~" + point2.row[0] + "," + point2.row[1],
-        series: point2.seriesKey,
-        x: selectedValue(point2.row[0], this.cell.xType),
-        y: point2.row[1]
-      }, this.cell);
+      return scatterPointItem(point2.seriesKey, point2.row, this.cell);
     }
     // The chart for a screen reader, of the series shown, e.g. 'Scatter chart of Bytes by Duration:
     // 30 points in 3 series, highest Bytes 9,800 at 410 (web-02)', or when its X axis is zoomed to

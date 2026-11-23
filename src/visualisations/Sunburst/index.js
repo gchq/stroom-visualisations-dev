@@ -34,7 +34,7 @@ import { DARK_BACKGROUND, LIGHT_BACKGROUND, mix, textColourOn } from "../../shar
 import { cellRows, distinct, keyOf } from "../../shared/data.js";
 import { edgeColour } from "../../shared/edges.js";
 import { formatKey, formatShare, formatValue } from "../../shared/format.js";
-import { inCell } from "../../shared/selection.js";
+import { sunburstNodeItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { DEFAULT_DELIMITER, branchOf, pathTree, rings } from "./paths.js";
 
@@ -279,8 +279,7 @@ class SunburstCell {
 
     // What Stroom is told of a selected node (as the legacy sunburst told it)
     selectionItem(node) {
-        const item = { key: node.data.path, value: node.value, name: node.data.name, path: node.data.path };
-        return inCell(item, this.cell);
+        return sunburstNodeItem(node.data.path, node.data.name, node.value, this.cell);
     }
 
     // The sunburst for a screen reader, e.g. 'Sunburst of Bytes by Path: 9 paths, total 2,048,

@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "ce55cb67-22ef-4146-b866-f8ba955b9ba6",
   "name": "Doughnut",
-  "version": "de7dbedb-65c4-40c1-1d6c-15ee4dc89d55",
+  "version": "c4d20030-ff90-1d1b-1ee6-1d04a22a310d",
   "description": "A ring of slices, one for each name, each its share of the total, in a grid of doughnuts if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.Doughnut"
 }

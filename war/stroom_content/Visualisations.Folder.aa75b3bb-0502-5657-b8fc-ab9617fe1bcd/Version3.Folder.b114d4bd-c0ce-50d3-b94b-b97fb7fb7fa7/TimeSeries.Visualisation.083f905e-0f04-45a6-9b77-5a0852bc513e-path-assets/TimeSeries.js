@@ -7787,6 +7787,10 @@
   };
 
   // src/shared/selection.js
+  function isoTime(time) {
+    const date2 = new Date(time);
+    return Number.isNaN(date2.getTime()) ? time : date2.toISOString();
+  }
   var Selection3 = class {
     // `onChange()` is called when the selection changes, so that the chart can show it
     constructor(onChange) {
@@ -8108,6 +8112,11 @@
     return fitted;
   }
 
+  // src/shared/selectionItems.js
+  function timeWindowItem(min2, max2) {
+    return { minTime: isoTime(min2), maxTime: isoTime(max2) };
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -8251,11 +8260,11 @@
     chooseWindow(window2, extent) {
       const chosen = clampWindow(window2, extent);
       this.window = isWhole(chosen, extent) ? null : chosen;
-      const told = new Date(chosen[0]).toISOString() + "/" + new Date(chosen[1]).toISOString();
+      const told = isoTime(chosen[0]) + "/" + isoTime(chosen[1]);
       if (told !== this.toldWindow) {
         this.toldWindow = told;
         if (typeof stroom !== "undefined" && typeof stroom.select === "function") {
-          stroom.select([{ minTime: new Date(chosen[0]).toISOString(), maxTime: new Date(chosen[1]).toISOString() }]);
+          stroom.select([timeWindowItem(chosen[0], chosen[1])]);
         }
       }
     }

@@ -32,6 +32,21 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "name",
+            "label": "Name"
+        },
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "value",
+            "label": "Value",
+            "type": "NUMBER"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

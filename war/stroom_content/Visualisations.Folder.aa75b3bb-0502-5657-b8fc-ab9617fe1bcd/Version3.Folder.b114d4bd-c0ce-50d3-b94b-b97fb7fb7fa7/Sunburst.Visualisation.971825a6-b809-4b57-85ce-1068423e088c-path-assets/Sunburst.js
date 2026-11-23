@@ -4821,6 +4821,11 @@
     return readableColour(fill, background, SHAPE_CONTRAST);
   }
 
+  // src/shared/selectionItems.js
+  function sunburstNodeItem(path2, name, value, cell) {
+    return inCell({ key: path2, value, name, path: path2 }, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -5043,8 +5048,7 @@
     }
     // What Stroom is told of a selected node (as the legacy sunburst told it)
     selectionItem(node) {
-      const item = { key: node.data.path, value: node.value, name: node.data.name, path: node.data.path };
-      return inCell(item, this.cell);
+      return sunburstNodeItem(node.data.path, node.data.name, node.value, this.cell);
     }
     // The sunburst for a screen reader, e.g. 'Sunburst of Bytes by Path: 9 paths, total 2,048,
     // largest branch var 1,200 (58.6%)'

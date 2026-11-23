@@ -4404,6 +4404,10 @@
   };
 
   // src/shared/selection.js
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
+  }
   var Selection3 = class {
     // `onChange()` is called when the selection changes, so that the chart can show it
     constructor(onChange) {
@@ -4591,6 +4595,12 @@
       this.grid.update([]);
     }
   };
+
+  // src/shared/selectionItems.js
+  function heatCellItem(heatCell) {
+    const time = isoTime(heatCell.time);
+    return { key: heatCell.mapKey + "~#~" + time, series: heatCell.mapKey, x: time, value: heatCell.value };
+  }
 
   // src/shared/edges.js
   var SHAPE_CONTRAST = 3;
@@ -4952,8 +4962,7 @@
     }
     // What Stroom is told of a selected cell
     selectionItem(cell) {
-      const time = new Date(cell.time).toISOString();
-      return { key: cell.mapKey + "~#~" + time, series: cell.mapKey, x: time, value: cell.value };
+      return heatCellItem(cell);
     }
     // The heat map for a screen reader, e.g. 'Heat map of Logins by day and week: 30 values,
     // highest 42 on Mon 12 Oct 2026, lowest 1 on Sun 18 Oct 2026'

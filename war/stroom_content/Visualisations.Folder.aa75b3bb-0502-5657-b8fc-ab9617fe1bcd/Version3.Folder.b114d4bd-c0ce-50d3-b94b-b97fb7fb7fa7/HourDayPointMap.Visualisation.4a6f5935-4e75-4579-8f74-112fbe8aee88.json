@@ -43,6 +43,25 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "x",
+            "label": "Time",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "value",
+            "label": "Value"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

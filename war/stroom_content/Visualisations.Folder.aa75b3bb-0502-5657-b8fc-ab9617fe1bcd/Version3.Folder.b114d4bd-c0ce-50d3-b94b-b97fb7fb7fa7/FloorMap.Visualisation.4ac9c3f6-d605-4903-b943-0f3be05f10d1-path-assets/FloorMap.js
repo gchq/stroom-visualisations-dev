@@ -13929,6 +13929,10 @@
   };
 
   // src/shared/selection.js
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
+  }
   var Selection3 = class {
     // `onChange()` is called when the selection changes, so that the chart can show it
     constructor(onChange) {
@@ -14672,6 +14676,27 @@
       this.to.textContent = to;
     }
   });
+
+  // src/shared/selectionItems.js
+  function markerItem(marker, place) {
+    const item = { key: marker.key, ...place };
+    if (marker.name !== null && marker.name !== "") {
+      item.name = marker.name;
+    }
+    if (marker.series !== null && marker.series !== "") {
+      item.series = marker.series;
+    }
+    if (marker.icon !== null) {
+      item.icon = marker.icon;
+    }
+    if (marker.gridSeries !== void 0) {
+      item.gridSeries = marker.gridSeries;
+    }
+    if (marker.time !== null) {
+      item.eventTime = isoTime(marker.time);
+    }
+    return item;
+  }
 
   // src/visualisations/FloorMap/floors.js
   var NAME = 0;
@@ -15815,30 +15840,13 @@
     // What Stroom is told of a selected marker (the fields the legacy map told it, with y as in the
     // row rather than turned over for a plan whose origin is its top left)
     selectionItem(marker) {
-      const item = {
-        key: marker.key,
+      return markerItem(marker, {
         x: marker.x,
         y: marker.y,
         campus: marker.floor.campus,
         building: marker.floor.building,
         floor: marker.floor.floor
-      };
-      if (marker.name !== null && marker.name !== "") {
-        item.name = marker.name;
-      }
-      if (marker.series !== null && marker.series !== "") {
-        item.series = marker.series;
-      }
-      if (marker.icon !== null) {
-        item.icon = marker.icon;
-      }
-      if (marker.gridSeries !== void 0) {
-        item.gridSeries = marker.gridSeries;
-      }
-      if (marker.time !== null) {
-        item.eventTime = new Date(marker.time).toISOString();
-      }
-      return item;
+      });
     }
     // One floor of the cell: the one chosen, or the first with markers, its plan under its markers
     // and zones, and a list to choose another when there are more

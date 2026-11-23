@@ -19,6 +19,18 @@
             "required": true
         }
     ],
+    "selection": [
+        {
+            "key": "x",
+            "label": "Time",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "value",
+            "label": "Value",
+            "type": "NUMBER"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

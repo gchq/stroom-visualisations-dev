@@ -29,7 +29,7 @@ import { Chart } from "../../shared/chart.js";
 import { distinct, keyOf } from "../../shared/data.js";
 import { formatKey, formatShare, formatValue } from "../../shared/format.js";
 import { isOutlineStyle } from "../../shared/look.js";
-import { inCell, selectedValue } from "../../shared/selection.js";
+import { sliceItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { pieSlices } from "./slices.js";
 
@@ -228,11 +228,7 @@ class DoughnutCell {
 
     // What Stroom is told of a selected slice (as the legacy doughnut told it)
     selectionItem(slice) {
-        return inCell({
-            key: slice.row[0],
-            name: selectedValue(slice.row[0], this.chart.data.types[0]),
-            value: slice.value
-        }, this.cell);
+        return sliceItem(slice.row[0], slice.value, this.chart.data.types[0], this.cell);
     }
 
     // The doughnut for a screen reader, e.g. 'Doughnut of Requests by Status: 4 slices, total

@@ -23,6 +23,7 @@
             "required": false
         }
     ],
+    "selection": [],
     "tabs": [
         {
             "name": "Data",

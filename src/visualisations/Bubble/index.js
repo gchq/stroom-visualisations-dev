@@ -32,7 +32,7 @@ import { textColourOn } from "../../shared/colour.js";
 import { distinct, hasValue, keyOf } from "../../shared/data.js";
 import { formatKey, formatValue } from "../../shared/format.js";
 import { PanZoom } from "../../shared/panZoom.js";
-import { inCell, selectedValue } from "../../shared/selection.js";
+import { bubbleItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { packBubbles } from "./bubbles.js";
 
@@ -238,12 +238,7 @@ class BubbleCell {
 
     // What Stroom is told of a selected bubble (as the legacy chart told it)
     selectionItem(bubble) {
-        return inCell({
-            key: bubble.seriesKey + "~#~" + bubble.row[0],
-            name: selectedValue(bubble.row[0], this.chart.data.types[0]),
-            series: bubble.seriesKey,
-            value: bubble.row[1]
-        }, this.cell);
+        return bubbleItem(bubble.seriesKey, bubble.row, this.chart.data.types[0], this.cell);
     }
 
     // The chart for a screen reader, e.g. 'Bubble chart of Requests by Status: 12 bubbles in 3

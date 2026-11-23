@@ -43,6 +43,25 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "x",
+            "label": "X"
+        },
+        {
+            "key": "y",
+            "label": "Y",
+            "type": "NUMBER"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

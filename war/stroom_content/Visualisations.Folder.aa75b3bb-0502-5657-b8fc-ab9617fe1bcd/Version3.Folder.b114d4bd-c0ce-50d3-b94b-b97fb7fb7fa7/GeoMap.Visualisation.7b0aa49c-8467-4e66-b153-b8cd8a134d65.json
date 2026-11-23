@@ -73,6 +73,37 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "lat",
+            "label": "Latitude"
+        },
+        {
+            "key": "lon",
+            "label": "Longitude"
+        },
+        {
+            "key": "name",
+            "label": "Name"
+        },
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "icon",
+            "label": "Icon"
+        },
+        {
+            "key": "eventTime",
+            "label": "Event time",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

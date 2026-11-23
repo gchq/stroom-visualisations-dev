@@ -4989,7 +4989,11 @@
 
   // src/shared/selection.js
   function selectedValue(value, type2) {
-    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? new Date(value).toISOString() : value;
+    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? isoTime(value) : value;
+  }
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
   }
   function inCell(item, cell) {
     if (!cell || !(cell.gridCellCount > 1)) {
@@ -5255,6 +5259,16 @@
     }
   };
 
+  // src/shared/selectionItems.js
+  function bubbleItem(seriesKey, row, nameType, cell) {
+    return inCell({
+      key: seriesKey + "~#~" + row[0],
+      name: selectedValue(row[0], nameType),
+      series: seriesKey,
+      value: row[1]
+    }, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -5426,12 +5440,7 @@
     }
     // What Stroom is told of a selected bubble (as the legacy chart told it)
     selectionItem(bubble) {
-      return inCell({
-        key: bubble.seriesKey + "~#~" + bubble.row[0],
-        name: selectedValue(bubble.row[0], this.chart.data.types[0]),
-        series: bubble.seriesKey,
-        value: bubble.row[1]
-      }, this.cell);
+      return bubbleItem(bubble.seriesKey, bubble.row, this.chart.data.types[0], this.cell);
     }
     // The chart for a screen reader, e.g. 'Bubble chart of Requests by Status: 12 bubbles in 3
     // series, largest Requests 1,380 (200 OK, db-01)'

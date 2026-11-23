@@ -32,6 +32,16 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "name",
+            "label": "Word"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

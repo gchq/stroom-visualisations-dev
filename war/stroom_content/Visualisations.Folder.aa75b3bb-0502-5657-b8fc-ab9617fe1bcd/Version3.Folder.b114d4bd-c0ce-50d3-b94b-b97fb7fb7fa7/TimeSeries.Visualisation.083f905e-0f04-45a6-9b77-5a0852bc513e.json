@@ -30,6 +30,18 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "minTime",
+            "label": "Window start",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "maxTime",
+            "label": "Window end",
+            "type": "DATE_TIME"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

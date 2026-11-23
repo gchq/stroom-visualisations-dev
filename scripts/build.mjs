@@ -38,6 +38,7 @@ import {
     nodeFile
 } from "./content.mjs";
 import { checkInputs } from "./inputs.mjs";
+import { checkSelection } from "./selection.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const VISUALISATIONS_SOURCE = path.join(ROOT, "src", "visualisations");
@@ -61,7 +62,8 @@ function readAssetVisualisations() {
                     throw new Error(dir + "/visualisation.json has no '" + key + "'");
                 }
             }
-            const problems = checkInputs(JSON.parse(settingsText));
+            const settings = JSON.parse(settingsText);
+            const problems = [...checkInputs(settings), ...checkSelection(settings)];
             if (problems.length > 0) {
                 throw new Error(dir + "/settings.json:\n  " + problems.join("\n  "));
             }

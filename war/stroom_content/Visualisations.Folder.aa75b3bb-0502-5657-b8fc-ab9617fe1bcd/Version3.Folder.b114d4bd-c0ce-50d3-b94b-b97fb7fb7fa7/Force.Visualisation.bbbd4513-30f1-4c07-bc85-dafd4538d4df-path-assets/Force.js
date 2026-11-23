@@ -5881,6 +5881,18 @@
     }
   };
 
+  // src/shared/selectionItems.js
+  function networkNodeItem(node, cell) {
+    if (node.isGroup) {
+      return inCell({ key: "Group: " + node.name, name: node.name, group: node.name }, cell);
+    }
+    const item = { key: node.name + " (" + node.group + ")", name: node.name };
+    if (node.group !== null && node.group !== void 0) {
+      item.group = node.group;
+    }
+    return inCell(item, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -6024,14 +6036,7 @@
     }
     // What Stroom is told of a selected node (as the legacy network told it), in its cell
     selectionItem(node, cell) {
-      if (node.isGroup) {
-        return inCell({ key: "Group: " + node.name, name: node.name, group: node.name }, cell);
-      }
-      const item = { key: node.name + " (" + node.group + ")", name: node.name };
-      if (node.group !== null && node.group !== void 0) {
-        item.group = node.group;
-      }
-      return inCell(item, cell);
+      return networkNodeItem(node, cell);
     }
     // A node's name for people to read, e.g. 'alice' or 'Ops (group)'
     nameOf(node) {

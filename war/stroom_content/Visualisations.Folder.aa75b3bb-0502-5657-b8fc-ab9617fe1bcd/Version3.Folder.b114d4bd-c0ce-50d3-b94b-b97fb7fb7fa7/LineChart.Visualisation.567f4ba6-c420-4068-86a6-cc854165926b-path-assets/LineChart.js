@@ -7906,7 +7906,11 @@
 
   // src/shared/selection.js
   function selectedValue(value, type2) {
-    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? new Date(value).toISOString() : value;
+    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? isoTime(value) : value;
+  }
+  function isoTime(time) {
+    const date2 = new Date(time);
+    return Number.isNaN(date2.getTime()) ? time : date2.toISOString();
   }
   function inCell(item, cell) {
     if (!cell || !(cell.gridCellCount > 1)) {

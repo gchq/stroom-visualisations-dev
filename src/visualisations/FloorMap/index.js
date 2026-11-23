@@ -30,6 +30,7 @@ import "./FloorMap.css";
 import L from "leaflet";
 import { MapChart } from "../../shared/mapChart.js";
 import { formatDate, formatNumber } from "../../shared/format.js";
+import { markerItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { floorLabel, floorMarkers, floorZoneList, nameAndTagsOf, parseConfig, pointOf, savedDictionary,
     stroomBaseOf, zoneSource, zonesOf } from "./floors.js";
@@ -96,24 +97,8 @@ class FloorMap extends MapChart {
     // What Stroom is told of a selected marker (the fields the legacy map told it, with y as in the
     // row rather than turned over for a plan whose origin is its top left)
     selectionItem(marker) {
-        const item = { key: marker.key, x: marker.x, y: marker.y, campus: marker.floor.campus,
-            building: marker.floor.building, floor: marker.floor.floor };
-        if (marker.name !== null && marker.name !== "") {
-            item.name = marker.name;
-        }
-        if (marker.series !== null && marker.series !== "") {
-            item.series = marker.series;
-        }
-        if (marker.icon !== null) {
-            item.icon = marker.icon;
-        }
-        if (marker.gridSeries !== undefined) {
-            item.gridSeries = marker.gridSeries;
-        }
-        if (marker.time !== null) {
-            item.eventTime = new Date(marker.time).toISOString();
-        }
-        return item;
+        return markerItem(marker, { x: marker.x, y: marker.y, campus: marker.floor.campus,
+            building: marker.floor.building, floor: marker.floor.floor });
     }
 
     // One floor of the cell: the one chosen, or the first with markers, its plan under its markers

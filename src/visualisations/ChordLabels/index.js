@@ -32,8 +32,8 @@ import { distinct, keyOf } from "../../shared/data.js";
 import { formatKey, formatValue } from "../../shared/format.js";
 import { shortened } from "../../shared/fit.js";
 import { PanZoom } from "../../shared/panZoom.js";
-import { inCell } from "../../shared/selection.js";
 import { chordLayout, flowCount, flowsOf, largestFlow, nameTotals, padAngleOf } from "./chords.js";
+import { chordFlowItem, chordNameItem } from "../../shared/selectionItems.js";
 
 // The room around the diagram
 const MARGIN = 4;
@@ -268,15 +268,12 @@ class ChordCell {
 
     // What Stroom is told of a selected name
     nameItem(index) {
-        const name = this.cell.names[index];
-        return inCell({ key: String(name), name }, this.cell);
+        return chordNameItem(this.cell.names[index], this.cell);
     }
 
     // What Stroom is told of a selected ribbon: its source and target
     ribbonItem(item) {
-        const source = this.cell.names[item.source.index];
-        const target = this.cell.names[item.target.index];
-        return inCell({ key: JSON.stringify([String(source), String(target)]), source, target }, this.cell);
+        return chordFlowItem(this.cell.names[item.source.index], this.cell.names[item.target.index], this.cell);
     }
 
     // The diagram for a screen reader, e.g. 'Chord diagram of Emails between From and To: 6 names,

@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "d9c04bbc-96f0-4586-a796-7dc5dfc14865",
   "name": "WordCloud",
-  "version": "ca444de1-4615-202b-46bc-1f8d193d10b1",
+  "version": "b7492c9f-fdf6-537e-476c-421543d3cdd9",
   "description": "The words of some text, each as big as how often it is seen (or how many times its rows count), the most seen in the middle, in a grid of clouds if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.WordCloud"
 }

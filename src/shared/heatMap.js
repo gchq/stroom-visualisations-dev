@@ -26,6 +26,7 @@ import { scaleBand, select } from "d3";
 import { Chart } from "./chart.js";
 import { DARK_BACKGROUND, LIGHT_BACKGROUND } from "./colour.js";
 import { TEXT } from "./data.js";
+import { heatCellItem } from "./selectionItems.js";
 import { edgeColour } from "./edges.js";
 import { formatNumber } from "./format.js";
 import { bucketWords, heatColours, heatScale } from "./heat.js";
@@ -309,8 +310,7 @@ class HeatCell {
 
     // What Stroom is told of a selected cell
     selectionItem(cell) {
-        const time = new Date(cell.time).toISOString();
-        return { key: cell.mapKey + "~#~" + time, series: cell.mapKey, x: time, value: cell.value };
+        return heatCellItem(cell);
     }
 
     // The heat map for a screen reader, e.g. 'Heat map of Logins by day and week: 30 values,

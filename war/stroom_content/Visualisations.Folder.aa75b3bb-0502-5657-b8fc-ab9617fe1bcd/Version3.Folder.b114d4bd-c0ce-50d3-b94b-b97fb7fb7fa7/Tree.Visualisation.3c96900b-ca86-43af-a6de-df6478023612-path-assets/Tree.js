@@ -5088,6 +5088,13 @@
   };
 
   // src/shared/selection.js
+  function selectedValue(value, type2) {
+    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? isoTime(value) : value;
+  }
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
+  }
   function inCell(item, cell) {
     if (!cell || !(cell.gridCellCount > 1)) {
       return item;
@@ -5388,6 +5395,19 @@
       }
     }
   };
+
+  // src/shared/selectionItems.js
+  var TREE_ITEM_KEYS = ["key", "path", "name", "value", "gridSeries"];
+  function treeNodeItem(path2, name, values, valueType, valueName, cell) {
+    const told = values.map((one2) => selectedValue(one2, valueType));
+    const value = told.length === 0 ? void 0 : told.length === 1 ? told[0] : told.join(", ");
+    const item = { key: path2, path: path2, name, value };
+    const extraKey = valueName || "Value";
+    if (!TREE_ITEM_KEYS.includes(extraKey)) {
+      item[extraKey] = value;
+    }
+    return inCell(item, cell);
+  }
 
   // src/shared/settings.js
   function isTrue(value, otherwise) {
@@ -5806,11 +5826,14 @@
     }
     // What Stroom is told of a selected box (the fields the legacy tree told it)
     selectionItem(node) {
-      const values = node.data.values;
-      const value = values.length === 0 ? void 0 : values.length === 1 ? values[0] : values.join(", ");
-      const item = { key: node.data.path, path: node.data.path, name: node.data.name, value };
-      item[this.chart.settings.valueName || "Value"] = value;
-      return inCell(item, this.cell);
+      return treeNodeItem(
+        node.data.path,
+        node.data.name,
+        node.data.values,
+        this.chart.data.types[1],
+        this.chart.settings.valueName,
+        this.cell
+      );
     }
     // The tree for a screen reader, e.g. 'Tree of Path: 13 paths, 4 levels deep, 6 shown'
     describe(cell, nodes) {

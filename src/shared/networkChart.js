@@ -27,7 +27,7 @@ import { formatNumber } from "./format.js";
 import { bucketWords, heatColours, heatScale } from "./heat.js";
 import { activityOf, filterNetwork, groupPairKey, networkOf } from "./network.js";
 import { SearchField } from "./searchField.js";
-import { inCell } from "./selection.js";
+import { networkNodeItem } from "./selectionItems.js";
 import { isTrue } from "./settings.js";
 
 // How many of a node's links its tooltip lists
@@ -193,16 +193,7 @@ export class NetworkChart extends Chart {
 
     // What Stroom is told of a selected node (as the legacy network told it), in its cell
     selectionItem(node, cell) {
-        // A group is told as its name (the legacy network told only its key, which no selection
-        // handler could use), and a node without a group as just its name (rather than 'null')
-        if (node.isGroup) {
-            return inCell({ key: "Group: " + node.name, name: node.name, group: node.name }, cell);
-        }
-        const item = { key: node.name + " (" + node.group + ")", name: node.name };
-        if (node.group !== null && node.group !== undefined) {
-            item.group = node.group;
-        }
-        return inCell(item, cell);
+        return networkNodeItem(node, cell);
     }
 
     // A node's name for people to read, e.g. 'alice' or 'Ops (group)'

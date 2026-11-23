@@ -33,7 +33,7 @@ import { DARK_BACKGROUND, LIGHT_BACKGROUND, mix, textColourOn } from "../../shar
 import { distinct, hasValue, isNumber, keyOf } from "../../shared/data.js";
 import { edgeColour } from "../../shared/edges.js";
 import { formatShare, formatValue } from "../../shared/format.js";
-import { selectedValue } from "../../shared/selection.js";
+import { boxItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { layoutBoxes } from "./boxes.js";
 
@@ -293,12 +293,7 @@ class TreeMapCell {
 
     // What Stroom is told of a selected box
     selectionItem(box) {
-        return {
-            key: box.seriesKey + "~#~" + box.row[0],
-            name: selectedValue(box.row[0], this.chart.data.types[0]),
-            series: box.seriesKey,
-            value: box.row[1]
-        };
+        return boxItem(box.seriesKey, box.row, this.chart.data.types[0]);
     }
 
     // The tree map for a screen reader, e.g. 'Tree map of Requests by Status: 12 boxes in 3 series,

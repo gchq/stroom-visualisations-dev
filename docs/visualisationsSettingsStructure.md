@@ -5,6 +5,7 @@ Each visualisation entity is accompanied by a JSON object that defines how Stroo
 The following features are defined in the JSON:
 
 * The data fields it takes, and their types (`inputs`)
+* The keys of what a person selects in it, for dashboards' selection handlers (`selection`)
 * Dashboard dialogue controls
     * Data fields
     * Settings values
@@ -281,6 +282,36 @@ build checks them (`scripts/inputs.mjs`).
 * **types** - The types of field it takes: any of `TEXT`, `NUMBER` and `DATE_TIME`
 * **required** - Whether the visualisation needs it (optional, false if left out)
 * **multiple** - Whether it takes several fields (optional, false if left out)
+
+## 'selection' Array
+
+The `selection` array declares the keys of each item the visualisation tells Stroom a person has
+selected in it (with `stroom.select`). Stroom offers each to a dashboard's selection handlers as
+`${component.<id>.selection.<key>}`. A visualisation in which nothing can be selected declares an
+empty array, so Stroom offers nothing. One that leaves it out is taken to tell `name` and `value`, as
+all visualisations were before keys were declared, so that is what Stroom offers. The
+`key` each item has, to say which item it is, is not declared. The build checks the keys
+(`scripts/selection.mjs`), and `src/shared/selectionItems.test.js` checks them against what each
+visualisation tells.
+
+```json
+    "selection": [
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "x",
+            "label": "Start",
+            "type": "DATE_TIME"
+        }
+    ]
+```
+
+* **key** - The key, as the visualisation tells it, with no spaces
+* **label** - What to call it
+* **type** - The type of its values, one of `TEXT`, `NUMBER` and `DATE_TIME` (optional: left out
+  when it depends on the fields chosen). A time is told in ISO 8601, e.g. `2026-10-12T08:00:00.000Z`
 
 ## 'data' Object
 

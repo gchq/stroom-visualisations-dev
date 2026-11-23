@@ -6094,6 +6094,10 @@
   };
 
   // src/shared/selection.js
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
+  }
   function inCell(item, cell) {
     if (!cell || !(cell.gridCellCount > 1)) {
       return item;
@@ -6481,6 +6485,12 @@
     return fitted;
   }
 
+  // src/shared/selectionItems.js
+  function timePointItem(seriesKey, row, cell) {
+    const time = isoTime(row[0]);
+    return inCell({ key: seriesKey + "~#~" + time, series: seriesKey, x: time, value: row[1] }, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -6660,9 +6670,7 @@
     }
     // What Stroom is told of a selected point
     selectionItem(point2) {
-      const time = new Date(point2.row[0]).toISOString();
-      const item = { key: point2.seriesKey + "~#~" + time, series: point2.seriesKey, x: time, value: point2.row[1] };
-      return inCell(item, this.cell);
+      return timePointItem(point2.seriesKey, point2.row, this.cell);
     }
     // The map for a screen reader, e.g. 'Point map of Time by hour and day: 36 events in 3 series
     // over 3 days, first 2026-10-12T08:00:00.000Z' (the time as the user has Stroom show times)

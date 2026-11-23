@@ -52,6 +52,16 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "name",
+            "label": "Node or group"
+        },
+        {
+            "key": "group",
+            "label": "Group"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

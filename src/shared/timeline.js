@@ -27,7 +27,7 @@ import { Chart } from "./chart.js";
 import { DATE_TIME, TEXT, distinct, keyOf } from "./data.js";
 import { formatKey, formatNumber } from "./format.js";
 import { MARGIN, fitAxes } from "./plot.js";
-import { inCell } from "./selection.js";
+import { sessionItem } from "./selectionItems.js";
 import { passesSeriesFilter, durationWords } from "./sessions.js";
 import { isTrue } from "./settings.js";
 import { currentZone, formatTime } from "./time.js";
@@ -268,13 +268,7 @@ class TimelineCell {
 
     // What Stroom is told of a selected session
     selectionItem(bar) {
-        const start = new Date(bar.session.start).toISOString();
-        return inCell({
-            key: bar.seriesKey + "~#~" + start,
-            series: bar.seriesKey,
-            x: start,
-            end: new Date(bar.session.end).toISOString()
-        }, this.cell);
+        return sessionItem(bar.seriesKey, bar.session, this.cell);
     }
 
     // The timeline for a screen reader, e.g. 'Sessions by User: 9 sessions in 3 series, from Mon 7

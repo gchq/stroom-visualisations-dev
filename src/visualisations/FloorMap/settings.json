@@ -103,6 +103,49 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "x",
+            "label": "X"
+        },
+        {
+            "key": "y",
+            "label": "Y"
+        },
+        {
+            "key": "campus",
+            "label": "Campus"
+        },
+        {
+            "key": "building",
+            "label": "Building"
+        },
+        {
+            "key": "floor",
+            "label": "Floor"
+        },
+        {
+            "key": "name",
+            "label": "Name"
+        },
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "icon",
+            "label": "Icon"
+        },
+        {
+            "key": "eventTime",
+            "label": "Event time",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

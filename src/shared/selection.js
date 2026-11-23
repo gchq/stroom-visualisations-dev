@@ -25,8 +25,15 @@ import { DATE_TIME } from "./data.js";
 // 8601, e.g. '2026-10-12T08:00:00.000Z', as the legacy charts told times; any other value as it is
 export function selectedValue(value, type) {
     return type === DATE_TIME && typeof value === "number" && Number.isFinite(value)
-        ? new Date(value).toISOString()
+        ? isoTime(value)
         : value;
+}
+
+// A time (milliseconds) in ISO 8601, e.g. '2026-10-12T08:00:00.000Z', or as it is if no date can
+// be that far from 1970 (more than 8.64e15 milliseconds, where toISOString would throw)
+export function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
 }
 
 // An item selected in one cell of a grid of charts (`cell` having `key`, its grid series value, and

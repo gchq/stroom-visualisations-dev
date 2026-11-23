@@ -36,6 +36,8 @@ import { formatValue } from "../../shared/format.js";
 import { lineCurve, lineDash, linePoints, orderedRows } from "../../shared/lines.js";
 import { NearestPoint } from "../../shared/nearest.js";
 import { MARGIN, fitAxes } from "../../shared/plot.js";
+import { isoTime } from "../../shared/selection.js";
+import { timeWindowItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { formatTime as timeWords } from "../../shared/time.js";
 import { clampWindow, isWhole, rowsAround, valueRangeIn, windowForKey } from "../../shared/window.js";
@@ -118,11 +120,11 @@ class TimeSeries extends Chart {
     chooseWindow(window, extent) {
         const chosen = clampWindow(window, extent);
         this.window = isWhole(chosen, extent) ? null : chosen;
-        const told = new Date(chosen[0]).toISOString() + "/" + new Date(chosen[1]).toISOString();
+        const told = isoTime(chosen[0]) + "/" + isoTime(chosen[1]);
         if (told !== this.toldWindow) {
             this.toldWindow = told;
             if (typeof stroom !== "undefined" && typeof stroom.select === "function") {
-                stroom.select([{ minTime: new Date(chosen[0]).toISOString(), maxTime: new Date(chosen[1]).toISOString() }]);
+                stroom.select([timeWindowItem(chosen[0], chosen[1])]);
             }
         }
     }

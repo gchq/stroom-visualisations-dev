@@ -5008,6 +5008,10 @@
   };
 
   // src/shared/selection.js
+  function isoTime(time) {
+    const date2 = new Date(time);
+    return Number.isNaN(date2.getTime()) ? time : date2.toISOString();
+  }
   function inCell(item, cell) {
     if (!cell || !(cell.gridCellCount > 1)) {
       return item;
@@ -5227,6 +5231,17 @@
     return fitted;
   }
 
+  // src/shared/selectionItems.js
+  function sessionItem(seriesKey, session, cell) {
+    const start2 = isoTime(session.start);
+    return inCell({
+      key: seriesKey + "~#~" + start2,
+      series: seriesKey,
+      x: start2,
+      end: isoTime(session.end)
+    }, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -5407,13 +5422,7 @@
     }
     // What Stroom is told of a selected session
     selectionItem(bar) {
-      const start2 = new Date(bar.session.start).toISOString();
-      return inCell({
-        key: bar.seriesKey + "~#~" + start2,
-        series: bar.seriesKey,
-        x: start2,
-        end: new Date(bar.session.end).toISOString()
-      }, this.cell);
+      return sessionItem(bar.seriesKey, bar.session, this.cell);
     }
     // The timeline for a screen reader, e.g. 'Sessions by User: 9 sessions in 3 series, from Mon 7
     // Sep 2026, 08:00:00 to Mon 7 Sep 2026, 18:00:00'

@@ -13929,6 +13929,10 @@
   };
 
   // src/shared/selection.js
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
+  }
   var Selection3 = class {
     // `onChange()` is called when the selection changes, so that the chart can show it
     constructor(onChange) {
@@ -14707,6 +14711,27 @@
     return { markers, left };
   }
 
+  // src/shared/selectionItems.js
+  function markerItem(marker, place) {
+    const item = { key: marker.key, ...place };
+    if (marker.name !== null && marker.name !== "") {
+      item.name = marker.name;
+    }
+    if (marker.series !== null && marker.series !== "") {
+      item.series = marker.series;
+    }
+    if (marker.icon !== null) {
+      item.icon = marker.icon;
+    }
+    if (marker.gridSeries !== void 0) {
+      item.gridSeries = marker.gridSeries;
+    }
+    if (marker.time !== null) {
+      item.eventTime = isoTime(marker.time);
+    }
+    return item;
+  }
+
   // src/visualisations/GeoMap/index.js
   var DEFAULT_CENTRE = [51, 0];
   var DEFAULT_ZOOM = 13;
@@ -14761,23 +14786,7 @@
     }
     // What Stroom is told of a selected marker (the fields the legacy map told it)
     selectionItem(marker) {
-      const item = { key: marker.key, lat: marker.lat, lon: marker.lon };
-      if (marker.name !== null && marker.name !== "") {
-        item.name = marker.name;
-      }
-      if (marker.series !== null && marker.series !== "") {
-        item.series = marker.series;
-      }
-      if (marker.icon !== null) {
-        item.icon = marker.icon;
-      }
-      if (marker.gridSeries !== void 0) {
-        item.gridSeries = marker.gridSeries;
-      }
-      if (marker.time !== null) {
-        item.eventTime = new Date(marker.time).toISOString();
-      }
-      return item;
+      return markerItem(marker, { lat: marker.lat, lon: marker.lon });
     }
   };
   window.visualisations = window.visualisations || {};

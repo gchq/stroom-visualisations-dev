@@ -4388,7 +4388,11 @@
 
   // src/shared/selection.js
   function selectedValue(value, type2) {
-    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? new Date(value).toISOString() : value;
+    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? isoTime(value) : value;
+  }
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
   }
   function inCell(item, cell) {
     if (!cell || !(cell.gridCellCount > 1)) {
@@ -4584,6 +4588,11 @@
     }
   };
 
+  // src/shared/selectionItems.js
+  function sliceItem(name, value, nameType, cell) {
+    return inCell({ key: name, name: selectedValue(name, nameType), value }, cell);
+  }
+
   // src/shared/settings.js
   function isTrue(value, otherwise) {
     if (value === void 0 || value === null || value === "") {
@@ -4751,11 +4760,7 @@
     }
     // What Stroom is told of a selected slice (as the legacy doughnut told it)
     selectionItem(slice2) {
-      return inCell({
-        key: slice2.row[0],
-        name: selectedValue(slice2.row[0], this.chart.data.types[0]),
-        value: slice2.value
-      }, this.cell);
+      return sliceItem(slice2.row[0], slice2.value, this.chart.data.types[0], this.cell);
     }
     // The doughnut for a screen reader, e.g. 'Doughnut of Requests by Status: 4 slices, total
     // 1,828, largest 200 OK 1,200 (65.6%)'

@@ -30,6 +30,22 @@
             "required": true
         }
     ],
+    "selection": [
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "x",
+            "label": "Time",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "value",
+            "label": "Value",
+            "type": "NUMBER"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

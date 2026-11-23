@@ -31,7 +31,7 @@ import { DARK_BACKGROUND, LIGHT_BACKGROUND } from "../../shared/colour.js";
 import { DATE_TIME, keyOf } from "../../shared/data.js";
 import { readableColour } from "../../shared/edges.js";
 import { formatKey, formatValue } from "../../shared/format.js";
-import { inCell } from "../../shared/selection.js";
+import { wordItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { countWords, layoutWords, rotationOf } from "./words.js";
 
@@ -239,7 +239,7 @@ class WordCloudCell {
 
     // What Stroom is told of a selected word
     selectionItem(word) {
-        return inCell({ key: word.text, name: word.text }, this.cell);
+        return wordItem(word.text, this.cell);
     }
 
     // The cloud for a screen reader, e.g. 'Word cloud of Message: 24 words, most seen disk 12', and

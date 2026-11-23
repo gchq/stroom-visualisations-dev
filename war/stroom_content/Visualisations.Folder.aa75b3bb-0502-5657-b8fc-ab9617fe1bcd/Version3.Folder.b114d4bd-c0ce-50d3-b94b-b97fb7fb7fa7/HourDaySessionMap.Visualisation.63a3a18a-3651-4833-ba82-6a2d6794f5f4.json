@@ -32,6 +32,26 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "series",
+            "label": "Series"
+        },
+        {
+            "key": "x",
+            "label": "Start",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "end",
+            "label": "End",
+            "type": "DATE_TIME"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

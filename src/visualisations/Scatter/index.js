@@ -31,7 +31,7 @@ import { aggregateRows, distinct, hasValue, isNumber, isOrdinal, keyOf } from ".
 import { formatKey, formatValue } from "../../shared/format.js";
 import { NearestPoint } from "../../shared/nearest.js";
 import { MARGIN, fitAxes } from "../../shared/plot.js";
-import { inCell, selectedValue } from "../../shared/selection.js";
+import { scatterPointItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { ZoomWindows, valueRangeIn } from "../../shared/window.js";
 import { pointRadius, scatterPoints } from "./points.js";
@@ -246,12 +246,7 @@ class ScatterCell {
 
     // What Stroom is told of a selected point (as the legacy chart told it)
     selectionItem(point) {
-        return inCell({
-            key: point.seriesKey + "~#~" + point.row[0] + "," + point.row[1],
-            series: point.seriesKey,
-            x: selectedValue(point.row[0], this.cell.xType),
-            y: point.row[1]
-        }, this.cell);
+        return scatterPointItem(point.seriesKey, point.row, this.cell);
     }
 
     // The chart for a screen reader, of the series shown, e.g. 'Scatter chart of Bytes by Duration:

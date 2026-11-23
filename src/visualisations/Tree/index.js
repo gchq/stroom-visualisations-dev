@@ -41,7 +41,7 @@ import { fitOf, shortened } from "../../shared/fit.js";
 import { formatKey, formatValue } from "../../shared/format.js";
 import { transitionMillis } from "../../shared/motion.js";
 import { PanZoom } from "../../shared/panZoom.js";
-import { inCell } from "../../shared/selection.js";
+import { treeNodeItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { DEFAULT_DELIMITER, ORIENTATIONS, boundsOf, elbowOf, layOut, layOutRadial, nodeCount, placeOf, radialTurn,
     shownHierarchy, treeDepth, treeOf } from "./tree.js";
@@ -437,11 +437,8 @@ class TreeCell {
 
     // What Stroom is told of a selected box (the fields the legacy tree told it)
     selectionItem(node) {
-        const values = node.data.values;
-        const value = values.length === 0 ? undefined : values.length === 1 ? values[0] : values.join(", ");
-        const item = { key: node.data.path, path: node.data.path, name: node.data.name, value };
-        item[this.chart.settings.valueName || "Value"] = value;
-        return inCell(item, this.cell);
+        return treeNodeItem(node.data.path, node.data.name, node.data.values, this.chart.data.types[1],
+            this.chart.settings.valueName, this.cell);
     }
 
     // The tree for a screen reader, e.g. 'Tree of Path: 13 paths, 4 levels deep, 6 shown'

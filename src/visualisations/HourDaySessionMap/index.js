@@ -31,7 +31,7 @@ import { NUMBER, TEXT, distinct, keyOf } from "../../shared/data.js";
 import { formatKey } from "../../shared/format.js";
 import { daysOf } from "../../shared/heat.js";
 import { MARGIN, fitAxes } from "../../shared/plot.js";
-import { inCell } from "../../shared/selection.js";
+import { sessionItem } from "../../shared/selectionItems.js";
 import { piecesByDay, sessionsOf, thresholdOf } from "../../shared/sessions.js";
 import { isTrue } from "../../shared/settings.js";
 import { currentZone } from "../../shared/time.js";
@@ -225,13 +225,7 @@ class SessionMapCell {
 
     // What Stroom is told of a selected session
     selectionItem(bar) {
-        const start = new Date(bar.session.start).toISOString();
-        return inCell({
-            key: bar.seriesKey + "~#~" + start,
-            series: bar.seriesKey,
-            x: start,
-            end: new Date(bar.session.end).toISOString()
-        }, this.cell);
+        return sessionItem(bar.seriesKey, bar.session, this.cell);
     }
 
     // The map for a screen reader, e.g. 'Sessions by User by hour and day: 9 sessions in 3 series

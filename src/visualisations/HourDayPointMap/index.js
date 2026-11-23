@@ -32,7 +32,7 @@ import { formatKey, formatValue } from "../../shared/format.js";
 import { daysOf } from "../../shared/heat.js";
 import { NearestPoint } from "../../shared/nearest.js";
 import { MARGIN, fitAxes } from "../../shared/plot.js";
-import { inCell } from "../../shared/selection.js";
+import { timePointItem } from "../../shared/selectionItems.js";
 import { isTrue } from "../../shared/settings.js";
 import { currentZone, formatTime } from "../../shared/time.js";
 import { dayPoints } from "./points.js";
@@ -234,9 +234,7 @@ class PointMapCell {
 
     // What Stroom is told of a selected point
     selectionItem(point) {
-        const time = new Date(point.row[0]).toISOString();
-        const item = { key: point.seriesKey + "~#~" + time, series: point.seriesKey, x: time, value: point.row[1] };
-        return inCell(item, this.cell);
+        return timePointItem(point.seriesKey, point.row, this.cell);
     }
 
     // The map for a screen reader, e.g. 'Point map of Time by hour and day: 36 events in 3 series

@@ -41,6 +41,26 @@
             "required": false
         }
     ],
+    "selection": [
+        {
+            "key": "name",
+            "label": "Name",
+            "type": "TEXT"
+        },
+        {
+            "key": "path",
+            "label": "Path",
+            "type": "TEXT"
+        },
+        {
+            "key": "value",
+            "label": "Value"
+        },
+        {
+            "key": "gridSeries",
+            "label": "Grid series"
+        }
+    ],
     "tabs": [
         {
             "name": "Data",

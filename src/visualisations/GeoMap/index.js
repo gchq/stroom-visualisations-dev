@@ -23,6 +23,7 @@ import "../../shared/shared.css";
 import L from "leaflet";
 import { MapChart } from "../../shared/mapChart.js";
 import { geoMarkers } from "./markers.js";
+import { markerItem } from "../../shared/selectionItems.js";
 
 // Where a map starts if the settings don't say (or say something that isn't a place)
 const DEFAULT_CENTRE = [51.0, 0.0];
@@ -89,23 +90,7 @@ class GeoMap extends MapChart {
 
     // What Stroom is told of a selected marker (the fields the legacy map told it)
     selectionItem(marker) {
-        const item = { key: marker.key, lat: marker.lat, lon: marker.lon };
-        if (marker.name !== null && marker.name !== "") {
-            item.name = marker.name;
-        }
-        if (marker.series !== null && marker.series !== "") {
-            item.series = marker.series;
-        }
-        if (marker.icon !== null) {
-            item.icon = marker.icon;
-        }
-        if (marker.gridSeries !== undefined) {
-            item.gridSeries = marker.gridSeries;
-        }
-        if (marker.time !== null) {
-            item.eventTime = new Date(marker.time).toISOString();
-        }
-        return item;
+        return markerItem(marker, { lat: marker.lat, lon: marker.lon });
     }
 }
 

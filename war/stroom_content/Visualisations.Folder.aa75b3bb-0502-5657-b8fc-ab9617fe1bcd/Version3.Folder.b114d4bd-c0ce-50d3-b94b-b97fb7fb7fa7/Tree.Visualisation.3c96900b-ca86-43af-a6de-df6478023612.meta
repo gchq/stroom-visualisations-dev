@@ -2,7 +2,7 @@
   "type": "Visualisation",
   "uuid": "3c96900b-ca86-43af-a6de-df6478023612",
   "name": "Tree",
-  "version": "112070f8-3731-be96-3978-66c811e0c17b",
+  "version": "3012828f-d4f8-3fa4-fb75-ed626df636a9",
   "description": "A tree of paths, each part a box joined to the part before it, whose branches can be shown or hidden, in a grid of trees if a Grid Series field is chosen.\nVersion: 8.0.0-beta.4",
   "functionName": "visualisations.Tree"
 }

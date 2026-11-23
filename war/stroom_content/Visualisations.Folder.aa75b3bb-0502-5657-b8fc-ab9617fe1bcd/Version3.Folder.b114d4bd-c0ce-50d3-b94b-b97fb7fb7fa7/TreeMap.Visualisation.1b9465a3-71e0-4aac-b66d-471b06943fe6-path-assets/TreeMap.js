@@ -4440,7 +4440,11 @@
 
   // src/shared/selection.js
   function selectedValue(value, type2) {
-    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? new Date(value).toISOString() : value;
+    return type2 === DATE_TIME && typeof value === "number" && Number.isFinite(value) ? isoTime(value) : value;
+  }
+  function isoTime(time) {
+    const date = new Date(time);
+    return Number.isNaN(date.getTime()) ? time : date.toISOString();
   }
   var Selection3 = class {
     // `onChange()` is called when the selection changes, so that the chart can show it
@@ -4647,6 +4651,16 @@
       return null;
     }
     return readableColour(fill, background, SHAPE_CONTRAST);
+  }
+
+  // src/shared/selectionItems.js
+  function boxItem(seriesKey, row, nameType) {
+    return {
+      key: seriesKey + "~#~" + row[0],
+      name: selectedValue(row[0], nameType),
+      series: seriesKey,
+      value: row[1]
+    };
   }
 
   // src/shared/settings.js
@@ -4887,12 +4901,7 @@
     }
     // What Stroom is told of a selected box
     selectionItem(box) {
-      return {
-        key: box.seriesKey + "~#~" + box.row[0],
-        name: selectedValue(box.row[0], this.chart.data.types[0]),
-        series: box.seriesKey,
-        value: box.row[1]
-      };
+      return boxItem(box.seriesKey, box.row, this.chart.data.types[0]);
     }
     // The tree map for a screen reader, e.g. 'Tree map of Requests by Status: 12 boxes in 3 series,
     // largest Requests 1,380 (200 OK, db-01)'
