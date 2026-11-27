@@ -167,7 +167,6 @@ visualisations.LineChart = function(containerNode) {
         .style("fill", highlightedPath.style("stroke"));
 
       tip.show(closest, marker.node());
-      tip.style("pointer-events", "none");
     } else {
       marker
         .attr("opacity", "0");
@@ -180,7 +179,6 @@ visualisations.LineChart = function(containerNode) {
       marker
         .attr("transform", "translate(" + closest.closestPos.x + "," + closest.closestPos.y + ")");
       tip.show(closest, marker.node());
-      tip.style("pointer-events", "none");
     } else {
       tip.hide();
     }

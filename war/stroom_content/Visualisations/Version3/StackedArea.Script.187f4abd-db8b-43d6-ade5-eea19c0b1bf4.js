@@ -172,7 +172,6 @@ visualisations.StackedArea = function(containerNode) {
         .attr("opacity", "1")
         .style("fill", highlightedPath.style("stroke"));
       markerTip.show(closest, marker.node());
-      markerTip.style("pointer-events","none");
     } else {
       marker
         .attr("opacity", "0");
@@ -185,7 +184,6 @@ visualisations.StackedArea = function(containerNode) {
       marker
         .attr("transform", "translate(" + closest.closestPos.x + "," + closest.closestPos.y + ")");
       markerTip.show(closest, marker.node());
-      markerTip.style("pointer-events","none");
     } else {
       markerTip.hide();
     }
