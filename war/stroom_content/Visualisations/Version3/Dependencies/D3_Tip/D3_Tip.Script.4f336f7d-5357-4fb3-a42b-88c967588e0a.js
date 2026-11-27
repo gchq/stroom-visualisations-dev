@@ -53,8 +53,12 @@
           scrollTop  = document.documentElement.scrollTop || document.body.scrollTop,
           scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft
 
+      // Leave pointer-events as 'none'. The tip is clamped inside the svg below,
+      // so it can end up over the element being hovered. If it took pointer
+      // events it would fire mouseout on that element, which hides the tip,
+      // which fires mouseover again, and the tip flickers (gh-70).
       nodel.html(content)
-        .style({ opacity: 1, 'pointer-events': 'all' })
+        .style({ opacity: 1 })
 
       while(i--) nodel.classed(directions[i], false)
       coords = direction_callbacks.get(dir).apply(this)

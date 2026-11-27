@@ -53,8 +53,11 @@
           scrollTop  = document.documentElement.scrollTop || document.body.scrollTop,
           scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft
 
+      // Leave pointer-events as 'none'. If the tip is placed over the element
+      // being hovered and takes pointer events, that element gets mouseout,
+      // which hides the tip, then mouseover again, and the tip flickers (gh-70).
       nodel.html(content)
-        .style({ opacity: 1, 'pointer-events': 'all' })
+        .style({ opacity: 1 })
 
       while(i--) nodel.classed(directions[i], false)
       coords = direction_callbacks.get(dir).apply(this)
